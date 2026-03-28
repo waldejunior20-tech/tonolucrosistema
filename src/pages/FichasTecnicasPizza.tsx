@@ -771,13 +771,17 @@ export default function FichasTecnicasPizza() {
                           { label: "G", qtdKey: "qtd_g" as const, qtdVal: ing.qtd_g },
                         ].map(({ label, qtdKey, qtdVal }) => (
                           <div key={label} className="flex items-end gap-1.5 flex-1">
-                            <div className="flex-1 min-w-0">
+                            <div className="flex-1 min-w-0 relative">
                               <Label className="text-xs">Qtd {label}</Label>
                               <Input
-                                type="number" step="0.01" min="0" className="h-8 text-sm"
+                                type="number" step="0.01" min="0" className="h-8 text-sm pr-6"
                                 value={qtdVal || ""}
                                 onChange={(e) => updateIngrediente(idx, qtdKey, parseFloat(e.target.value) || 0)}
+                                onBlur={() => autoSaveIngredienteQtd(ing, qtdKey, ing[qtdKey])}
                               />
+                              {ing.db_id && savedFields[`${ing.db_id}-${qtdKey}`] && (
+                                <Check className="absolute right-1 top-[50%] h-3.5 w-3.5 text-green-500 animate-in fade-in duration-200" />
+                              )}
                             </div>
                             <div className="min-w-[70px] text-center pb-1">
                               <p className="text-[10px] text-muted-foreground leading-none mb-0.5">Custo {label}</p>
