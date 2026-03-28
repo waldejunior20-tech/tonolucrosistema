@@ -70,6 +70,12 @@ const emptyIngrediente: IngredienteForm = {
   qtd_m: 0,
   qtd_g: 0,
   unidade: "",
+  caixa_p_id: "",
+  caixa_p_nome: "",
+  caixa_m_id: "",
+  caixa_m_nome: "",
+  caixa_g_id: "",
+  caixa_g_nome: "",
 };
 
 const converterQuantidade = (quantidade: number, unidade: string) => {
