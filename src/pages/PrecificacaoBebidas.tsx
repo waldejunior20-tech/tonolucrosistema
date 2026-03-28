@@ -550,7 +550,6 @@ export default function PrecificacaoBebidas() {
                       <TableHead className="text-center">Lucro Débito</TableHead>
                       <TableHead className="text-center">Lucro Crédito</TableHead>
                       <TableHead className="text-center">Lucro iFood</TableHead>
-                      <TableHead></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
