@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import { toast } from "sonner";
 import { Settings2, Save, AlertTriangle, Check } from "lucide-react";
+import { formatMoney, parseFormattedNumber } from "@/components/MoneyInput";
 
 // ─── Types ───────────────────────────────────────────────────────────
 interface ConfigPrecificacao {
