@@ -471,7 +471,7 @@ export default function InsumosProduzidos() {
 
                 {form.ingredientes.length > 0 && (
                   <div className="text-right text-sm text-muted-foreground">
-                    Custo total: R$ {custoFormulario.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    Custo total: {formatMoney(custoFormulario)}
                   </div>
                 )}
               </div>
