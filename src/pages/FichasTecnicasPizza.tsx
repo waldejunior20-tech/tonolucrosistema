@@ -17,6 +17,7 @@ import {
 import { toast } from "sonner";
 import { Pencil, Trash2, Plus, Filter, Search, X, Check } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
+import { formatQty } from "@/components/MoneyInput";
 
 const TIPOS = ["tradicional", "especial", "premium", "doce"];
 const UNIDADES = ["kg", "g", "L", "ml", "unidade"];
