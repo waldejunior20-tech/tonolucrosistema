@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      configuracoes_precificacao: {
+        Row: {
+          cmv_meta_pct: number
+          created_at: string
+          custos_fixos_pct: number
+          id: string
+          taxa_credito_pct: number
+          taxa_debito_pct: number
+          taxa_ifood_pct: number
+          taxa_pix_pct: number
+          updated_at: string
+        }
+        Insert: {
+          cmv_meta_pct?: number
+          created_at?: string
+          custos_fixos_pct?: number
+          id?: string
+          taxa_credito_pct?: number
+          taxa_debito_pct?: number
+          taxa_ifood_pct?: number
+          taxa_pix_pct?: number
+          updated_at?: string
+        }
+        Update: {
+          cmv_meta_pct?: number
+          created_at?: string
+          custos_fixos_pct?: number
+          id?: string
+          taxa_credito_pct?: number
+          taxa_debito_pct?: number
+          taxa_ifood_pct?: number
+          taxa_pix_pct?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       configuracoes_preco: {
         Row: {
           comissao_marketplace: number | null

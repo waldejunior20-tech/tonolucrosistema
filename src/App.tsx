@@ -9,6 +9,7 @@ import SectionPage from "@/pages/SectionPage";
 import InsumosComprados from "@/pages/InsumosComprados";
 import InsumosProduzidos from "@/pages/InsumosProduzidos";
 import FichasTecnicasPizza from "@/pages/FichasTecnicasPizza";
+import PrecificacaoPizzas from "@/pages/PrecificacaoPizzas";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -35,7 +36,7 @@ const App = () => (
             <Route path="/fichas/sobremesas" element={<SectionPage />} />
             <Route path="/fichas/bebidas" element={<SectionPage />} />
             {/* Precificação */}
-            <Route path="/precificacao/pizzas" element={<SectionPage />} />
+            <Route path="/precificacao/pizzas" element={<PrecificacaoPizzas />} />
             <Route path="/precificacao/produtos" element={<SectionPage />} />
             <Route path="/precificacao/bebidas" element={<SectionPage />} />
             {/* Financeiro */}
