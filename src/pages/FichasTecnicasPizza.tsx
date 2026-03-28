@@ -438,6 +438,27 @@ export default function FichasTecnicasPizza() {
     setForm({ ...form, ingredientes: updated });
   };
 
+  // Auto-save ingredient quantity on blur (edit mode only)
+  const autoSaveIngredienteQtd = useCallback(
+    async (ing: IngredienteForm, field: "qtd_p" | "qtd_m" | "qtd_g", value: number) => {
+      if (!editingId || !ing.db_id) return;
+      try {
+        const { error } = await supabase
+          .from("fichas_tecnicas_pizza_ingredientes")
+          .update({ [field]: value })
+          .eq("id", ing.db_id);
+        if (error) throw error;
+        queryClient.invalidateQueries({ queryKey: ["fichas_tecnicas_pizza_ingredientes"] });
+        const key = `${ing.db_id}-${field}`;
+        setSavedFields((prev) => ({ ...prev, [key]: true }));
+        setTimeout(() => setSavedFields((prev) => ({ ...prev, [key]: false })), 2000);
+      } catch {
+        // silent fail
+      }
+    },
+    [editingId, queryClient]
+  );
+
   const selectInsumo = (index: number, id: string, nome: string, tipo: string) => {
     const updated = [...form.ingredientes];
     let unidadeAuto = updated[index].unidade;
