@@ -294,35 +294,27 @@ export default function PrecificacaoPizzas() {
     onError: () => toast.error("Erro ao salvar configurações."),
   });
 
-  // ─── Save prices ────────────────────────────────────────────────
-  const priceMutation = useMutation({
-    mutationFn: async ({
-      id,
-      p,
-      m,
-      g,
-    }: {
-      id: string;
-      p: number;
-      m: number;
-      g: number;
-    }) => {
+  // ─── Auto-save single price on blur ──────────────────────────────
+  const autoSavePrice = useCallback(
+    async (fichaId: string, size: "p" | "m" | "g", value: string) => {
+      const numVal = parseFloat(value) || 0;
+      const colMap = { p: "preco_venda_p", m: "preco_venda_m", g: "preco_venda_g" } as const;
       const { error } = await supabase
         .from("fichas_tecnicas_pizza")
-        .update({
-          preco_venda_p: p || null,
-          preco_venda_m: m || null,
-          preco_venda_g: g || null,
-        })
-        .eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
+        .update({ [colMap[size]]: numVal || null })
+        .eq("id", fichaId);
+      if (error) {
+        toast.error("Erro ao salvar preço.");
+        return;
+      }
       queryClient.invalidateQueries({ queryKey: ["fichas_tecnicas_pizza"] });
-      toast.success("Preço salvo!");
+      // Show check for 2 seconds
+      const key = `${fichaId}-${size}`;
+      setSavedFields((prev) => ({ ...prev, [key]: true }));
+      setTimeout(() => setSavedFields((prev) => ({ ...prev, [key]: false })), 2000);
     },
-    onError: () => toast.error("Erro ao salvar preço."),
-  });
+    [queryClient]
+  );
 
   const handlePriceChange = (fichaId: string, size: "p" | "m" | "g", value: string) => {
     setLocalPrices((prev) => ({
@@ -331,14 +323,18 @@ export default function PrecificacaoPizzas() {
     }));
   };
 
-  const savePrice = (ficha: FichaPizza) => {
-    const p = getPreco(ficha.id, "p", ficha);
-    const m = getPreco(ficha.id, "m", ficha);
-    const g = getPreco(ficha.id, "g", ficha);
-    priceMutation.mutate({ id: ficha.id, p, m, g });
+  const handlePriceBlur = (fichaId: string, size: "p" | "m" | "g", ficha: FichaPizza) => {
+    const local = localPrices[fichaId]?.[size];
+    if (local === undefined) return; // no change
+    const original = String(ficha[`preco_venda_${size}` as keyof FichaPizza] ?? "");
+    if (local === original) return; // no change
+    autoSavePrice(fichaId, size, local);
     setLocalPrices((prev) => {
       const copy = { ...prev };
-      delete copy[ficha.id];
+      if (copy[fichaId]) {
+        delete copy[fichaId][size];
+        if (!copy[fichaId].p && !copy[fichaId].m && !copy[fichaId].g) delete copy[fichaId];
+      }
       return copy;
     });
   };
