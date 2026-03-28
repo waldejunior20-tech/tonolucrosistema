@@ -89,6 +89,8 @@ export default function FichasTecnicasPizza() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [filtroTipo, setFiltroTipo] = useState("todos");
+  const [buscaIngrediente, setBuscaIngrediente] = useState("");
+  const [buscaAberta, setBuscaAberta] = useState<number | null>(null);
   const [buscaEmbalagemAberta, setBuscaEmbalagemAberta] = useState<string | null>(null);
   const [buscaEmbalagemTermo, setBuscaEmbalagemTermo] = useState("");
 
