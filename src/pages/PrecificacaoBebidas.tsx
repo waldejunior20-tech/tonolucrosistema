@@ -76,32 +76,56 @@ const fmt = (v: number) =>
 
 const fmtPct = (v: number) => `${v.toFixed(1)}%`;
 
+// ─── Faixas CMV para bebidas PREPARADAS (padrão Abrasel) ─────────
 const cmvColor = (pct: number): string => {
   if (pct < 25) return "text-blue-600";
   if (pct <= 35) return "text-green-600";
   if (pct <= 40) return "text-yellow-600";
   return "text-red-600";
 };
-
 const cmvBg = (pct: number): string => {
   if (pct < 25) return "bg-blue-100 text-blue-800";
   if (pct <= 35) return "bg-green-100 text-green-800";
   if (pct <= 40) return "bg-yellow-100 text-yellow-800";
   return "bg-red-100 text-red-800";
 };
-
 const cmvEmoji = (pct: number): string => {
   if (pct < 25) return "🔵";
   if (pct <= 35) return "🟢";
   if (pct <= 40) return "🟡";
   return "🔴";
 };
-
 const cmvMessage = (pct: number): string => {
   if (pct < 25) return "Preço alto — verifique se está correto";
   if (pct <= 35) return "Ideal";
   if (pct <= 40) return "Atenção — margem apertada";
   return "Rever preços — prejuízo";
+};
+
+// ─── Faixas CMV para bebidas INDUSTRIALIZADAS ────────────────────
+const indCmvColor = (pct: number): string => {
+  if (pct < 75) return "text-blue-600";
+  if (pct <= 85) return "text-green-600";
+  if (pct <= 92) return "text-yellow-600";
+  return "text-red-600";
+};
+const indCmvBg = (pct: number): string => {
+  if (pct < 75) return "bg-blue-100 text-blue-800";
+  if (pct <= 85) return "bg-green-100 text-green-800";
+  if (pct <= 92) return "bg-yellow-100 text-yellow-800";
+  return "bg-red-100 text-red-800";
+};
+const indCmvEmoji = (pct: number): string => {
+  if (pct < 75) return "🔵";
+  if (pct <= 85) return "🟢";
+  if (pct <= 92) return "🟡";
+  return "🔴";
+};
+const indCmvMessage = (pct: number): string => {
+  if (pct < 75) return "Ótima margem — acima do mercado";
+  if (pct <= 85) return "Margem normal para revenda";
+  if (pct <= 92) return "Atenção — margem muito apertada";
+  return "Prejuízo — rever preço";
 };
 
 const calcCmv = (custo: number, preco: number) =>
