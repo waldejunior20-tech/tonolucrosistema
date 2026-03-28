@@ -16,6 +16,7 @@ import {
 import { toast } from "sonner";
 import { Pencil, Trash2, Plus, Filter } from "lucide-react";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
+import { MoneyInput, QuantityInput, formatMoney, formatQty } from "@/components/MoneyInput";
 
 const CATEGORIAS = [
   "Proteínas", "Laticínios", "Hortifruti", "Secos", "Bebidas",
@@ -177,11 +178,11 @@ export default function InsumosComprados() {
                 </div>
                 <div>
                   <Label htmlFor="preco">Preço Pago (R$) *</Label>
-                  <Input id="preco" type="number" step="0.01" min="0" value={form.preco_pago || ""} onChange={(e) => setForm({ ...form, preco_pago: parseFloat(e.target.value) || 0 })} required />
+                  <MoneyInput id="preco" value={form.preco_pago} onChange={(v) => setForm({ ...form, preco_pago: v })} required />
                 </div>
                 <div>
                   <Label htmlFor="qtd">Quantidade *</Label>
-                  <Input id="qtd" type="number" step="0.01" min="0" value={form.quantidade || ""} onChange={(e) => setForm({ ...form, quantidade: parseFloat(e.target.value) || 0 })} required />
+                  <QuantityInput id="qtd" value={form.quantidade} onChange={(v) => setForm({ ...form, quantidade: v })} required />
                 </div>
                 <div>
                   <Label htmlFor="fornecedor">Fornecedor</Label>
@@ -243,9 +244,9 @@ export default function InsumosComprados() {
                   <TableCell className="font-medium">{insumo.nome}</TableCell>
                   <TableCell>{insumo.categoria}</TableCell>
                   <TableCell className="text-right">
-                    {Number(insumo.preco_pago).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                    {formatMoney(Number(insumo.preco_pago))}
                   </TableCell>
-                  <TableCell className="text-right">{Number(insumo.quantidade)}</TableCell>
+                  <TableCell className="text-right">{formatQty(Number(insumo.quantidade))}</TableCell>
                   <TableCell>{insumo.unidade}</TableCell>
                   <TableCell>{insumo.fornecedor ?? "—"}</TableCell>
                   <TableCell>

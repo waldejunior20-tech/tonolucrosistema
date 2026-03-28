@@ -9,6 +9,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { AlertTriangle, Beer, GlassWater, Check } from "lucide-react";
+import { formatMoney } from "@/components/MoneyInput";
 
 // ─── Types ───────────────────────────────────────────────────────────
 interface InsumoComprado {
@@ -483,17 +484,28 @@ export default function PrecificacaoBebidas() {
                           <TableCell className="text-center text-xs">{fmt(custoUnit)}</TableCell>
                           <TableCell>
                             <div className="relative flex items-center justify-center">
-                              <span className="absolute left-2 text-xs font-semibold text-[#C0392B] pointer-events-none z-10">R$</span>
                               <Input
-                                type="number"
-                                step="0.01"
-                                className="h-8 w-28 text-xs text-center pl-8 pr-6 border-b-2 border-b-[#C0392B] border-t-0 border-l-0 border-r-0 rounded-none bg-[#FEF2F2] focus-visible:ring-[#C0392B]/30"
-                                value={localPricesInd[bebida.id] ?? (precificacaoMap.get(bebida.id)?.preco_venda ?? "")}
+                                type={localPricesInd[bebida.id] !== undefined ? "number" : "text"}
+                                step={localPricesInd[bebida.id] !== undefined ? "0.01" : undefined}
+                                className="h-8 w-28 text-xs text-center pr-6 border-b-2 border-b-[#C0392B] border-t-0 border-l-0 border-r-0 rounded-none bg-[#FEF2F2] focus-visible:ring-[#C0392B]/30"
+                                value={
+                                  localPricesInd[bebida.id] !== undefined
+                                    ? localPricesInd[bebida.id]
+                                    : (precificacaoMap.get(bebida.id)?.preco_venda
+                                      ? formatMoney(Number(precificacaoMap.get(bebida.id)?.preco_venda))
+                                      : "")
+                                }
                                 onChange={(e) =>
                                   setLocalPricesInd((prev) => ({ ...prev, [bebida.id]: e.target.value }))
                                 }
+                                onFocus={() => {
+                                  if (localPricesInd[bebida.id] === undefined) {
+                                    const v = precificacaoMap.get(bebida.id)?.preco_venda;
+                                    setLocalPricesInd((prev) => ({ ...prev, [bebida.id]: String(v ?? "") }));
+                                  }
+                                }}
                                 onBlur={() => autoSaveInd(bebida.id)}
-                                placeholder="0,00"
+                                placeholder="R$ 0,00"
                               />
                               {savedFields[`ind-${bebida.id}`] && (
                                 <Check className="absolute right-1 h-3.5 w-3.5 text-green-500 animate-in fade-in duration-200" />
@@ -571,17 +583,27 @@ export default function PrecificacaoBebidas() {
                           <TableCell className="text-center text-xs">{fmt(custo)}</TableCell>
                           <TableCell>
                             <div className="relative flex items-center justify-center">
-                              <span className="absolute left-2 text-xs font-semibold text-[#C0392B] pointer-events-none z-10">R$</span>
                               <Input
-                                type="number"
-                                step="0.01"
-                                className="h-8 w-28 text-xs text-center pl-8 pr-6 border-b-2 border-b-[#C0392B] border-t-0 border-l-0 border-r-0 rounded-none bg-[#FEF2F2] focus-visible:ring-[#C0392B]/30"
-                                value={localPricesPrep[ficha.id] ?? (ficha.preco_venda ?? "")}
+                                type={localPricesPrep[ficha.id] !== undefined ? "number" : "text"}
+                                step={localPricesPrep[ficha.id] !== undefined ? "0.01" : undefined}
+                                className="h-8 w-28 text-xs text-center pr-6 border-b-2 border-b-[#C0392B] border-t-0 border-l-0 border-r-0 rounded-none bg-[#FEF2F2] focus-visible:ring-[#C0392B]/30"
+                                value={
+                                  localPricesPrep[ficha.id] !== undefined
+                                    ? localPricesPrep[ficha.id]
+                                    : (ficha.preco_venda
+                                      ? formatMoney(Number(ficha.preco_venda))
+                                      : "")
+                                }
                                 onChange={(e) =>
                                   setLocalPricesPrep((prev) => ({ ...prev, [ficha.id]: e.target.value }))
                                 }
+                                onFocus={() => {
+                                  if (localPricesPrep[ficha.id] === undefined) {
+                                    setLocalPricesPrep((prev) => ({ ...prev, [ficha.id]: String(ficha.preco_venda ?? "") }));
+                                  }
+                                }}
                                 onBlur={() => autoSavePrep(ficha.id)}
-                                placeholder="0,00"
+                                placeholder="R$ 0,00"
                               />
                               {savedFields[`prep-${ficha.id}`] && (
                                 <Check className="absolute right-1 h-3.5 w-3.5 text-green-500 animate-in fade-in duration-200" />

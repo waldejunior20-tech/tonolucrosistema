@@ -16,6 +16,7 @@ import {
 import { toast } from "sonner";
 import { Pencil, Trash2, Plus, Search, X } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
+import { QuantityInput, formatMoney } from "@/components/MoneyInput";
 
 const UNIDADES_RENDIMENTO = ["kg", "g", "L", "ml", "unidade"];
 const UNIDADES_INGREDIENTE = ["kg", "g", "L", "ml", "unidade", "caixa", "pacote"];
@@ -348,13 +349,10 @@ export default function InsumosProduzidos() {
                 </div>
                 <div>
                   <Label htmlFor="rendimento">Rendimento *</Label>
-                  <Input
+                  <QuantityInput
                     id="rendimento"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={form.rendimento || ""}
-                    onChange={(e) => setForm({ ...form, rendimento: parseFloat(e.target.value) || 0 })}
+                    value={form.rendimento}
+                    onChange={(v) => setForm({ ...form, rendimento: v })}
                     required
                   />
                 </div>
@@ -370,7 +368,7 @@ export default function InsumosProduzidos() {
                 <div className="flex flex-col justify-end">
                   <p className="text-sm text-muted-foreground">Custo/{form.unidade_rendimento || "un"}:</p>
                   <p className="text-lg font-semibold text-foreground">
-                    R$ {custoPorUnidade.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    {formatMoney(custoPorUnidade)}
                   </p>
                 </div>
               </div>
@@ -446,13 +444,10 @@ export default function InsumosProduzidos() {
                     {/* Quantidade */}
                     <div className="w-24">
                       <Label className="text-xs">Qtd</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
+                      <QuantityInput
                         className="h-8 text-sm"
-                        value={ing.quantidade || ""}
-                        onChange={(e) => updateIngrediente(idx, "quantidade", parseFloat(e.target.value) || 0)}
+                        value={ing.quantidade}
+                        onChange={(v) => updateIngrediente(idx, "quantidade", v)}
                       />
                     </div>
 
@@ -476,7 +471,7 @@ export default function InsumosProduzidos() {
 
                 {form.ingredientes.length > 0 && (
                   <div className="text-right text-sm text-muted-foreground">
-                    Custo total: R$ {custoFormulario.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    Custo total: {formatMoney(custoFormulario)}
                   </div>
                 )}
               </div>
@@ -520,10 +515,10 @@ export default function InsumosProduzidos() {
                       {Number(ip.rendimento)} {ip.unidade_rendimento}
                     </TableCell>
                     <TableCell className="text-right">
-                      R$ {custoPorUn.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/{ip.unidade_rendimento}
+                      {formatMoney(custoPorUn)}/{ip.unidade_rendimento}
                     </TableCell>
                     <TableCell className="text-right">
-                      R$ {custoTotal.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      {formatMoney(custoTotal)}
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-1">

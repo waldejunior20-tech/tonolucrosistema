@@ -17,6 +17,7 @@ import {
 import { toast } from "sonner";
 import { Pencil, Trash2, Plus, Filter, Search, X, Check } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
+import { formatQty } from "@/components/MoneyInput";
 
 const TIPOS = ["tradicional", "especial", "premium", "doce"];
 const UNIDADES = ["kg", "g", "L", "ml", "unidade"];
@@ -778,6 +779,7 @@ export default function FichasTecnicasPizza() {
                                 value={qtdVal || ""}
                                 onChange={(e) => updateIngrediente(idx, qtdKey, parseFloat(e.target.value) || 0)}
                                 onBlur={() => autoSaveIngredienteQtd(ing, qtdKey, ing[qtdKey])}
+                                placeholder="0,000"
                               />
                               {ing.db_id && savedFields[`${ing.db_id}-${qtdKey}`] && (
                                 <Check className="absolute right-1 top-[50%] h-3.5 w-3.5 text-green-500 animate-in fade-in duration-200" />
