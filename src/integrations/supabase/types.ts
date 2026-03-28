@@ -153,6 +153,103 @@ export type Database = {
           },
         ]
       }
+      fichas_tecnicas_produtos: {
+        Row: {
+          categoria: string
+          created_at: string
+          id: string
+          modo_preparo: string | null
+          nome: string
+          numero_ficha: string | null
+          preco_venda: number | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          categoria: string
+          created_at?: string
+          id?: string
+          modo_preparo?: string | null
+          nome: string
+          numero_ficha?: string | null
+          preco_venda?: number | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          categoria?: string
+          created_at?: string
+          id?: string
+          modo_preparo?: string | null
+          nome?: string
+          numero_ficha?: string | null
+          preco_venda?: number | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      fichas_tecnicas_produtos_ingredientes: {
+        Row: {
+          created_at: string
+          ficha_id: string
+          id: string
+          insumo_comprado_id: string | null
+          insumo_proprio_id: string | null
+          quantidade: number
+          tipo_insumo: string
+          unidade: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          ficha_id: string
+          id?: string
+          insumo_comprado_id?: string | null
+          insumo_proprio_id?: string | null
+          quantidade: number
+          tipo_insumo: string
+          unidade: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          ficha_id?: string
+          id?: string
+          insumo_comprado_id?: string | null
+          insumo_proprio_id?: string | null
+          quantidade?: number
+          tipo_insumo?: string
+          unidade?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fichas_tecnicas_produtos_ingredientes_ficha_id_fkey"
+            columns: ["ficha_id"]
+            isOneToOne: false
+            referencedRelation: "fichas_tecnicas_produtos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fichas_tecnicas_produtos_ingredientes_insumo_comprado_id_fkey"
+            columns: ["insumo_comprado_id"]
+            isOneToOne: false
+            referencedRelation: "insumos_comprados"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fichas_tecnicas_produtos_ingredientes_insumo_proprio_id_fkey"
+            columns: ["insumo_proprio_id"]
+            isOneToOne: false
+            referencedRelation: "insumos_proprios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       insumos_comprados: {
         Row: {
           categoria: string
