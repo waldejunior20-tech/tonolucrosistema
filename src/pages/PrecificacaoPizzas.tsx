@@ -465,7 +465,7 @@ export default function PrecificacaoPizzas() {
                   <TableHead colSpan={3} className="text-center border-l">Lucro Débito</TableHead>
                   <TableHead colSpan={3} className="text-center border-l">Lucro Crédito</TableHead>
                   <TableHead colSpan={3} className="text-center border-l">Lucro iFood</TableHead>
-                  <TableHead rowSpan={2} className="align-bottom border-l"></TableHead>
+                  
                 </TableRow>
                 <TableRow>
                   {/* Custo */}
