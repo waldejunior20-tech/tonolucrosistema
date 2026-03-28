@@ -504,12 +504,7 @@ export default function FichasTecnicasPizza() {
 
               {/* Ingredientes */}
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label className="text-base">Ingredientes</Label>
-                  <Button type="button" variant="outline" size="sm" className="gap-1" onClick={addIngrediente}>
-                    <Plus className="h-3 w-3" /> Adicionar
-                  </Button>
-                </div>
+                <Label className="text-base">Ingredientes</Label>
 
                 {form.ingredientes.length === 0 && (
                   <p className="text-sm text-muted-foreground">Nenhum ingrediente adicionado.</p>
