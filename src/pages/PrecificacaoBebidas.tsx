@@ -323,43 +323,61 @@ export default function PrecificacaoBebidas() {
   }, [bebidasIndustrializadas, fichasBebidas, custoPrepMap, getPrecoInd, getPrecoPrep]);
 
   // ─── Mutations ───────────────────────────────────────────────────
-  const saveIndMutation = useMutation({
-    mutationFn: async ({ insumo_comprado_id, preco_venda }: { insumo_comprado_id: string; preco_venda: number }) => {
-      const existing = precificacaoMap.get(insumo_comprado_id);
-      if (existing) {
-        const { error } = await supabase
-          .from("precificacao_bebidas")
-          .update({ preco_venda })
-          .eq("id", existing.id);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from("precificacao_bebidas")
-          .insert({ insumo_comprado_id, preco_venda });
-        if (error) throw error;
+  // ─── Auto-save helpers ─────────────────────────────────────────
+  const showSavedCheck = useCallback((key: string) => {
+    setSavedFields((prev) => ({ ...prev, [key]: true }));
+    setTimeout(() => setSavedFields((prev) => ({ ...prev, [key]: false })), 2000);
+  }, []);
+
+  const autoSaveInd = useCallback(
+    async (insumoId: string) => {
+      const local = localPricesInd[insumoId];
+      if (local === undefined) return;
+      const numVal = parseFloat(local) || 0;
+      const existing = precificacaoMap.get(insumoId);
+      try {
+        if (existing) {
+          const { error } = await supabase
+            .from("precificacao_bebidas")
+            .update({ preco_venda: numVal })
+            .eq("id", existing.id);
+          if (error) throw error;
+        } else {
+          const { error } = await supabase
+            .from("precificacao_bebidas")
+            .insert({ insumo_comprado_id: insumoId, preco_venda: numVal });
+          if (error) throw error;
+        }
+        queryClient.invalidateQueries({ queryKey: ["precificacao_bebidas"] });
+        showSavedCheck(`ind-${insumoId}`);
+        setLocalPricesInd((prev) => { const copy = { ...prev }; delete copy[insumoId]; return copy; });
+      } catch {
+        toast.error("Erro ao salvar preço.");
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["precificacao_bebidas"] });
-      toast.success("Preço salvo!");
-    },
-    onError: () => toast.error("Erro ao salvar preço."),
-  });
+    [localPricesInd, precificacaoMap, queryClient, showSavedCheck]
+  );
 
-  const savePrepMutation = useMutation({
-    mutationFn: async ({ id, preco_venda }: { id: string; preco_venda: number }) => {
-      const { error } = await supabase
-        .from("fichas_tecnicas_produtos")
-        .update({ preco_venda: preco_venda || null })
-        .eq("id", id);
-      if (error) throw error;
+  const autoSavePrep = useCallback(
+    async (fichaId: string) => {
+      const local = localPricesPrep[fichaId];
+      if (local === undefined) return;
+      const numVal = parseFloat(local) || 0;
+      try {
+        const { error } = await supabase
+          .from("fichas_tecnicas_produtos")
+          .update({ preco_venda: numVal || null })
+          .eq("id", fichaId);
+        if (error) throw error;
+        queryClient.invalidateQueries({ queryKey: ["fichas_tecnicas_produtos"] });
+        showSavedCheck(`prep-${fichaId}`);
+        setLocalPricesPrep((prev) => { const copy = { ...prev }; delete copy[fichaId]; return copy; });
+      } catch {
+        toast.error("Erro ao salvar preço.");
+      }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["fichas_tecnicas_produtos"] });
-      toast.success("Preço salvo!");
-    },
-    onError: () => toast.error("Erro ao salvar preço."),
-  });
+    [localPricesPrep, queryClient, showSavedCheck]
+  );
 
   const cmvMeta = config?.cmv_meta_pct ?? 32;
   const taxaIfood = config?.taxa_ifood_pct ?? 12;
