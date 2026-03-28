@@ -61,6 +61,7 @@ function AppRoutes() {
         <Route path="/precificacao/pizzas" element={<PrecificacaoPizzas />} />
         <Route path="/precificacao/produtos" element={<PrecificacaoProdutos />} />
         <Route path="/precificacao/bebidas" element={<PrecificacaoBebidas />} />
+        <Route path="/precificacao/configuracoes" element={<PrecificacaoConfiguracoes />} />
         {/* Financeiro */}
         <Route path="/financeiro/dre" element={<FinanceiroDRE />} />
         <Route path="/financeiro/contas-a-pagar" element={<FinanceiroContasPagar />} />

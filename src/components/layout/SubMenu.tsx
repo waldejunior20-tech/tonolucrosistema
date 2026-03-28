@@ -23,6 +23,7 @@ const subMenus: Record<ModuleKey, SubMenuItem[]> = {
     { label: "Pizzas", path: "/precificacao/pizzas" },
     { label: "Produtos", path: "/precificacao/produtos" },
     { label: "Bebidas", path: "/precificacao/bebidas" },
+    { label: "Configurações", path: "/precificacao/configuracoes" },
   ],
   financeiro: [
     { label: "DRE", path: "/financeiro/dre" },
