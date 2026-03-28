@@ -9,6 +9,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { AlertTriangle, Beer, GlassWater, Check } from "lucide-react";
+import { formatMoney } from "@/components/MoneyInput";
 
 // ─── Types ───────────────────────────────────────────────────────────
 interface InsumoComprado {
