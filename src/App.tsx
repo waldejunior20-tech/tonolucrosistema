@@ -7,6 +7,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import Dashboard from "@/pages/Dashboard";
 import SectionPage from "@/pages/SectionPage";
 import InsumosComprados from "@/pages/InsumosComprados";
+import InsumosProduzidos from "@/pages/InsumosProduzidos";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -22,7 +23,7 @@ const App = () => (
             <Route path="/" element={<Dashboard />} />
             {/* Insumos */}
             <Route path="/insumos/comprados" element={<InsumosComprados />} />
-            <Route path="/insumos/produzidos" element={<SectionPage />} />
+            <Route path="/insumos/produzidos" element={<InsumosProduzidos />} />
             {/* Fichas Técnicas */}
             <Route path="/fichas/tradicionais" element={<SectionPage />} />
             <Route path="/fichas/especiais" element={<SectionPage />} />
