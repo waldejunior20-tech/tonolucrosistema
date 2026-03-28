@@ -371,6 +371,7 @@ export default function FichasTecnicasPizza() {
     const normalRows = allIngs.filter((i) => !i.tipo_insumo.startsWith("embalagem_"));
 
     const ingredientesForm: IngredienteForm[] = normalRows.map((ing) => ({
+      db_id: ing.id,
       tipo_insumo: ing.tipo_insumo,
       insumo_comprado_id: ing.insumo_comprado_id ?? "",
       insumo_proprio_id: ing.insumo_proprio_id ?? "",
