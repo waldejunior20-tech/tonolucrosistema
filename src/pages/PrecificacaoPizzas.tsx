@@ -546,18 +546,21 @@ export default function PrecificacaoPizzas() {
                       {/* Preço Praticado (editable) */}
                       {(["p", "m", "g"] as const).map((s, i) => (
                         <TableCell key={s} className={`${i === 0 ? "border-l" : ""}`}>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            className="h-8 w-20 text-xs text-center"
-                            value={
-                              localPrices[ficha.id]?.[s] !== undefined
-                                ? localPrices[ficha.id][s]
-                                : (ficha[`preco_venda_${s}` as keyof FichaPizza] ?? "")
-                            }
-                            onChange={(e) => handlePriceChange(ficha.id, s, e.target.value)}
-                            placeholder="0,00"
-                          />
+                          <div className="relative flex items-center">
+                            <Input
+                              type="number"
+                              step="0.01"
+                              className="h-8 w-24 text-xs text-center pr-6 border-b-2 border-b-blue-500 border-t-0 border-l-0 border-r-0 rounded-none bg-[#FFFBEB] focus-visible:ring-blue-500/30"
+                              value={
+                                localPrices[ficha.id]?.[s] !== undefined
+                                  ? localPrices[ficha.id][s]
+                                  : (ficha[`preco_venda_${s}` as keyof FichaPizza] ?? "")
+                              }
+                              onChange={(e) => handlePriceChange(ficha.id, s, e.target.value)}
+                              placeholder="R$ 0,00"
+                            />
+                            <Pencil className="absolute right-1.5 h-3 w-3 text-blue-500 pointer-events-none" />
+                          </div>
                         </TableCell>
                       ))}
 
