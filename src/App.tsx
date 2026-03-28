@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppLayout } from "@/components/layout/AppLayout";
 import Dashboard from "@/pages/Dashboard";
 import SectionPage from "@/pages/SectionPage";
+import InsumosComprados from "@/pages/InsumosComprados";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -20,7 +21,7 @@ const App = () => (
           <Route element={<AppLayout />}>
             <Route path="/" element={<Dashboard />} />
             {/* Insumos */}
-            <Route path="/insumos/comprados" element={<SectionPage />} />
+            <Route path="/insumos/comprados" element={<InsumosComprados />} />
             <Route path="/insumos/produzidos" element={<SectionPage />} />
             {/* Fichas Técnicas */}
             <Route path="/fichas/tradicionais" element={<SectionPage />} />
