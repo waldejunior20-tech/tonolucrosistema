@@ -368,7 +368,7 @@ export default function InsumosProduzidos() {
                 <div className="flex flex-col justify-end">
                   <p className="text-sm text-muted-foreground">Custo/{form.unidade_rendimento || "un"}:</p>
                   <p className="text-lg font-semibold text-foreground">
-                    R$ {custoPorUnidade.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    {formatMoney(custoPorUnidade)}
                   </p>
                 </div>
               </div>
