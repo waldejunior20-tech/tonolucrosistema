@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { toast } from "sonner";
-import { Settings2, Save, AlertTriangle } from "lucide-react";
+import { Settings2, Save, AlertTriangle, Check } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────
 interface ConfigPrecificacao {
