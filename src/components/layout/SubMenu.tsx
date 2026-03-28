@@ -13,10 +13,7 @@ const subMenus: Record<ModuleKey, SubMenuItem[]> = {
     { label: "Insumos Produzidos", path: "/insumos/produzidos" },
   ],
   fichas: [
-    { label: "Tradicionais", path: "/fichas/tradicionais" },
-    { label: "Especiais", path: "/fichas/especiais" },
-    { label: "Premium", path: "/fichas/premium" },
-    { label: "Doces", path: "/fichas/doces" },
+    { label: "Pizzas", path: "/fichas/pizzas" },
     { label: "Sanduíches e Lanches", path: "/fichas/sanduiches" },
     { label: "Pratos", path: "/fichas/pratos" },
     { label: "Sobremesas", path: "/fichas/sobremesas" },
