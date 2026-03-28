@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { MoneyInput } from "@/components/MoneyInput";
 import { toast } from "sonner";
-import { Plus, Target } from "lucide-react";
+import { Plus, Target, AlertTriangle, TrendingUp, TrendingDown } from "lucide-react";
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -27,11 +27,9 @@ const CATEGORIAS_RECEITA_OPTIONS = [
 ];
 
 const CATEGORIAS_DESPESA_OPTIONS = [
-  { value: "cmv", label: "Ingredientes / Fornecedores" },
-  { value: "custos_fixos", label: "Custos Fixos" },
+  { value: "cmv", label: "Fornecedores / Insumos" },
   { value: "salarios", label: "Salários" },
   { value: "pro_labore", label: "Pró-labore" },
-  { value: "impostos", label: "Impostos" },
   { value: "aluguel", label: "Aluguel" },
   { value: "energia", label: "Energia" },
   { value: "agua", label: "Água" },
@@ -39,11 +37,13 @@ const CATEGORIAS_DESPESA_OPTIONS = [
   { value: "marketing", label: "Marketing" },
   { value: "manutencao", label: "Manutenção" },
   { value: "gasolina_delivery", label: "Gasolina Delivery" },
+  { value: "impostos", label: "Impostos" },
+  { value: "taxas_apps", label: "Taxas apps" },
   { value: "outros", label: "Outros" },
 ];
 
 const CAT_LABELS: Record<string, string> = {
-  cmv: "Fornecedores / Ingredientes",
+  cmv: "Fornecedores / Insumos",
   custos_fixos: "Custos Fixos",
   salarios: "Salários",
   pro_labore: "Pró-labore",
@@ -55,11 +55,29 @@ const CAT_LABELS: Record<string, string> = {
   marketing: "Marketing",
   manutencao: "Manutenção",
   gasolina_delivery: "Gasolina / Delivery",
+  taxas_apps: "Taxas apps",
   outros: "Outros",
   vendas_balcao: "Vendas Balcão",
   vendas_delivery: "Vendas Delivery",
   vendas_ifood: "Vendas iFood",
   outras_receitas: "Outras Receitas",
+};
+
+const CAT_COLORS: Record<string, string> = {
+  cmv: "bg-orange-500",
+  salarios: "bg-purple-500",
+  pro_labore: "bg-violet-500",
+  aluguel: "bg-blue-500",
+  energia: "bg-yellow-500",
+  agua: "bg-cyan-500",
+  internet: "bg-indigo-500",
+  marketing: "bg-pink-500",
+  manutencao: "bg-amber-600",
+  gasolina_delivery: "bg-slate-500",
+  impostos: "bg-red-500",
+  taxas_apps: "bg-rose-400",
+  custos_fixos: "bg-blue-400",
+  outros: "bg-gray-400",
 };
 
 interface Lancamento {
@@ -129,6 +147,37 @@ export default function FinanceiroDRE() {
     },
   });
 
+  // Fetch insumos for alerts
+  const { data: insumos = [] } = useQuery({
+    queryKey: ["insumos_comprados_dre"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("insumos_comprados")
+        .select("id, nome, preco_pago, updated_at")
+        .order("updated_at", { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Fetch contas atrasadas
+  const { data: contasAtrasadas = [] } = useQuery({
+    queryKey: ["contas_atrasadas_dre"],
+    queryFn: async () => {
+      const today = new Date().toISOString().slice(0, 10);
+      const { data, error } = await supabase
+        .from("lancamentos_financeiros")
+        .select("*")
+        .eq("pago", false)
+        .eq("tipo", "despesa")
+        .lt("data_lancamento", today)
+        .limit(10);
+      if (error) throw error;
+      return data as Lancamento[];
+    },
+  });
+
   const upsertMetaMutation = useMutation({
     mutationFn: async (metaFaturamento: number) => {
       if (meta?.id) {
@@ -167,7 +216,6 @@ export default function FinanceiroDRE() {
     if (!form.descricao || !form.valor) return;
 
     if (form.data_fim) {
-      // Create one entry per day in the range
       const start = new Date(form.data_lancamento + "T12:00:00");
       const end = new Date(form.data_fim + "T12:00:00");
       const days = Math.max(1, Math.round((end.getTime() - start.getTime()) / 86400000) + 1);
@@ -209,7 +257,6 @@ export default function FinanceiroDRE() {
     setDialogOpen(true);
   };
 
-  // Média diária calculation
   const mediaDiaria = useMemo(() => {
     if (!form.data_fim || !form.data_lancamento || !form.valor) return null;
     const start = new Date(form.data_lancamento + "T12:00:00");
@@ -228,23 +275,25 @@ export default function FinanceiroDRE() {
     const sobrouPct = totalEntrou > 0 ? (sobrou / totalEntrou) * 100 : 0;
 
     const cmv = despesas.filter((l) => l.categoria === "cmv").reduce((s, l) => s + Number(l.valor), 0);
-    const despFixas = despesas.filter((l) => ["custos_fixos", "aluguel", "energia", "agua", "internet", "marketing", "manutencao", "gasolina_delivery", "outros"].includes(l.categoria)).reduce((s, l) => s + Number(l.valor), 0);
-    const impostos = despesas.filter((l) => l.categoria === "impostos").reduce((s, l) => s + Number(l.valor), 0);
+    const cmvPct = totalEntrou > 0 ? (cmv / totalEntrou) * 100 : 0;
+    const despFixas = despesas.filter((l) =>
+      ["custos_fixos", "aluguel", "energia", "agua", "internet", "marketing", "manutencao", "gasolina_delivery", "outros"].includes(l.categoria)
+    ).reduce((s, l) => s + Number(l.valor), 0);
+    const impostos = despesas.filter((l) => ["impostos", "taxas_apps"].includes(l.categoria)).reduce((s, l) => s + Number(l.valor), 0);
     const salarios = despesas.filter((l) => ["salarios", "pro_labore"].includes(l.categoria)).reduce((s, l) => s + Number(l.valor), 0);
 
     const per100 = (v: number) => totalEntrou > 0 ? (v / totalEntrou) * 100 : 0;
 
     // Margem de contribuição
     const despesasSobreVendas = impostos;
-    const cmvEVariaveis = cmv;
-    const margemContribuicao = totalEntrou - despesasSobreVendas - cmvEVariaveis;
+    const margemContribuicao = totalEntrou - despesasSobreVendas - cmv;
     const margemContribuicaoPct = totalEntrou > 0 ? (margemContribuicao / totalEntrou) * 100 : 0;
 
     // Ponto de equilíbrio
     const despFixasTotal = despFixas + salarios;
     const pontoEquilibrio = margemContribuicaoPct > 0 ? despFixasTotal / (margemContribuicaoPct / 100) : 0;
     const faltaPE = pontoEquilibrio - totalEntrou;
-    const progressPE = pontoEquilibrio > 0 ? Math.min((totalEntrou / pontoEquilibrio) * 100, 100) : 0;
+    const progressPE = pontoEquilibrio > 0 ? Math.min((totalEntrou / pontoEquilibrio) * 100, 150) : 0;
 
     // Onde foi o dinheiro
     const porCategoria = despesas.reduce<Record<string, number>>((acc, l) => {
@@ -257,29 +306,36 @@ export default function FinanceiroDRE() {
         cat,
         label: CAT_LABELS[cat] || cat,
         valor,
-        pct: totalSaiu > 0 ? (valor / totalSaiu) * 100 : 0,
+        pct: totalEntrou > 0 ? (valor / totalEntrou) * 100 : 0,
+        pctDespesas: totalSaiu > 0 ? (valor / totalSaiu) * 100 : 0,
       }));
+
+    // Status do mês
+    let status: "verde" | "amarelo" | "vermelho" = "verde";
+    if (sobrou < 0) status = "vermelho";
+    else if (cmvPct > 32) status = "amarelo";
 
     return {
       totalEntrou, totalSaiu, sobrou, sobrouPct,
-      cmv, despFixas, impostos, salarios,
+      cmv, cmvPct, despFixas, impostos, salarios,
       per100,
-      despesasSobreVendas, cmvEVariaveis, margemContribuicao, margemContribuicaoPct,
+      despesasSobreVendas, margemContribuicao, margemContribuicaoPct,
       despFixasTotal,
       pontoEquilibrio, faltaPE, progressPE,
       atingiuPE: totalEntrou >= pontoEquilibrio && pontoEquilibrio > 0,
       categoriasOrdenadas,
+      status,
     };
   }, [lancamentos]);
 
   const anos = Array.from({ length: 5 }, (_, i) => now.getFullYear() - 2 + i);
 
   const per100Items = [
-    { emoji: "📋", label: "Impostos", value: calc.per100(calc.impostos), color: "bg-destructive" },
-    { emoji: "🍕", label: "CMV", value: calc.per100(calc.cmv), color: "bg-orange-500" },
-    { emoji: "🏠", label: "Desp. fixas", value: calc.per100(calc.despFixas), color: "bg-blue-500" },
-    { emoji: "👥", label: "Salários", value: calc.per100(calc.salarios), color: "bg-purple-500" },
-    { emoji: "💚", label: "Seu lucro", value: calc.per100(calc.sobrou), color: calc.sobrou >= 0 ? "bg-green-500" : "bg-destructive" },
+    { label: "Ingredientes", value: calc.per100(calc.cmv), color: "bg-orange-500" },
+    { label: "Desp. fixas", value: calc.per100(calc.despFixas), color: "bg-blue-500" },
+    { label: "Impostos", value: calc.per100(calc.impostos), color: "bg-red-500" },
+    { label: "Salários", value: calc.per100(calc.salarios), color: "bg-purple-500" },
+    { label: "Lucro", value: calc.per100(calc.sobrou), color: calc.sobrou >= 0 ? "bg-green-500" : "bg-red-500" },
   ];
 
   const lucroLiquidoPer100 = calc.per100(calc.sobrou);
@@ -290,9 +346,48 @@ export default function FinanceiroDRE() {
   const metaAtingida = metaFaturamento > 0 && calc.totalEntrou >= metaFaturamento;
   const metaPctAcima = metaFaturamento > 0 ? ((calc.totalEntrou - metaFaturamento) / metaFaturamento) * 100 : 0;
 
+  // CMV faixas
+  const cmvColor = calc.cmvPct > 40 ? "text-red-500" : calc.cmvPct > 32 ? "text-yellow-500" : "text-green-500";
+  const cmvBg = calc.cmvPct > 40 ? "bg-red-500" : calc.cmvPct > 32 ? "bg-yellow-500" : "bg-green-500";
+  const cmvFolga = 32 - calc.cmvPct;
+
+  // Alerts
+  const alertas: string[] = [];
+  if (contasAtrasadas.length > 0) {
+    alertas.push(`${contasAtrasadas.length} conta(s) em atraso`);
+  }
+  if (calc.cmvPct > 40) {
+    alertas.push("CMV acima de 40% — atenção urgente!");
+  } else if (calc.cmvPct > 32) {
+    alertas.push("CMV acima da meta de 32%");
+  }
+
+  const statusConfig = {
+    verde: {
+      bg: "bg-green-500/10 border-green-500/30",
+      text: "text-green-700 dark:text-green-400",
+      icon: <TrendingUp className="h-5 w-5" />,
+      message: "Negócio saudável este mês",
+    },
+    amarelo: {
+      bg: "bg-yellow-500/10 border-yellow-500/30",
+      text: "text-yellow-700 dark:text-yellow-400",
+      icon: <AlertTriangle className="h-5 w-5" />,
+      message: "Atenção — verifique os custos",
+    },
+    vermelho: {
+      bg: "bg-red-500/10 border-red-500/30",
+      text: "text-red-700 dark:text-red-400",
+      icon: <TrendingDown className="h-5 w-5" />,
+      message: "Mês no prejuízo",
+    },
+  };
+
+  const st = statusConfig[calc.status];
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-5">
+      {/* ═══ TOPBAR ═══ */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <h1 className="text-2xl font-bold text-foreground">Resultado do Mês</h1>
         <div className="flex gap-2 items-center flex-wrap">
@@ -321,7 +416,18 @@ export default function FinanceiroDRE() {
         </div>
       </div>
 
-      {/* BLOCO 1: RESUMO DO MÊS */}
+      {/* ═══ BLOCO 1 — FAIXA STATUS ═══ */}
+      <div className={`flex items-center justify-between rounded-lg border px-4 py-3 ${st.bg}`}>
+        <div className={`flex items-center gap-2 font-semibold ${st.text}`}>
+          {st.icon}
+          <span>{st.message}</span>
+        </div>
+        <span className={`text-lg font-bold ${calc.sobrou >= 0 ? "text-green-600" : "text-red-500"}`}>
+          {fmt(calc.sobrou)}
+        </span>
+      </div>
+
+      {/* ═══ BLOCO 2 — 3 NÚMEROS GRANDES ═══ */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardContent className="pt-6 text-center">
@@ -332,7 +438,7 @@ export default function FinanceiroDRE() {
         <Card>
           <CardContent className="pt-6 text-center">
             <p className="text-sm text-muted-foreground mb-1">💸 Saiu</p>
-            <p className="text-3xl font-bold text-destructive">{fmt(calc.totalSaiu)}</p>
+            <p className="text-3xl font-bold text-red-500">{fmt(calc.totalSaiu)}</p>
           </CardContent>
         </Card>
         <Card className={calc.sobrou >= 0 ? "border-green-300 bg-green-50/40 dark:bg-green-950/20" : "border-red-300 bg-red-50/40 dark:bg-red-950/20"}>
@@ -340,56 +446,110 @@ export default function FinanceiroDRE() {
             <p className="text-sm text-muted-foreground mb-1">
               {calc.sobrou >= 0 ? "✅ Sobrou" : "❌ Faltou"}
             </p>
-            <p className={`text-3xl font-bold ${calc.sobrou >= 0 ? "text-green-600" : "text-destructive"}`}>
+            <p className={`text-3xl font-bold ${calc.sobrou >= 0 ? "text-green-600" : "text-red-500"}`}>
               {fmt(Math.abs(calc.sobrou))}
             </p>
-            <p className={`text-sm mt-1 ${calc.sobrou >= 0 ? "text-green-600" : "text-destructive"}`}>
+            <p className={`text-sm mt-1 ${calc.sobrou >= 0 ? "text-green-600" : "text-red-500"}`}>
               {calc.sobrouPct.toFixed(1)}% da receita
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* BLOCO 2: PONTO DE EQUILÍBRIO */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base flex items-center gap-2">
-            <Target className="h-5 w-5 text-primary" />
-            Ponto de Equilíbrio
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-center text-3xl font-bold text-foreground mb-4">
-            {fmt(calc.pontoEquilibrio)}
-          </p>
-          <div className="relative h-6 bg-muted rounded-full overflow-hidden mb-3">
-            <div
-              className={`h-full rounded-full transition-all duration-700 ${
-                calc.atingiuPE
-                  ? "bg-gradient-to-r from-red-400 via-yellow-400 to-green-500"
-                  : "bg-gradient-to-r from-red-400 to-red-500"
-              }`}
-              style={{ width: `${calc.progressPE}%` }}
-            />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-xs font-bold text-foreground/80">
-                {calc.pontoEquilibrio > 0
-                  ? `${((calc.totalEntrou / calc.pontoEquilibrio) * 100).toFixed(0)}%`
-                  : "—"}
-              </span>
+      {/* ═══ BLOCO 3 — META + EQUILÍBRIO ═══ */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Card Meta */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              🎯 Meta do mês
+            </CardTitle>
+            <p className="text-xs text-muted-foreground">Quanto você quer faturar</p>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div>
+              <Label className="text-xs">Meta R$</Label>
+              <MoneyInput
+                value={metaFaturamento}
+                onChange={(v) => upsertMetaMutation.mutate(v)}
+              />
             </div>
-          </div>
-          <p className={`text-center text-sm font-medium ${calc.atingiuPE ? "text-green-600" : "text-destructive"}`}>
-            {calc.atingiuPE
-              ? `✅ Atingido! Folga de ${fmt(Math.abs(calc.faltaPE))}`
-              : calc.pontoEquilibrio > 0
-              ? `Faltam ${fmt(calc.faltaPE)} para atingir`
-              : "Cadastre receitas e despesas para calcular"}
-          </p>
-        </CardContent>
-      </Card>
+            {metaFaturamento > 0 && (
+              <>
+                <div className="relative h-6 bg-muted rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-700 ${
+                      metaAtingida ? "bg-green-500" : "bg-red-400"
+                    }`}
+                    style={{ width: `${metaProgress}%` }}
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-xs font-bold text-foreground/80">
+                      {((calc.totalEntrou / metaFaturamento) * 100).toFixed(0)}%
+                    </span>
+                  </div>
+                </div>
+                <p className={`text-sm text-center font-medium ${metaAtingida ? "text-green-600" : "text-red-500"}`}>
+                  {metaAtingida
+                    ? `🎉 Meta batida! Você faturou ${metaPctAcima.toFixed(0)}% acima`
+                    : `Faltam ${fmt(metaFaturamento - calc.totalEntrou)} para bater a meta`}
+                </p>
+              </>
+            )}
+          </CardContent>
+        </Card>
 
-      {/* 4 CARDS DETALHADOS */}
+        {/* Card Ponto de Equilíbrio */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Target className="h-5 w-5 text-orange-500" />
+              Ponto de Equilíbrio
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-center text-3xl font-bold text-orange-500">
+              {fmt(calc.pontoEquilibrio)}
+            </p>
+            <div className="relative h-6 bg-muted rounded-full overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all duration-700 ${
+                  calc.atingiuPE
+                    ? "bg-gradient-to-r from-red-400 via-yellow-400 to-green-500"
+                    : "bg-gradient-to-r from-red-400 to-red-500"
+                }`}
+                style={{ width: `${Math.min(calc.progressPE, 100)}%` }}
+              />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-xs font-bold text-foreground/80">
+                  {calc.pontoEquilibrio > 0
+                    ? `${((calc.totalEntrou / calc.pontoEquilibrio) * 100).toFixed(0)}%`
+                    : "—"}
+                </span>
+              </div>
+            </div>
+            <div className="text-xs space-y-1 text-muted-foreground">
+              <div className="flex justify-between">
+                <span>Despesas fixas</span>
+                <span className="font-medium text-foreground">{fmt(calc.despFixasTotal)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Margem contrib. %</span>
+                <span className="font-medium text-foreground">{calc.margemContribuicaoPct.toFixed(1)}%</span>
+              </div>
+            </div>
+            <p className={`text-sm text-center font-medium ${calc.atingiuPE ? "text-green-600" : "text-red-500"}`}>
+              {calc.atingiuPE
+                ? `Tudo acima disso é lucro puro! 🎯`
+                : calc.pontoEquilibrio > 0
+                ? `Faltam ${fmt(calc.faltaPE)} para atingir`
+                : "Cadastre receitas e despesas"}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* ═══ BLOCO 4 — 4 CARDS ANALÍTICOS ═══ */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         {/* CARD 1: Sobra das Vendas */}
         <Card>
@@ -405,167 +565,164 @@ export default function FinanceiroDRE() {
                 <span>Faturamento Bruto</span>
                 <span className="font-medium">{fmt(calc.totalEntrou)}</span>
               </div>
-              <div className="flex justify-between text-destructive">
+              <div className="flex justify-between text-red-500">
                 <span>(-) Desp. s/ vendas</span>
                 <span>-{fmt(calc.despesasSobreVendas)}</span>
               </div>
-              <div className="flex justify-between text-destructive">
-                <span>(-) CMV e desp. variáveis</span>
-                <span>-{fmt(calc.cmvEVariaveis)}</span>
+              <div className="flex justify-between text-red-500">
+                <span>(-) CMV</span>
+                <span>-{fmt(calc.cmv)}</span>
               </div>
               <div className="flex justify-between font-bold border-t pt-1">
-                <span>(=) Margem contribuição</span>
+                <span>(=) Sobra</span>
                 <span className="text-green-600">{fmt(calc.margemContribuicao)}</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* CARD 2: Ponto de Equilíbrio detalhado */}
+        {/* CARD 2: Para cada R$100 */}
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold">Ponto de Equilíbrio</CardTitle>
-            <p className="text-xs text-muted-foreground">Onde as vendas viram lucro</p>
+            <CardTitle className="text-sm font-semibold">Para cada R$100 vendidos</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <p className="text-2xl font-bold text-orange-500">{fmt(calc.pontoEquilibrio)}</p>
-            <p className="text-xs text-muted-foreground">Faturamento mínimo necessário</p>
-            <div className="text-xs space-y-1 border-t pt-2">
-              <div className="flex justify-between">
-                <span>Despesas Fixas</span>
-                <span className="font-medium">{fmt(calc.despFixasTotal)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Margem Contrib. %</span>
-                <span className="font-medium">{calc.margemContribuicaoPct.toFixed(1)}%</span>
-              </div>
-              <div className="flex justify-between font-bold border-t pt-1">
-                <span>Ponto de Equilíbrio</span>
-                <span className="text-orange-500">{fmt(calc.pontoEquilibrio)}</span>
-              </div>
-            </div>
-            <p className="text-xs text-center text-muted-foreground mt-2">
-              Tudo acima disso é lucro puro! 🎯
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* CARD 3: Para cada R$100 */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold">Para cada R$100,00 vendidos</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <p className={`text-2xl font-bold ${lucroLiquidoPer100 >= 0 ? "text-green-600" : "text-destructive"}`}>
+            <p className={`text-2xl font-bold ${lucroLiquidoPer100 >= 0 ? "text-green-600" : "text-red-500"}`}>
               R$ {Math.abs(lucroLiquidoPer100).toFixed(2).replace(".", ",")}
             </p>
             <p className="text-xs text-muted-foreground">
               {lucroLiquidoPer100 >= 0 ? "sobram de lucro líquido" : "de prejuízo líquido"}
             </p>
             <div className="space-y-2 border-t pt-2">
-              {per100Items.map((item) => (
-                <div key={item.label} className="flex items-center gap-2 text-xs">
-                  <span className={`h-2.5 w-2.5 rounded-full ${item.color} shrink-0`} />
-                  <span className="flex-1">{item.label}</span>
-                  <span className="font-medium">R$ {Math.abs(item.value).toFixed(2).replace(".", ",")}</span>
-                </div>
-              ))}
+              {per100Items.map((item) => {
+                const maxVal = Math.max(...per100Items.map(i => Math.abs(i.value)), 1);
+                const barW = (Math.abs(item.value) / maxVal) * 100;
+                return (
+                  <div key={item.label} className="space-y-0.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-1.5">
+                        <span className={`h-2.5 w-2.5 rounded-full ${item.color} shrink-0`} />
+                        <span>{item.label}</span>
+                      </div>
+                      <span className="font-medium">R$ {Math.abs(item.value).toFixed(2).replace(".", ",")}</span>
+                    </div>
+                    <div className="h-2 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full ${item.color} transition-all duration-500`}
+                        style={{ width: `${barW}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </CardContent>
         </Card>
 
-        {/* CARD 4: Meta do Mês */}
+        {/* CARD 3: CMV */}
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold">Meta do mês</CardTitle>
-            <p className="text-xs text-muted-foreground">Quanto você quer faturar</p>
+            <CardTitle className="text-sm font-semibold">CMV</CardTitle>
+            <p className="text-xs text-muted-foreground">Custo dos ingredientes</p>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div>
-              <Label className="text-xs">Meta R$</Label>
-              <MoneyInput
-                value={metaFaturamento}
-                onChange={(v) => upsertMetaMutation.mutate(v)}
+            <p className={`text-3xl font-bold text-center ${cmvColor}`}>
+              {calc.cmvPct.toFixed(1)}%
+            </p>
+            <div className="relative h-4 bg-muted rounded-full overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all duration-500 ${cmvBg}`}
+                style={{ width: `${Math.min(calc.cmvPct * 2, 100)}%` }}
               />
             </div>
-            {metaFaturamento > 0 && (
-              <>
-                <div className="relative h-5 bg-muted rounded-full overflow-hidden">
-                  <div
-                    className={`h-full rounded-full transition-all duration-700 ${
-                      metaAtingida ? "bg-green-500" : "bg-red-400"
-                    }`}
-                    style={{ width: `${metaProgress}%` }}
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-[10px] font-bold text-foreground/80">
-                      {((calc.totalEntrou / metaFaturamento) * 100).toFixed(0)}%
-                    </span>
+            <div className="text-xs space-y-1 text-muted-foreground">
+              <div className="flex justify-between">
+                <span>Meta máxima</span>
+                <span className="font-medium text-foreground">32%</span>
+              </div>
+              <div className="flex justify-between">
+                <span>CMV atual</span>
+                <span className={`font-medium ${cmvColor}`}>{calc.cmvPct.toFixed(1)}%</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Folga</span>
+                <span className={`font-medium ${cmvFolga >= 0 ? "text-green-600" : "text-red-500"}`}>
+                  {cmvFolga >= 0 ? `${cmvFolga.toFixed(1)}%` : `${Math.abs(cmvFolga).toFixed(1)}% acima`}
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* CARD 4: Alertas */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-yellow-500" />
+              Alertas
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {alertas.length === 0 && contasAtrasadas.length === 0 ? (
+              <div className="text-center py-4">
+                <p className="text-sm text-green-600 font-medium">✅ Tudo em dia!</p>
+                <p className="text-xs text-muted-foreground mt-1">Nenhum alerta no momento</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {alertas.map((a, i) => (
+                  <div key={i} className="flex items-start gap-2 text-xs bg-yellow-50 dark:bg-yellow-950/20 rounded-md p-2">
+                    <span className="text-yellow-500 shrink-0">⚠️</span>
+                    <span className="text-foreground">{a}</span>
                   </div>
-                </div>
-                <p className={`text-xs text-center font-medium ${metaAtingida ? "text-green-600" : "text-destructive"}`}>
-                  {metaAtingida
-                    ? `🎉 Meta batida! Você faturou ${metaPctAcima.toFixed(0)}% acima`
-                    : `Faltam ${fmt(metaFaturamento - calc.totalEntrou)} para bater a meta`}
-                </p>
-              </>
+                ))}
+                {contasAtrasadas.map((c) => (
+                  <div key={c.id} className="flex items-start gap-2 text-xs bg-red-50 dark:bg-red-950/20 rounded-md p-2">
+                    <span className="text-red-500 shrink-0">🔴</span>
+                    <div>
+                      <p className="font-medium text-foreground">{c.descricao}</p>
+                      <p className="text-muted-foreground">{fmt(c.valor)} — {new Date(c.data_lancamento + "T12:00:00").toLocaleDateString("pt-BR")}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </CardContent>
         </Card>
       </div>
 
-      {/* BLOCO 3: PARA CADA R$100 — barras horizontais */}
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base">Para cada R$100 vendidos</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {per100Items.map((item) => (
-            <div key={item.label} className="space-y-1">
-              <div className="flex items-center justify-between text-sm">
-                <span>{item.emoji} {item.label}</span>
-                <span className="font-semibold">R$ {Math.abs(item.value).toFixed(2).replace(".", ",")}</span>
-              </div>
-              <div className="h-3 bg-muted rounded-full overflow-hidden">
-                <div
-                  className={`h-full rounded-full transition-all duration-500 ${item.color}`}
-                  style={{ width: `${Math.min(Math.abs(item.value), 100)}%` }}
-                />
-              </div>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-
-      {/* BLOCO 4: ONDE FOI O DINHEIRO? */}
+      {/* ═══ BLOCO 5 — ONDE FOI O DINHEIRO? ═══ */}
       {calc.categoriasOrdenadas.length > 0 && (
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-base">Onde foi o dinheiro?</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {calc.categoriasOrdenadas.map((c) => (
-              <div key={c.cat} className="space-y-1">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-foreground/80">{c.label}</span>
-                  <div className="flex items-center gap-3">
-                    <span className="font-semibold">{fmt(c.valor)}</span>
-                    <span className="text-muted-foreground text-xs w-10 text-right">{c.pct.toFixed(0)}%</span>
+            {calc.categoriasOrdenadas.map((c) => {
+              const barColor = CAT_COLORS[c.cat] || "bg-primary/70";
+              return (
+                <div key={c.cat} className="space-y-1">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-foreground/80">{c.label}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="font-semibold">{fmt(c.valor)}</span>
+                      <span className="text-muted-foreground text-xs w-10 text-right">{c.pct.toFixed(0)}%</span>
+                    </div>
+                  </div>
+                  <div className="h-2.5 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${barColor} transition-all duration-500`}
+                      style={{ width: `${c.pctDespesas}%` }}
+                    />
                   </div>
                 </div>
-                <div className="h-2 bg-muted rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-primary/70 transition-all duration-500"
-                    style={{ width: `${c.pct}%` }}
-                  />
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </CardContent>
         </Card>
       )}
 
-      {/* Dialog — Nova Receita / Despesa */}
+      {/* ═══ DIALOG — Nova Receita / Despesa ═══ */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -579,7 +736,7 @@ export default function FinanceiroDRE() {
               <Input
                 value={form.descricao}
                 onChange={(e) => setForm((f) => ({ ...f, descricao: e.target.value }))}
-                placeholder="Ex: Vendas do dia, Conta de luz..."
+                placeholder={dialogTipo === "receita" ? "Ex: Vendas do dia, Evento..." : "Ex: Conta de luz, Fornecedor..."}
               />
             </div>
             <div>
