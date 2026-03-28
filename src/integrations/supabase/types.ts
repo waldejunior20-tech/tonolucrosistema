@@ -14,6 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      configuracoes_negocio: {
+        Row: {
+          aluguel: number
+          contador: number
+          created_at: string
+          energia: number
+          faturamento_medio: number
+          id: string
+          internet: number
+          nome_estabelecimento: string
+          num_funcionarios: number
+          onboarding_completo: boolean
+          outros_fixos: number
+          pct_credito: number
+          pct_debito: number
+          pct_dinheiro_pix: number
+          pct_ifood: number
+          salarios: number
+          updated_at: string
+        }
+        Insert: {
+          aluguel?: number
+          contador?: number
+          created_at?: string
+          energia?: number
+          faturamento_medio?: number
+          id?: string
+          internet?: number
+          nome_estabelecimento?: string
+          num_funcionarios?: number
+          onboarding_completo?: boolean
+          outros_fixos?: number
+          pct_credito?: number
+          pct_debito?: number
+          pct_dinheiro_pix?: number
+          pct_ifood?: number
+          salarios?: number
+          updated_at?: string
+        }
+        Update: {
+          aluguel?: number
+          contador?: number
+          created_at?: string
+          energia?: number
+          faturamento_medio?: number
+          id?: string
+          internet?: number
+          nome_estabelecimento?: string
+          num_funcionarios?: number
+          onboarding_completo?: boolean
+          outros_fixos?: number
+          pct_credito?: number
+          pct_debito?: number
+          pct_dinheiro_pix?: number
+          pct_ifood?: number
+          salarios?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       configuracoes_precificacao: {
         Row: {
           cmv_meta_pct: number
