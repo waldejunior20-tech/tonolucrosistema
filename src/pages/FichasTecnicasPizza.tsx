@@ -36,6 +36,13 @@ interface IngredienteForm {
   qtd_m: number;
   qtd_g: number;
   unidade: string;
+  // Embalagem por tamanho
+  caixa_p_id: string;
+  caixa_p_nome: string;
+  caixa_m_id: string;
+  caixa_m_nome: string;
+  caixa_g_id: string;
+  caixa_g_nome: string;
 }
 
 interface FormState {
