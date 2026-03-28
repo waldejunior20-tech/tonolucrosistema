@@ -14,6 +14,7 @@ import FichasTecnicasProdutos from "@/pages/FichasTecnicasProdutos";
 import PrecificacaoPizzas from "@/pages/PrecificacaoPizzas";
 import PrecificacaoBebidas from "@/pages/PrecificacaoBebidas";
 import PrecificacaoProdutos from "@/pages/PrecificacaoProdutos";
+import PrecificacaoConfiguracoes from "@/pages/PrecificacaoConfiguracoes";
 import FinanceiroDRE from "@/pages/FinanceiroDRE";
 import FinanceiroContasPagar from "@/pages/FinanceiroContasPagar";
 import FinanceiroPontoEquilibrio from "@/pages/FinanceiroPontoEquilibrio";
