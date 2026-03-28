@@ -163,9 +163,17 @@ export default function Onboarding() {
           {/* Step 3 */}
           {step === 2 && (
             <div className="space-y-4 animate-in fade-in duration-300">
-              <p className="text-sm text-muted-foreground mb-2">
-                % aproximado de cada forma de pagamento
-              </p>
+              <div className="mb-4">
+                <p className="text-sm text-foreground font-medium mb-1">
+                  Quanto % das suas vendas vem de cada forma de pagamento?
+                </p>
+                <p className="text-sm text-muted-foreground mb-2">
+                  Isso nos ajuda a calcular sua taxa média mensal.
+                </p>
+                <p className="text-xs text-muted-foreground bg-muted rounded-md px-3 py-2">
+                  Ex: 30% PIX + 30% Débito + 28% Crédito + 12% iFood = 100%
+                </p>
+              </div>
               {[
                 { label: "Dinheiro / PIX", value: pctPix, set: setPctPix },
                 { label: "Débito", value: pctDebito, set: setPctDebito },
@@ -179,6 +187,7 @@ export default function Onboarding() {
                       type="number"
                       min="0"
                       max="100"
+                      inputMode="decimal"
                       value={item.value || ""}
                       onChange={(e) => item.set(parseFloat(e.target.value) || 0)}
                       className="flex-1"
@@ -194,10 +203,17 @@ export default function Onboarding() {
                 }`}>
                   {totalPct.toFixed(0)}%
                 </span>
-                {Math.abs(totalPct - 100) > 1 && (
-                  <span className="text-xs text-destructive">Deve somar 100%</span>
-                )}
               </div>
+              {totalPct < 100 && totalPct > 0 && (
+                <p className="text-sm text-amber-600">
+                  Falta {(100 - totalPct).toFixed(0)}% — distribua entre as formas de pagamento
+                </p>
+              )}
+              {totalPct > 100 && (
+                <p className="text-sm text-destructive">
+                  Passou {(totalPct - 100).toFixed(0)}% — reduza alguma forma de pagamento
+                </p>
+              )}
             </div>
           )}
 
