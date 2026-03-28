@@ -583,6 +583,87 @@ export default function FichasTecnicasPizza() {
                 )}
 
                 {form.ingredientes.map((ing, idx) => {
+                  // Embalagem rendering
+                  if (ing.tipo_insumo === "embalagem") {
+                    const custoP = custoCompradoMap.get(ing.caixa_p_id) ?? 0;
+                    const custoM = custoCompradoMap.get(ing.caixa_m_id) ?? 0;
+                    const custoG = custoCompradoMap.get(ing.caixa_g_id) ?? 0;
+
+                    const renderCaixaField = (size: "p" | "m" | "g", label: string, caixaId: string, caixaNome: string, custo: number) => {
+                      const key = `${idx}-${size}`;
+                      return (
+                        <div key={size} className="flex items-center gap-2 flex-1">
+                          <div className="flex-1 relative">
+                            <Label className="text-xs">Caixa {label}</Label>
+                            {caixaId ? (
+                              <div className="flex items-center gap-1 h-8">
+                                <span className="text-sm font-medium text-foreground truncate">{caixaNome}</span>
+                                <Button type="button" variant="ghost" size="icon" className="h-5 w-5 shrink-0" onClick={() => {
+                                  const updated = [...form.ingredientes];
+                                  if (size === "p") updated[idx] = { ...updated[idx], caixa_p_id: "", caixa_p_nome: "" };
+                                  else if (size === "m") updated[idx] = { ...updated[idx], caixa_m_id: "", caixa_m_nome: "" };
+                                  else updated[idx] = { ...updated[idx], caixa_g_id: "", caixa_g_nome: "" };
+                                  setForm({ ...form, ingredientes: updated });
+                                }}>
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <div className="relative">
+                                <div className="relative">
+                                  <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
+                                  <Input
+                                    placeholder="Buscar caixa..."
+                                    className="pl-7 h-8 text-sm"
+                                    value={buscaEmbalagemAberta === key ? buscaEmbalagemTermo : ""}
+                                    onFocus={() => { setBuscaEmbalagemAberta(key); setBuscaEmbalagemTermo(""); }}
+                                    onChange={(e) => setBuscaEmbalagemTermo(e.target.value)}
+                                  />
+                                </div>
+                                {buscaEmbalagemAberta === key && (
+                                  <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-popover border border-border rounded-md shadow-md max-h-40 overflow-y-auto">
+                                    {getFilteredEmbalagemInsumos().length === 0 ? (
+                                      <p className="p-2 text-xs text-muted-foreground">Nenhum insumo encontrado.</p>
+                                    ) : (
+                                      getFilteredEmbalagemInsumos().map((item) => (
+                                        <button key={item.id} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors"
+                                          onClick={() => selectEmbalagemInsumo(idx, size, item.id, item.nome)}>
+                                          <span className="font-medium">{item.nome}</span>
+                                          <span className="text-xs text-muted-foreground ml-2">R$ {fmt(custoCompradoMap.get(item.id) ?? 0)}/un</span>
+                                        </button>
+                                      ))
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          <div className="min-w-[70px] text-center">
+                            <p className="text-[10px] text-muted-foreground leading-none mb-0.5">Custo {label}</p>
+                            <p className="text-xs font-medium text-foreground">R$ {fmt(custo)}</p>
+                          </div>
+                        </div>
+                      );
+                    };
+
+                    return (
+                      <div key={idx} className="rounded-md border border-border p-3 space-y-2 bg-muted/20">
+                        <div className="flex items-center justify-between">
+                          <Label className="text-sm font-semibold">📦 Embalagem por tamanho</Label>
+                          <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => removeIngrediente(idx)}>
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
+                        <div className="space-y-2">
+                          {renderCaixaField("p", "P (25cm)", ing.caixa_p_id, ing.caixa_p_nome, custoP)}
+                          {renderCaixaField("m", "M (30cm)", ing.caixa_m_id, ing.caixa_m_nome, custoM)}
+                          {renderCaixaField("g", "G (35cm)", ing.caixa_g_id, ing.caixa_g_nome, custoG)}
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  // Normal ingredient rendering
                   const insumoId = ing.tipo_insumo === "comprado" ? ing.insumo_comprado_id : ing.insumo_proprio_id;
                   const custoUnit = ing.tipo_insumo === "comprado"
                     ? (custoCompradoMap.get(insumoId) ?? 0)
@@ -591,7 +672,6 @@ export default function FichasTecnicasPizza() {
                   return (
                     <div key={idx} className="rounded-md border border-border p-3 space-y-2">
                       <div className="flex items-end gap-2">
-                        {/* Tipo insumo */}
                         <div className="w-36">
                           <Label className="text-xs">Tipo</Label>
                           <Select value={ing.tipo_insumo} onValueChange={(v) => updateIngrediente(idx, "tipo_insumo", v)}>
@@ -603,7 +683,6 @@ export default function FichasTecnicasPizza() {
                           </Select>
                         </div>
 
-                        {/* Busca insumo */}
                         <div className="flex-1 relative">
                           <Label className="text-xs">
                             {ing.tipo_insumo === "comprado" ? "Insumo Comprado" : "Insumo Produzido"}
@@ -633,12 +712,8 @@ export default function FichasTecnicasPizza() {
                                     <p className="p-2 text-xs text-muted-foreground">Nenhum insumo encontrado.</p>
                                   ) : (
                                     getFilteredInsumos(ing.tipo_insumo).map((item) => (
-                                      <button
-                                        key={item.id}
-                                        type="button"
-                                        className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors"
-                                        onClick={() => selectInsumo(idx, item.id, item.nome, ing.tipo_insumo)}
-                                      >
+                                      <button key={item.id} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors"
+                                        onClick={() => selectInsumo(idx, item.id, item.nome, ing.tipo_insumo)}>
                                         <span className="font-medium">{item.nome}</span>
                                       </button>
                                     ))
@@ -649,7 +724,6 @@ export default function FichasTecnicasPizza() {
                           )}
                         </div>
 
-                        {/* Unidade */}
                         <div className="w-24">
                           <Label className="text-xs">Unidade</Label>
                           <Select value={ing.unidade} onValueChange={(v) => updateIngrediente(idx, "unidade", v)}>
@@ -660,13 +734,11 @@ export default function FichasTecnicasPizza() {
                           </Select>
                         </div>
 
-                        {/* Remover */}
                         <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => removeIngrediente(idx)}>
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       </div>
 
-                      {/* Quantidades e Custos P/M/G em linha */}
                       <div className="flex items-end gap-2 bg-muted/40 rounded px-2 py-1.5">
                         {[
                           { label: "P", qtdKey: "qtd_p" as const, qtdVal: ing.qtd_p },
@@ -695,14 +767,26 @@ export default function FichasTecnicasPizza() {
                   );
                 })}
 
-                <Button
-                  type="button"
-                  size="sm"
-                  className="gap-1 w-full bg-[hsl(4,70%,46%)] hover:bg-[hsl(4,70%,40%)] text-primary-foreground"
-                  onClick={addIngrediente}
-                >
-                  <Plus className="h-3 w-3" /> Adicionar Ingrediente
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="gap-1 flex-1 bg-[hsl(4,70%,46%)] hover:bg-[hsl(4,70%,40%)] text-primary-foreground"
+                    onClick={addIngrediente}
+                  >
+                    <Plus className="h-3 w-3" /> Adicionar Ingrediente
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="gap-1"
+                    onClick={addEmbalagem}
+                    disabled={form.ingredientes.some((i) => i.tipo_insumo === "embalagem")}
+                  >
+                    <Plus className="h-3 w-3" /> 📦 Embalagem por Tamanho
+                  </Button>
+                </div>
 
                 {form.ingredientes.length > 0 && (
                   <div className="grid grid-cols-3 gap-3 text-right text-sm text-muted-foreground border-t border-border pt-2">
