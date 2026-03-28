@@ -444,13 +444,10 @@ export default function InsumosProduzidos() {
                     {/* Quantidade */}
                     <div className="w-24">
                       <Label className="text-xs">Qtd</Label>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        min="0"
+                      <QuantityInput
                         className="h-8 text-sm"
-                        value={ing.quantidade || ""}
-                        onChange={(e) => updateIngrediente(idx, "quantidade", parseFloat(e.target.value) || 0)}
+                        value={ing.quantidade}
+                        onChange={(v) => updateIngrediente(idx, "quantidade", v)}
                       />
                     </div>
 
