@@ -379,6 +379,38 @@ export type Database = {
           },
         ]
       }
+      precificacao_bebidas: {
+        Row: {
+          created_at: string
+          id: string
+          insumo_comprado_id: string
+          preco_venda: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          insumo_comprado_id: string
+          preco_venda?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          insumo_comprado_id?: string
+          preco_venda?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "precificacao_bebidas_insumo_comprado_id_fkey"
+            columns: ["insumo_comprado_id"]
+            isOneToOne: true
+            referencedRelation: "insumos_comprados"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
