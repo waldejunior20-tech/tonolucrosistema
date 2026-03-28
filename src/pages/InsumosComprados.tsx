@@ -244,9 +244,9 @@ export default function InsumosComprados() {
                   <TableCell className="font-medium">{insumo.nome}</TableCell>
                   <TableCell>{insumo.categoria}</TableCell>
                   <TableCell className="text-right">
-                    {Number(insumo.preco_pago).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                    {formatMoney(Number(insumo.preco_pago))}
                   </TableCell>
-                  <TableCell className="text-right">{Number(insumo.quantidade)}</TableCell>
+                  <TableCell className="text-right">{formatQty(Number(insumo.quantidade))}</TableCell>
                   <TableCell>{insumo.unidade}</TableCell>
                   <TableCell>{insumo.fornecedor ?? "—"}</TableCell>
                   <TableCell>

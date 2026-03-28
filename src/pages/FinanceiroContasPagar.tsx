@@ -386,12 +386,10 @@ export default function FinanceiroContasPagar() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>Valor (R$)</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={form.valor}
-                  onChange={(e) => setForm({ ...form, valor: e.target.value })}
-                  placeholder="0,00"
+                <MoneyInput
+                  value={parseFloat(form.valor) || 0}
+                  onChange={(v) => setForm({ ...form, valor: String(v) })}
+                  placeholder="R$ 0,00"
                 />
               </div>
               <div>

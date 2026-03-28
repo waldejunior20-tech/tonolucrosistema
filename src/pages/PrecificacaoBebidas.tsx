@@ -583,17 +583,27 @@ export default function PrecificacaoBebidas() {
                           <TableCell className="text-center text-xs">{fmt(custo)}</TableCell>
                           <TableCell>
                             <div className="relative flex items-center justify-center">
-                              <span className="absolute left-2 text-xs font-semibold text-[#C0392B] pointer-events-none z-10">R$</span>
                               <Input
-                                type="number"
-                                step="0.01"
-                                className="h-8 w-28 text-xs text-center pl-8 pr-6 border-b-2 border-b-[#C0392B] border-t-0 border-l-0 border-r-0 rounded-none bg-[#FEF2F2] focus-visible:ring-[#C0392B]/30"
-                                value={localPricesPrep[ficha.id] ?? (ficha.preco_venda ?? "")}
+                                type={localPricesPrep[ficha.id] !== undefined ? "number" : "text"}
+                                step={localPricesPrep[ficha.id] !== undefined ? "0.01" : undefined}
+                                className="h-8 w-28 text-xs text-center pr-6 border-b-2 border-b-[#C0392B] border-t-0 border-l-0 border-r-0 rounded-none bg-[#FEF2F2] focus-visible:ring-[#C0392B]/30"
+                                value={
+                                  localPricesPrep[ficha.id] !== undefined
+                                    ? localPricesPrep[ficha.id]
+                                    : (ficha.preco_venda
+                                      ? formatMoney(Number(ficha.preco_venda))
+                                      : "")
+                                }
                                 onChange={(e) =>
                                   setLocalPricesPrep((prev) => ({ ...prev, [ficha.id]: e.target.value }))
                                 }
+                                onFocus={() => {
+                                  if (localPricesPrep[ficha.id] === undefined) {
+                                    setLocalPricesPrep((prev) => ({ ...prev, [ficha.id]: String(ficha.preco_venda ?? "") }));
+                                  }
+                                }}
                                 onBlur={() => autoSavePrep(ficha.id)}
-                                placeholder="0,00"
+                                placeholder="R$ 0,00"
                               />
                               {savedFields[`prep-${ficha.id}`] && (
                                 <Check className="absolute right-1 h-3.5 w-3.5 text-green-500 animate-in fade-in duration-200" />

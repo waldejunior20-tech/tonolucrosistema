@@ -779,6 +779,7 @@ export default function FichasTecnicasPizza() {
                                 value={qtdVal || ""}
                                 onChange={(e) => updateIngrediente(idx, qtdKey, parseFloat(e.target.value) || 0)}
                                 onBlur={() => autoSaveIngredienteQtd(ing, qtdKey, ing[qtdKey])}
+                                placeholder="0,000"
                               />
                               {ing.db_id && savedFields[`${ing.db_id}-${qtdKey}`] && (
                                 <Check className="absolute right-1 top-[50%] h-3.5 w-3.5 text-green-500 animate-in fade-in duration-200" />

@@ -515,10 +515,10 @@ export default function InsumosProduzidos() {
                       {Number(ip.rendimento)} {ip.unidade_rendimento}
                     </TableCell>
                     <TableCell className="text-right">
-                      R$ {custoPorUn.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/{ip.unidade_rendimento}
+                      {formatMoney(custoPorUn)}/{ip.unidade_rendimento}
                     </TableCell>
                     <TableCell className="text-right">
-                      R$ {custoTotal.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      {formatMoney(custoTotal)}
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-1">
