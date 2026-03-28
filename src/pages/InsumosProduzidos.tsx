@@ -349,13 +349,10 @@ export default function InsumosProduzidos() {
                 </div>
                 <div>
                   <Label htmlFor="rendimento">Rendimento *</Label>
-                  <Input
+                  <QuantityInput
                     id="rendimento"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={form.rendimento || ""}
-                    onChange={(e) => setForm({ ...form, rendimento: parseFloat(e.target.value) || 0 })}
+                    value={form.rendimento}
+                    onChange={(v) => setForm({ ...form, rendimento: v })}
                     required
                   />
                 </div>
