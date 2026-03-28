@@ -51,10 +51,7 @@ function AppRoutes() {
         <Route path="/insumos/comprados" element={<InsumosComprados />} />
         <Route path="/insumos/produzidos" element={<InsumosProduzidos />} />
         {/* Fichas Técnicas */}
-        <Route path="/fichas/tradicionais" element={<FichasTecnicasPizza />} />
-        <Route path="/fichas/especiais" element={<FichasTecnicasPizza />} />
-        <Route path="/fichas/premium" element={<FichasTecnicasPizza />} />
-        <Route path="/fichas/doces" element={<FichasTecnicasPizza />} />
+        <Route path="/fichas/pizzas" element={<FichasTecnicasPizza />} />
         <Route path="/fichas/sanduiches" element={<FichasTecnicasProdutos categoria="sanduiche" />} />
         <Route path="/fichas/pratos" element={<FichasTecnicasProdutos categoria="prato" />} />
         <Route path="/fichas/sobremesas" element={<FichasTecnicasProdutos categoria="sobremesa" />} />
