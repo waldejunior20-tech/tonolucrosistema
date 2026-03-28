@@ -135,6 +135,7 @@ export default function PrecificacaoBebidas() {
   const queryClient = useQueryClient();
   const [localPricesInd, setLocalPricesInd] = useState<Record<string, string>>({});
   const [localPricesPrep, setLocalPricesPrep] = useState<Record<string, string>>({});
+  const [savedFields, setSavedFields] = useState<Record<string, boolean>>({});
 
   // ─── Queries ─────────────────────────────────────────────────────
   const { data: config } = useQuery({
