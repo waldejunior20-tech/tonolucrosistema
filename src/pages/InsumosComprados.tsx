@@ -178,11 +178,11 @@ export default function InsumosComprados() {
                 </div>
                 <div>
                   <Label htmlFor="preco">Preço Pago (R$) *</Label>
-                  <Input id="preco" type="number" step="0.01" min="0" value={form.preco_pago || ""} onChange={(e) => setForm({ ...form, preco_pago: parseFloat(e.target.value) || 0 })} required />
+                  <MoneyInput id="preco" value={form.preco_pago} onChange={(v) => setForm({ ...form, preco_pago: v })} required />
                 </div>
                 <div>
                   <Label htmlFor="qtd">Quantidade *</Label>
-                  <Input id="qtd" type="number" step="0.01" min="0" value={form.quantidade || ""} onChange={(e) => setForm({ ...form, quantidade: parseFloat(e.target.value) || 0 })} required />
+                  <QuantityInput id="qtd" value={form.quantidade} onChange={(v) => setForm({ ...form, quantidade: v })} required />
                 </div>
                 <div>
                   <Label htmlFor="fornecedor">Fornecedor</Label>
