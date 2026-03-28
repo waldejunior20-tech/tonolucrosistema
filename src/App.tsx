@@ -44,9 +44,9 @@ const App = () => (
             <Route path="/precificacao/produtos" element={<SectionPage />} />
             <Route path="/precificacao/bebidas" element={<PrecificacaoBebidas />} />
             {/* Financeiro */}
-            <Route path="/financeiro/dre" element={<SectionPage />} />
-            <Route path="/financeiro/contas-a-pagar" element={<SectionPage />} />
-            <Route path="/financeiro/ponto-de-equilibrio" element={<SectionPage />} />
+            <Route path="/financeiro/dre" element={<FinanceiroDRE />} />
+            <Route path="/financeiro/contas-a-pagar" element={<FinanceiroContasPagar />} />
+            <Route path="/financeiro/ponto-de-equilibrio" element={<FinanceiroPontoEquilibrio />} />
             {/* Promoções */}
             <Route path="/promocoes/ativas" element={<SectionPage />} />
             <Route path="/promocoes/combos" element={<SectionPage />} />
