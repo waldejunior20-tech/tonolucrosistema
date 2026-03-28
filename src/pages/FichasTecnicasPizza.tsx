@@ -342,6 +342,8 @@ export default function FichasTecnicasPizza() {
     setDialogOpen(false);
     setBuscaIngrediente("");
     setBuscaAberta(null);
+    setBuscaEmbalagemAberta(null);
+    setBuscaEmbalagemTermo("");
   };
 
   const handleSubmit = (e: React.FormEvent) => {
