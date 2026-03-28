@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      configuracoes_preco: {
+        Row: {
+          comissao_marketplace: number | null
+          created_at: string | null
+          custos_fixos: number | null
+          id: string
+          impostos: number | null
+          margem_desejada: number | null
+          outros_custos_variaveis: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          comissao_marketplace?: number | null
+          created_at?: string | null
+          custos_fixos?: number | null
+          id?: string
+          impostos?: number | null
+          margem_desejada?: number | null
+          outros_custos_variaveis?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          comissao_marketplace?: number | null
+          created_at?: string | null
+          custos_fixos?: number | null
+          id?: string
+          impostos?: number | null
+          margem_desejada?: number | null
+          outros_custos_variaveis?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       fichas_tecnicas_pizza: {
         Row: {
           created_at: string | null
@@ -21,8 +57,12 @@ export type Database = {
           modo_preparo: string | null
           nome: string
           numero_ficha: string | null
+          preco_venda_g: number | null
+          preco_venda_m: number | null
+          preco_venda_p: number | null
           tipo: string | null
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           created_at?: string | null
@@ -30,8 +70,12 @@ export type Database = {
           modo_preparo?: string | null
           nome: string
           numero_ficha?: string | null
+          preco_venda_g?: number | null
+          preco_venda_m?: number | null
+          preco_venda_p?: number | null
           tipo?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           created_at?: string | null
@@ -39,8 +83,12 @@ export type Database = {
           modo_preparo?: string | null
           nome?: string
           numero_ficha?: string | null
+          preco_venda_g?: number | null
+          preco_venda_m?: number | null
+          preco_venda_p?: number | null
           tipo?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -55,6 +103,7 @@ export type Database = {
           qtd_p: number | null
           tipo_insumo: string
           unidade: string
+          user_id: string | null
         }
         Insert: {
           ficha_id?: string | null
@@ -66,6 +115,7 @@ export type Database = {
           qtd_p?: number | null
           tipo_insumo: string
           unidade: string
+          user_id?: string | null
         }
         Update: {
           ficha_id?: string | null
@@ -77,6 +127,7 @@ export type Database = {
           qtd_p?: number | null
           tipo_insumo?: string
           unidade?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -115,6 +166,7 @@ export type Database = {
           quantidade: number
           unidade: string
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           categoria: string
@@ -128,6 +180,7 @@ export type Database = {
           quantidade: number
           unidade: string
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           categoria?: string
@@ -141,6 +194,7 @@ export type Database = {
           quantidade?: number
           unidade?: string
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -152,6 +206,7 @@ export type Database = {
           rendimento: number
           unidade_rendimento: string
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           created_at?: string | null
@@ -160,6 +215,7 @@ export type Database = {
           rendimento: number
           unidade_rendimento: string
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           created_at?: string | null
@@ -168,6 +224,7 @@ export type Database = {
           rendimento?: number
           unidade_rendimento?: string
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -178,6 +235,7 @@ export type Database = {
           insumo_proprio_id: string | null
           quantidade: number
           unidade: string
+          user_id: string | null
         }
         Insert: {
           id?: string
@@ -185,6 +243,7 @@ export type Database = {
           insumo_proprio_id?: string | null
           quantidade: number
           unidade: string
+          user_id?: string | null
         }
         Update: {
           id?: string
@@ -192,6 +251,7 @@ export type Database = {
           insumo_proprio_id?: string | null
           quantidade?: number
           unidade?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -209,6 +269,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          display_name: string | null
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          id: string
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          display_name?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
     }
     Views: {
