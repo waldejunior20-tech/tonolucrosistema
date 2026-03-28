@@ -8,6 +8,7 @@ import Dashboard from "@/pages/Dashboard";
 import SectionPage from "@/pages/SectionPage";
 import InsumosComprados from "@/pages/InsumosComprados";
 import InsumosProduzidos from "@/pages/InsumosProduzidos";
+import FichasTecnicasPizza from "@/pages/FichasTecnicasPizza";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -25,10 +26,10 @@ const App = () => (
             <Route path="/insumos/comprados" element={<InsumosComprados />} />
             <Route path="/insumos/produzidos" element={<InsumosProduzidos />} />
             {/* Fichas Técnicas */}
-            <Route path="/fichas/tradicionais" element={<SectionPage />} />
-            <Route path="/fichas/especiais" element={<SectionPage />} />
-            <Route path="/fichas/premium" element={<SectionPage />} />
-            <Route path="/fichas/doces" element={<SectionPage />} />
+            <Route path="/fichas/tradicionais" element={<FichasTecnicasPizza />} />
+            <Route path="/fichas/especiais" element={<FichasTecnicasPizza />} />
+            <Route path="/fichas/premium" element={<FichasTecnicasPizza />} />
+            <Route path="/fichas/doces" element={<FichasTecnicasPizza />} />
             <Route path="/fichas/sanduiches" element={<SectionPage />} />
             <Route path="/fichas/pratos" element={<SectionPage />} />
             <Route path="/fichas/sobremesas" element={<SectionPage />} />
