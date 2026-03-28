@@ -54,10 +54,10 @@ function AppRoutes() {
         <Route path="/fichas/especiais" element={<FichasTecnicasPizza />} />
         <Route path="/fichas/premium" element={<FichasTecnicasPizza />} />
         <Route path="/fichas/doces" element={<FichasTecnicasPizza />} />
-        <Route path="/fichas/sanduiches" element={<SectionPage />} />
-        <Route path="/fichas/pratos" element={<SectionPage />} />
-        <Route path="/fichas/sobremesas" element={<SectionPage />} />
-        <Route path="/fichas/bebidas" element={<SectionPage />} />
+        <Route path="/fichas/sanduiches" element={<FichasTecnicasProdutos categoria="sanduiche" />} />
+        <Route path="/fichas/pratos" element={<FichasTecnicasProdutos categoria="prato" />} />
+        <Route path="/fichas/sobremesas" element={<FichasTecnicasProdutos categoria="sobremesa" />} />
+        <Route path="/fichas/bebidas" element={<FichasTecnicasProdutos categoria="bebida" />} />
         {/* Precificação */}
         <Route path="/precificacao/pizzas" element={<PrecificacaoPizzas />} />
         <Route path="/precificacao/produtos" element={<SectionPage />} />
