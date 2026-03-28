@@ -558,7 +558,6 @@ export default function PrecificacaoBebidas() {
                       const preco = getPrecoPrep(ficha.id, ficha);
                       const cmv = calcCmv(custo, preco);
                       const sugerido = cmvMeta > 0 ? custo / (cmvMeta / 100) : 0;
-                      const hasLocal = localPricesPrep[ficha.id] !== undefined;
                       const hasAlert = cmv > 40 && preco > 0;
 
                       return (
