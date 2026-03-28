@@ -39,6 +39,46 @@ export const parseFormattedNumber = (str: string): number => {
   return parseFloat(clean) || 0;
 };
 
+/**
+ * Format a raw numeric string with thousand separators while typing.
+ * Input: "2000" → "2.000"
+ * Input: "1500.5" → "1.500,5"
+ */
+const formatWhileTyping = (raw: string, isMoney: boolean): string => {
+  if (!raw) return "";
+  // Remove anything that's not digit, dot, minus, comma
+  let clean = raw.replace(/[^\d.,-]/g, "");
+  if (!clean) return "";
+
+  // Determine decimal part
+  // Accept both . and , as decimal separator input
+  let parts: string[];
+  if (clean.includes(",")) {
+    parts = clean.split(",");
+  } else if (clean.includes(".")) {
+    parts = clean.split(".");
+  } else {
+    parts = [clean];
+  }
+
+  // Integer part — add thousand separators
+  let intPart = parts[0].replace(/\D/g, "");
+  if (!intPart) intPart = "0";
+  const intFormatted = parseInt(intPart, 10).toLocaleString("pt-BR");
+
+  let result = intFormatted;
+  if (parts.length > 1) {
+    // Keep decimal part as-is (user is still typing)
+    result += "," + parts[1].replace(/\D/g, "");
+  }
+
+  if (isMoney) {
+    result = "R$ " + result;
+  }
+
+  return result;
+};
+
 interface MoneyInputProps {
   value: number;
   onChange: (value: number) => void;
@@ -70,7 +110,7 @@ export function MoneyInput({
 
   const handleFocus = useCallback(() => {
     setFocused(true);
-    setLocalValue(value ? String(value) : "");
+    setLocalValue(value ? formatWhileTyping(String(value), true) : "");
   }, [value]);
 
   const handleBlur = useCallback(() => {
@@ -79,16 +119,23 @@ export function MoneyInput({
     onChange(parsed);
   }, [localValue, onChange]);
 
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+    // Strip formatting to get raw digits, then reformat
+    const stripped = raw.replace(/R\$\s?/g, "").replace(/\./g, "").replace(",", ".");
+    // If user is typing, keep the raw feel but format with separators
+    setLocalValue(formatWhileTyping(raw.replace(/R\$\s?/g, ""), true));
+  }, []);
+
   return (
     <Input
       ref={inputRef}
       id={id}
-      type={focused ? "number" : "text"}
-      step={focused ? "0.01" : undefined}
-      min={focused ? "0" : undefined}
+      type="text"
+      inputMode="decimal"
       className={cn(className)}
       value={displayValue}
-      onChange={(e) => setLocalValue(e.target.value)}
+      onChange={handleChange}
       onFocus={handleFocus}
       onBlur={handleBlur}
       placeholder={placeholder}
@@ -117,7 +164,6 @@ export function QuantityInput({
   disabled,
   id,
   required,
-  step = "0.001",
 }: QuantityInputProps) {
   const [focused, setFocused] = useState(false);
   const [localValue, setLocalValue] = useState("");
@@ -130,7 +176,7 @@ export function QuantityInput({
 
   const handleFocus = useCallback(() => {
     setFocused(true);
-    setLocalValue(value ? String(value) : "");
+    setLocalValue(value ? formatWhileTyping(String(value), false) : "");
   }, [value]);
 
   const handleBlur = useCallback(() => {
@@ -139,15 +185,18 @@ export function QuantityInput({
     onChange(parsed);
   }, [localValue, onChange]);
 
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setLocalValue(formatWhileTyping(e.target.value, false));
+  }, []);
+
   return (
     <Input
       id={id}
-      type={focused ? "number" : "text"}
-      step={focused ? step : undefined}
-      min={focused ? "0" : undefined}
+      type="text"
+      inputMode="decimal"
       className={cn(className)}
       value={displayValue}
-      onChange={(e) => setLocalValue(e.target.value)}
+      onChange={handleChange}
       onFocus={handleFocus}
       onBlur={handleBlur}
       placeholder={placeholder}
