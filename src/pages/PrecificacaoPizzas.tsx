@@ -9,7 +9,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { toast } from "sonner";
-import { Settings2, Save, AlertTriangle } from "lucide-react";
+import { Settings2, Save, AlertTriangle, Pencil } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────
 interface ConfigPrecificacao {
