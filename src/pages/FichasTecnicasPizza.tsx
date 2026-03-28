@@ -594,50 +594,30 @@ export default function FichasTecnicasPizza() {
                         </Button>
                       </div>
 
-                      {/* Quantidades P/M/G */}
-                      <div className="grid grid-cols-6 gap-2">
-                        <div>
-                          <Label className="text-xs">Qtd P</Label>
-                          <Input
-                            type="number" step="0.01" min="0" className="h-8 text-sm"
-                            value={ing.qtd_p || ""}
-                            onChange={(e) => updateIngrediente(idx, "qtd_p", parseFloat(e.target.value) || 0)}
-                          />
-                        </div>
-                        <div>
-                          <Label className="text-xs text-muted-foreground">Custo P</Label>
-                          <p className="h-8 flex items-center text-xs text-muted-foreground">
-                            R$ {fmt(custoUnit * converterQuantidade(ing.qtd_p, ing.unidade))}
-                          </p>
-                        </div>
-                        <div>
-                          <Label className="text-xs">Qtd M</Label>
-                          <Input
-                            type="number" step="0.01" min="0" className="h-8 text-sm"
-                            value={ing.qtd_m || ""}
-                            onChange={(e) => updateIngrediente(idx, "qtd_m", parseFloat(e.target.value) || 0)}
-                          />
-                        </div>
-                        <div>
-                          <Label className="text-xs text-muted-foreground">Custo M</Label>
-                          <p className="h-8 flex items-center text-xs text-muted-foreground">
-                            R$ {fmt(custoUnit * converterQuantidade(ing.qtd_m, ing.unidade))}
-                          </p>
-                        </div>
-                        <div>
-                          <Label className="text-xs">Qtd G</Label>
-                          <Input
-                            type="number" step="0.01" min="0" className="h-8 text-sm"
-                            value={ing.qtd_g || ""}
-                            onChange={(e) => updateIngrediente(idx, "qtd_g", parseFloat(e.target.value) || 0)}
-                          />
-                        </div>
-                        <div>
-                          <Label className="text-xs text-muted-foreground">Custo G</Label>
-                          <p className="h-8 flex items-center text-xs text-muted-foreground">
-                            R$ {fmt(custoUnit * converterQuantidade(ing.qtd_g, ing.unidade))}
-                          </p>
-                        </div>
+                      {/* Quantidades e Custos P/M/G em linha */}
+                      <div className="flex items-end gap-2 bg-muted/40 rounded px-2 py-1.5">
+                        {[
+                          { label: "P", qtdKey: "qtd_p" as const, qtdVal: ing.qtd_p },
+                          { label: "M", qtdKey: "qtd_m" as const, qtdVal: ing.qtd_m },
+                          { label: "G", qtdKey: "qtd_g" as const, qtdVal: ing.qtd_g },
+                        ].map(({ label, qtdKey, qtdVal }) => (
+                          <div key={label} className="flex items-end gap-1.5 flex-1">
+                            <div className="flex-1 min-w-0">
+                              <Label className="text-xs">Qtd {label}</Label>
+                              <Input
+                                type="number" step="0.01" min="0" className="h-8 text-sm"
+                                value={qtdVal || ""}
+                                onChange={(e) => updateIngrediente(idx, qtdKey, parseFloat(e.target.value) || 0)}
+                              />
+                            </div>
+                            <div className="min-w-[70px] text-center pb-1">
+                              <p className="text-[10px] text-muted-foreground leading-none mb-0.5">Custo {label}</p>
+                              <p className="text-xs font-medium text-foreground">
+                                R$ {fmt(custoUnit * converterQuantidade(qtdVal, ing.unidade))}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   );
