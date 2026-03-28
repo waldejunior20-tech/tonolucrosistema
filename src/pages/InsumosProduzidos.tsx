@@ -101,6 +101,14 @@ export default function InsumosProduzidos() {
     unidadeCompradoMap.set(ic.id, ic.unidade);
   });
 
+  // Converte quantidade do ingrediente para a unidade base do insumo comprado
+  const converterQuantidade = (quantidade: number, unidadeIngrediente: string) => {
+    if (unidadeIngrediente === "g" || unidadeIngrediente === "ml") {
+      return quantidade / 1000;
+    }
+    return quantidade;
+  };
+
   // Calcula custo total de um insumo próprio
   const calcularCusto = (insumoId: string) => {
     const ingredientes = todosIngredientes.filter(
@@ -108,7 +116,8 @@ export default function InsumosProduzidos() {
     );
     return ingredientes.reduce((acc, ing) => {
       const custoUnit = custoUnitarioMap.get(ing.insumo_comprado_id ?? "") ?? 0;
-      return acc + custoUnit * Number(ing.quantidade);
+      const qtdConvertida = converterQuantidade(Number(ing.quantidade), ing.unidade);
+      return acc + custoUnit * qtdConvertida;
     }, 0);
   };
 
