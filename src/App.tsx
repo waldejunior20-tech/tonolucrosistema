@@ -7,6 +7,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import Dashboard from "@/pages/Dashboard";
 import SectionPage from "@/pages/SectionPage";
 import InsumosComprados from "@/pages/InsumosComprados";
+import InsumosProduzidos from "@/pages/InsumosProduzidos";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
