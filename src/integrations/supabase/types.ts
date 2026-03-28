@@ -534,6 +534,38 @@ export type Database = {
           },
         ]
       }
+      precificacao_produtos: {
+        Row: {
+          created_at: string
+          ficha_id: string
+          id: string
+          preco_venda: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          ficha_id: string
+          id?: string
+          preco_venda?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          ficha_id?: string
+          id?: string
+          preco_venda?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "precificacao_produtos_ficha_id_fkey"
+            columns: ["ficha_id"]
+            isOneToOne: true
+            referencedRelation: "fichas_tecnicas_produtos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null

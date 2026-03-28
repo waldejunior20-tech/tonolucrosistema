@@ -13,6 +13,7 @@ import FichasTecnicasPizza from "@/pages/FichasTecnicasPizza";
 import FichasTecnicasProdutos from "@/pages/FichasTecnicasProdutos";
 import PrecificacaoPizzas from "@/pages/PrecificacaoPizzas";
 import PrecificacaoBebidas from "@/pages/PrecificacaoBebidas";
+import PrecificacaoProdutos from "@/pages/PrecificacaoProdutos";
 import FinanceiroDRE from "@/pages/FinanceiroDRE";
 import FinanceiroContasPagar from "@/pages/FinanceiroContasPagar";
 import FinanceiroPontoEquilibrio from "@/pages/FinanceiroPontoEquilibrio";
@@ -60,7 +61,7 @@ function AppRoutes() {
         <Route path="/fichas/bebidas" element={<FichasTecnicasProdutos categoria="bebida" />} />
         {/* Precificação */}
         <Route path="/precificacao/pizzas" element={<PrecificacaoPizzas />} />
-        <Route path="/precificacao/produtos" element={<SectionPage />} />
+        <Route path="/precificacao/produtos" element={<PrecificacaoProdutos />} />
         <Route path="/precificacao/bebidas" element={<PrecificacaoBebidas />} />
         {/* Financeiro */}
         <Route path="/financeiro/dre" element={<FinanceiroDRE />} />

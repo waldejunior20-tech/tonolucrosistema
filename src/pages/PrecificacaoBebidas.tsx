@@ -187,7 +187,7 @@ export default function PrecificacaoBebidas() {
       const { data, error } = await supabase
         .from("fichas_tecnicas_produtos")
         .select("*")
-        .eq("categoria", "bebidas")
+        .eq("categoria", "bebida")
         .order("nome");
       if (error) throw error;
       return data as FichaProduto[];
