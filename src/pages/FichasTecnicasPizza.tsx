@@ -386,10 +386,15 @@ export default function FichasTecnicasPizza() {
 
   const selectInsumo = (index: number, id: string, nome: string, tipo: string) => {
     const updated = [...form.ingredientes];
+    let unidadeAuto = updated[index].unidade;
     if (tipo === "comprado") {
-      updated[index] = { ...updated[index], insumo_comprado_id: id, nome_display: nome };
+      const insumo = insumosComprados.find((ic) => ic.id === id);
+      if (insumo) unidadeAuto = insumo.unidade === "kg" ? "g" : insumo.unidade === "L" ? "ml" : insumo.unidade;
+      updated[index] = { ...updated[index], insumo_comprado_id: id, nome_display: nome, unidade: unidadeAuto };
     } else {
-      updated[index] = { ...updated[index], insumo_proprio_id: id, nome_display: nome };
+      const insumo = insumosProprios.find((ip) => ip.id === id);
+      if (insumo) unidadeAuto = insumo.unidade_rendimento === "kg" ? "g" : insumo.unidade_rendimento === "L" ? "ml" : insumo.unidade_rendimento;
+      updated[index] = { ...updated[index], insumo_proprio_id: id, nome_display: nome, unidade: unidadeAuto };
     }
     setForm({ ...form, ingredientes: updated });
     setBuscaIngrediente("");
