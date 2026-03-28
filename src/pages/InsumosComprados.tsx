@@ -16,6 +16,7 @@ import {
 import { toast } from "sonner";
 import { Pencil, Trash2, Plus, Filter } from "lucide-react";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
+import { MoneyInput, QuantityInput, formatMoney, formatQty } from "@/components/MoneyInput";
 
 const CATEGORIAS = [
   "Proteínas", "Laticínios", "Hortifruti", "Secos", "Bebidas",
