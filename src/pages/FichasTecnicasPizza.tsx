@@ -36,6 +36,13 @@ interface IngredienteForm {
   qtd_m: number;
   qtd_g: number;
   unidade: string;
+  // Embalagem por tamanho
+  caixa_p_id: string;
+  caixa_p_nome: string;
+  caixa_m_id: string;
+  caixa_m_nome: string;
+  caixa_g_id: string;
+  caixa_g_nome: string;
 }
 
 interface FormState {
@@ -63,6 +70,12 @@ const emptyIngrediente: IngredienteForm = {
   qtd_m: 0,
   qtd_g: 0,
   unidade: "",
+  caixa_p_id: "",
+  caixa_p_nome: "",
+  caixa_m_id: "",
+  caixa_m_nome: "",
+  caixa_g_id: "",
+  caixa_g_nome: "",
 };
 
 const converterQuantidade = (quantidade: number, unidade: string) => {
@@ -78,6 +91,8 @@ export default function FichasTecnicasPizza() {
   const [filtroTipo, setFiltroTipo] = useState("todos");
   const [buscaIngrediente, setBuscaIngrediente] = useState("");
   const [buscaAberta, setBuscaAberta] = useState<number | null>(null);
+  const [buscaEmbalagemAberta, setBuscaEmbalagemAberta] = useState<string | null>(null);
+  const [buscaEmbalagemTermo, setBuscaEmbalagemTermo] = useState("");
 
   // Queries
   const { data: fichas = [], isLoading } = useQuery({
@@ -179,9 +194,17 @@ export default function FichasTecnicasPizza() {
     const ings = todosIngredientes.filter((i) => i.ficha_id === fichaId);
     let custoP = 0, custoM = 0, custoG = 0;
     ings.forEach((ing) => {
-      custoP += calcularCustoIngrediente(ing, Number(ing.qtd_p ?? 0));
-      custoM += calcularCustoIngrediente(ing, Number(ing.qtd_m ?? 0));
-      custoG += calcularCustoIngrediente(ing, Number(ing.qtd_g ?? 0));
+      if (ing.tipo_insumo === "embalagem_p") {
+        custoP += (custoCompradoMap.get(ing.insumo_comprado_id ?? "") ?? 0) * Number(ing.qtd_p ?? 0);
+      } else if (ing.tipo_insumo === "embalagem_m") {
+        custoM += (custoCompradoMap.get(ing.insumo_comprado_id ?? "") ?? 0) * Number(ing.qtd_m ?? 0);
+      } else if (ing.tipo_insumo === "embalagem_g") {
+        custoG += (custoCompradoMap.get(ing.insumo_comprado_id ?? "") ?? 0) * Number(ing.qtd_g ?? 0);
+      } else {
+        custoP += calcularCustoIngrediente(ing, Number(ing.qtd_p ?? 0));
+        custoM += calcularCustoIngrediente(ing, Number(ing.qtd_m ?? 0));
+        custoG += calcularCustoIngrediente(ing, Number(ing.qtd_g ?? 0));
+      }
     });
     return { custoP, custoM, custoG };
   };
@@ -190,16 +213,42 @@ export default function FichasTecnicasPizza() {
   const calcularCustosForm = () => {
     let custoP = 0, custoM = 0, custoG = 0;
     form.ingredientes.forEach((ing) => {
-      const id = ing.tipo_insumo === "comprado" ? ing.insumo_comprado_id : ing.insumo_proprio_id;
-      if (!id) return;
-      const custoUnit = ing.tipo_insumo === "comprado"
-        ? (custoCompradoMap.get(id) ?? 0)
-        : (custoProprioMap.get(id) ?? 0);
-      custoP += custoUnit * converterQuantidade(ing.qtd_p, ing.unidade);
-      custoM += custoUnit * converterQuantidade(ing.qtd_m, ing.unidade);
-      custoG += custoUnit * converterQuantidade(ing.qtd_g, ing.unidade);
+      if (ing.tipo_insumo === "embalagem") {
+        custoP += (custoCompradoMap.get(ing.caixa_p_id) ?? 0) * 1;
+        custoM += (custoCompradoMap.get(ing.caixa_m_id) ?? 0) * 1;
+        custoG += (custoCompradoMap.get(ing.caixa_g_id) ?? 0) * 1;
+      } else {
+        const id = ing.tipo_insumo === "comprado" ? ing.insumo_comprado_id : ing.insumo_proprio_id;
+        if (!id) return;
+        const custoUnit = ing.tipo_insumo === "comprado"
+          ? (custoCompradoMap.get(id) ?? 0)
+          : (custoProprioMap.get(id) ?? 0);
+        custoP += custoUnit * converterQuantidade(ing.qtd_p, ing.unidade);
+        custoM += custoUnit * converterQuantidade(ing.qtd_m, ing.unidade);
+        custoG += custoUnit * converterQuantidade(ing.qtd_g, ing.unidade);
+      }
     });
     return { custoP, custoM, custoG };
+  };
+
+  // Expande ingredientes do form para rows do DB
+  const expandIngredientesParaDB = (ingredientes: IngredienteForm[], fichaId: string) => {
+    const rows: Array<{ficha_id: string; tipo_insumo: string; insumo_comprado_id: string | null; insumo_proprio_id: string | null; qtd_p: number; qtd_m: number; qtd_g: number; unidade: string}> = [];
+    ingredientes.forEach((ing) => {
+      if (ing.tipo_insumo === "embalagem") {
+        if (ing.caixa_p_id) rows.push({ ficha_id: fichaId, tipo_insumo: "embalagem_p", insumo_comprado_id: ing.caixa_p_id, insumo_proprio_id: null, qtd_p: 1, qtd_m: 0, qtd_g: 0, unidade: "unidade" });
+        if (ing.caixa_m_id) rows.push({ ficha_id: fichaId, tipo_insumo: "embalagem_m", insumo_comprado_id: ing.caixa_m_id, insumo_proprio_id: null, qtd_p: 0, qtd_m: 1, qtd_g: 0, unidade: "unidade" });
+        if (ing.caixa_g_id) rows.push({ ficha_id: fichaId, tipo_insumo: "embalagem_g", insumo_comprado_id: ing.caixa_g_id, insumo_proprio_id: null, qtd_p: 0, qtd_m: 0, qtd_g: 1, unidade: "unidade" });
+      } else {
+        rows.push({
+          ficha_id: fichaId, tipo_insumo: ing.tipo_insumo,
+          insumo_comprado_id: ing.insumo_comprado_id || null,
+          insumo_proprio_id: ing.insumo_proprio_id || null,
+          qtd_p: ing.qtd_p, qtd_m: ing.qtd_m, qtd_g: ing.qtd_g, unidade: ing.unidade,
+        });
+      }
+    });
+    return rows;
   };
 
   const invalidateAll = () => {
@@ -222,21 +271,11 @@ export default function FichasTecnicasPizza() {
         .single();
       if (error) throw error;
 
-      if (data.ingredientes.length > 0) {
+      const dbRows = expandIngredientesParaDB(data.ingredientes, inserted.id);
+      if (dbRows.length > 0) {
         const { error: ingError } = await supabase
           .from("fichas_tecnicas_pizza_ingredientes")
-          .insert(
-            data.ingredientes.map((ing) => ({
-              ficha_id: inserted.id,
-              tipo_insumo: ing.tipo_insumo,
-              insumo_comprado_id: ing.insumo_comprado_id || null,
-              insumo_proprio_id: ing.insumo_proprio_id || null,
-              qtd_p: ing.qtd_p,
-              qtd_m: ing.qtd_m,
-              qtd_g: ing.qtd_g,
-              unidade: ing.unidade,
-            }))
-          );
+          .insert(dbRows);
         if (ingError) throw ingError;
       }
     },
@@ -267,21 +306,11 @@ export default function FichasTecnicasPizza() {
         .delete()
         .eq("ficha_id", id);
 
-      if (data.ingredientes.length > 0) {
+      const dbRows = expandIngredientesParaDB(data.ingredientes, id);
+      if (dbRows.length > 0) {
         const { error: ingError } = await supabase
           .from("fichas_tecnicas_pizza_ingredientes")
-          .insert(
-            data.ingredientes.map((ing) => ({
-              ficha_id: id,
-              tipo_insumo: ing.tipo_insumo,
-              insumo_comprado_id: ing.insumo_comprado_id || null,
-              insumo_proprio_id: ing.insumo_proprio_id || null,
-              qtd_p: ing.qtd_p,
-              qtd_m: ing.qtd_m,
-              qtd_g: ing.qtd_g,
-              unidade: ing.unidade,
-            }))
-          );
+          .insert(dbRows);
         if (ingError) throw ingError;
       }
     },
@@ -313,6 +342,8 @@ export default function FichasTecnicasPizza() {
     setDialogOpen(false);
     setBuscaIngrediente("");
     setBuscaAberta(null);
+    setBuscaEmbalagemAberta(null);
+    setBuscaEmbalagemTermo("");
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -334,7 +365,11 @@ export default function FichasTecnicasPizza() {
       .select("*")
       .eq("ficha_id", ficha.id);
 
-    const ingredientesForm: IngredienteForm[] = (ings ?? []).map((ing) => ({
+    const allIngs = ings ?? [];
+    const embalagemRows = allIngs.filter((i) => i.tipo_insumo.startsWith("embalagem_"));
+    const normalRows = allIngs.filter((i) => !i.tipo_insumo.startsWith("embalagem_"));
+
+    const ingredientesForm: IngredienteForm[] = normalRows.map((ing) => ({
       tipo_insumo: ing.tipo_insumo,
       insumo_comprado_id: ing.insumo_comprado_id ?? "",
       insumo_proprio_id: ing.insumo_proprio_id ?? "",
@@ -346,7 +381,25 @@ export default function FichasTecnicasPizza() {
       qtd_m: Number(ing.qtd_m ?? 0),
       qtd_g: Number(ing.qtd_g ?? 0),
       unidade: ing.unidade,
+      caixa_p_id: "", caixa_p_nome: "", caixa_m_id: "", caixa_m_nome: "", caixa_g_id: "", caixa_g_nome: "",
     }));
+
+    // Merge embalagem rows into single form entry
+    if (embalagemRows.length > 0) {
+      const embP = embalagemRows.find((r) => r.tipo_insumo === "embalagem_p");
+      const embM = embalagemRows.find((r) => r.tipo_insumo === "embalagem_m");
+      const embG = embalagemRows.find((r) => r.tipo_insumo === "embalagem_g");
+      ingredientesForm.push({
+        ...emptyIngrediente,
+        tipo_insumo: "embalagem",
+        caixa_p_id: embP?.insumo_comprado_id ?? "",
+        caixa_p_nome: nomeCompradoMap.get(embP?.insumo_comprado_id ?? "") ?? "",
+        caixa_m_id: embM?.insumo_comprado_id ?? "",
+        caixa_m_nome: nomeCompradoMap.get(embM?.insumo_comprado_id ?? "") ?? "",
+        caixa_g_id: embG?.insumo_comprado_id ?? "",
+        caixa_g_nome: nomeCompradoMap.get(embG?.insumo_comprado_id ?? "") ?? "",
+      });
+    }
 
     setForm({
       nome: ficha.nome,
@@ -407,6 +460,22 @@ export default function FichasTecnicasPizza() {
     setForm({ ...form, ingredientes: updated });
   };
 
+  const addEmbalagem = () => {
+    const hasEmbalagem = form.ingredientes.some((i) => i.tipo_insumo === "embalagem");
+    if (hasEmbalagem) { toast.error("Já existe uma embalagem nesta ficha."); return; }
+    setForm({ ...form, ingredientes: [...form.ingredientes, { ...emptyIngrediente, tipo_insumo: "embalagem" }] });
+  };
+
+  const selectEmbalagemInsumo = (index: number, size: "p" | "m" | "g", id: string, nome: string) => {
+    const updated = [...form.ingredientes];
+    if (size === "p") updated[index] = { ...updated[index], caixa_p_id: id, caixa_p_nome: nome };
+    else if (size === "m") updated[index] = { ...updated[index], caixa_m_id: id, caixa_m_nome: nome };
+    else updated[index] = { ...updated[index], caixa_g_id: id, caixa_g_nome: nome };
+    setForm({ ...form, ingredientes: updated });
+    setBuscaEmbalagemAberta(null);
+    setBuscaEmbalagemTermo("");
+  };
+
   const filteredFichas = filtroTipo === "todos" ? fichas : fichas.filter((f) => f.tipo === filtroTipo);
 
   const getFilteredInsumos = (tipo: string) => {
@@ -415,6 +484,11 @@ export default function FichasTecnicasPizza() {
       return insumosComprados.filter((ic) => ic.nome.toLowerCase().includes(term)).slice(0, 10);
     }
     return insumosProprios.filter((ip) => ip.nome.toLowerCase().includes(term)).slice(0, 10);
+  };
+
+  const getFilteredEmbalagemInsumos = () => {
+    const term = buscaEmbalagemTermo.toLowerCase();
+    return insumosComprados.filter((ic) => ic.nome.toLowerCase().includes(term)).slice(0, 10);
   };
 
   const custoForm = calcularCustosForm();
@@ -511,6 +585,87 @@ export default function FichasTecnicasPizza() {
                 )}
 
                 {form.ingredientes.map((ing, idx) => {
+                  // Embalagem rendering
+                  if (ing.tipo_insumo === "embalagem") {
+                    const custoP = custoCompradoMap.get(ing.caixa_p_id) ?? 0;
+                    const custoM = custoCompradoMap.get(ing.caixa_m_id) ?? 0;
+                    const custoG = custoCompradoMap.get(ing.caixa_g_id) ?? 0;
+
+                    const renderCaixaField = (size: "p" | "m" | "g", label: string, caixaId: string, caixaNome: string, custo: number) => {
+                      const key = `${idx}-${size}`;
+                      return (
+                        <div key={size} className="flex items-center gap-2 flex-1">
+                          <div className="flex-1 relative">
+                            <Label className="text-xs">Caixa {label}</Label>
+                            {caixaId ? (
+                              <div className="flex items-center gap-1 h-8">
+                                <span className="text-sm font-medium text-foreground truncate">{caixaNome}</span>
+                                <Button type="button" variant="ghost" size="icon" className="h-5 w-5 shrink-0" onClick={() => {
+                                  const updated = [...form.ingredientes];
+                                  if (size === "p") updated[idx] = { ...updated[idx], caixa_p_id: "", caixa_p_nome: "" };
+                                  else if (size === "m") updated[idx] = { ...updated[idx], caixa_m_id: "", caixa_m_nome: "" };
+                                  else updated[idx] = { ...updated[idx], caixa_g_id: "", caixa_g_nome: "" };
+                                  setForm({ ...form, ingredientes: updated });
+                                }}>
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <div className="relative">
+                                <div className="relative">
+                                  <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
+                                  <Input
+                                    placeholder="Buscar caixa..."
+                                    className="pl-7 h-8 text-sm"
+                                    value={buscaEmbalagemAberta === key ? buscaEmbalagemTermo : ""}
+                                    onFocus={() => { setBuscaEmbalagemAberta(key); setBuscaEmbalagemTermo(""); }}
+                                    onChange={(e) => setBuscaEmbalagemTermo(e.target.value)}
+                                  />
+                                </div>
+                                {buscaEmbalagemAberta === key && (
+                                  <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-popover border border-border rounded-md shadow-md max-h-40 overflow-y-auto">
+                                    {getFilteredEmbalagemInsumos().length === 0 ? (
+                                      <p className="p-2 text-xs text-muted-foreground">Nenhum insumo encontrado.</p>
+                                    ) : (
+                                      getFilteredEmbalagemInsumos().map((item) => (
+                                        <button key={item.id} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors"
+                                          onClick={() => selectEmbalagemInsumo(idx, size, item.id, item.nome)}>
+                                          <span className="font-medium">{item.nome}</span>
+                                          <span className="text-xs text-muted-foreground ml-2">R$ {fmt(custoCompradoMap.get(item.id) ?? 0)}/un</span>
+                                        </button>
+                                      ))
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          <div className="min-w-[70px] text-center">
+                            <p className="text-[10px] text-muted-foreground leading-none mb-0.5">Custo {label}</p>
+                            <p className="text-xs font-medium text-foreground">R$ {fmt(custo)}</p>
+                          </div>
+                        </div>
+                      );
+                    };
+
+                    return (
+                      <div key={idx} className="rounded-md border border-border p-3 space-y-2 bg-muted/20">
+                        <div className="flex items-center justify-between">
+                          <Label className="text-sm font-semibold">📦 Embalagem por tamanho</Label>
+                          <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => removeIngrediente(idx)}>
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
+                        <div className="space-y-2">
+                          {renderCaixaField("p", "P (25cm)", ing.caixa_p_id, ing.caixa_p_nome, custoP)}
+                          {renderCaixaField("m", "M (30cm)", ing.caixa_m_id, ing.caixa_m_nome, custoM)}
+                          {renderCaixaField("g", "G (35cm)", ing.caixa_g_id, ing.caixa_g_nome, custoG)}
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  // Normal ingredient rendering
                   const insumoId = ing.tipo_insumo === "comprado" ? ing.insumo_comprado_id : ing.insumo_proprio_id;
                   const custoUnit = ing.tipo_insumo === "comprado"
                     ? (custoCompradoMap.get(insumoId) ?? 0)
@@ -519,7 +674,6 @@ export default function FichasTecnicasPizza() {
                   return (
                     <div key={idx} className="rounded-md border border-border p-3 space-y-2">
                       <div className="flex items-end gap-2">
-                        {/* Tipo insumo */}
                         <div className="w-36">
                           <Label className="text-xs">Tipo</Label>
                           <Select value={ing.tipo_insumo} onValueChange={(v) => updateIngrediente(idx, "tipo_insumo", v)}>
@@ -531,7 +685,6 @@ export default function FichasTecnicasPizza() {
                           </Select>
                         </div>
 
-                        {/* Busca insumo */}
                         <div className="flex-1 relative">
                           <Label className="text-xs">
                             {ing.tipo_insumo === "comprado" ? "Insumo Comprado" : "Insumo Produzido"}
@@ -561,12 +714,8 @@ export default function FichasTecnicasPizza() {
                                     <p className="p-2 text-xs text-muted-foreground">Nenhum insumo encontrado.</p>
                                   ) : (
                                     getFilteredInsumos(ing.tipo_insumo).map((item) => (
-                                      <button
-                                        key={item.id}
-                                        type="button"
-                                        className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors"
-                                        onClick={() => selectInsumo(idx, item.id, item.nome, ing.tipo_insumo)}
-                                      >
+                                      <button key={item.id} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors"
+                                        onClick={() => selectInsumo(idx, item.id, item.nome, ing.tipo_insumo)}>
                                         <span className="font-medium">{item.nome}</span>
                                       </button>
                                     ))
@@ -577,7 +726,6 @@ export default function FichasTecnicasPizza() {
                           )}
                         </div>
 
-                        {/* Unidade */}
                         <div className="w-24">
                           <Label className="text-xs">Unidade</Label>
                           <Select value={ing.unidade} onValueChange={(v) => updateIngrediente(idx, "unidade", v)}>
@@ -588,13 +736,11 @@ export default function FichasTecnicasPizza() {
                           </Select>
                         </div>
 
-                        {/* Remover */}
                         <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => removeIngrediente(idx)}>
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       </div>
 
-                      {/* Quantidades e Custos P/M/G em linha */}
                       <div className="flex items-end gap-2 bg-muted/40 rounded px-2 py-1.5">
                         {[
                           { label: "P", qtdKey: "qtd_p" as const, qtdVal: ing.qtd_p },
@@ -623,14 +769,26 @@ export default function FichasTecnicasPizza() {
                   );
                 })}
 
-                <Button
-                  type="button"
-                  size="sm"
-                  className="gap-1 w-full bg-[hsl(4,70%,46%)] hover:bg-[hsl(4,70%,40%)] text-primary-foreground"
-                  onClick={addIngrediente}
-                >
-                  <Plus className="h-3 w-3" /> Adicionar Ingrediente
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="gap-1 flex-1 bg-[hsl(4,70%,46%)] hover:bg-[hsl(4,70%,40%)] text-primary-foreground"
+                    onClick={addIngrediente}
+                  >
+                    <Plus className="h-3 w-3" /> Adicionar Ingrediente
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="gap-1"
+                    onClick={addEmbalagem}
+                    disabled={form.ingredientes.some((i) => i.tipo_insumo === "embalagem")}
+                  >
+                    <Plus className="h-3 w-3" /> 📦 Embalagem por Tamanho
+                  </Button>
+                </div>
 
                 {form.ingredientes.length > 0 && (
                   <div className="grid grid-cols-3 gap-3 text-right text-sm text-muted-foreground border-t border-border pt-2">
