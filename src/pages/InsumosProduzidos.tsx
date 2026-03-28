@@ -308,7 +308,8 @@ export default function InsumosProduzidos() {
   // Calcula custo do formulário atual
   const custoFormulario = form.ingredientes.reduce((acc, ing) => {
     const custoUnit = custoUnitarioMap.get(ing.insumo_comprado_id) ?? 0;
-    return acc + custoUnit * ing.quantidade;
+    const qtdConvertida = converterQuantidade(ing.quantidade, ing.unidade);
+    return acc + custoUnit * qtdConvertida;
   }, 0);
 
   const custoPorUnidade = form.rendimento > 0 ? custoFormulario / form.rendimento : 0;
