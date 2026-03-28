@@ -16,6 +16,7 @@ import {
 import { toast } from "sonner";
 import { Pencil, Trash2, Plus, Search, X } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
+import { QuantityInput, formatMoney } from "@/components/MoneyInput";
 
 const UNIDADES_RENDIMENTO = ["kg", "g", "L", "ml", "unidade"];
 const UNIDADES_INGREDIENTE = ["kg", "g", "L", "ml", "unidade", "caixa", "pacote"];
