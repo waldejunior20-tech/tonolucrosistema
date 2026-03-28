@@ -433,11 +433,7 @@ export default function PrecificacaoPizzas() {
             <p className="text-3xl">
               {cmvEmoji(indicators.avgCmv)}{" "}
               <span className={`text-lg font-semibold ${cmvColor(indicators.avgCmv)}`}>
-                {indicators.avgCmv >= 25 && indicators.avgCmv <= 35
-                  ? "Ideal"
-                  : indicators.avgCmv > 35 && indicators.avgCmv <= 40
-                  ? "Atenção"
-                  : "Rever preços"}
+                {cmvMessage(indicators.avgCmv)}
               </span>
             </p>
           </CardContent>
