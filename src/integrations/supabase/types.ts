@@ -160,7 +160,10 @@ export type Database = {
           id: string
           modo_preparo: string | null
           nome: string
+          numero_ficha: string | null
+          preco_venda: number | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           categoria: string
@@ -168,7 +171,10 @@ export type Database = {
           id?: string
           modo_preparo?: string | null
           nome: string
+          numero_ficha?: string | null
+          preco_venda?: number | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           categoria?: string
@@ -176,7 +182,10 @@ export type Database = {
           id?: string
           modo_preparo?: string | null
           nome?: string
+          numero_ficha?: string | null
+          preco_venda?: number | null
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -191,6 +200,7 @@ export type Database = {
           tipo_insumo: string
           unidade: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -202,6 +212,7 @@ export type Database = {
           tipo_insumo: string
           unidade: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -213,6 +224,7 @@ export type Database = {
           tipo_insumo?: string
           unidade?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
