@@ -107,6 +107,7 @@ export default function PrecificacaoPizzas() {
   const [configOpen, setConfigOpen] = useState(false);
   const [localPrices, setLocalPrices] = useState<Record<string, { p: string; m: string; g: string }>>({});
   const [configForm, setConfigForm] = useState<ConfigPrecificacao | null>(null);
+  const [savedFields, setSavedFields] = useState<Record<string, boolean>>({});
 
   // ─── Queries ─────────────────────────────────────────────────────
   const { data: config } = useQuery({
