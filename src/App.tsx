@@ -10,6 +10,7 @@ import SectionPage from "@/pages/SectionPage";
 import InsumosComprados from "@/pages/InsumosComprados";
 import InsumosProduzidos from "@/pages/InsumosProduzidos";
 import FichasTecnicasPizza from "@/pages/FichasTecnicasPizza";
+import FichasTecnicasProdutos from "@/pages/FichasTecnicasProdutos";
 import PrecificacaoPizzas from "@/pages/PrecificacaoPizzas";
 import PrecificacaoBebidas from "@/pages/PrecificacaoBebidas";
 import FinanceiroDRE from "@/pages/FinanceiroDRE";
