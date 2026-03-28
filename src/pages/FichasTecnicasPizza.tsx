@@ -28,6 +28,7 @@ type InsumoComprado = Tables<"insumos_comprados">;
 type InsumoProprio = Tables<"insumos_proprios">;
 
 interface IngredienteForm {
+  db_id?: string; // DB row ID for auto-save
   tipo_insumo: string;
   insumo_comprado_id: string;
   insumo_proprio_id: string;
@@ -36,7 +37,6 @@ interface IngredienteForm {
   qtd_m: number;
   qtd_g: number;
   unidade: string;
-  // Embalagem por tamanho
   caixa_p_id: string;
   caixa_p_nome: string;
   caixa_m_id: string;
