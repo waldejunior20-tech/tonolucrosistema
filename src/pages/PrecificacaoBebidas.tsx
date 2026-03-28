@@ -281,13 +281,12 @@ export default function PrecificacaoBebidas() {
     [localPricesPrep]
   );
 
-  // ─── Indicators ──────────────────────────────────────────────────
-  const indicators = useMemo(() => {
+  // ─── Indicators (separados por tipo) ──────────────────────────────
+  const indIndicators = useMemo(() => {
     let totalCmv = 0;
     let count = 0;
     let foraMetaCount = 0;
 
-    // Industrialized
     bebidasIndustrializadas.forEach((b) => {
       const custo = Number(b.preco_pago) / Number(b.quantidade);
       const preco = getPrecoInd(b.id);
@@ -295,11 +294,19 @@ export default function PrecificacaoBebidas() {
         const cmv = calcCmv(custo, preco);
         totalCmv += cmv;
         count++;
-        if (cmv > 40) foraMetaCount++;
+        if (cmv > 92) foraMetaCount++;
       }
     });
 
-    // Prepared
+    const avgCmv = count > 0 ? totalCmv / count : 0;
+    return { avgCmv, foraMetaCount };
+  }, [bebidasIndustrializadas, getPrecoInd]);
+
+  const prepIndicators = useMemo(() => {
+    let totalCmv = 0;
+    let count = 0;
+    let foraMetaCount = 0;
+
     fichasBebidas.forEach((f) => {
       const custo = custoPrepMap.get(f.id) ?? 0;
       const preco = getPrecoPrep(f.id, f);
