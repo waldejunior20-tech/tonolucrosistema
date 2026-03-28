@@ -14,6 +14,7 @@ import FichasTecnicasProdutos from "@/pages/FichasTecnicasProdutos";
 import PrecificacaoPizzas from "@/pages/PrecificacaoPizzas";
 import PrecificacaoBebidas from "@/pages/PrecificacaoBebidas";
 import PrecificacaoProdutos from "@/pages/PrecificacaoProdutos";
+import PrecificacaoConfiguracoes from "@/pages/PrecificacaoConfiguracoes";
 import FinanceiroDRE from "@/pages/FinanceiroDRE";
 import FinanceiroContasPagar from "@/pages/FinanceiroContasPagar";
 import FinanceiroPontoEquilibrio from "@/pages/FinanceiroPontoEquilibrio";
@@ -60,6 +61,7 @@ function AppRoutes() {
         <Route path="/precificacao/pizzas" element={<PrecificacaoPizzas />} />
         <Route path="/precificacao/produtos" element={<PrecificacaoProdutos />} />
         <Route path="/precificacao/bebidas" element={<PrecificacaoBebidas />} />
+        <Route path="/precificacao/configuracoes" element={<PrecificacaoConfiguracoes />} />
         {/* Financeiro */}
         <Route path="/financeiro/dre" element={<FinanceiroDRE />} />
         <Route path="/financeiro/contas-a-pagar" element={<FinanceiroContasPagar />} />
