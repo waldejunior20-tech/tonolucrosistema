@@ -60,7 +60,7 @@ function AppRoutes() {
         <Route path="/fichas/bebidas" element={<FichasTecnicasProdutos categoria="bebida" />} />
         {/* Precificação */}
         <Route path="/precificacao/pizzas" element={<PrecificacaoPizzas />} />
-        <Route path="/precificacao/produtos" element={<SectionPage />} />
+        <Route path="/precificacao/produtos" element={<PrecificacaoProdutos />} />
         <Route path="/precificacao/bebidas" element={<PrecificacaoBebidas />} />
         {/* Financeiro */}
         <Route path="/financeiro/dre" element={<FinanceiroDRE />} />
