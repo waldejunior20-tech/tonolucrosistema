@@ -8,6 +8,7 @@ import Dashboard from "@/pages/Dashboard";
 import SectionPage from "@/pages/SectionPage";
 import InsumosComprados from "@/pages/InsumosComprados";
 import InsumosProduzidos from "@/pages/InsumosProduzidos";
+import FichasTecnicasPizza from "@/pages/FichasTecnicasPizza";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
