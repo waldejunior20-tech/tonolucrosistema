@@ -379,6 +379,69 @@ export type Database = {
           },
         ]
       }
+      lancamentos_financeiros: {
+        Row: {
+          categoria: string
+          created_at: string
+          data_lancamento: string
+          descricao: string
+          id: string
+          pago: boolean
+          tipo: string
+          updated_at: string
+          valor: number
+        }
+        Insert: {
+          categoria: string
+          created_at?: string
+          data_lancamento?: string
+          descricao: string
+          id?: string
+          pago?: boolean
+          tipo: string
+          updated_at?: string
+          valor?: number
+        }
+        Update: {
+          categoria?: string
+          created_at?: string
+          data_lancamento?: string
+          descricao?: string
+          id?: string
+          pago?: boolean
+          tipo?: string
+          updated_at?: string
+          valor?: number
+        }
+        Relationships: []
+      }
+      metas_financeiras: {
+        Row: {
+          ano: number
+          created_at: string
+          id: string
+          mes: number
+          meta_cmv_pct: number
+          meta_faturamento: number
+        }
+        Insert: {
+          ano: number
+          created_at?: string
+          id?: string
+          mes: number
+          meta_cmv_pct?: number
+          meta_faturamento?: number
+        }
+        Update: {
+          ano?: number
+          created_at?: string
+          id?: string
+          mes?: number
+          meta_cmv_pct?: number
+          meta_faturamento?: number
+        }
+        Relationships: []
+      }
       precificacao_bebidas: {
         Row: {
           created_at: string
