@@ -14,7 +14,202 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      fichas_tecnicas_pizza: {
+        Row: {
+          created_at: string | null
+          id: string
+          modo_preparo: string | null
+          nome: string
+          numero_ficha: string | null
+          tipo: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          modo_preparo?: string | null
+          nome: string
+          numero_ficha?: string | null
+          tipo?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          modo_preparo?: string | null
+          nome?: string
+          numero_ficha?: string | null
+          tipo?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      fichas_tecnicas_pizza_ingredientes: {
+        Row: {
+          ficha_id: string | null
+          id: string
+          insumo_comprado_id: string | null
+          insumo_proprio_id: string | null
+          qtd_g: number | null
+          qtd_m: number | null
+          qtd_p: number | null
+          tipo_insumo: string
+          unidade: string
+        }
+        Insert: {
+          ficha_id?: string | null
+          id?: string
+          insumo_comprado_id?: string | null
+          insumo_proprio_id?: string | null
+          qtd_g?: number | null
+          qtd_m?: number | null
+          qtd_p?: number | null
+          tipo_insumo: string
+          unidade: string
+        }
+        Update: {
+          ficha_id?: string | null
+          id?: string
+          insumo_comprado_id?: string | null
+          insumo_proprio_id?: string | null
+          qtd_g?: number | null
+          qtd_m?: number | null
+          qtd_p?: number | null
+          tipo_insumo?: string
+          unidade?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fichas_tecnicas_pizza_ingredientes_ficha_id_fkey"
+            columns: ["ficha_id"]
+            isOneToOne: false
+            referencedRelation: "fichas_tecnicas_pizza"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fichas_tecnicas_pizza_ingredientes_insumo_comprado_id_fkey"
+            columns: ["insumo_comprado_id"]
+            isOneToOne: false
+            referencedRelation: "insumos_comprados"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fichas_tecnicas_pizza_ingredientes_insumo_proprio_id_fkey"
+            columns: ["insumo_proprio_id"]
+            isOneToOne: false
+            referencedRelation: "insumos_proprios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      insumos_comprados: {
+        Row: {
+          categoria: string
+          codigo: string | null
+          created_at: string | null
+          data_compra: string | null
+          fornecedor: string | null
+          id: string
+          nome: string
+          preco_pago: number
+          quantidade: number
+          unidade: string
+          updated_at: string | null
+        }
+        Insert: {
+          categoria: string
+          codigo?: string | null
+          created_at?: string | null
+          data_compra?: string | null
+          fornecedor?: string | null
+          id?: string
+          nome: string
+          preco_pago: number
+          quantidade: number
+          unidade: string
+          updated_at?: string | null
+        }
+        Update: {
+          categoria?: string
+          codigo?: string | null
+          created_at?: string | null
+          data_compra?: string | null
+          fornecedor?: string | null
+          id?: string
+          nome?: string
+          preco_pago?: number
+          quantidade?: number
+          unidade?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      insumos_proprios: {
+        Row: {
+          created_at: string | null
+          id: string
+          nome: string
+          rendimento: number
+          unidade_rendimento: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          nome: string
+          rendimento: number
+          unidade_rendimento: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          nome?: string
+          rendimento?: number
+          unidade_rendimento?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      insumos_proprios_ingredientes: {
+        Row: {
+          id: string
+          insumo_comprado_id: string | null
+          insumo_proprio_id: string | null
+          quantidade: number
+          unidade: string
+        }
+        Insert: {
+          id?: string
+          insumo_comprado_id?: string | null
+          insumo_proprio_id?: string | null
+          quantidade: number
+          unidade: string
+        }
+        Update: {
+          id?: string
+          insumo_comprado_id?: string | null
+          insumo_proprio_id?: string | null
+          quantidade?: number
+          unidade?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insumos_proprios_ingredientes_insumo_comprado_id_fkey"
+            columns: ["insumo_comprado_id"]
+            isOneToOne: false
+            referencedRelation: "insumos_comprados"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "insumos_proprios_ingredientes_insumo_proprio_id_fkey"
+            columns: ["insumo_proprio_id"]
+            isOneToOne: false
+            referencedRelation: "insumos_proprios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
