@@ -192,9 +192,17 @@ export default function FichasTecnicasPizza() {
     const ings = todosIngredientes.filter((i) => i.ficha_id === fichaId);
     let custoP = 0, custoM = 0, custoG = 0;
     ings.forEach((ing) => {
-      custoP += calcularCustoIngrediente(ing, Number(ing.qtd_p ?? 0));
-      custoM += calcularCustoIngrediente(ing, Number(ing.qtd_m ?? 0));
-      custoG += calcularCustoIngrediente(ing, Number(ing.qtd_g ?? 0));
+      if (ing.tipo_insumo === "embalagem_p") {
+        custoP += (custoCompradoMap.get(ing.insumo_comprado_id ?? "") ?? 0) * Number(ing.qtd_p ?? 0);
+      } else if (ing.tipo_insumo === "embalagem_m") {
+        custoM += (custoCompradoMap.get(ing.insumo_comprado_id ?? "") ?? 0) * Number(ing.qtd_m ?? 0);
+      } else if (ing.tipo_insumo === "embalagem_g") {
+        custoG += (custoCompradoMap.get(ing.insumo_comprado_id ?? "") ?? 0) * Number(ing.qtd_g ?? 0);
+      } else {
+        custoP += calcularCustoIngrediente(ing, Number(ing.qtd_p ?? 0));
+        custoM += calcularCustoIngrediente(ing, Number(ing.qtd_m ?? 0));
+        custoG += calcularCustoIngrediente(ing, Number(ing.qtd_g ?? 0));
+      }
     });
     return { custoP, custoM, custoG };
   };
@@ -203,16 +211,42 @@ export default function FichasTecnicasPizza() {
   const calcularCustosForm = () => {
     let custoP = 0, custoM = 0, custoG = 0;
     form.ingredientes.forEach((ing) => {
-      const id = ing.tipo_insumo === "comprado" ? ing.insumo_comprado_id : ing.insumo_proprio_id;
-      if (!id) return;
-      const custoUnit = ing.tipo_insumo === "comprado"
-        ? (custoCompradoMap.get(id) ?? 0)
-        : (custoProprioMap.get(id) ?? 0);
-      custoP += custoUnit * converterQuantidade(ing.qtd_p, ing.unidade);
-      custoM += custoUnit * converterQuantidade(ing.qtd_m, ing.unidade);
-      custoG += custoUnit * converterQuantidade(ing.qtd_g, ing.unidade);
+      if (ing.tipo_insumo === "embalagem") {
+        custoP += (custoCompradoMap.get(ing.caixa_p_id) ?? 0) * 1;
+        custoM += (custoCompradoMap.get(ing.caixa_m_id) ?? 0) * 1;
+        custoG += (custoCompradoMap.get(ing.caixa_g_id) ?? 0) * 1;
+      } else {
+        const id = ing.tipo_insumo === "comprado" ? ing.insumo_comprado_id : ing.insumo_proprio_id;
+        if (!id) return;
+        const custoUnit = ing.tipo_insumo === "comprado"
+          ? (custoCompradoMap.get(id) ?? 0)
+          : (custoProprioMap.get(id) ?? 0);
+        custoP += custoUnit * converterQuantidade(ing.qtd_p, ing.unidade);
+        custoM += custoUnit * converterQuantidade(ing.qtd_m, ing.unidade);
+        custoG += custoUnit * converterQuantidade(ing.qtd_g, ing.unidade);
+      }
     });
     return { custoP, custoM, custoG };
+  };
+
+  // Expande ingredientes do form para rows do DB
+  const expandIngredientesParaDB = (ingredientes: IngredienteForm[], fichaId: string) => {
+    const rows: Array<{ficha_id: string; tipo_insumo: string; insumo_comprado_id: string | null; insumo_proprio_id: string | null; qtd_p: number; qtd_m: number; qtd_g: number; unidade: string}> = [];
+    ingredientes.forEach((ing) => {
+      if (ing.tipo_insumo === "embalagem") {
+        if (ing.caixa_p_id) rows.push({ ficha_id: fichaId, tipo_insumo: "embalagem_p", insumo_comprado_id: ing.caixa_p_id, insumo_proprio_id: null, qtd_p: 1, qtd_m: 0, qtd_g: 0, unidade: "unidade" });
+        if (ing.caixa_m_id) rows.push({ ficha_id: fichaId, tipo_insumo: "embalagem_m", insumo_comprado_id: ing.caixa_m_id, insumo_proprio_id: null, qtd_p: 0, qtd_m: 1, qtd_g: 0, unidade: "unidade" });
+        if (ing.caixa_g_id) rows.push({ ficha_id: fichaId, tipo_insumo: "embalagem_g", insumo_comprado_id: ing.caixa_g_id, insumo_proprio_id: null, qtd_p: 0, qtd_m: 0, qtd_g: 1, unidade: "unidade" });
+      } else {
+        rows.push({
+          ficha_id: fichaId, tipo_insumo: ing.tipo_insumo,
+          insumo_comprado_id: ing.insumo_comprado_id || null,
+          insumo_proprio_id: ing.insumo_proprio_id || null,
+          qtd_p: ing.qtd_p, qtd_m: ing.qtd_m, qtd_g: ing.qtd_g, unidade: ing.unidade,
+        });
+      }
+    });
+    return rows;
   };
 
   const invalidateAll = () => {
