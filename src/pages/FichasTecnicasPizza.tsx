@@ -643,6 +643,15 @@ export default function FichasTecnicasPizza() {
                   );
                 })}
 
+                <Button
+                  type="button"
+                  size="sm"
+                  className="gap-1 w-full bg-[hsl(4,70%,46%)] hover:bg-[hsl(4,70%,40%)] text-primary-foreground"
+                  onClick={addIngrediente}
+                >
+                  <Plus className="h-3 w-3" /> Adicionar Ingrediente
+                </Button>
+
                 {form.ingredientes.length > 0 && (
                   <div className="grid grid-cols-3 gap-3 text-right text-sm text-muted-foreground border-t border-border pt-2">
                     <p>Total P: R$ {fmt(custoForm.custoP)}</p>
