@@ -458,6 +458,22 @@ export default function FichasTecnicasPizza() {
     setForm({ ...form, ingredientes: updated });
   };
 
+  const addEmbalagem = () => {
+    const hasEmbalagem = form.ingredientes.some((i) => i.tipo_insumo === "embalagem");
+    if (hasEmbalagem) { toast.error("Já existe uma embalagem nesta ficha."); return; }
+    setForm({ ...form, ingredientes: [...form.ingredientes, { ...emptyIngrediente, tipo_insumo: "embalagem" }] });
+  };
+
+  const selectEmbalagemInsumo = (index: number, size: "p" | "m" | "g", id: string, nome: string) => {
+    const updated = [...form.ingredientes];
+    if (size === "p") updated[index] = { ...updated[index], caixa_p_id: id, caixa_p_nome: nome };
+    else if (size === "m") updated[index] = { ...updated[index], caixa_m_id: id, caixa_m_nome: nome };
+    else updated[index] = { ...updated[index], caixa_g_id: id, caixa_g_nome: nome };
+    setForm({ ...form, ingredientes: updated });
+    setBuscaEmbalagemAberta(null);
+    setBuscaEmbalagemTermo("");
+  };
+
   const filteredFichas = filtroTipo === "todos" ? fichas : fichas.filter((f) => f.tipo === filtroTipo);
 
   const getFilteredInsumos = (tipo: string) => {
@@ -466,6 +482,11 @@ export default function FichasTecnicasPizza() {
       return insumosComprados.filter((ic) => ic.nome.toLowerCase().includes(term)).slice(0, 10);
     }
     return insumosProprios.filter((ip) => ip.nome.toLowerCase().includes(term)).slice(0, 10);
+  };
+
+  const getFilteredEmbalagemInsumos = () => {
+    const term = buscaEmbalagemTermo.toLowerCase();
+    return insumosComprados.filter((ic) => ic.nome.toLowerCase().includes(term)).slice(0, 10);
   };
 
   const custoForm = calcularCustosForm();
