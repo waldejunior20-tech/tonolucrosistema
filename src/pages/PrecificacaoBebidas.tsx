@@ -470,7 +470,6 @@ export default function PrecificacaoBebidas() {
                       const preco = getPrecoInd(bebida.id);
                       const cmv = calcCmv(custoUnit, preco);
                       const sugerido = custoUnit / 0.80;
-                      const hasLocal = localPricesInd[bebida.id] !== undefined;
                       const hasAlert = cmv > 92 && preco > 0;
 
                       return (
