@@ -515,7 +515,7 @@ export default function PrecificacaoBebidas() {
                     })}
                     {bebidasIndustrializadas.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={10} className="text-center py-8 text-muted-foreground">
+                        <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                           Nenhuma bebida industrializada cadastrada. Cadastre em Insumos Comprados com categoria "Bebidas".
                         </TableCell>
                       </TableRow>
