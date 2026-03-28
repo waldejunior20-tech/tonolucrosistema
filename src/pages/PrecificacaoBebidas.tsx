@@ -481,7 +481,7 @@ export default function PrecificacaoBebidas() {
                             </div>
                           </TableCell>
                           <TableCell className="text-center">
-                            <span className={`text-xs font-semibold px-1.5 py-0.5 rounded ${cmvBg(cmv)}`}>
+                            <span className={`text-xs font-semibold px-1.5 py-0.5 rounded ${indCmvBg(cmv)}`}>
                               {preco > 0 ? fmtPct(cmv) : "—"}
                             </span>
                           </TableCell>
