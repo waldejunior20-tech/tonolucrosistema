@@ -22,7 +22,7 @@ export function IconSidebar({ activeModule, onModuleChange }: IconSidebarProps) 
     <div className="w-16 min-h-screen bg-sidebar flex flex-col items-center py-6 gap-1 border-r border-sidebar-border">
       {/* Logo */}
       <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg mb-6 font-serif">
-        D
+        oi
       </div>
 
       {modules.map((mod) => {
