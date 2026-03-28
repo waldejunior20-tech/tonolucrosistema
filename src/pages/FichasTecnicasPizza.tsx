@@ -15,7 +15,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Pencil, Trash2, Plus, Filter, Search, X } from "lucide-react";
+import { Pencil, Trash2, Plus, Filter, Search, X, Check } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 
 const TIPOS = ["tradicional", "especial", "premium", "doce"];
