@@ -361,7 +361,11 @@ export default function FichasTecnicasPizza() {
       .select("*")
       .eq("ficha_id", ficha.id);
 
-    const ingredientesForm: IngredienteForm[] = (ings ?? []).map((ing) => ({
+    const allIngs = ings ?? [];
+    const embalagemRows = allIngs.filter((i) => i.tipo_insumo.startsWith("embalagem_"));
+    const normalRows = allIngs.filter((i) => !i.tipo_insumo.startsWith("embalagem_"));
+
+    const ingredientesForm: IngredienteForm[] = normalRows.map((ing) => ({
       tipo_insumo: ing.tipo_insumo,
       insumo_comprado_id: ing.insumo_comprado_id ?? "",
       insumo_proprio_id: ing.insumo_proprio_id ?? "",
@@ -373,7 +377,25 @@ export default function FichasTecnicasPizza() {
       qtd_m: Number(ing.qtd_m ?? 0),
       qtd_g: Number(ing.qtd_g ?? 0),
       unidade: ing.unidade,
+      caixa_p_id: "", caixa_p_nome: "", caixa_m_id: "", caixa_m_nome: "", caixa_g_id: "", caixa_g_nome: "",
     }));
+
+    // Merge embalagem rows into single form entry
+    if (embalagemRows.length > 0) {
+      const embP = embalagemRows.find((r) => r.tipo_insumo === "embalagem_p");
+      const embM = embalagemRows.find((r) => r.tipo_insumo === "embalagem_m");
+      const embG = embalagemRows.find((r) => r.tipo_insumo === "embalagem_g");
+      ingredientesForm.push({
+        ...emptyIngrediente,
+        tipo_insumo: "embalagem",
+        caixa_p_id: embP?.insumo_comprado_id ?? "",
+        caixa_p_nome: nomeCompradoMap.get(embP?.insumo_comprado_id ?? "") ?? "",
+        caixa_m_id: embM?.insumo_comprado_id ?? "",
+        caixa_m_nome: nomeCompradoMap.get(embM?.insumo_comprado_id ?? "") ?? "",
+        caixa_g_id: embG?.insumo_comprado_id ?? "",
+        caixa_g_nome: nomeCompradoMap.get(embG?.insumo_comprado_id ?? "") ?? "",
+      });
+    }
 
     setForm({
       nome: ficha.nome,
