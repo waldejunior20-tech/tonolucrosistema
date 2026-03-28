@@ -452,9 +452,9 @@ export default function PrecificacaoBebidas() {
                       const custoUnit = Number(bebida.preco_pago) / Number(bebida.quantidade);
                       const preco = getPrecoInd(bebida.id);
                       const cmv = calcCmv(custoUnit, preco);
-                      const sugerido = cmvMeta > 0 ? custoUnit / (cmvMeta / 100) : 0;
+                      const sugerido = custoUnit / 0.80;
                       const hasLocal = localPricesInd[bebida.id] !== undefined;
-                      const hasAlert = cmv > 40 && preco > 0;
+                      const hasAlert = cmv > 92 && preco > 0;
 
                       return (
                         <TableRow key={bebida.id} className={hasAlert ? "bg-red-50/50" : ""}>
