@@ -520,7 +520,6 @@ export default function PrecificacaoPizzas() {
                   const lucro = (preco: number, custo: number, taxaPct: number) =>
                     preco - custo - preco * (taxaPct / 100);
 
-                  const hasLocalChanges = !!localPrices[ficha.id];
                   const hasAlert = cmvP > 40 || cmvM > 40 || cmvG > 40;
 
                   return (
