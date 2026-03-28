@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { toast } from "sonner";
-import { Settings2, Save, AlertTriangle } from "lucide-react";
+import { Settings2, Save, AlertTriangle, Check } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────
 interface ConfigPrecificacao {
@@ -107,6 +107,7 @@ export default function PrecificacaoPizzas() {
   const [configOpen, setConfigOpen] = useState(false);
   const [localPrices, setLocalPrices] = useState<Record<string, { p: string; m: string; g: string }>>({});
   const [configForm, setConfigForm] = useState<ConfigPrecificacao | null>(null);
+  const [savedFields, setSavedFields] = useState<Record<string, boolean>>({});
 
   // ─── Queries ─────────────────────────────────────────────────────
   const { data: config } = useQuery({
@@ -293,35 +294,27 @@ export default function PrecificacaoPizzas() {
     onError: () => toast.error("Erro ao salvar configurações."),
   });
 
-  // ─── Save prices ────────────────────────────────────────────────
-  const priceMutation = useMutation({
-    mutationFn: async ({
-      id,
-      p,
-      m,
-      g,
-    }: {
-      id: string;
-      p: number;
-      m: number;
-      g: number;
-    }) => {
+  // ─── Auto-save single price on blur ──────────────────────────────
+  const autoSavePrice = useCallback(
+    async (fichaId: string, size: "p" | "m" | "g", value: string) => {
+      const numVal = parseFloat(value) || 0;
+      const colMap = { p: "preco_venda_p", m: "preco_venda_m", g: "preco_venda_g" } as const;
       const { error } = await supabase
         .from("fichas_tecnicas_pizza")
-        .update({
-          preco_venda_p: p || null,
-          preco_venda_m: m || null,
-          preco_venda_g: g || null,
-        })
-        .eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
+        .update({ [colMap[size]]: numVal || null })
+        .eq("id", fichaId);
+      if (error) {
+        toast.error("Erro ao salvar preço.");
+        return;
+      }
       queryClient.invalidateQueries({ queryKey: ["fichas_tecnicas_pizza"] });
-      toast.success("Preço salvo!");
+      // Show check for 2 seconds
+      const key = `${fichaId}-${size}`;
+      setSavedFields((prev) => ({ ...prev, [key]: true }));
+      setTimeout(() => setSavedFields((prev) => ({ ...prev, [key]: false })), 2000);
     },
-    onError: () => toast.error("Erro ao salvar preço."),
-  });
+    [queryClient]
+  );
 
   const handlePriceChange = (fichaId: string, size: "p" | "m" | "g", value: string) => {
     setLocalPrices((prev) => ({
@@ -330,14 +323,18 @@ export default function PrecificacaoPizzas() {
     }));
   };
 
-  const savePrice = (ficha: FichaPizza) => {
-    const p = getPreco(ficha.id, "p", ficha);
-    const m = getPreco(ficha.id, "m", ficha);
-    const g = getPreco(ficha.id, "g", ficha);
-    priceMutation.mutate({ id: ficha.id, p, m, g });
+  const handlePriceBlur = (fichaId: string, size: "p" | "m" | "g", ficha: FichaPizza) => {
+    const local = localPrices[fichaId]?.[size];
+    if (local === undefined) return; // no change
+    const original = String(ficha[`preco_venda_${size}` as keyof FichaPizza] ?? "");
+    if (local === original) return; // no change
+    autoSavePrice(fichaId, size, local);
     setLocalPrices((prev) => {
       const copy = { ...prev };
-      delete copy[ficha.id];
+      if (copy[fichaId]) {
+        delete copy[fichaId][size];
+        if (!copy[fichaId].p && !copy[fichaId].m && !copy[fichaId].g) delete copy[fichaId];
+      }
       return copy;
     });
   };
@@ -468,7 +465,7 @@ export default function PrecificacaoPizzas() {
                   <TableHead colSpan={3} className="text-center border-l">Lucro Débito</TableHead>
                   <TableHead colSpan={3} className="text-center border-l">Lucro Crédito</TableHead>
                   <TableHead colSpan={3} className="text-center border-l">Lucro iFood</TableHead>
-                  <TableHead rowSpan={2} className="align-bottom border-l"></TableHead>
+                  
                 </TableRow>
                 <TableRow>
                   {/* Custo */}
@@ -523,7 +520,6 @@ export default function PrecificacaoPizzas() {
                   const lucro = (preco: number, custo: number, taxaPct: number) =>
                     preco - custo - preco * (taxaPct / 100);
 
-                  const hasLocalChanges = !!localPrices[ficha.id];
                   const hasAlert = cmvP > 40 || cmvM > 40 || cmvG > 40;
 
                   return (
@@ -543,26 +539,33 @@ export default function PrecificacaoPizzas() {
                       <TableCell className="text-center text-xs">{fmt(custos.m)}</TableCell>
                       <TableCell className="text-center text-xs">{fmt(custos.g)}</TableCell>
 
-                      {/* Preço Praticado (editable) */}
-                      {(["p", "m", "g"] as const).map((s, i) => (
-                        <TableCell key={s} className={`${i === 0 ? "border-l" : ""}`}>
-                          <div className="relative flex items-center">
-                            <span className="absolute left-2 text-xs font-semibold text-[#C0392B] pointer-events-none">R$</span>
-                            <Input
-                              type="number"
-                              step="0.01"
-                              className="h-8 w-28 text-xs text-center pl-8 border-b-2 border-b-[#C0392B] border-t-0 border-l-0 border-r-0 rounded-none bg-[#FEF2F2] focus-visible:ring-[#C0392B]/30"
-                              value={
-                                localPrices[ficha.id]?.[s] !== undefined
-                                  ? localPrices[ficha.id][s]
-                                  : (ficha[`preco_venda_${s}` as keyof FichaPizza] ?? "")
-                              }
-                              onChange={(e) => handlePriceChange(ficha.id, s, e.target.value)}
-                              placeholder="0,00"
-                            />
-                          </div>
-                        </TableCell>
-                      ))}
+                      {/* Preço Praticado (auto-save on blur) */}
+                      {(["p", "m", "g"] as const).map((s, i) => {
+                        const fieldKey = `${ficha.id}-${s}`;
+                        return (
+                          <TableCell key={s} className={`${i === 0 ? "border-l" : ""}`}>
+                            <div className="relative flex items-center">
+                              <span className="absolute left-2 text-xs font-semibold text-[#C0392B] pointer-events-none z-10">R$</span>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                className="h-8 w-28 text-xs text-center pl-8 pr-6 border-b-2 border-b-[#C0392B] border-t-0 border-l-0 border-r-0 rounded-none bg-[#FEF2F2] focus-visible:ring-[#C0392B]/30"
+                                value={
+                                  localPrices[ficha.id]?.[s] !== undefined
+                                    ? localPrices[ficha.id][s]
+                                    : (ficha[`preco_venda_${s}` as keyof FichaPizza] ?? "")
+                                }
+                                onChange={(e) => handlePriceChange(ficha.id, s, e.target.value)}
+                                onBlur={() => handlePriceBlur(ficha.id, s, ficha)}
+                                placeholder="0,00"
+                              />
+                              {savedFields[fieldKey] && (
+                                <Check className="absolute right-1 h-3.5 w-3.5 text-green-500 animate-in fade-in duration-200" />
+                              )}
+                            </div>
+                          </TableCell>
+                        );
+                      })}
 
                       {/* CMV % */}
                       {[cmvP, cmvM, cmvG].map((cmv, i) => (
@@ -605,19 +608,6 @@ export default function PrecificacaoPizzas() {
                           {fmt(lucro(preco, [custos.p, custos.m, custos.g][i], taxaIfood))}
                         </TableCell>
                       ))}
-
-                      {/* Save */}
-                      <TableCell className="border-l">
-                        <Button
-                          size="sm"
-                          variant={hasLocalChanges ? "default" : "ghost"}
-                          className="h-7 w-7 p-0"
-                          onClick={() => savePrice(ficha)}
-                          disabled={!hasLocalChanges}
-                        >
-                          <Save className="h-3.5 w-3.5" />
-                        </Button>
-                      </TableCell>
                     </TableRow>
                   );
                 })}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Pencil, Trash2, Plus, Filter, Search, X } from "lucide-react";
+import { Pencil, Trash2, Plus, Filter, Search, X, Check } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 
 const TIPOS = ["tradicional", "especial", "premium", "doce"];
@@ -28,6 +28,7 @@ type InsumoComprado = Tables<"insumos_comprados">;
 type InsumoProprio = Tables<"insumos_proprios">;
 
 interface IngredienteForm {
+  db_id?: string; // DB row ID for auto-save
   tipo_insumo: string;
   insumo_comprado_id: string;
   insumo_proprio_id: string;
@@ -36,7 +37,6 @@ interface IngredienteForm {
   qtd_m: number;
   qtd_g: number;
   unidade: string;
-  // Embalagem por tamanho
   caixa_p_id: string;
   caixa_p_nome: string;
   caixa_m_id: string;
@@ -93,6 +93,7 @@ export default function FichasTecnicasPizza() {
   const [buscaAberta, setBuscaAberta] = useState<number | null>(null);
   const [buscaEmbalagemAberta, setBuscaEmbalagemAberta] = useState<string | null>(null);
   const [buscaEmbalagemTermo, setBuscaEmbalagemTermo] = useState("");
+  const [savedFields, setSavedFields] = useState<Record<string, boolean>>({});
 
   // Queries
   const { data: fichas = [], isLoading } = useQuery({
@@ -370,6 +371,7 @@ export default function FichasTecnicasPizza() {
     const normalRows = allIngs.filter((i) => !i.tipo_insumo.startsWith("embalagem_"));
 
     const ingredientesForm: IngredienteForm[] = normalRows.map((ing) => ({
+      db_id: ing.id,
       tipo_insumo: ing.tipo_insumo,
       insumo_comprado_id: ing.insumo_comprado_id ?? "",
       insumo_proprio_id: ing.insumo_proprio_id ?? "",
@@ -436,6 +438,27 @@ export default function FichasTecnicasPizza() {
     }
     setForm({ ...form, ingredientes: updated });
   };
+
+  // Auto-save ingredient quantity on blur (edit mode only)
+  const autoSaveIngredienteQtd = useCallback(
+    async (ing: IngredienteForm, field: "qtd_p" | "qtd_m" | "qtd_g", value: number) => {
+      if (!editingId || !ing.db_id) return;
+      try {
+        const { error } = await supabase
+          .from("fichas_tecnicas_pizza_ingredientes")
+          .update({ [field]: value })
+          .eq("id", ing.db_id);
+        if (error) throw error;
+        queryClient.invalidateQueries({ queryKey: ["fichas_tecnicas_pizza_ingredientes"] });
+        const key = `${ing.db_id}-${field}`;
+        setSavedFields((prev) => ({ ...prev, [key]: true }));
+        setTimeout(() => setSavedFields((prev) => ({ ...prev, [key]: false })), 2000);
+      } catch {
+        // silent fail
+      }
+    },
+    [editingId, queryClient]
+  );
 
   const selectInsumo = (index: number, id: string, nome: string, tipo: string) => {
     const updated = [...form.ingredientes];
@@ -748,13 +771,17 @@ export default function FichasTecnicasPizza() {
                           { label: "G", qtdKey: "qtd_g" as const, qtdVal: ing.qtd_g },
                         ].map(({ label, qtdKey, qtdVal }) => (
                           <div key={label} className="flex items-end gap-1.5 flex-1">
-                            <div className="flex-1 min-w-0">
+                            <div className="flex-1 min-w-0 relative">
                               <Label className="text-xs">Qtd {label}</Label>
                               <Input
-                                type="number" step="0.01" min="0" className="h-8 text-sm"
+                                type="number" step="0.01" min="0" className="h-8 text-sm pr-6"
                                 value={qtdVal || ""}
                                 onChange={(e) => updateIngrediente(idx, qtdKey, parseFloat(e.target.value) || 0)}
+                                onBlur={() => autoSaveIngredienteQtd(ing, qtdKey, ing[qtdKey])}
                               />
+                              {ing.db_id && savedFields[`${ing.db_id}-${qtdKey}`] && (
+                                <Check className="absolute right-1 top-[50%] h-3.5 w-3.5 text-green-500 animate-in fade-in duration-200" />
+                              )}
                             </div>
                             <div className="min-w-[70px] text-center pb-1">
                               <p className="text-[10px] text-muted-foreground leading-none mb-0.5">Custo {label}</p>

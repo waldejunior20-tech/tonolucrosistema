@@ -1,15 +1,14 @@
 import { useState, useMemo, useCallback } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Save, AlertTriangle, Beer, GlassWater } from "lucide-react";
+import { AlertTriangle, Beer, GlassWater, Check } from "lucide-react";
 
 // ─── Types ───────────────────────────────────────────────────────────
 interface InsumoComprado {
@@ -136,6 +135,7 @@ export default function PrecificacaoBebidas() {
   const queryClient = useQueryClient();
   const [localPricesInd, setLocalPricesInd] = useState<Record<string, string>>({});
   const [localPricesPrep, setLocalPricesPrep] = useState<Record<string, string>>({});
+  const [savedFields, setSavedFields] = useState<Record<string, boolean>>({});
 
   // ─── Queries ─────────────────────────────────────────────────────
   const { data: config } = useQuery({
@@ -323,43 +323,61 @@ export default function PrecificacaoBebidas() {
   }, [bebidasIndustrializadas, fichasBebidas, custoPrepMap, getPrecoInd, getPrecoPrep]);
 
   // ─── Mutations ───────────────────────────────────────────────────
-  const saveIndMutation = useMutation({
-    mutationFn: async ({ insumo_comprado_id, preco_venda }: { insumo_comprado_id: string; preco_venda: number }) => {
-      const existing = precificacaoMap.get(insumo_comprado_id);
-      if (existing) {
-        const { error } = await supabase
-          .from("precificacao_bebidas")
-          .update({ preco_venda })
-          .eq("id", existing.id);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from("precificacao_bebidas")
-          .insert({ insumo_comprado_id, preco_venda });
-        if (error) throw error;
+  // ─── Auto-save helpers ─────────────────────────────────────────
+  const showSavedCheck = useCallback((key: string) => {
+    setSavedFields((prev) => ({ ...prev, [key]: true }));
+    setTimeout(() => setSavedFields((prev) => ({ ...prev, [key]: false })), 2000);
+  }, []);
+
+  const autoSaveInd = useCallback(
+    async (insumoId: string) => {
+      const local = localPricesInd[insumoId];
+      if (local === undefined) return;
+      const numVal = parseFloat(local) || 0;
+      const existing = precificacaoMap.get(insumoId);
+      try {
+        if (existing) {
+          const { error } = await supabase
+            .from("precificacao_bebidas")
+            .update({ preco_venda: numVal })
+            .eq("id", existing.id);
+          if (error) throw error;
+        } else {
+          const { error } = await supabase
+            .from("precificacao_bebidas")
+            .insert({ insumo_comprado_id: insumoId, preco_venda: numVal });
+          if (error) throw error;
+        }
+        queryClient.invalidateQueries({ queryKey: ["precificacao_bebidas"] });
+        showSavedCheck(`ind-${insumoId}`);
+        setLocalPricesInd((prev) => { const copy = { ...prev }; delete copy[insumoId]; return copy; });
+      } catch {
+        toast.error("Erro ao salvar preço.");
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["precificacao_bebidas"] });
-      toast.success("Preço salvo!");
-    },
-    onError: () => toast.error("Erro ao salvar preço."),
-  });
+    [localPricesInd, precificacaoMap, queryClient, showSavedCheck]
+  );
 
-  const savePrepMutation = useMutation({
-    mutationFn: async ({ id, preco_venda }: { id: string; preco_venda: number }) => {
-      const { error } = await supabase
-        .from("fichas_tecnicas_produtos")
-        .update({ preco_venda: preco_venda || null })
-        .eq("id", id);
-      if (error) throw error;
+  const autoSavePrep = useCallback(
+    async (fichaId: string) => {
+      const local = localPricesPrep[fichaId];
+      if (local === undefined) return;
+      const numVal = parseFloat(local) || 0;
+      try {
+        const { error } = await supabase
+          .from("fichas_tecnicas_produtos")
+          .update({ preco_venda: numVal || null })
+          .eq("id", fichaId);
+        if (error) throw error;
+        queryClient.invalidateQueries({ queryKey: ["fichas_tecnicas_produtos"] });
+        showSavedCheck(`prep-${fichaId}`);
+        setLocalPricesPrep((prev) => { const copy = { ...prev }; delete copy[fichaId]; return copy; });
+      } catch {
+        toast.error("Erro ao salvar preço.");
+      }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["fichas_tecnicas_produtos"] });
-      toast.success("Preço salvo!");
-    },
-    onError: () => toast.error("Erro ao salvar preço."),
-  });
+    [localPricesPrep, queryClient, showSavedCheck]
+  );
 
   const cmvMeta = config?.cmv_meta_pct ?? 32;
   const taxaIfood = config?.taxa_ifood_pct ?? 12;
@@ -444,7 +462,6 @@ export default function PrecificacaoBebidas() {
                       <TableHead className="text-center">Lucro Débito</TableHead>
                       <TableHead className="text-center">Lucro Crédito</TableHead>
                       <TableHead className="text-center">Lucro iFood</TableHead>
-                      <TableHead></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -453,7 +470,6 @@ export default function PrecificacaoBebidas() {
                       const preco = getPrecoInd(bebida.id);
                       const cmv = calcCmv(custoUnit, preco);
                       const sugerido = custoUnit / 0.80;
-                      const hasLocal = localPricesInd[bebida.id] !== undefined;
                       const hasAlert = cmv > 92 && preco > 0;
 
                       return (
@@ -467,17 +483,21 @@ export default function PrecificacaoBebidas() {
                           <TableCell className="text-center text-xs">{fmt(custoUnit)}</TableCell>
                           <TableCell>
                             <div className="relative flex items-center justify-center">
-                              <span className="absolute left-2 text-xs font-semibold text-[#C0392B] pointer-events-none">R$</span>
+                              <span className="absolute left-2 text-xs font-semibold text-[#C0392B] pointer-events-none z-10">R$</span>
                               <Input
                                 type="number"
                                 step="0.01"
-                                className="h-8 w-28 text-xs text-center pl-8 border-b-2 border-b-[#C0392B] border-t-0 border-l-0 border-r-0 rounded-none bg-[#FEF2F2] focus-visible:ring-[#C0392B]/30"
+                                className="h-8 w-28 text-xs text-center pl-8 pr-6 border-b-2 border-b-[#C0392B] border-t-0 border-l-0 border-r-0 rounded-none bg-[#FEF2F2] focus-visible:ring-[#C0392B]/30"
                                 value={localPricesInd[bebida.id] ?? (precificacaoMap.get(bebida.id)?.preco_venda ?? "")}
                                 onChange={(e) =>
                                   setLocalPricesInd((prev) => ({ ...prev, [bebida.id]: e.target.value }))
                                 }
+                                onBlur={() => autoSaveInd(bebida.id)}
                                 placeholder="0,00"
                               />
+                              {savedFields[`ind-${bebida.id}`] && (
+                                <Check className="absolute right-1 h-3.5 w-3.5 text-green-500 animate-in fade-in duration-200" />
+                              )}
                             </div>
                           </TableCell>
                           <TableCell className="text-center">
@@ -490,33 +510,12 @@ export default function PrecificacaoBebidas() {
                           <TableCell className="text-center text-xs">{preco > 0 ? fmt(lucro(preco, custoUnit, taxaDebito)) : "—"}</TableCell>
                           <TableCell className="text-center text-xs">{preco > 0 ? fmt(lucro(preco, custoUnit, taxaCredito)) : "—"}</TableCell>
                           <TableCell className="text-center text-xs">{preco > 0 ? fmt(lucro(preco, custoUnit, taxaIfood)) : "—"}</TableCell>
-                          <TableCell>
-                            <Button
-                              size="sm"
-                              variant={hasLocal ? "default" : "ghost"}
-                              className="h-7 w-7 p-0"
-                              onClick={() => {
-                                saveIndMutation.mutate({
-                                  insumo_comprado_id: bebida.id,
-                                  preco_venda: getPrecoInd(bebida.id),
-                                });
-                                setLocalPricesInd((prev) => {
-                                  const copy = { ...prev };
-                                  delete copy[bebida.id];
-                                  return copy;
-                                });
-                              }}
-                              disabled={!hasLocal}
-                            >
-                              <Save className="h-3.5 w-3.5" />
-                            </Button>
-                          </TableCell>
                         </TableRow>
                       );
                     })}
                     {bebidasIndustrializadas.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={10} className="text-center py-8 text-muted-foreground">
+                        <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                           Nenhuma bebida industrializada cadastrada. Cadastre em Insumos Comprados com categoria "Bebidas".
                         </TableCell>
                       </TableRow>
@@ -551,7 +550,6 @@ export default function PrecificacaoBebidas() {
                       <TableHead className="text-center">Lucro Débito</TableHead>
                       <TableHead className="text-center">Lucro Crédito</TableHead>
                       <TableHead className="text-center">Lucro iFood</TableHead>
-                      <TableHead></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -560,7 +558,6 @@ export default function PrecificacaoBebidas() {
                       const preco = getPrecoPrep(ficha.id, ficha);
                       const cmv = calcCmv(custo, preco);
                       const sugerido = cmvMeta > 0 ? custo / (cmvMeta / 100) : 0;
-                      const hasLocal = localPricesPrep[ficha.id] !== undefined;
                       const hasAlert = cmv > 40 && preco > 0;
 
                       return (
@@ -574,17 +571,21 @@ export default function PrecificacaoBebidas() {
                           <TableCell className="text-center text-xs">{fmt(custo)}</TableCell>
                           <TableCell>
                             <div className="relative flex items-center justify-center">
-                              <span className="absolute left-2 text-xs font-semibold text-[#C0392B] pointer-events-none">R$</span>
+                              <span className="absolute left-2 text-xs font-semibold text-[#C0392B] pointer-events-none z-10">R$</span>
                               <Input
                                 type="number"
                                 step="0.01"
-                                className="h-8 w-28 text-xs text-center pl-8 border-b-2 border-b-[#C0392B] border-t-0 border-l-0 border-r-0 rounded-none bg-[#FEF2F2] focus-visible:ring-[#C0392B]/30"
+                                className="h-8 w-28 text-xs text-center pl-8 pr-6 border-b-2 border-b-[#C0392B] border-t-0 border-l-0 border-r-0 rounded-none bg-[#FEF2F2] focus-visible:ring-[#C0392B]/30"
                                 value={localPricesPrep[ficha.id] ?? (ficha.preco_venda ?? "")}
                                 onChange={(e) =>
                                   setLocalPricesPrep((prev) => ({ ...prev, [ficha.id]: e.target.value }))
                                 }
+                                onBlur={() => autoSavePrep(ficha.id)}
                                 placeholder="0,00"
                               />
+                              {savedFields[`prep-${ficha.id}`] && (
+                                <Check className="absolute right-1 h-3.5 w-3.5 text-green-500 animate-in fade-in duration-200" />
+                              )}
                             </div>
                           </TableCell>
                           <TableCell className="text-center">
@@ -597,33 +598,12 @@ export default function PrecificacaoBebidas() {
                           <TableCell className="text-center text-xs">{preco > 0 ? fmt(lucro(preco, custo, taxaDebito)) : "—"}</TableCell>
                           <TableCell className="text-center text-xs">{preco > 0 ? fmt(lucro(preco, custo, taxaCredito)) : "—"}</TableCell>
                           <TableCell className="text-center text-xs">{preco > 0 ? fmt(lucro(preco, custo, taxaIfood)) : "—"}</TableCell>
-                          <TableCell>
-                            <Button
-                              size="sm"
-                              variant={hasLocal ? "default" : "ghost"}
-                              className="h-7 w-7 p-0"
-                              onClick={() => {
-                                savePrepMutation.mutate({
-                                  id: ficha.id,
-                                  preco_venda: getPrecoPrep(ficha.id, ficha),
-                                });
-                                setLocalPricesPrep((prev) => {
-                                  const copy = { ...prev };
-                                  delete copy[ficha.id];
-                                  return copy;
-                                });
-                              }}
-                              disabled={!hasLocal}
-                            >
-                              <Save className="h-3.5 w-3.5" />
-                            </Button>
-                          </TableCell>
                         </TableRow>
                       );
                     })}
                     {fichasBebidas.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={10} className="text-center py-8 text-muted-foreground">
+                        <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                           Nenhuma bebida preparada cadastrada. Cadastre fichas técnicas de bebidas primeiro.
                         </TableCell>
                       </TableRow>
