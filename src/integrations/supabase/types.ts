@@ -24,7 +24,6 @@ export type Database = {
           margem_desejada: number | null
           outros_custos_variaveis: number | null
           updated_at: string | null
-          user_id: string | null
         }
         Insert: {
           comissao_marketplace?: number | null
@@ -35,7 +34,6 @@ export type Database = {
           margem_desejada?: number | null
           outros_custos_variaveis?: number | null
           updated_at?: string | null
-          user_id?: string | null
         }
         Update: {
           comissao_marketplace?: number | null
@@ -46,7 +44,6 @@ export type Database = {
           margem_desejada?: number | null
           outros_custos_variaveis?: number | null
           updated_at?: string | null
-          user_id?: string | null
         }
         Relationships: []
       }
@@ -62,7 +59,6 @@ export type Database = {
           preco_venda_p: number | null
           tipo: string | null
           updated_at: string | null
-          user_id: string | null
         }
         Insert: {
           created_at?: string | null
@@ -75,7 +71,6 @@ export type Database = {
           preco_venda_p?: number | null
           tipo?: string | null
           updated_at?: string | null
-          user_id?: string | null
         }
         Update: {
           created_at?: string | null
@@ -88,7 +83,6 @@ export type Database = {
           preco_venda_p?: number | null
           tipo?: string | null
           updated_at?: string | null
-          user_id?: string | null
         }
         Relationships: []
       }
@@ -103,7 +97,6 @@ export type Database = {
           qtd_p: number | null
           tipo_insumo: string
           unidade: string
-          user_id: string | null
         }
         Insert: {
           ficha_id?: string | null
@@ -115,7 +108,6 @@ export type Database = {
           qtd_p?: number | null
           tipo_insumo: string
           unidade: string
-          user_id?: string | null
         }
         Update: {
           ficha_id?: string | null
@@ -127,7 +119,6 @@ export type Database = {
           qtd_p?: number | null
           tipo_insumo?: string
           unidade?: string
-          user_id?: string | null
         }
         Relationships: [
           {
@@ -163,7 +154,6 @@ export type Database = {
           numero_ficha: string | null
           preco_venda: number | null
           updated_at: string
-          user_id: string | null
         }
         Insert: {
           categoria: string
@@ -174,7 +164,6 @@ export type Database = {
           numero_ficha?: string | null
           preco_venda?: number | null
           updated_at?: string
-          user_id?: string | null
         }
         Update: {
           categoria?: string
@@ -185,7 +174,6 @@ export type Database = {
           numero_ficha?: string | null
           preco_venda?: number | null
           updated_at?: string
-          user_id?: string | null
         }
         Relationships: []
       }
@@ -200,7 +188,6 @@ export type Database = {
           tipo_insumo: string
           unidade: string
           updated_at: string
-          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -212,7 +199,6 @@ export type Database = {
           tipo_insumo: string
           unidade: string
           updated_at?: string
-          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -224,7 +210,6 @@ export type Database = {
           tipo_insumo?: string
           unidade?: string
           updated_at?: string
-          user_id?: string | null
         }
         Relationships: [
           {
@@ -263,7 +248,6 @@ export type Database = {
           quantidade: number
           unidade: string
           updated_at: string | null
-          user_id: string | null
         }
         Insert: {
           categoria: string
@@ -277,7 +261,6 @@ export type Database = {
           quantidade: number
           unidade: string
           updated_at?: string | null
-          user_id?: string | null
         }
         Update: {
           categoria?: string
@@ -291,7 +274,6 @@ export type Database = {
           quantidade?: number
           unidade?: string
           updated_at?: string | null
-          user_id?: string | null
         }
         Relationships: []
       }
@@ -303,7 +285,6 @@ export type Database = {
           rendimento: number
           unidade_rendimento: string
           updated_at: string | null
-          user_id: string | null
         }
         Insert: {
           created_at?: string | null
@@ -312,7 +293,6 @@ export type Database = {
           rendimento: number
           unidade_rendimento: string
           updated_at?: string | null
-          user_id?: string | null
         }
         Update: {
           created_at?: string | null
@@ -321,7 +301,6 @@ export type Database = {
           rendimento?: number
           unidade_rendimento?: string
           updated_at?: string | null
-          user_id?: string | null
         }
         Relationships: []
       }
@@ -332,7 +311,6 @@ export type Database = {
           insumo_proprio_id: string | null
           quantidade: number
           unidade: string
-          user_id: string | null
         }
         Insert: {
           id?: string
@@ -340,7 +318,6 @@ export type Database = {
           insumo_proprio_id?: string | null
           quantidade: number
           unidade: string
-          user_id?: string | null
         }
         Update: {
           id?: string
@@ -348,7 +325,6 @@ export type Database = {
           insumo_proprio_id?: string | null
           quantidade?: number
           unidade?: string
-          user_id?: string | null
         }
         Relationships: [
           {
