@@ -269,21 +269,11 @@ export default function FichasTecnicasPizza() {
         .single();
       if (error) throw error;
 
-      if (data.ingredientes.length > 0) {
+      const dbRows = expandIngredientesParaDB(data.ingredientes, inserted.id);
+      if (dbRows.length > 0) {
         const { error: ingError } = await supabase
           .from("fichas_tecnicas_pizza_ingredientes")
-          .insert(
-            data.ingredientes.map((ing) => ({
-              ficha_id: inserted.id,
-              tipo_insumo: ing.tipo_insumo,
-              insumo_comprado_id: ing.insumo_comprado_id || null,
-              insumo_proprio_id: ing.insumo_proprio_id || null,
-              qtd_p: ing.qtd_p,
-              qtd_m: ing.qtd_m,
-              qtd_g: ing.qtd_g,
-              unidade: ing.unidade,
-            }))
-          );
+          .insert(dbRows);
         if (ingError) throw ingError;
       }
     },
