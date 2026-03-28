@@ -374,33 +374,33 @@ export default function PrecificacaoBebidas() {
       {/* Header */}
       <h1 className="text-2xl font-bold text-foreground">Precificação de Bebidas</h1>
 
-      {/* Indicators */}
+      {/* Indicators — Industrializadas */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">CMV Médio Atual</p>
-            <p className={`text-3xl font-bold ${cmvColor(indicators.avgCmv)}`}>
-              {fmtPct(indicators.avgCmv)}
+            <p className="text-sm text-muted-foreground">CMV Médio — Industrializadas</p>
+            <p className={`text-3xl font-bold ${indCmvColor(indIndicators.avgCmv)}`}>
+              {fmtPct(indIndicators.avgCmv)}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Semáforo CMV</p>
+            <p className="text-sm text-muted-foreground">Semáforo — Industrializadas</p>
             <p className="text-3xl">
-              {cmvEmoji(indicators.avgCmv)}{" "}
-              <span className={`text-lg font-semibold ${cmvColor(indicators.avgCmv)}`}>
-                {cmvMessage(indicators.avgCmv)}
+              {indCmvEmoji(indIndicators.avgCmv)}{" "}
+              <span className={`text-lg font-semibold ${indCmvColor(indIndicators.avgCmv)}`}>
+                {indCmvMessage(indIndicators.avgCmv)}
               </span>
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Bebidas Fora da Meta</p>
+            <p className="text-sm text-muted-foreground">Fora da Meta</p>
             <p className="text-3xl font-bold text-foreground flex items-center gap-2">
-              {indicators.foraMetaCount}
-              {indicators.foraMetaCount > 0 && (
+              {indIndicators.foraMetaCount + prepIndicators.foraMetaCount}
+              {(indIndicators.foraMetaCount + prepIndicators.foraMetaCount) > 0 && (
                 <AlertTriangle className="h-6 w-6 text-red-500" />
               )}
             </p>
