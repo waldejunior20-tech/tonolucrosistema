@@ -2,17 +2,7 @@ import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { IconSidebar, type ModuleKey } from "./IconSidebar";
 import { SubMenu, subMenus } from "./SubMenu";
-
-function getModuleFromPath(path: string): ModuleKey {
-  if (path.startsWith("/insumos")) return "insumos";
-  if (path.startsWith("/fichas")) return "fichas";
-  if (path.startsWith("/precificacao")) return "precificacao";
-  if (path.startsWith("/financeiro")) return "financeiro";
-  if (path.startsWith("/promocoes")) return "promocoes";
-  return "dashboard";
-}
-
-export function AppLayout() {
+import { Header } from "./Header";
   const navigate = useNavigate();
   const location = useLocation();
   const [activeModule, setActiveModule] = useState<ModuleKey>(getModuleFromPath(location.pathname));
