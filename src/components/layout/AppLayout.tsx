@@ -2,6 +2,7 @@ import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { IconSidebar, type ModuleKey } from "./IconSidebar";
 import { SubMenu, subMenus } from "./SubMenu";
+import { Header } from "./Header";
 
 function getModuleFromPath(path: string): ModuleKey {
   if (path.startsWith("/insumos")) return "insumos";
@@ -36,12 +37,15 @@ export function AppLayout() {
   };
 
   return (
-    <div className="flex min-h-screen w-full">
-      <IconSidebar activeModule={activeModule} onModuleChange={handleModuleChange} />
-      <SubMenu activeModule={activeModule} currentPath={location.pathname} onNavigate={handleNavigate} />
-      <main className="flex-1 p-8 overflow-auto">
-        <Outlet />
-      </main>
+    <div className="flex flex-col min-h-screen w-full">
+      <Header />
+      <div className="flex flex-1 overflow-hidden">
+        <IconSidebar activeModule={activeModule} onModuleChange={handleModuleChange} />
+        <SubMenu activeModule={activeModule} currentPath={location.pathname} onNavigate={handleNavigate} />
+        <main className="flex-1 p-8 overflow-auto">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }

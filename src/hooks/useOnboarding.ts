@@ -8,10 +8,17 @@ export function useOnboarding() {
   useEffect(() => {
     async function check() {
       try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          setNeedsOnboarding(false);
+          return;
+        }
+
         const { data, error } = await (supabase as any)
           .from("configuracoes_negocio")
           .select("id, onboarding_completo")
           .eq("onboarding_completo", true)
+          .eq("user_id", user.id)
           .limit(1);
         if (error) throw error;
         setNeedsOnboarding(!data || data.length === 0);

@@ -56,7 +56,7 @@ export function SubMenu({ activeModule, currentPath, onNavigate }: SubMenuProps)
   if (items.length === 0) return null;
 
   return (
-    <div className="w-56 min-h-screen bg-muted/50 border-r border-border flex flex-col py-6 px-3">
+    <div className="w-56 h-full bg-muted/50 border-r border-border flex flex-col py-6 px-3">
       <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-4">
         {moduleTitles[activeModule]}
       </h2>
