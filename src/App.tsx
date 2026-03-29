@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useOnboarding } from "@/hooks/useOnboarding";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import Dashboard from "@/pages/Dashboard";
 import SectionPage from "@/pages/SectionPage";
 import InsumosComprados from "@/pages/InsumosComprados";
@@ -19,18 +21,48 @@ import FinanceiroDRE from "@/pages/FinanceiroDRE";
 import FinanceiroContasPagar from "@/pages/FinanceiroContasPagar";
 import FinanceiroPontoEquilibrio from "@/pages/FinanceiroPontoEquilibrio";
 import Onboarding from "@/pages/Onboarding";
+import Login from "@/pages/Login";
+import Signup from "@/pages/Signup";
+import PasswordRecovery from "@/pages/PasswordRecovery";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
 
 function AppRoutes() {
-  const { loading, needsOnboarding } = useOnboarding();
+  const [session, setSession] = useState<any>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const { loading: onboardingLoading, needsOnboarding } = useOnboarding();
 
-  if (loading) {
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setAuthLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setAuthLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (authLoading || (session && onboardingLoading)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/recovery" element={<PasswordRecovery />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
     );
   }
 
@@ -45,6 +77,8 @@ function AppRoutes() {
 
   return (
     <Routes>
+      <Route path="/login" element={<Navigate to="/" replace />} />
+      <Route path="/signup" element={<Navigate to="/" replace />} />
       <Route path="/onboarding" element={<Navigate to="/" replace />} />
       <Route element={<AppLayout />}>
         <Route path="/" element={<Dashboard />} />
