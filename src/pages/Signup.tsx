@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,33 +21,19 @@ export default function Signup() {
       toast.error("As senhas não coincidem");
       return;
     }
-
     setLoading(true);
     try {
       const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            business_name: businessName,
-          },
-        },
+        email, password,
+        options: { data: { business_name: businessName } },
       });
-
       if (error) throw error;
       if (!data.user) throw new Error("Erro ao criar usuário");
-
-      // Save business name to profiles
       const { error: profileError } = await supabase
         .from("profiles")
         .insert([{ id: data.user.id, business_name: businessName }]);
-
-      if (profileError) {
-        console.error("Error updating profile:", profileError);
-        // We'll proceed anyway as the user is created
-      }
-
-      toast.success("Conta criada com sucesso! Redirecionando para onboarding...");
+      if (profileError) console.error("Error updating profile:", profileError);
+      toast.success("Conta criada com sucesso!");
       navigate("/onboarding");
     } catch (error: any) {
       toast.error(error.message || "Erro ao criar conta");
@@ -59,68 +44,38 @@ export default function Signup() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md space-y-8 text-center">
+      <div className="w-full max-w-sm space-y-6">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-[#C0392B] mb-2">Dom Corleone</h1>
-          <p className="text-muted-foreground">Crie sua conta no sistema</p>
+          <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg mx-auto mb-4">
+            DC
+          </div>
+          <h1 className="text-xl font-bold">Criar sua conta</h1>
+          <p className="text-sm text-muted-foreground mt-1">Comece a gerenciar seu negócio</p>
         </div>
-        <form onSubmit={handleSignup} className="space-y-4 bg-card p-8 rounded-lg border shadow-sm text-left">
+        <form onSubmit={handleSignup} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="businessName">Nome do estabelecimento</Label>
-            <Input
-              id="businessName"
-              placeholder="Ex: Pizzaria do Chef"
-              value={businessName}
-              onChange={(e) => setBusinessName(e.target.value)}
-              required
-            />
+            <Input id="businessName" placeholder="Ex: Pizzaria do Chef" value={businessName} onChange={(e) => setBusinessName(e.target.value)} required />
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="seu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+            <Input id="email" type="email" placeholder="seu@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Senha</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Mínimo 6 caracteres"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6}
-            />
+            <Input id="password" type="password" placeholder="Mínimo 6 caracteres" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">Confirmar senha</Label>
-            <Input
-              id="confirmPassword"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
+            <Input id="confirmPassword" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
           </div>
-          <Button 
-            type="submit" 
-            className="w-full bg-[#C0392B] hover:bg-[#A93226]" 
-            disabled={loading}
-          >
+          <Button type="submit" className="w-full" disabled={loading}>
             {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Criar conta"}
           </Button>
-          <div className="text-center mt-4">
-            <span className="text-sm text-muted-foreground">Já tem uma conta? </span>
-            <Link to="/login" className="text-sm text-[#C0392B] hover:underline font-medium">
-              Fazer login
-            </Link>
-          </div>
+          <p className="text-center text-sm text-muted-foreground">
+            Já tem uma conta?{" "}
+            <Link to="/login" className="text-primary hover:underline font-medium">Fazer login</Link>
+          </p>
         </form>
       </div>
     </div>
