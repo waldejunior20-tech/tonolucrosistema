@@ -552,7 +552,7 @@ export default function PrecificacaoPizzas() {
                               <Input
                                 type={localPrices[ficha.id]?.[s] !== undefined ? "number" : "text"}
                                 step={localPrices[ficha.id]?.[s] !== undefined ? "0.01" : undefined}
-                                className="h-8 w-28 text-xs text-center pr-6 border-b-2 border-b-[#C0392B] border-t-0 border-l-0 border-r-0 rounded-none bg-[#FEF2F2] focus-visible:ring-[#C0392B]/30"
+                                className="h-8 w-28 text-xs text-center pr-6 border-b-2 border-b-primary border-t-0 border-l-0 border-r-0 rounded-none bg-primary/5 focus-visible:ring-primary/30"
                                 value={
                                   localPrices[ficha.id]?.[s] !== undefined
                                     ? localPrices[ficha.id][s]
