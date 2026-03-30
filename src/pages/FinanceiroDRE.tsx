@@ -1,8 +1,7 @@
 import { useMemo, useState } from "react";
+import { cn } from "@/lib/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -10,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { MoneyInput } from "@/components/MoneyInput";
 import { toast } from "sonner";
 import { Plus, Target, AlertTriangle, TrendingUp, TrendingDown } from "lucide-react";
+import { HealthStatus } from "@/components/HealthStatus";
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -147,21 +147,6 @@ export default function FinanceiroDRE() {
     },
   });
 
-  // Fetch insumos for alerts
-  const { data: insumos = [] } = useQuery({
-    queryKey: ["insumos_comprados_dre"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("insumos_comprados")
-        .select("id, nome, preco_pago, updated_at")
-        .order("updated_at", { ascending: false })
-        .limit(50);
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  // Fetch contas atrasadas
   const { data: contasAtrasadas = [] } = useQuery({
     queryKey: ["contas_atrasadas_dre"],
     queryFn: async () => {
@@ -214,13 +199,11 @@ export default function FinanceiroDRE() {
 
   const handleSubmit = () => {
     if (!form.descricao || !form.valor) return;
-
     if (form.data_fim) {
       const start = new Date(form.data_lancamento + "T12:00:00");
       const end = new Date(form.data_fim + "T12:00:00");
       const days = Math.max(1, Math.round((end.getTime() - start.getTime()) / 86400000) + 1);
       const dailyValue = form.valor / days;
-
       const entries = [];
       for (let i = 0; i < days; i++) {
         const d = new Date(start);
@@ -268,12 +251,10 @@ export default function FinanceiroDRE() {
   const calc = useMemo(() => {
     const receitas = lancamentos.filter((l) => l.tipo === "receita");
     const despesas = lancamentos.filter((l) => l.tipo === "despesa");
-
     const totalEntrou = receitas.reduce((s, l) => s + Number(l.valor), 0);
     const totalSaiu = despesas.reduce((s, l) => s + Number(l.valor), 0);
     const sobrou = totalEntrou - totalSaiu;
     const sobrouPct = totalEntrou > 0 ? (sobrou / totalEntrou) * 100 : 0;
-
     const cmv = despesas.filter((l) => l.categoria === "cmv").reduce((s, l) => s + Number(l.valor), 0);
     const cmvPct = totalEntrou > 0 ? (cmv / totalEntrou) * 100 : 0;
     const despFixas = despesas.filter((l) =>
@@ -281,21 +262,14 @@ export default function FinanceiroDRE() {
     ).reduce((s, l) => s + Number(l.valor), 0);
     const impostos = despesas.filter((l) => ["impostos", "taxas_apps"].includes(l.categoria)).reduce((s, l) => s + Number(l.valor), 0);
     const salarios = despesas.filter((l) => ["salarios", "pro_labore"].includes(l.categoria)).reduce((s, l) => s + Number(l.valor), 0);
-
     const per100 = (v: number) => totalEntrou > 0 ? (v / totalEntrou) * 100 : 0;
-
-    // Margem de contribuição
     const despesasSobreVendas = impostos;
     const margemContribuicao = totalEntrou - despesasSobreVendas - cmv;
     const margemContribuicaoPct = totalEntrou > 0 ? (margemContribuicao / totalEntrou) * 100 : 0;
-
-    // Ponto de equilíbrio
     const despFixasTotal = despFixas + salarios;
     const pontoEquilibrio = margemContribuicaoPct > 0 ? despFixasTotal / (margemContribuicaoPct / 100) : 0;
     const faltaPE = pontoEquilibrio - totalEntrou;
     const progressPE = pontoEquilibrio > 0 ? Math.min((totalEntrou / pontoEquilibrio) * 100, 150) : 0;
-
-    // Onde foi o dinheiro
     const porCategoria = despesas.reduce<Record<string, number>>((acc, l) => {
       acc[l.categoria] = (acc[l.categoria] || 0) + Number(l.valor);
       return acc;
@@ -309,12 +283,9 @@ export default function FinanceiroDRE() {
         pct: totalEntrou > 0 ? (valor / totalEntrou) * 100 : 0,
         pctDespesas: totalSaiu > 0 ? (valor / totalSaiu) * 100 : 0,
       }));
-
-    // Status do mês
     let status: "verde" | "amarelo" | "vermelho" = "verde";
     if (sobrou < 0) status = "vermelho";
     else if (cmvPct > 32) status = "amarelo";
-
     return {
       totalEntrou, totalSaiu, sobrou, sobrouPct,
       cmv, cmvPct, despFixas, impostos, salarios,
@@ -328,8 +299,6 @@ export default function FinanceiroDRE() {
     };
   }, [lancamentos]);
 
-  const anos = Array.from({ length: 5 }, (_, i) => now.getFullYear() - 2 + i);
-
   const per100Items = [
     { label: "Ingredientes", value: calc.per100(calc.cmv), color: "bg-orange-500" },
     { label: "Desp. fixas", value: calc.per100(calc.despFixas), color: "bg-blue-500" },
@@ -339,456 +308,213 @@ export default function FinanceiroDRE() {
   ];
 
   const lucroLiquidoPer100 = calc.per100(calc.sobrou);
-
-  // Meta
   const metaFaturamento = meta?.meta_faturamento ?? 0;
   const metaProgress = metaFaturamento > 0 ? Math.min((calc.totalEntrou / metaFaturamento) * 100, 100) : 0;
   const metaAtingida = metaFaturamento > 0 && calc.totalEntrou >= metaFaturamento;
   const metaPctAcima = metaFaturamento > 0 ? ((calc.totalEntrou - metaFaturamento) / metaFaturamento) * 100 : 0;
-
-  // CMV faixas
-  const cmvColor = calc.cmvPct > 40 ? "text-red-500" : calc.cmvPct > 32 ? "text-yellow-500" : "text-green-500";
-  const cmvBg = calc.cmvPct > 40 ? "bg-red-500" : calc.cmvPct > 32 ? "bg-yellow-500" : "bg-green-500";
   const cmvFolga = 32 - calc.cmvPct;
 
-  // Alerts
   const alertas: string[] = [];
-  if (contasAtrasadas.length > 0) {
-    alertas.push(`${contasAtrasadas.length} conta(s) em atraso`);
-  }
-  if (calc.cmvPct > 40) {
-    alertas.push("CMV acima de 40% — atenção urgente!");
-  } else if (calc.cmvPct > 32) {
-    alertas.push("CMV acima da meta de 32%");
-  }
+  if (contasAtrasadas.length > 0) alertas.push(`${contasAtrasadas.length} conta(s) em atraso`);
+  if (calc.cmvPct > 40) alertas.push("CMV acima de 40% — atenção urgente!");
+  else if (calc.cmvPct > 32) alertas.push("CMV acima da meta de 32%");
 
-  const statusConfig = {
-    verde: {
-      bg: "bg-green-500/10 border-green-500/30",
-      text: "text-green-700 dark:text-green-400",
-      icon: <TrendingUp className="h-5 w-5" />,
-      message: "Negócio saudável este mês",
-    },
-    amarelo: {
-      bg: "bg-yellow-500/10 border-yellow-500/30",
-      text: "text-yellow-700 dark:text-yellow-400",
-      icon: <AlertTriangle className="h-5 w-5" />,
-      message: "Atenção — verifique os custos",
-    },
-    vermelho: {
-      bg: "bg-red-500/10 border-red-500/30",
-      text: "text-red-700 dark:text-red-400",
-      icon: <TrendingDown className="h-5 w-5" />,
-      message: "Mês no prejuízo",
-    },
-  };
-
-  const st = statusConfig[calc.status];
+  const anos = Array.from({ length: 5 }, (_, i) => now.getFullYear() - 2 + i);
 
   return (
     <div className="space-y-5">
-      {/* ═══ TOPBAR ═══ */}
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <h1 className="text-2xl font-bold text-foreground">Resultado do Mês</h1>
-        <div className="flex gap-2 items-center flex-wrap">
-          <Button onClick={() => openDialog("receita")} className="bg-green-600 hover:bg-green-700 text-white">
-            <Plus className="h-4 w-4 mr-1" /> Receita
-          </Button>
-          <Button onClick={() => openDialog("despesa")} variant="destructive">
-            <Plus className="h-4 w-4 mr-1" /> Despesa
-          </Button>
-          <Select value={String(mes)} onValueChange={(v) => setMes(Number(v))}>
-            <SelectTrigger className="w-[130px]"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {MESES.map((m, i) => (
-                <SelectItem key={i} value={String(i + 1)}>{m}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={String(ano)} onValueChange={(v) => setAno(Number(v))}>
-            <SelectTrigger className="w-[90px]"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {anos.map((a) => (
-                <SelectItem key={a} value={String(a)}>{a}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      <div className="flex items-center justify-between flex-wrap gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl font-extrabold tracking-tight text-syne uppercase">DRE Financeiro</h1>
+          <p className="text-text2 font-medium">Demonstrativo de Resultados do Exercício</p>
+        </div>
+        <div className="flex gap-3 items-center flex-wrap">
+          <button onClick={() => openDialog("receita")} className="btn-3d-green h-10 px-6 flex items-center gap-2">
+            <Plus className="h-4 w-4" /> <span>Receita</span>
+          </button>
+          <button onClick={() => openDialog("despesa")} className="btn-3d-red h-10 px-6 flex items-center gap-2">
+            <Plus className="h-4 w-4" /> <span>Despesa</span>
+          </button>
+          <div className="flex items-center gap-2 bg-surface p-1 rounded-lg border">
+            <Select value={String(mes)} onValueChange={(v) => setMes(Number(v))}>
+              <SelectTrigger className="w-[120px] h-8 border-none bg-transparent shadow-none"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {MESES.map((m, i) => (<SelectItem key={i} value={String(i + 1)}>{m}</SelectItem>))}
+              </SelectContent>
+            </Select>
+            <div className="w-px h-4 bg-border" />
+            <Select value={String(ano)} onValueChange={(v) => setAno(Number(v))}>
+              <SelectTrigger className="w-[80px] h-8 border-none bg-transparent shadow-none"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {anos.map((a) => (<SelectItem key={a} value={String(a)}>{a}</SelectItem>))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 
-      {/* ═══ BLOCO 1 — FAIXA STATUS ═══ */}
-      <div className={`flex items-center justify-between rounded-lg border px-4 py-3 ${st.bg}`}>
-        <div className={`flex items-center gap-2 font-semibold ${st.text}`}>
-          {st.icon}
-          <span>{st.message}</span>
+      <HealthStatus status={calc.status === "verde" ? "healthy" : calc.status === "amarelo" ? "warning" : "danger"} />
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="card-premium p-6">
+          <p className="label-upper mb-4">💰 Faturamento Total</p>
+          <p className="kpi-number text-[#27AE60]">{fmt(calc.totalEntrou)}</p>
         </div>
-        <span className={`text-lg font-bold ${calc.sobrou >= 0 ? "text-green-600" : "text-red-500"}`}>
-          {fmt(calc.sobrou)}
-        </span>
+        <div className="card-premium p-6">
+          <p className="label-upper mb-4">💸 Saída Total</p>
+          <p className="kpi-number text-[#C0392B]">{fmt(calc.totalSaiu)}</p>
+        </div>
+        <div className={cn("card-premium p-6", calc.sobrou >= 0 ? "border-[#27AE60]/30 shadow-sm shadow-[#27AE60]/5" : "border-[#C0392B]/30 shadow-sm shadow-[#C0392B]/5")}>
+          <p className="label-upper mb-4">{calc.sobrou >= 0 ? "✅ Lucro Líquido" : "❌ Prejuízo"}</p>
+          <p className={cn("kpi-number", calc.sobrou >= 0 ? "text-[#27AE60]" : "text-[#C0392B]")}>{fmt(Math.abs(calc.sobrou))}</p>
+          <p className={cn("text-[11px] mt-1 font-bold", calc.sobrou >= 0 ? "text-[#27AE60]" : "text-[#C0392B]")}>{calc.sobrouPct.toFixed(1)}% de margem</p>
+        </div>
       </div>
 
-      {/* ═══ BLOCO 2 — 3 NÚMEROS GRANDES ═══ */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="pt-6 text-center">
-            <p className="text-sm text-muted-foreground mb-1">💰 Entrou</p>
-            <p className="text-3xl font-bold text-green-600">{fmt(calc.totalEntrou)}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6 text-center">
-            <p className="text-sm text-muted-foreground mb-1">💸 Saiu</p>
-            <p className="text-3xl font-bold text-red-500">{fmt(calc.totalSaiu)}</p>
-          </CardContent>
-        </Card>
-        <Card className={calc.sobrou >= 0 ? "border-green-300 bg-green-50/40 dark:bg-green-950/20" : "border-red-300 bg-red-50/40 dark:bg-red-950/20"}>
-          <CardContent className="pt-6 text-center">
-            <p className="text-sm text-muted-foreground mb-1">
-              {calc.sobrou >= 0 ? "✅ Sobrou" : "❌ Faltou"}
-            </p>
-            <p className={`text-3xl font-bold ${calc.sobrou >= 0 ? "text-green-600" : "text-red-500"}`}>
-              {fmt(Math.abs(calc.sobrou))}
-            </p>
-            <p className={`text-sm mt-1 ${calc.sobrou >= 0 ? "text-green-600" : "text-red-500"}`}>
-              {calc.sobrouPct.toFixed(1)}% da receita
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* ═══ BLOCO 3 — META + EQUILÍBRIO ═══ */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Card Meta */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
-              🎯 Meta do mês
-            </CardTitle>
-            <p className="text-xs text-muted-foreground">Quanto você quer faturar</p>
-          </CardHeader>
-          <CardContent className="space-y-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="card-premium p-6">
+          <div className="pb-4">
+            <h3 className="text-base font-bold flex items-center gap-2 font-syne uppercase">🎯 Meta do mês</h3>
+            <p className="text-[11px] text-text3 font-medium uppercase tracking-wider">Objetivo de Faturamento</p>
+          </div>
+          <div className="space-y-4">
             <div>
               <Label className="text-xs">Meta R$</Label>
-              <MoneyInput
-                value={metaFaturamento}
-                onChange={(v) => upsertMetaMutation.mutate(v)}
-              />
+              <MoneyInput value={metaFaturamento} onChange={(v) => upsertMetaMutation.mutate(v)} />
             </div>
             {metaFaturamento > 0 && (
               <>
-                <div className="relative h-6 bg-muted rounded-full overflow-hidden">
-                  <div
-                    className={`h-full rounded-full transition-all duration-700 ${
-                      metaAtingida ? "bg-green-500" : "bg-red-400"
-                    }`}
-                    style={{ width: `${metaProgress}%` }}
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-xs font-bold text-foreground/80">
-                      {((calc.totalEntrou / metaFaturamento) * 100).toFixed(0)}%
-                    </span>
-                  </div>
+                <div className="progress-premium">
+                  <div className={cn("progress-premium-bar", metaAtingida ? "bg-green-500" : "bg-red-400")} style={{ width: `${metaProgress}%` }} />
                 </div>
-                <p className={`text-sm text-center font-medium ${metaAtingida ? "text-green-600" : "text-red-500"}`}>
-                  {metaAtingida
-                    ? `🎉 Meta batida! Você faturou ${metaPctAcima.toFixed(0)}% acima`
-                    : `Faltam ${fmt(metaFaturamento - calc.totalEntrou)} para bater a meta`}
+                <p className={cn("text-xs text-center font-bold uppercase", metaAtingida ? "text-green-600" : "text-red-500")}>
+                  {metaAtingida ? `🎉 Meta batida! Você faturou ${metaPctAcima.toFixed(0)}% acima` : `Faltam ${fmt(metaFaturamento - calc.totalEntrou)} para bater a meta`}
                 </p>
               </>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        {/* Card Ponto de Equilíbrio */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Target className="h-5 w-5 text-orange-500" />
-              Ponto de Equilíbrio
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <p className="text-center text-3xl font-bold text-orange-500">
-              {fmt(calc.pontoEquilibrio)}
-            </p>
-            <div className="relative h-6 bg-muted rounded-full overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all duration-700 ${
-                  calc.atingiuPE
-                    ? "bg-gradient-to-r from-red-400 via-yellow-400 to-green-500"
-                    : "bg-gradient-to-r from-red-400 to-red-500"
-                }`}
-                style={{ width: `${Math.min(calc.progressPE, 100)}%` }}
-              />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-xs font-bold text-foreground/80">
-                  {calc.pontoEquilibrio > 0
-                    ? `${((calc.totalEntrou / calc.pontoEquilibrio) * 100).toFixed(0)}%`
-                    : "—"}
-                </span>
-              </div>
+        <div className="card-premium p-6">
+          <div className="pb-4">
+            <h3 className="text-base font-bold flex items-center gap-2 font-syne uppercase"><Target className="h-5 w-5 text-orange-500" /> Ponto de Equilíbrio</h3>
+            <p className="text-[11px] text-text3 font-medium uppercase tracking-wider">Zero a Zero</p>
+          </div>
+          <div className="space-y-4">
+            <p className="text-center text-3xl font-bold text-orange-500 font-syne">{fmt(calc.pontoEquilibrio)}</p>
+            <div className="progress-premium">
+              <div className={cn("progress-premium-bar", calc.atingiuPE ? "bg-gradient-to-r from-red-400 via-yellow-400 to-green-500" : "bg-gradient-to-r from-red-400 to-red-500")} style={{ width: `${Math.min(calc.progressPE, 100)}%` }} />
             </div>
-            <div className="text-xs space-y-1 text-muted-foreground">
-              <div className="flex justify-between">
-                <span>Despesas fixas</span>
-                <span className="font-medium text-foreground">{fmt(calc.despFixasTotal)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Margem contrib. %</span>
-                <span className="font-medium text-foreground">{calc.margemContribuicaoPct.toFixed(1)}%</span>
-              </div>
+            <div className="text-xs space-y-1 text-text2">
+              <div className="flex justify-between"><span>Despesas fixas</span><span className="font-medium text-foreground">{fmt(calc.despFixasTotal)}</span></div>
+              <div className="flex justify-between"><span>Margem contrib. %</span><span className="font-medium text-foreground">{calc.margemContribuicaoPct.toFixed(1)}%</span></div>
             </div>
-            <p className={`text-sm text-center font-medium ${calc.atingiuPE ? "text-green-600" : "text-red-500"}`}>
-              {calc.atingiuPE
-                ? `Tudo acima disso é lucro puro! 🎯`
-                : calc.pontoEquilibrio > 0
-                ? `Faltam ${fmt(calc.faltaPE)} para atingir`
-                : "Cadastre receitas e despesas"}
+            <p className={cn("text-xs text-center font-bold uppercase", calc.atingiuPE ? "text-green-600" : "text-red-500")}>
+              {calc.atingiuPE ? "Tudo acima disso é lucro puro! 🎯" : calc.pontoEquilibrio > 0 ? `Faltam ${fmt(calc.faltaPE)} para atingir` : "Cadastre receitas e despesas"}
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
-      {/* ═══ BLOCO 4 — 4 CARDS ANALÍTICOS ═══ */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        {/* CARD 1: Sobra das Vendas */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold">Sobra das vendas</CardTitle>
-            <p className="text-xs text-muted-foreground">Margem de contribuição</p>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <p className="text-2xl font-bold text-green-600">{fmt(calc.margemContribuicao)}</p>
-            <p className="text-xs text-muted-foreground">Sobraram para pagar despesas fixas</p>
-            <div className="text-xs space-y-1 border-t pt-2">
-              <div className="flex justify-between">
-                <span>Faturamento Bruto</span>
-                <span className="font-medium">{fmt(calc.totalEntrou)}</span>
-              </div>
-              <div className="flex justify-between text-red-500">
-                <span>(-) Desp. s/ vendas</span>
-                <span>-{fmt(calc.despesasSobreVendas)}</span>
-              </div>
-              <div className="flex justify-between text-red-500">
-                <span>(-) CMV</span>
-                <span>-{fmt(calc.cmv)}</span>
-              </div>
-              <div className="flex justify-between font-bold border-t pt-1">
-                <span>(=) Sobra</span>
-                <span className="text-green-600">{fmt(calc.margemContribuicao)}</span>
-              </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div className="card-premium p-6">
+          <div className="pb-4"><h3 className="text-sm font-bold font-syne uppercase">Sobra das vendas</h3><p className="text-[10px] text-text3 font-medium uppercase tracking-wider">Margem de contribuição</p></div>
+          <div className="space-y-4">
+            <p className="text-2xl font-bold text-[#27AE60] font-syne">{fmt(calc.margemContribuicao)}</p>
+            <div className="text-[11px] space-y-1 border-t pt-2 text-text2">
+              <div className="flex justify-between"><span>Faturamento Bruto</span><span className="font-medium text-foreground">{fmt(calc.totalEntrou)}</span></div>
+              <div className="flex justify-between text-[#C0392B]"><span>(-) Desp. s/ vendas</span><span>-{fmt(calc.despesasSobreVendas)}</span></div>
+              <div className="flex justify-between text-[#C0392B]"><span>(-) CMV</span><span>-{fmt(calc.cmv)}</span></div>
+              <div className="flex justify-between font-bold border-t pt-1"><span className="text-foreground">(=) Sobra</span><span className="text-[#27AE60]">{fmt(calc.margemContribuicao)}</span></div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        {/* CARD 2: Para cada R$100 */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold">Para cada R$100 vendidos</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <p className={`text-2xl font-bold ${lucroLiquidoPer100 >= 0 ? "text-green-600" : "text-red-500"}`}>
-              R$ {Math.abs(lucroLiquidoPer100).toFixed(2).replace(".", ",")}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {lucroLiquidoPer100 >= 0 ? "sobram de lucro líquido" : "de prejuízo líquido"}
-            </p>
+        <div className="card-premium p-6">
+          <div className="pb-4"><h3 className="text-sm font-bold font-syne uppercase">Para cada R$100 vendidos</h3><p className="text-[10px] text-text3 font-medium uppercase tracking-wider">Raio-X de Lucratividade</p></div>
+          <div className="space-y-4">
+            <p className={cn("text-2xl font-bold font-syne", lucroLiquidoPer100 >= 0 ? "text-[#27AE60]" : "text-[#C0392B]")}>R$ {Math.abs(lucroLiquidoPer100).toFixed(2).replace(".", ",")}</p>
             <div className="space-y-2 border-t pt-2">
               {per100Items.map((item) => {
                 const maxVal = Math.max(...per100Items.map(i => Math.abs(i.value)), 1);
                 const barW = (Math.abs(item.value) / maxVal) * 100;
                 return (
-                  <div key={item.label} className="space-y-0.5">
-                    <div className="flex items-center justify-between text-xs">
-                      <div className="flex items-center gap-1.5">
-                        <span className={`h-2.5 w-2.5 rounded-full ${item.color} shrink-0`} />
-                        <span>{item.label}</span>
-                      </div>
-                      <span className="font-medium">R$ {Math.abs(item.value).toFixed(2).replace(".", ",")}</span>
-                    </div>
-                    <div className="h-2 bg-muted rounded-full overflow-hidden">
-                      <div
-                        className={`h-full rounded-full ${item.color} transition-all duration-500`}
-                        style={{ width: `${barW}%` }}
-                      />
-                    </div>
+                  <div key={item.label} className="space-y-1">
+                    <div className="flex items-center justify-between text-[10px]"><div className="flex items-center gap-1.5"><span className={cn("h-2 w-2 rounded-full shrink-0", item.color)} /><span className="text-text2">{item.label}</span></div><span className="font-bold text-foreground">R$ {Math.abs(item.value).toFixed(2).replace(".", ",")}</span></div>
+                    <div className="h-1.5 bg-bg3 rounded-full overflow-hidden"><div className={cn("h-full rounded-full transition-all duration-500", item.color)} style={{ width: `${barW}%` }} /></div>
                   </div>
                 );
               })}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        {/* CARD 3: CMV */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold">CMV</CardTitle>
-            <p className="text-xs text-muted-foreground">Custo dos ingredientes</p>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <p className={`text-3xl font-bold text-center ${cmvColor}`}>
-              {calc.cmvPct.toFixed(1)}%
-            </p>
-            <div className="relative h-4 bg-muted rounded-full overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all duration-500 ${cmvBg}`}
-                style={{ width: `${Math.min(calc.cmvPct * 2, 100)}%` }}
-              />
+        <div className="card-premium p-6">
+          <div className="pb-4"><h3 className="text-sm font-bold font-syne uppercase">CMV</h3><p className="text-[10px] text-text3 font-medium uppercase tracking-wider">Custo dos ingredientes</p></div>
+          <div className="space-y-4">
+            <p className={cn("text-3xl font-bold text-center font-syne", calc.cmvPct > 40 ? "text-[#C0392B]" : calc.cmvPct > 32 ? "text-[#F39C12]" : "text-[#27AE60]")}>{calc.cmvPct.toFixed(1)}%</p>
+            <div className="progress-premium"><div className={cn("progress-premium-bar", calc.cmvPct > 40 ? "bg-[#C0392B]" : calc.cmvPct > 32 ? "bg-[#F39C12]" : "bg-[#27AE60]")} style={{ width: `${Math.min(calc.cmvPct * 2.5, 100)}%` }} /></div>
+            <div className="text-[11px] space-y-1 text-text2">
+              <div className="flex justify-between"><span>Meta máxima</span><span className="font-bold text-foreground">32%</span></div>
+              <div className="flex justify-between"><span>Folga</span><span className={cn("font-bold", cmvFolga >= 0 ? "text-[#27AE60]" : "text-[#C0392B]")}>{cmvFolga >= 0 ? `${cmvFolga.toFixed(1)}%` : `${Math.abs(cmvFolga).toFixed(1)}% acima`}</span></div>
             </div>
-            <div className="text-xs space-y-1 text-muted-foreground">
-              <div className="flex justify-between">
-                <span>Meta máxima</span>
-                <span className="font-medium text-foreground">32%</span>
-              </div>
-              <div className="flex justify-between">
-                <span>CMV atual</span>
-                <span className={`font-medium ${cmvColor}`}>{calc.cmvPct.toFixed(1)}%</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Folga</span>
-                <span className={`font-medium ${cmvFolga >= 0 ? "text-green-600" : "text-red-500"}`}>
-                  {cmvFolga >= 0 ? `${cmvFolga.toFixed(1)}%` : `${Math.abs(cmvFolga).toFixed(1)}% acima`}
-                </span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        {/* CARD 4: Alertas */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-yellow-500" />
-              Alertas
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+        <div className="card-premium p-6">
+          <div className="pb-4"><h3 className="text-sm font-bold font-syne uppercase flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-[#F39C12]" />Alertas</h3><p className="text-[10px] text-text3 font-medium uppercase tracking-wider">Situações Críticas</p></div>
+          <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
             {alertas.length === 0 && contasAtrasadas.length === 0 ? (
-              <div className="text-center py-4">
-                <p className="text-sm text-green-600 font-medium">✅ Tudo em dia!</p>
-                <p className="text-xs text-muted-foreground mt-1">Nenhum alerta no momento</p>
-              </div>
+              <div className="text-center py-4"><p className="text-xs text-[#27AE60] font-bold uppercase tracking-tight">✅ Tudo em dia!</p></div>
             ) : (
               <div className="space-y-2">
-                {alertas.map((a, i) => (
-                  <div key={i} className="flex items-start gap-2 text-xs bg-yellow-50 dark:bg-yellow-950/20 rounded-md p-2">
-                    <span className="text-yellow-500 shrink-0">⚠️</span>
-                    <span className="text-foreground">{a}</span>
-                  </div>
-                ))}
-                {contasAtrasadas.map((c) => (
-                  <div key={c.id} className="flex items-start gap-2 text-xs bg-red-50 dark:bg-red-950/20 rounded-md p-2">
-                    <span className="text-red-500 shrink-0">🔴</span>
-                    <div>
-                      <p className="font-medium text-foreground">{c.descricao}</p>
-                      <p className="text-muted-foreground">{fmt(c.valor)} — {new Date(c.data_lancamento + "T12:00:00").toLocaleDateString("pt-BR")}</p>
-                    </div>
-                  </div>
-                ))}
+                {alertas.map((a, i) => (<div key={i} className="flex items-start gap-2 text-[11px] bg-[#F39C12]/10 border border-[#F39C12]/20 rounded-md p-2"><span className="text-[#F39C12] shrink-0">⚠️</span><span className="text-foreground font-medium">{a}</span></div>))}
+                {contasAtrasadas.map((c) => (<div key={c.id} className="flex items-start gap-2 text-[11px] bg-[#C0392B]/10 border border-[#C0392B]/20 rounded-md p-2"><span className="text-[#C0392B] shrink-0">🔴</span><div><p className="font-bold text-foreground">{c.descricao}</p><p className="text-text2">{fmt(c.valor)} — {new Date(c.data_lancamento + "T12:00:00").toLocaleDateString("pt-BR")}</p></div></div>))}
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
-      {/* ═══ BLOCO 5 — ONDE FOI O DINHEIRO? ═══ */}
       {calc.categoriasOrdenadas.length > 0 && (
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base">Onde foi o dinheiro?</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
+        <div className="card-premium p-6">
+          <div className="pb-4"><h3 className="text-base font-bold font-syne uppercase">Onde foi o dinheiro?</h3></div>
+          <div className="space-y-3">
             {calc.categoriasOrdenadas.map((c) => {
               const barColor = CAT_COLORS[c.cat] || "bg-primary/70";
               return (
                 <div key={c.cat} className="space-y-1">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-foreground/80">{c.label}</span>
-                    <div className="flex items-center gap-3">
-                      <span className="font-semibold">{fmt(c.valor)}</span>
-                      <span className="text-muted-foreground text-xs w-10 text-right">{c.pct.toFixed(0)}%</span>
-                    </div>
-                  </div>
-                  <div className="h-2.5 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className={`h-full rounded-full ${barColor} transition-all duration-500`}
-                      style={{ width: `${c.pctDespesas}%` }}
-                    />
-                  </div>
+                  <div className="flex items-center justify-between text-sm"><span className="text-foreground/80">{c.label}</span><div className="flex items-center gap-3"><span className="font-semibold">{fmt(c.valor)}</span><span className="text-muted-foreground text-xs w-10 text-right">{c.pct.toFixed(0)}%</span></div></div>
+                  <div className="h-2.5 bg-muted rounded-full overflow-hidden"><div className={`h-full rounded-full ${barColor} transition-all duration-500`} style={{ width: `${c.pctDespesas}%` }} /></div>
                 </div>
               );
             })}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
-      {/* ═══ DIALOG — Nova Receita / Despesa ═══ */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {dialogTipo === "receita" ? "💰 Nova Receita" : "💸 Nova Despesa"}
-            </DialogTitle>
-          </DialogHeader>
+          <DialogHeader><DialogTitle>{dialogTipo === "receita" ? "💰 Nova Receita" : "💸 Nova Despesa"}</DialogTitle></DialogHeader>
           <div className="space-y-4">
-            <div>
-              <Label>Descrição</Label>
-              <Input
-                value={form.descricao}
-                onChange={(e) => setForm((f) => ({ ...f, descricao: e.target.value }))}
-                placeholder={dialogTipo === "receita" ? "Ex: Vendas do dia, Evento..." : "Ex: Conta de luz, Fornecedor..."}
-              />
-            </div>
-            <div>
-              <Label>Valor</Label>
-              <MoneyInput
-                value={form.valor}
-                onChange={(v) => setForm((f) => ({ ...f, valor: v }))}
-              />
-            </div>
+            <div><Label>Descrição</Label><Input value={form.descricao} onChange={(e) => setForm((f) => ({ ...f, descricao: e.target.value }))} placeholder={dialogTipo === "receita" ? "Ex: Vendas do dia, Evento..." : "Ex: Conta de luz, Fornecedor..."} /></div>
+            <div><Label>Valor</Label><MoneyInput value={form.valor} onChange={(v) => setForm((f) => ({ ...f, valor: v }))} /></div>
             <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label>Data início</Label>
-                <Input
-                  type="date"
-                  value={form.data_lancamento}
-                  onChange={(e) => setForm((f) => ({ ...f, data_lancamento: e.target.value }))}
-                />
-              </div>
-              <div>
-                <Label>Data fim <span className="text-muted-foreground text-xs">(opcional)</span></Label>
-                <Input
-                  type="date"
-                  value={form.data_fim}
-                  onChange={(e) => setForm((f) => ({ ...f, data_fim: e.target.value }))}
-                />
-              </div>
+              <div><Label>Data início</Label><Input type="date" value={form.data_lancamento} onChange={(e) => setForm((f) => ({ ...f, data_lancamento: e.target.value }))} /></div>
+              <div><Label>Data fim <span className="text-muted-foreground text-xs">(opcional)</span></Label><Input type="date" value={form.data_fim} onChange={(e) => setForm((f) => ({ ...f, data_fim: e.target.value }))} /></div>
             </div>
-            {mediaDiaria !== null && (
-              <p className="text-sm text-muted-foreground bg-muted/50 rounded-md px-3 py-2">
-                Média diária: <span className="font-semibold text-foreground">{fmt(mediaDiaria)}</span>
-              </p>
-            )}
+            {mediaDiaria !== null && (<p className="text-sm text-muted-foreground bg-muted/50 rounded-md px-3 py-2">Média diária: <span className="font-semibold text-foreground">{fmt(mediaDiaria)}</span></p>)}
             <div>
               <Label>Categoria</Label>
-              <Select
-                value={form.categoria}
-                onValueChange={(v) => setForm((f) => ({ ...f, categoria: v }))}
-              >
+              <Select value={form.categoria} onValueChange={(v) => setForm((f) => ({ ...f, categoria: v }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {(dialogTipo === "receita" ? CATEGORIAS_RECEITA_OPTIONS : CATEGORIAS_DESPESA_OPTIONS).map((c) => (
-                    <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
-                  ))}
-                </SelectContent>
+                <SelectContent>{(dialogTipo === "receita" ? CATEGORIAS_RECEITA_OPTIONS : CATEGORIAS_DESPESA_OPTIONS).map((c) => (<SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>))}</SelectContent>
               </Select>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancelar</Button>
-            <Button onClick={handleSubmit} disabled={createMutation.isPending}>
-              Salvar
-            </Button>
+            <button className="btn-3d-ghost h-10 px-6" onClick={() => setDialogOpen(false)}>Cancelar</button>
+            <button className="btn-3d-red h-10 px-6" onClick={handleSubmit} disabled={createMutation.isPending}>Salvar</button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
