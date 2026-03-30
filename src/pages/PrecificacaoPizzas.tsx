@@ -76,10 +76,10 @@ const fmt = (v: number) =>
 const fmtPct = (v: number) => `${v.toFixed(1)}%`;
 
 const cmvColor = (pct: number): string => {
-  if (pct < 25) return "text-blue-600";
-  if (pct <= 35) return "text-green-600";
-  if (pct <= 40) return "text-yellow-600";
-  return "text-red-600";
+  if (pct < 25) return "text-info";
+  if (pct <= 35) return "text-success";
+  if (pct <= 40) return "text-warning";
+  return "text-destructive";
 };
 
 const cmvBg = (pct: number): string => {
@@ -530,7 +530,7 @@ export default function PrecificacaoPizzas() {
                     <TableRow key={ficha.id} className={hasAlert ? "bg-red-50/50" : ""}>
                       <TableCell className="font-medium">
                         <div className="flex items-center gap-1">
-                          {hasAlert && <AlertTriangle className="h-4 w-4 text-red-500 flex-shrink-0" />}
+                          {hasAlert && <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0" />}
                           {ficha.nome}
                         </div>
                       </TableCell>
@@ -570,7 +570,7 @@ export default function PrecificacaoPizzas() {
                                 placeholder="R$ 0,00"
                               />
                               {savedFields[fieldKey] && (
-                                <Check className="absolute right-1 h-3.5 w-3.5 text-green-500 animate-in fade-in duration-200" />
+                                <Check className="absolute right-1 h-3.5 w-3.5 text-success animate-in fade-in duration-200" />
                               )}
                             </div>
                           </TableCell>

@@ -50,7 +50,7 @@ function AppRoutes() {
 
   if (authLoading || (session && onboardingLoading)) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     );
@@ -83,25 +83,20 @@ function AppRoutes() {
       <Route path="/onboarding" element={<Navigate to="/" replace />} />
       <Route element={<AppLayout />}>
         <Route path="/" element={<Dashboard />} />
-        {/* Insumos */}
         <Route path="/insumos/comprados" element={<InsumosComprados />} />
         <Route path="/insumos/produzidos" element={<InsumosProduzidos />} />
-        {/* Fichas Técnicas */}
         <Route path="/fichas/pizzas" element={<FichasTecnicasPizza />} />
         <Route path="/fichas/sanduiches" element={<FichasTecnicasProdutos categoria="sanduiche" />} />
         <Route path="/fichas/pratos" element={<FichasTecnicasProdutos categoria="prato" />} />
         <Route path="/fichas/sobremesas" element={<FichasTecnicasProdutos categoria="sobremesa" />} />
         <Route path="/fichas/bebidas" element={<FichasTecnicasProdutos categoria="bebida" />} />
-        {/* Precificação */}
         <Route path="/precificacao/pizzas" element={<PrecificacaoPizzas />} />
         <Route path="/precificacao/produtos" element={<PrecificacaoProdutos />} />
         <Route path="/precificacao/bebidas" element={<PrecificacaoBebidas />} />
         <Route path="/precificacao/configuracoes" element={<PrecificacaoConfiguracoes />} />
-        {/* Financeiro */}
         <Route path="/financeiro/dre" element={<FinanceiroDRE />} />
         <Route path="/financeiro/contas-a-pagar" element={<FinanceiroContasPagar />} />
         <Route path="/financeiro/ponto-de-equilibrio" element={<FinanceiroPontoEquilibrio />} />
-        {/* Promoções */}
         <Route path="/promocoes/ativas" element={<SectionPage />} />
         <Route path="/promocoes/combos" element={<SectionPage />} />
       </Route>
@@ -112,7 +107,7 @@ function AppRoutes() {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+    <ThemeProvider>
       <TooltipProvider>
         <Toaster />
         <Sonner />

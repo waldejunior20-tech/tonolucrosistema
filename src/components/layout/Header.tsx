@@ -1,18 +1,10 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LogOut, User, Sun, Moon, Monitor } from "lucide-react";
+import { LogOut, User, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useTheme } from "@/components/ThemeProvider";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 export function Header() {
-  const { theme, setTheme } = useTheme();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const navigate = useNavigate();
@@ -39,48 +31,33 @@ export function Header() {
   };
 
   return (
-    <header className="h-14 border-b border-border bg-card/80 backdrop-blur-sm flex items-center justify-between px-6 sticky top-0 z-10">
+    <header className="h-16 border-b border-border bg-background flex items-center justify-between px-6 sticky top-0 z-10">
       <div className="flex items-center gap-3">
         {profile?.business_name && (
-          <span className="text-sm font-medium text-foreground">
+          <span className="text-sm font-semibold text-foreground">
             {profile.business_name}
           </span>
         )}
       </div>
       
-      <div className="flex items-center gap-2">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
-              {theme === "light" ? (
-                <Sun className="h-4 w-4" />
-              ) : theme === "dark" ? (
-                <Moon className="h-4 w-4" />
-              ) : (
-                <Monitor className="h-4 w-4" />
-              )}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => setTheme("light")}>
-              <Sun className="mr-2 h-4 w-4" /> Claro
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTheme("dark")}>
-              <Moon className="mr-2 h-4 w-4" /> Escuro
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTheme("system")}>
-              <Monitor className="mr-2 h-4 w-4" /> Automático
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+      <div className="flex items-center gap-3">
+        {/* Search */}
+        <div className="hidden md:flex items-center gap-2 bg-card border border-border rounded-sm px-3 py-2 w-[280px]">
+          <Search className="h-4 w-4 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Buscar..."
+            className="bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none w-full"
+          />
+        </div>
 
         <div className="h-5 w-px bg-border" />
 
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
-            <User className="h-3.5 w-3.5 text-primary" />
+          <div className="w-9 h-9 rounded-full border-2 border-primary flex items-center justify-center">
+            <User className="h-4 w-4 text-primary" />
           </div>
-          <span className="hidden sm:block text-xs">{user?.email}</span>
+          <span className="hidden sm:block text-xs text-foreground">{user?.email}</span>
         </div>
 
         <Button 

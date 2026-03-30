@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -34,35 +33,24 @@ export default function PasswordRecovery() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-primary mb-2">TôNoLucro</h1>
+          <h1 className="text-2xl font-bold text-primary mb-2">TôNoLucro</h1>
           <p className="text-muted-foreground">Recuperar sua senha</p>
         </div>
         
-        <div className="bg-card p-8 rounded-xl border shadow-card">
+        <div className="bg-card p-8 rounded-md border border-border shadow-card">
           {!sent ? (
             <form onSubmit={handleRecovery} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Digite seu email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="seu@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
+                <Input id="email" type="email" placeholder="seu@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
               </div>
-              <Button 
-                type="submit" 
-                className="w-full" 
-                disabled={loading}
-              >
+              <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Enviar email de recuperação"}
               </Button>
             </form>
           ) : (
             <div className="text-center space-y-4">
-              <p className="text-sm">Um link de recuperação foi enviado para o seu email.</p>
+              <p className="text-sm text-foreground">Um link de recuperação foi enviado para o seu email.</p>
               <Button asChild variant="outline" className="w-full">
                 <Link to="/login">Voltar para o login</Link>
               </Button>

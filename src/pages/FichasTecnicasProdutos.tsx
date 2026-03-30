@@ -557,7 +557,7 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
                               onBlur={() => autoSaveIngredienteQtd(ing, ing.quantidade)}
                             />
                             {savedFields[`${ing.db_id}-qty`] && (
-                              <Check className="absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-green-500" />
+                              <Check className="absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-success" />
                             )}
                           </div>
                         </div>

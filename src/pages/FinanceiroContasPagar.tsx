@@ -239,13 +239,13 @@ export default function FinanceiroContasPagar() {
         <Card>
           <CardContent className="pt-6">
             <p className="text-xs text-muted-foreground">Total a Pagar</p>
-            <p className="text-2xl font-bold text-red-600">{fmt(cards.totalAPagar)}</p>
+            <p className="text-2xl font-bold text-destructive">{fmt(cards.totalAPagar)}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
             <p className="text-xs text-muted-foreground">Total Pago no Mês</p>
-            <p className="text-2xl font-bold text-green-600">{fmt(cards.totalPago)}</p>
+            <p className="text-2xl font-bold text-success">{fmt(cards.totalPago)}</p>
           </CardContent>
         </Card>
         <Card>
@@ -253,7 +253,7 @@ export default function FinanceiroContasPagar() {
             <p className="text-xs text-muted-foreground">Atrasadas</p>
             <p className="text-2xl font-bold text-foreground flex items-center gap-2">
               {cards.atrasadas}
-              {cards.atrasadas > 0 && <AlertTriangle className="h-5 w-5 text-red-500" />}
+              {cards.atrasadas > 0 && <AlertTriangle className="h-5 w-5 text-destructive" />}
             </p>
           </CardContent>
         </Card>
@@ -317,7 +317,7 @@ export default function FinanceiroContasPagar() {
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-7 w-7 p-0 text-green-600 hover:text-green-700"
+                            className="h-7 w-7 p-0 text-success hover:text-success"
                             title="Marcar como pago"
                             onClick={() => togglePagoMutation.mutate({ id: l.id, pago: true })}
                           >
@@ -346,7 +346,7 @@ export default function FinanceiroContasPagar() {
                         <Button
                           size="sm"
                           variant="ghost"
-                          className="h-7 w-7 p-0 text-red-500 hover:text-red-600"
+                          className="h-7 w-7 p-0 text-destructive hover:text-destructive"
                           onClick={() => setDeleteId(l.id)}
                         >
                           <Trash2 className="h-4 w-4" />

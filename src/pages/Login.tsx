@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, Pizza } from "lucide-react";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -31,10 +31,10 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center">
-          <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center text-accent-foreground font-bold text-lg mx-auto mb-4">
-            TL
+          <div className="w-12 h-12 rounded-sm bg-primary flex items-center justify-center mx-auto mb-4">
+            <Pizza size={24} className="text-primary-foreground" />
           </div>
-          <h1 className="text-xl font-bold">Bem-vindo ao TôNoLucro</h1>
+          <h1 className="text-xl font-bold text-foreground">Bem-vindo ao TôNoLucro</h1>
           <p className="text-sm text-muted-foreground mt-1">Faça login para acessar o sistema</p>
         </div>
         <form onSubmit={handleLogin} className="space-y-4">

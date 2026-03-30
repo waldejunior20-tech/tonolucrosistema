@@ -94,7 +94,7 @@ export default function Onboarding() {
               return (
                 <div key={i} className="flex-1 flex flex-col items-center gap-1">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
-                    done ? "bg-green-500 text-white" : active ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                    done ? "bg-success text-foreground" : active ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
                   }`}>
                     {done ? <Check className="h-5 w-5" /> : <Icon className="h-5 w-5" />}
                   </div>
@@ -199,13 +199,13 @@ export default function Onboarding() {
               <div className="flex items-center gap-3 pt-3 border-t border-border">
                 <span className="w-36 text-sm font-semibold text-foreground">Total</span>
                 <span className={`text-lg font-bold ${
-                  Math.abs(totalPct - 100) <= 1 ? "text-green-600" : "text-destructive"
+                  Math.abs(totalPct - 100) <= 1 ? "text-success" : "text-destructive"
                 }`}>
                   {totalPct.toFixed(0)}%
                 </span>
               </div>
               {totalPct < 100 && totalPct > 0 && (
-                <p className="text-sm text-amber-600">
+                <p className="text-sm text-warning">
                   Falta {(100 - totalPct).toFixed(0)}% — distribua entre as formas de pagamento
                 </p>
               )}
@@ -233,7 +233,7 @@ export default function Onboarding() {
               <Button
                 onClick={handleFinish}
                 disabled={saving}
-                className="bg-green-600 hover:bg-green-700 text-white"
+                className="bg-success hover:bg-success/80 text-foreground"
               >
                 {saving ? "Salvando..." : "Começar a usar o sistema!"}
               </Button>

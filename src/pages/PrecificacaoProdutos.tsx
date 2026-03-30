@@ -75,10 +75,10 @@ const fmt = (v: number) =>
 const fmtPct = (v: number) => `${v.toFixed(1)}%`;
 
 const cmvColor = (pct: number): string => {
-  if (pct < 25) return "text-blue-600";
-  if (pct <= 35) return "text-green-600";
-  if (pct <= 40) return "text-yellow-600";
-  return "text-red-600";
+  if (pct < 25) return "text-info";
+  if (pct <= 35) return "text-success";
+  if (pct <= 40) return "text-warning";
+  return "text-destructive";
 };
 
 const cmvBg = (pct: number): string => {
@@ -352,7 +352,7 @@ export default function PrecificacaoProdutos() {
               <TableRow key={ficha.id} className={hasAlert ? "bg-red-50/50" : ""}>
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-1">
-                    {hasAlert && <AlertTriangle className="h-4 w-4 text-red-500 flex-shrink-0" />}
+                    {hasAlert && <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0" />}
                     {ficha.nome}
                   </div>
                 </TableCell>
@@ -362,7 +362,7 @@ export default function PrecificacaoProdutos() {
                     <Input
                       type={localPrices[ficha.id] !== undefined ? "number" : "text"}
                       step={localPrices[ficha.id] !== undefined ? "0.01" : undefined}
-                      className="h-8 w-28 text-xs text-center pr-6 border-b-2 border-b-[#C0392B] border-t-0 border-l-0 border-r-0 rounded-none bg-[#FEF2F2] focus-visible:ring-[#C0392B]/30"
+                      className="h-8 w-28 text-xs text-center pr-6 border-b-2 border-b-primary border-t-0 border-l-0 border-r-0 rounded-none bg-primary/5 focus-visible:ring-primary/30"
                       value={
                         localPrices[ficha.id] !== undefined
                           ? localPrices[ficha.id]
@@ -383,7 +383,7 @@ export default function PrecificacaoProdutos() {
                       placeholder="R$ 0,00"
                     />
                     {savedFields[ficha.id] && (
-                      <Check className="absolute right-1 h-3.5 w-3.5 text-green-500 animate-in fade-in duration-200" />
+                      <Check className="absolute right-1 h-3.5 w-3.5 text-success animate-in fade-in duration-200" />
                     )}
                   </div>
                 </TableCell>
@@ -443,7 +443,7 @@ export default function PrecificacaoProdutos() {
             <p className="text-3xl font-bold text-foreground flex items-center gap-2">
               {indicators.foraMetaCount}
               {indicators.foraMetaCount > 0 && (
-                <AlertTriangle className="h-6 w-6 text-red-500" />
+                <AlertTriangle className="h-6 w-6 text-destructive" />
               )}
             </p>
           </CardContent>

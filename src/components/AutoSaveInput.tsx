@@ -98,7 +98,7 @@ export function AutoSaveInput({
         disabled={disabled}
       />
       {showCheck && (
-        <Check className="absolute right-1 h-3.5 w-3.5 text-green-500 animate-in fade-in duration-200" />
+        <Check className="absolute right-1 h-3.5 w-3.5 text-success animate-in fade-in duration-200" />
       )}
     </div>
   );

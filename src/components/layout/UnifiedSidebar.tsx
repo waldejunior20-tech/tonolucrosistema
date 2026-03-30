@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, Package, BookOpen, DollarSign, 
   TrendingUp, Tag, ChevronDown, 
-  PanelLeftClose, PanelLeft 
+  PanelLeftClose, PanelLeft, Pizza
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -24,29 +24,18 @@ interface SidebarItem {
 }
 
 const sidebarItems: SidebarItem[] = [
+  { key: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/" },
   {
-    key: "dashboard",
-    label: "Dashboard",
-    icon: LayoutDashboard,
-    path: "/",
-  },
-  {
-    key: "insumos",
-    label: "Insumos",
-    icon: Package,
+    key: "insumos", label: "Insumos", icon: Package,
     subItems: [
       { label: "Comprados", path: "/insumos/comprados" },
       { label: "Produzidos", path: "/insumos/produzidos" },
     ],
   },
   {
-    key: "fichas",
-    label: "Fichas Técnicas",
-    icon: BookOpen,
+    key: "fichas", label: "Fichas Técnicas", icon: BookOpen,
     subItems: [
-      { 
-        label: "Pizzas", 
-        subItems: [
+      { label: "Pizzas", subItems: [
           { label: "Tradicionais", path: "/fichas/pizzas?tipo=tradicional" },
           { label: "Especiais", path: "/fichas/pizzas?tipo=especial" },
           { label: "Premium", path: "/fichas/pizzas?tipo=premium" },
@@ -60,9 +49,7 @@ const sidebarItems: SidebarItem[] = [
     ],
   },
   {
-    key: "precificacao",
-    label: "Precificação",
-    icon: DollarSign,
+    key: "precificacao", label: "Precificação", icon: DollarSign,
     subItems: [
       { label: "Pizzas", path: "/precificacao/pizzas" },
       { label: "Produtos", path: "/precificacao/produtos" },
@@ -70,9 +57,7 @@ const sidebarItems: SidebarItem[] = [
     ],
   },
   {
-    key: "financeiro",
-    label: "Financeiro",
-    icon: TrendingUp,
+    key: "financeiro", label: "Financeiro", icon: TrendingUp,
     subItems: [
       { label: "DRE", path: "/financeiro/dre" },
       { label: "Contas a Pagar", path: "/financeiro/contas-a-pagar" },
@@ -80,9 +65,7 @@ const sidebarItems: SidebarItem[] = [
     ],
   },
   {
-    key: "promocoes",
-    label: "Promoções",
-    icon: Tag,
+    key: "promocoes", label: "Promoções", icon: Tag,
     subItems: [
       { label: "Promoções Ativas", path: "/promocoes/ativas" },
       { label: "Combos Fixos", path: "/promocoes/combos" },
@@ -133,7 +116,6 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
         setExpandedItems(prev => ({ ...prev, [item.key]: true }));
       }
     }
-    
     if (item.path) {
       navigate(item.path);
     } else if (item.subItems) {
@@ -144,23 +126,23 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
   return (
     <aside 
       className={cn(
-        "h-screen bg-sidebar transition-all duration-300 flex flex-col border-r border-sidebar-border relative z-50",
+        "h-screen bg-sidebar transition-all duration-300 flex flex-col border-r border-sidebar-border relative z-50 shadow-sidebar",
         collapsed ? "w-16" : "w-[240px]"
       )}
     >
-      {/* Sidebar Header */}
+      {/* Logo */}
       <div className="h-16 flex items-center px-4 shrink-0 overflow-hidden relative">
         <div className={cn("flex items-center gap-3 transition-opacity duration-200", collapsed ? "opacity-0 w-0" : "opacity-100")}>
-          <div className="w-9 h-9 rounded-full bg-accent flex items-center justify-center shrink-0">
-            <span className="text-accent-foreground font-sans font-extrabold text-sm leading-none">TL</span>
+          <div className="w-9 h-9 rounded-sm bg-primary flex items-center justify-center shrink-0">
+            <Pizza size={18} className="text-primary-foreground" />
           </div>
-          <span className="text-sidebar-accent-foreground font-sans font-bold text-lg leading-none whitespace-nowrap">TôNoLucro</span>
+          <span className="text-foreground font-sans font-extrabold text-lg leading-none whitespace-nowrap">TôNoLucro</span>
         </div>
         
         <button
           onClick={onToggle}
           className={cn(
-            "p-1.5 rounded-lg text-sidebar-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent transition-colors",
+            "p-1.5 rounded-sm text-sidebar-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent transition-colors",
             collapsed ? "mx-auto" : "ml-auto"
           )}
         >
@@ -186,23 +168,25 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
                 <button
                   onClick={() => handleItemClick(item)}
                   className={cn(
-                    "group relative w-full h-10 flex items-center rounded-lg transition-all duration-200 overflow-hidden",
-                    isActive ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                    "group relative w-full h-10 flex items-center rounded-sm transition-all duration-200 overflow-hidden",
+                    isActive 
+                      ? "bg-primary/10 text-primary" 
+                      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                   )}
                 >
-                  {/* Left Active Bar */}
+                  {/* Left Active Bar — ember orange */}
                   {isActive && !collapsed && (
-                    <div className="absolute left-0 top-0 w-[3px] h-full bg-accent" />
+                    <div className="absolute left-0 top-0 w-[3px] h-full bg-primary rounded-r" />
                   )}
                   
                   <div className={cn("flex items-center w-full px-3 gap-3", collapsed ? "justify-center" : "")}>
-                    <div className={cn("shrink-0 transition-transform duration-200", isActive ? "scale-110" : "group-hover:scale-110")}>
+                    <div className="shrink-0">
                       <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
                     </div>
                     
                     {!collapsed && (
                       <div className="flex-1 flex items-center justify-between min-w-0">
-                        <span className="text-sm font-medium truncate">{item.label}</span>
+                        <span className={cn("text-sm truncate", isActive ? "font-semibold" : "font-medium")}>{item.label}</span>
                         {hasSubItems && (
                           <div className={cn("transition-transform duration-200", isExpanded ? "rotate-180" : "")}>
                             <ChevronDown size={14} className="text-sidebar-foreground" />
@@ -215,7 +199,7 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
 
                 {/* Sub-items */}
                 {!collapsed && hasSubItems && isExpanded && (
-                  <div className="flex flex-col gap-1 mt-1">
+                  <div className="flex flex-col gap-0.5 mt-0.5">
                     {item.subItems?.map((sub, idx) => {
                       const hasNestedItems = !!sub.subItems;
                       const isNestedExpanded = expandedSubItems[sub.label];
@@ -223,25 +207,25 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
                       const isSubActive = sub.path ? currentPath.includes(sub.path) : sub.subItems?.some(n => currentPath.includes(n.path));
                       
                       return (
-                        <div key={`${sub.label}-${idx}`} className="flex flex-col gap-1">
+                        <div key={`${sub.label}-${idx}`} className="flex flex-col gap-0.5">
                           <button
                             onClick={() => {
                               if (sub.path) navigate(sub.path);
                               if (hasNestedItems) toggleSubExpand(sub.label);
                             }}
                             className={cn(
-                              "h-8 pl-11 pr-4 flex items-center justify-between text-sm font-medium transition-colors rounded-lg group",
-                              isSubActive ? "text-accent" : "text-sidebar-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent"
+                              "h-8 pl-11 pr-4 flex items-center justify-between text-sm transition-colors rounded-sm group",
+                              isSubActive ? "text-primary font-semibold" : "text-sidebar-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent font-medium"
                             )}
                           >
-                            <span className="truncate">→ {sub.label}</span>
+                            <span className="truncate">{sub.label}</span>
                             {hasNestedItems && (
                               <ChevronDown size={12} className={cn("transition-transform duration-200", isNestedExpanded ? "rotate-180" : "")} />
                             )}
                           </button>
 
                           {hasNestedItems && isNestedExpanded && (
-                            <div className="flex flex-col gap-1 ml-4 border-l border-sidebar-border pl-2">
+                            <div className="flex flex-col gap-0.5 ml-4 border-l border-sidebar-border pl-2">
                               {sub.subItems?.map((nested, nIdx) => {
                                 const isNestedActive = currentPath.includes(nested.path);
                                 return (
@@ -249,11 +233,11 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
                                     key={`${nested.path}-${nIdx}`}
                                     onClick={() => navigate(nested.path)}
                                     className={cn(
-                                      "h-7 px-3 flex items-center text-xs font-medium transition-colors rounded-lg",
-                                      isNestedActive ? "text-accent" : "text-sidebar-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent"
+                                      "h-7 px-3 flex items-center text-xs transition-colors rounded-sm",
+                                      isNestedActive ? "text-primary font-semibold" : "text-sidebar-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent font-medium"
                                     )}
                                   >
-                                    <span className="truncate">• {nested.label}</span>
+                                    <span className="truncate">{nested.label}</span>
                                   </button>
                                 );
                               })}
