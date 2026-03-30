@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, Package, BookOpen, DollarSign, 
-  TrendingUp, Tag, ChevronDown, ChevronRight, 
+  TrendingUp, Tag, ChevronDown, 
   PanelLeftClose, PanelLeft 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -38,10 +38,10 @@ const sidebarItems: SidebarItem[] = [
     label: "Fichas Técnicas",
     icon: BookOpen,
     subItems: [
-      { label: "Tradicionais", path: "/fichas/pizzas?tipo=tradicional" },
-      { label: "Especiais", path: "/fichas/pizzas?tipo=especial" },
-      { label: "Premium", path: "/fichas/pizzas?tipo=premium" },
-      { label: "Doces", path: "/fichas/pizzas?tipo=doce" },
+      { label: "Tradicionais", path: "/fichas/pizzas" },
+      { label: "Especiais", path: "/fichas/pizzas" },
+      { label: "Premium", path: "/fichas/pizzas" },
+      { label: "Doces", path: "/fichas/pizzas" },
       { label: "Sanduíches", path: "/fichas/sanduiches" },
       { label: "Pratos", path: "/fichas/pratos" },
       { label: "Sobremesas", path: "/fichas/sobremesas" },
@@ -92,7 +92,7 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
   useEffect(() => {
     // Auto-expand the module containing the current path
     sidebarItems.forEach(item => {
-      if (item.subItems?.some(sub => location.pathname === sub.path.split('?')[0])) {
+      if (item.subItems?.some(sub => location.pathname === sub.path)) {
         setExpandedItems(prev => ({ ...prev, [item.key]: true }));
       }
     });
@@ -125,12 +125,12 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
       )}
     >
       {/* Sidebar Header */}
-      <div className="h-16 flex items-center px-4 shrink-0 relative">
-        <div className={cn("flex items-center gap-3 transition-opacity duration-200", collapsed ? "opacity-0 invisible w-0" : "opacity-100 visible")}>
-          <div className="w-8 h-8 rounded-full bg-[#C0392B] flex items-center justify-center shrink-0">
+      <div className="h-16 flex items-center px-4 shrink-0 overflow-hidden">
+        <div className={cn("flex items-center gap-3 transition-opacity duration-200", collapsed ? "opacity-0 w-0" : "opacity-100")}>
+          <div className="w-9 h-9 rounded-full bg-[#C0392B] flex items-center justify-center shrink-0">
             <span className="text-white font-['Syne'] font-extrabold text-sm leading-none">TL</span>
           </div>
-          <span className="text-[#F5F0F0] font-['Syne'] font-bold text-lg leading-none">ToLucro</span>
+          <span className="text-[#F5F0F0] font-['Syne'] font-bold text-lg leading-none whitespace-nowrap">ToLucro</span>
         </div>
         
         <button
@@ -145,32 +145,32 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto overflow-x-hidden py-4 scrollbar-thin scrollbar-thumb-white/10">
-        <div className="flex flex-col gap-1 px-2">
+      <nav className="flex-1 overflow-y-auto overflow-x-hidden py-4 px-2">
+        <div className="flex flex-col gap-1">
           {sidebarItems.map((item) => {
             const Icon = item.icon;
             const isExpanded = expandedItems[item.key];
             const hasSubItems = !!item.subItems;
-            const isActive = item.path === location.pathname || 
-                            (item.subItems?.some(sub => location.pathname === sub.path.split('?')[0]));
+            const isActive = (item.path === location.pathname) || 
+                            (item.subItems?.some(sub => location.pathname === sub.path));
 
             return (
               <div key={item.key} className="flex flex-col gap-1">
                 <button
                   onClick={() => handleItemClick(item)}
                   className={cn(
-                    "group relative w-full h-11 flex items-center rounded-lg transition-all duration-200 overflow-hidden",
+                    "group relative w-full h-10 flex items-center rounded-lg transition-all duration-200 overflow-hidden",
                     isActive ? "bg-[#C0392B]/15 text-[#F5F0F0]" : "text-[#A89898] hover:bg-white/5 hover:text-[#F5F0F0]"
                   )}
                 >
                   {/* Left Active Bar */}
                   {isActive && !collapsed && (
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 bg-[#C0392B] rounded-r" />
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-[#C0392B] rounded-r" />
                   )}
                   
                   <div className={cn("flex items-center w-full px-3 gap-3", collapsed ? "justify-center" : "")}>
                     <div className={cn("shrink-0 transition-transform duration-200", isActive ? "scale-110" : "group-hover:scale-110")}>
-                      <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+                      <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
                     </div>
                     
                     {!collapsed && (
@@ -189,16 +189,17 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
                 {/* Sub-items */}
                 {!collapsed && hasSubItems && isExpanded && (
                   <div className="flex flex-col gap-1 mt-1">
-                    {item.subItems?.map((sub) => {
-                      const isSubActive = location.pathname === sub.path.split('?')[0] && 
-                                          (!sub.path.includes('?') || location.search === sub.path.split('?')[1] || location.search === `?${sub.path.split('?')[1]}`);
+                    {item.subItems?.map((sub, idx) => {
+                      // Basic active check: just match the path. For multiple links to the same path (like Fichas), 
+                      // we just highlight if the path matches.
+                      const isSubActive = location.pathname === sub.path;
                       
                       return (
                         <button
-                          key={sub.path}
+                          key={`${sub.path}-${idx}`}
                           onClick={() => navigate(sub.path)}
                           className={cn(
-                            "h-9 pl-11 pr-4 flex items-center text-sm font-medium transition-colors rounded-lg",
+                            "h-8 pl-11 pr-4 flex items-center text-sm font-medium transition-colors rounded-lg",
                             isSubActive ? "text-[#C0392B]" : "text-[#A89898] hover:text-[#F5F0F0] hover:bg-white/5"
                           )}
                         >
