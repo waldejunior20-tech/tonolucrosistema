@@ -99,17 +99,31 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
+  const [expandedSubItems, setExpandedSubItems] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     sidebarItems.forEach(item => {
-      if (item.subItems?.some(sub => location.pathname === sub.path)) {
+      const isSubActive = item.subItems?.some(sub => 
+        location.pathname === sub.path || 
+        sub.subItems?.some(nested => location.pathname + location.search === nested.path)
+      );
+      if (isSubActive) {
         setExpandedItems(prev => ({ ...prev, [item.key]: true }));
+        item.subItems?.forEach(sub => {
+          if (sub.subItems?.some(nested => location.pathname + location.search === nested.path)) {
+            setExpandedSubItems(prev => ({ ...prev, [sub.label]: true }));
+          }
+        });
       }
     });
-  }, [location.pathname]);
+  }, [location.pathname, location.search]);
 
   const toggleExpand = (key: string) => {
     setExpandedItems(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const toggleSubExpand = (label: string) => {
+    setExpandedSubItems(prev => ({ ...prev, [label]: !prev[label] }));
   };
 
   const handleItemClick = (item: SidebarItem) => {
