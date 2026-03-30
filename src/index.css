@@ -102,6 +102,7 @@
 @layer components {
   .label-upper {
     @apply text-xs font-semibold uppercase tracking-wider text-muted-foreground;
+    font-family: 'Syne', system-ui, sans-serif;
   }
 
   .kpi-number {
