@@ -422,7 +422,7 @@ export default function PrecificacaoPizzas() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="card-premium p-6">
           <p className="label-upper mb-4">📊 CMV Médio Atual</p>
-          <p className={cn("kpi-number", indicators.avgCmv > 40 ? "text-[#C0392B]" : indicators.avgCmv > 32 ? "text-[#F39C12]" : "text-[#27AE60]")}>
+          <p className={cn("kpi-number", indicators.avgCmv > 40 ? "text-destructive" : indicators.avgCmv > 32 ? "text-warning" : "text-success")}>
             {fmtPct(indicators.avgCmv)}
           </p>
           <p className="text-[11px] text-text3 font-medium mt-1">Média entre todos os tamanhos</p>
