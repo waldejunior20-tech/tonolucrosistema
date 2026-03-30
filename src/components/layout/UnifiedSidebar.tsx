@@ -38,10 +38,10 @@ const sidebarItems: SidebarItem[] = [
     label: "Fichas Técnicas",
     icon: BookOpen,
     subItems: [
-      { label: "Tradicionais", path: "/fichas/pizzas" },
-      { label: "Especiais", path: "/fichas/pizzas" },
-      { label: "Premium", path: "/fichas/pizzas" },
-      { label: "Doces", path: "/fichas/pizzas" },
+      { label: "Tradicionais", path: "/fichas/tradicionais" },
+      { label: "Especiais", path: "/fichas/especiais" },
+      { label: "Premium", path: "/fichas/premium" },
+      { label: "Doces", path: "/fichas/doces" },
       { label: "Sanduíches", path: "/fichas/sanduiches" },
       { label: "Pratos", path: "/fichas/pratos" },
       { label: "Sobremesas", path: "/fichas/sobremesas" },
@@ -90,7 +90,6 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    // Auto-expand the module containing the current path
     sidebarItems.forEach(item => {
       if (item.subItems?.some(sub => location.pathname === sub.path)) {
         setExpandedItems(prev => ({ ...prev, [item.key]: true }));
@@ -120,12 +119,12 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
   return (
     <aside 
       className={cn(
-        "h-screen bg-[#161212] transition-all duration-300 flex flex-col border-r border-white/5",
+        "h-screen bg-[#161212] transition-all duration-300 flex flex-col border-r border-white/5 relative z-50",
         collapsed ? "w-16" : "w-[240px]"
       )}
     >
       {/* Sidebar Header */}
-      <div className="h-16 flex items-center px-4 shrink-0 overflow-hidden">
+      <div className="h-16 flex items-center px-4 shrink-0 overflow-hidden relative">
         <div className={cn("flex items-center gap-3 transition-opacity duration-200", collapsed ? "opacity-0 w-0" : "opacity-100")}>
           <div className="w-9 h-9 rounded-full bg-[#C0392B] flex items-center justify-center shrink-0">
             <span className="text-white font-['Syne'] font-extrabold text-sm leading-none">TL</span>
@@ -159,13 +158,13 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
                 <button
                   onClick={() => handleItemClick(item)}
                   className={cn(
-                    "group relative w-full h-10 flex items-center rounded-lg transition-all duration-200 overflow-hidden",
+                    "group relative w-full h-10 flex items-center rounded transition-all duration-200 overflow-hidden",
                     isActive ? "bg-[#C0392B]/15 text-[#F5F0F0]" : "text-[#A89898] hover:bg-white/5 hover:text-[#F5F0F0]"
                   )}
                 >
                   {/* Left Active Bar */}
                   {isActive && !collapsed && (
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-[#C0392B] rounded-r" />
+                    <div className="absolute left-0 top-0 w-[3px] h-full bg-[#C0392B]" />
                   )}
                   
                   <div className={cn("flex items-center w-full px-3 gap-3", collapsed ? "justify-center" : "")}>
@@ -190,8 +189,6 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
                 {!collapsed && hasSubItems && isExpanded && (
                   <div className="flex flex-col gap-1 mt-1">
                     {item.subItems?.map((sub, idx) => {
-                      // Basic active check: just match the path. For multiple links to the same path (like Fichas), 
-                      // we just highlight if the path matches.
                       const isSubActive = location.pathname === sub.path;
                       
                       return (
@@ -199,11 +196,11 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
                           key={`${sub.path}-${idx}`}
                           onClick={() => navigate(sub.path)}
                           className={cn(
-                            "h-8 pl-11 pr-4 flex items-center text-sm font-medium transition-colors rounded-lg",
+                            "h-8 pl-11 pr-4 flex items-center text-sm font-medium transition-colors rounded",
                             isSubActive ? "text-[#C0392B]" : "text-[#A89898] hover:text-[#F5F0F0] hover:bg-white/5"
                           )}
                         >
-                          <span className="truncate">{sub.label}</span>
+                          <span className="truncate">→ {sub.label}</span>
                         </button>
                       );
                     })}
