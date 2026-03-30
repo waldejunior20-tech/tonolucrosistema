@@ -435,7 +435,7 @@ export default function PrecificacaoPizzas() {
               indicators.avgCmv > 40 ? "health-pulse" : indicators.avgCmv > 32 ? "health-pulse-amber" : "health-pulse-green",
               indicators.avgCmv > 40 ? "bg-destructive" : indicators.avgCmv > 32 ? "bg-warning" : "bg-success"
             )} />
-            <span className={cn("text-lg font-bold font-syne uppercase", indicators.avgCmv > 40 ? "text-[#C0392B]" : indicators.avgCmv > 32 ? "text-[#F39C12]" : "text-[#27AE60]")}>
+            <span className={cn("text-lg font-bold font-heading uppercase", indicators.avgCmv > 40 ? "text-destructive" : indicators.avgCmv > 32 ? "text-warning" : "text-success")}>
               {cmvMessage(indicators.avgCmv)}
             </span>
           </div>
