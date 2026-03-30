@@ -107,6 +107,7 @@
 
   .kpi-number {
     @apply text-3xl font-bold tracking-tight;
+    font-family: 'Syne', system-ui, sans-serif;
   }
 
   .card-premium {
