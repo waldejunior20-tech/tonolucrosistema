@@ -357,21 +357,23 @@ export default function PrecificacaoPizzas() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-[1400px] mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Precificação de Pizzas</h1>
-        <Button
-          variant="outline"
-          size="sm"
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-extrabold tracking-tight text-syne uppercase">Precificação de Pizzas</h1>
+          <p className="text-text2 font-medium">Gestão de margem por tamanho</p>
+        </div>
+        <button
           onClick={() => {
             setConfigForm(config ?? null);
             setConfigOpen(!configOpen);
           }}
+          className="btn-3d-ghost h-10 px-6 flex items-center gap-2"
         >
-          <Settings2 className="h-4 w-4 mr-2" />
-          Configurações
-        </Button>
+          <Settings2 className="h-4 w-4" />
+          <span>Configurações</span>
+        </button>
       </div>
 
       {/* Config panel */}
