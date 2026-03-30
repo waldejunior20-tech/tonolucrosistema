@@ -20,7 +20,7 @@ interface ThemeProviderState {
 const initialState: ThemeProviderState = {
   theme: "system",
   setTheme: () => null,
-  accentColor: "#C0392B",
+  accentColor: "#1C3F3A",
   setAccentColor: () => null,
 };
 
@@ -38,7 +38,7 @@ export function ThemeProvider({
   );
   
   const [accentColor, setAccentColor] = useState<string>(
-    () => localStorage.getItem(colorStorageKey) || "#C0392B"
+    () => localStorage.getItem(colorStorageKey) || "#1C3F3A"
   );
 
   useEffect(() => {
@@ -62,22 +62,18 @@ export function ThemeProvider({
   useEffect(() => {
     const root = window.document.documentElement;
     
-    // Helper to convert hex to dark version (simplified logic)
     const getDarkColor = (hex: string) => {
-      // In a real app we'd use a library, but here we can just map the 5 specific colors
       const colorMap: Record<string, string> = {
-        "#C0392B": "#922B21", // Red
-        "#1A5276": "#154360", // Navy
-        "#1E8449": "#145A32", // Green
-        "#6C3483": "#512E5F", // Purple
-        "#784212": "#4E2C0C", // Brown
+        "#1C3F3A": "#142D29",
+        "#2D5A52": "#1C3F3A",
+        "#A8D84A": "#8BBE35",
       };
       return colorMap[hex] || hex;
     };
 
     root.style.setProperty("--red", accentColor);
     root.style.setProperty("--red-dark", getDarkColor(accentColor));
-    root.style.setProperty("--red-glow", `${accentColor}40`); // 25% opacity
+    root.style.setProperty("--red-glow", `${accentColor}40`);
     
     localStorage.setItem("vite-ui-color", accentColor);
   }, [accentColor]);

@@ -38,7 +38,7 @@ export default function PasswordRecovery() {
           <p className="text-muted-foreground">Recuperar sua senha</p>
         </div>
         
-        <div className="bg-card p-8 rounded-lg border shadow-sm">
+        <div className="bg-card p-8 rounded-xl border shadow-card">
           {!sent ? (
             <form onSubmit={handleRecovery} className="space-y-4">
               <div className="space-y-2">
@@ -54,7 +54,7 @@ export default function PasswordRecovery() {
               </div>
               <Button 
                 type="submit" 
-                className="w-full bg-[#C0392B] hover:bg-[#A93226]" 
+                className="w-full" 
                 disabled={loading}
               >
                 {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Enviar email de recuperação"}
@@ -70,7 +70,7 @@ export default function PasswordRecovery() {
           )}
           
           <div className="mt-4">
-            <Button variant="link" className="w-full text-muted-foreground hover:text-[#C0392B]" asChild>
+            <Button variant="link" className="w-full text-muted-foreground hover:text-primary" asChild>
               <Link to="/login" className="flex items-center justify-center gap-2">
                 <ArrowLeft className="h-4 w-4" /> Voltar para o login
               </Link>

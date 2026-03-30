@@ -9,28 +9,28 @@ interface HealthStatusProps {
 export function HealthStatus({ status, label }: HealthStatusProps) {
   const statusConfig = {
     healthy: {
-      color: "bg-[#27AE60]",
-      glow: "shadow-[0_0_8px_#27AE60]",
+      color: "bg-success",
+      glow: "shadow-[0_0_8px_hsl(var(--success))]",
       text: "Negócio Saudável",
       pulseClass: "health-pulse-green",
-      barBg: "bg-[#27AE60]/10",
-      border: "border-[#27AE60]/20"
+      barBg: "bg-success/10",
+      border: "border-success/20"
     },
     warning: {
-      color: "bg-[#F39C12]",
-      glow: "shadow-[0_0_8px_#F39C12]",
+      color: "bg-warning",
+      glow: "shadow-[0_0_8px_hsl(var(--warning))]",
       text: "Atenção Necessária",
       pulseClass: "health-pulse-amber",
-      barBg: "bg-[#F39C12]/10",
-      border: "border-[#F39C12]/20"
+      barBg: "bg-warning/10",
+      border: "border-warning/20"
     },
     danger: {
-      color: "bg-[#C0392B]",
-      glow: "shadow-[0_0_8px_#C0392B]",
+      color: "bg-destructive",
+      glow: "shadow-[0_0_8px_hsl(var(--destructive))]",
       text: "Situação de Prejuízo",
       pulseClass: "health-pulse",
-      barBg: "bg-[#C0392B]/10",
-      border: "border-[#C0392B]/20"
+      barBg: "bg-destructive/10",
+      border: "border-destructive/20"
     }
   };
 
@@ -43,7 +43,7 @@ export function HealthStatus({ status, label }: HealthStatusProps) {
       config.border
     )}>
       <div className={cn("w-3 h-3 rounded-full", config.color, config.glow, config.pulseClass)} />
-      <span className="text-sm font-bold tracking-tight uppercase font-syne">
+      <span className="text-sm font-bold tracking-tight uppercase font-heading">
         {label || config.text}
       </span>
     </div>
