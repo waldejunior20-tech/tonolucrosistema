@@ -56,11 +56,11 @@ export function SubMenu({ activeModule, currentPath, onNavigate }: SubMenuProps)
   if (items.length === 0) return null;
 
   return (
-    <div className="w-[170px] h-full bg-sidebar-accent/30 border-r border-border flex flex-col py-6 px-3">
-      <h2 className="label-upper px-3 mb-6">
+    <div className="w-52 h-full bg-card border-r border-border flex flex-col py-5 px-3">
+      <h2 className="px-3 mb-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
         {moduleTitles[activeModule]}
       </h2>
-      <nav className="flex flex-col gap-1">
+      <nav className="flex flex-col gap-0.5">
         {items.map((item) => {
           const isActive = currentPath === item.path;
           return (
@@ -68,10 +68,10 @@ export function SubMenu({ activeModule, currentPath, onNavigate }: SubMenuProps)
               key={item.path}
               onClick={() => onNavigate(item.path)}
               className={cn(
-                "text-left px-3 py-2.5 rounded-md text-[13px] transition-all duration-150 font-medium",
+                "text-left px-3 py-2 rounded-lg text-sm transition-all duration-150 font-medium",
                 isActive
                   ? "bg-primary/10 text-primary"
-                  : "text-text2 hover:bg-sidebar-accent hover:text-text"
+                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
               )}
             >
               {item.label}
