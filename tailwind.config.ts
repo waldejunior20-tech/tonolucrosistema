@@ -14,8 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Inter", "DM Sans", "system-ui", "sans-serif"],
-        heading: ["Inter", "DM Sans", "system-ui", "sans-serif"],
+        sans: ["DM Sans", "Inter", "system-ui", "sans-serif"],
+        heading: ["DM Sans", "Inter", "system-ui", "sans-serif"],
+        mono: ["JetBrains Mono", "Fira Code", "monospace"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -67,16 +68,22 @@ export default {
         },
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-        xl: "20px",
+        xs: "6px",
+        sm: "10px",
+        md: "16px",
+        lg: "20px",
+        xl: "28px",
         pill: "9999px",
       },
       boxShadow: {
-        card: "0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05)",
-        "card-hover": "0 4px 12px rgba(0,0,0,0.08), 0 12px 32px rgba(0,0,0,0.08)",
-        button: "0 2px 8px rgba(168,216,74,0.35)",
+        card: "0 1px 2px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.3)",
+        "card-hover": "0 1px 2px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.35)",
+        "card-ember": "0 0 0 1px rgba(255,107,43,0.15), 0 8px 32px rgba(255,107,43,0.08)",
+        "glow-ember": "0 0 24px rgba(255,107,43,0.20)",
+        "glow-profit": "0 0 16px rgba(0,214,143,0.15)",
+        button: "0 4px 16px rgba(255,107,43,0.30)",
+        tooltip: "0 8px 32px rgba(0,0,0,0.6)",
+        sidebar: "2px 0 20px rgba(0,0,0,0.4)",
       },
       keyframes: {
         "accordion-down": {
