@@ -9,12 +9,18 @@ import { cn } from "@/lib/utils";
 
 export type ModuleKey = "dashboard" | "insumos" | "fichas" | "precificacao" | "financeiro" | "promocoes";
 
+interface SubItem {
+  label: string;
+  path?: string;
+  subItems?: { label: string; path: string; }[];
+}
+
 interface SidebarItem {
   key: ModuleKey;
   label: string;
   icon: React.ElementType;
   path?: string;
-  subItems?: { label: string; path: string; }[];
+  subItems?: SubItem[];
 }
 
 const sidebarItems: SidebarItem[] = [
@@ -38,10 +44,15 @@ const sidebarItems: SidebarItem[] = [
     label: "Fichas Técnicas",
     icon: BookOpen,
     subItems: [
-      { label: "Tradicionais", path: "/fichas/pizzas" },
-      { label: "Especiais", path: "/fichas/pizzas" },
-      { label: "Premium", path: "/fichas/pizzas" },
-      { label: "Doces", path: "/fichas/pizzas" },
+      { 
+        label: "Pizzas", 
+        subItems: [
+          { label: "Tradicionais", path: "/fichas/pizzas?tipo=tradicional" },
+          { label: "Especiais", path: "/fichas/pizzas?tipo=especial" },
+          { label: "Premium", path: "/fichas/pizzas?tipo=premium" },
+          { label: "Doces", path: "/fichas/pizzas?tipo=doce" },
+        ]
+      },
       { label: "Sanduíches", path: "/fichas/sanduiches" },
       { label: "Pratos", path: "/fichas/pratos" },
       { label: "Sobremesas", path: "/fichas/sobremesas" },
@@ -88,17 +99,31 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
+  const [expandedSubItems, setExpandedSubItems] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     sidebarItems.forEach(item => {
-      if (item.subItems?.some(sub => location.pathname === sub.path)) {
+      const isSubActive = item.subItems?.some(sub => 
+        location.pathname === sub.path || 
+        sub.subItems?.some(nested => location.pathname + location.search === nested.path)
+      );
+      if (isSubActive) {
         setExpandedItems(prev => ({ ...prev, [item.key]: true }));
+        item.subItems?.forEach(sub => {
+          if (sub.subItems?.some(nested => location.pathname + location.search === nested.path)) {
+            setExpandedSubItems(prev => ({ ...prev, [sub.label]: true }));
+          }
+        });
       }
     });
-  }, [location.pathname]);
+  }, [location.pathname, location.search]);
 
   const toggleExpand = (key: string) => {
     setExpandedItems(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const toggleSubExpand = (label: string) => {
+    setExpandedSubItems(prev => ({ ...prev, [label]: !prev[label] }));
   };
 
   const handleItemClick = (item: SidebarItem) => {
@@ -151,7 +176,10 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
             const isExpanded = expandedItems[item.key];
             const hasSubItems = !!item.subItems;
             const isActive = (item.path === location.pathname) || 
-                            (item.subItems?.some(sub => location.pathname === sub.path));
+                            (item.subItems?.some(sub => 
+                              (sub.path && (location.pathname + location.search).includes(sub.path)) || 
+                              sub.subItems?.some(nested => (location.pathname + location.search).includes(nested.path))
+                            ));
 
             return (
               <div key={item.key} className="flex flex-col gap-1">
@@ -189,19 +217,49 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
                 {!collapsed && hasSubItems && isExpanded && (
                   <div className="flex flex-col gap-1 mt-1">
                     {item.subItems?.map((sub, idx) => {
-                      const isSubActive = location.pathname === sub.path;
+                      const hasNestedItems = !!sub.subItems;
+                      const isNestedExpanded = expandedSubItems[sub.label];
+                      const currentPath = location.pathname + location.search;
+                      const isSubActive = sub.path ? currentPath.includes(sub.path) : sub.subItems?.some(n => currentPath.includes(n.path));
                       
                       return (
-                        <button
-                          key={`${sub.path}-${idx}`}
-                          onClick={() => navigate(sub.path)}
-                          className={cn(
-                            "h-8 pl-11 pr-4 flex items-center text-sm font-medium transition-colors rounded",
-                            isSubActive ? "text-[#C0392B]" : "text-[#A89898] hover:text-[#F5F0F0] hover:bg-white/5"
+                        <div key={`${sub.label}-${idx}`} className="flex flex-col gap-1">
+                          <button
+                            onClick={() => {
+                              if (sub.path) navigate(sub.path);
+                              if (hasNestedItems) toggleSubExpand(sub.label);
+                            }}
+                            className={cn(
+                              "h-8 pl-11 pr-4 flex items-center justify-between text-sm font-medium transition-colors rounded group",
+                              isSubActive ? "text-[#C0392B]" : "text-[#A89898] hover:text-[#F5F0F0] hover:bg-white/5"
+                            )}
+                          >
+                            <span className="truncate">→ {sub.label}</span>
+                            {hasNestedItems && (
+                              <ChevronDown size={12} className={cn("transition-transform duration-200", isNestedExpanded ? "rotate-180" : "")} />
+                            )}
+                          </button>
+
+                          {hasNestedItems && isNestedExpanded && (
+                            <div className="flex flex-col gap-1 ml-4 border-l border-white/5 pl-2">
+                              {sub.subItems?.map((nested, nIdx) => {
+                                const isNestedActive = currentPath.includes(nested.path);
+                                return (
+                                  <button
+                                    key={`${nested.path}-${nIdx}`}
+                                    onClick={() => navigate(nested.path)}
+                                    className={cn(
+                                      "h-7 px-3 flex items-center text-xs font-medium transition-colors rounded",
+                                      isNestedActive ? "text-[#C0392B]" : "text-[#A89898] hover:text-[#F5F0F0] hover:bg-white/5"
+                                    )}
+                                  >
+                                    <span className="truncate">• {nested.label}</span>
+                                  </button>
+                                );
+                              })}
+                            </div>
                           )}
-                        >
-                          <span className="truncate">→ {sub.label}</span>
-                        </button>
+                        </div>
                       );
                     })}
                   </div>

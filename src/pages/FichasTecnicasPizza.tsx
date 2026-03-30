@@ -1,4 +1,5 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -86,10 +87,20 @@ const converterQuantidade = (quantidade: number, unidade: string) => {
 
 export default function FichasTecnicasPizza() {
   const queryClient = useQueryClient();
+  const [searchParams] = useSearchParams();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [filtroTipo, setFiltroTipo] = useState("todos");
+
+  useEffect(() => {
+    const tipo = searchParams.get("tipo");
+    if (tipo && TIPOS.includes(tipo)) {
+      setFiltroTipo(tipo);
+    } else {
+      setFiltroTipo("todos");
+    }
+  }, [searchParams]);
   const [buscaIngrediente, setBuscaIngrediente] = useState("");
   const [buscaAberta, setBuscaAberta] = useState<number | null>(null);
   const [buscaEmbalagemAberta, setBuscaEmbalagemAberta] = useState<string | null>(null);
