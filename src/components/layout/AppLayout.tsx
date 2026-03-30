@@ -1,7 +1,6 @@
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { IconSidebar, type ModuleKey } from "./IconSidebar";
-import { SubMenu, subMenus } from "./SubMenu";
+import { UnifiedSidebar, type ModuleKey } from "./UnifiedSidebar";
 import { Header } from "./Header";
 
 function getModuleFromPath(path: string): ModuleKey {
