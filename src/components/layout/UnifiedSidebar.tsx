@@ -217,19 +217,49 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
                 {!collapsed && hasSubItems && isExpanded && (
                   <div className="flex flex-col gap-1 mt-1">
                     {item.subItems?.map((sub, idx) => {
-                      const isSubActive = location.pathname === sub.path;
+                      const hasNestedItems = !!sub.subItems;
+                      const isNestedExpanded = expandedSubItems[sub.label];
+                      const currentPath = location.pathname + location.search;
+                      const isSubActive = sub.path ? currentPath.includes(sub.path) : sub.subItems?.some(n => currentPath.includes(n.path));
                       
                       return (
-                        <button
-                          key={`${sub.path}-${idx}`}
-                          onClick={() => navigate(sub.path)}
-                          className={cn(
-                            "h-8 pl-11 pr-4 flex items-center text-sm font-medium transition-colors rounded",
-                            isSubActive ? "text-[#C0392B]" : "text-[#A89898] hover:text-[#F5F0F0] hover:bg-white/5"
+                        <div key={`${sub.label}-${idx}`} className="flex flex-col gap-1">
+                          <button
+                            onClick={() => {
+                              if (sub.path) navigate(sub.path);
+                              if (hasNestedItems) toggleSubExpand(sub.label);
+                            }}
+                            className={cn(
+                              "h-8 pl-11 pr-4 flex items-center justify-between text-sm font-medium transition-colors rounded group",
+                              isSubActive ? "text-[#C0392B]" : "text-[#A89898] hover:text-[#F5F0F0] hover:bg-white/5"
+                            )}
+                          >
+                            <span className="truncate">→ {sub.label}</span>
+                            {hasNestedItems && (
+                              <ChevronDown size={12} className={cn("transition-transform duration-200", isNestedExpanded ? "rotate-180" : "")} />
+                            )}
+                          </button>
+
+                          {hasNestedItems && isNestedExpanded && (
+                            <div className="flex flex-col gap-1 ml-4 border-l border-white/5 pl-2">
+                              {sub.subItems?.map((nested, nIdx) => {
+                                const isNestedActive = currentPath.includes(nested.path);
+                                return (
+                                  <button
+                                    key={`${nested.path}-${nIdx}`}
+                                    onClick={() => navigate(nested.path)}
+                                    className={cn(
+                                      "h-7 px-3 flex items-center text-xs font-medium transition-colors rounded",
+                                      isNestedActive ? "text-[#C0392B]" : "text-[#A89898] hover:text-[#F5F0F0] hover:bg-white/5"
+                                    )}
+                                  >
+                                    <span className="truncate">• {nested.label}</span>
+                                  </button>
+                                );
+                              })}
+                            </div>
                           )}
-                        >
-                          <span className="truncate">→ {sub.label}</span>
-                        </button>
+                        </div>
                       );
                     })}
                   </div>
