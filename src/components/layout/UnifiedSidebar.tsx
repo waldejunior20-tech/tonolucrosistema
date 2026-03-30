@@ -176,7 +176,10 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
             const isExpanded = expandedItems[item.key];
             const hasSubItems = !!item.subItems;
             const isActive = (item.path === location.pathname) || 
-                            (item.subItems?.some(sub => location.pathname === sub.path));
+                            (item.subItems?.some(sub => 
+                              (sub.path && (location.pathname + location.search).includes(sub.path)) || 
+                              sub.subItems?.some(nested => (location.pathname + location.search).includes(nested.path))
+                            ));
 
             return (
               <div key={item.key} className="flex flex-col gap-1">
