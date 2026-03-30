@@ -389,72 +389,73 @@ export default function FinanceiroDRE() {
   return (
     <div className="space-y-5">
       {/* ═══ TOPBAR ═══ */}
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <h1 className="text-2xl font-bold text-foreground">Resultado do Mês</h1>
-        <div className="flex gap-2 items-center flex-wrap">
-          <Button onClick={() => openDialog("receita")} className="bg-green-600 hover:bg-green-700 text-white">
-            <Plus className="h-4 w-4 mr-1" /> Receita
-          </Button>
-          <Button onClick={() => openDialog("despesa")} variant="destructive">
-            <Plus className="h-4 w-4 mr-1" /> Despesa
-          </Button>
-          <Select value={String(mes)} onValueChange={(v) => setMes(Number(v))}>
-            <SelectTrigger className="w-[130px]"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {MESES.map((m, i) => (
-                <SelectItem key={i} value={String(i + 1)}>{m}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={String(ano)} onValueChange={(v) => setAno(Number(v))}>
-            <SelectTrigger className="w-[90px]"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {anos.map((a) => (
-                <SelectItem key={a} value={String(a)}>{a}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      <div className="flex items-center justify-between flex-wrap gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl font-extrabold tracking-tight text-syne uppercase">DRE Financeiro</h1>
+          <p className="text-text2 font-medium">Demonstrativo de Resultados do Exercício</p>
+        </div>
+        <div className="flex gap-3 items-center flex-wrap">
+          <button 
+            onClick={() => openDialog("receita")} 
+            className="btn-3d-green h-10 px-6 flex items-center gap-2"
+          >
+            <Plus className="h-4 w-4" /> <span>Receita</span>
+          </button>
+          <button 
+            onClick={() => openDialog("despesa")} 
+            className="btn-3d-red h-10 px-6 flex items-center gap-2"
+          >
+            <Plus className="h-4 w-4" /> <span>Despesa</span>
+          </button>
+          
+          <div className="flex items-center gap-2 bg-surface p-1 rounded-lg border">
+            <Select value={String(mes)} onValueChange={(v) => setMes(Number(v))}>
+              <SelectTrigger className="w-[120px] h-8 border-none bg-transparent shadow-none"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {MESES.map((m, i) => (
+                  <SelectItem key={i} value={String(i + 1)}>{m}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <div className="w-px h-4 bg-border" />
+            <Select value={String(ano)} onValueChange={(v) => setAno(Number(v))}>
+              <SelectTrigger className="w-[80px] h-8 border-none bg-transparent shadow-none"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {anos.map((a) => (
+                  <SelectItem key={a} value={String(a)}>{a}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 
-      {/* ═══ BLOCO 1 — FAIXA STATUS ═══ */}
-      <div className={`flex items-center justify-between rounded-lg border px-4 py-3 ${st.bg}`}>
-        <div className={`flex items-center gap-2 font-semibold ${st.text}`}>
-          {st.icon}
-          <span>{st.message}</span>
-        </div>
-        <span className={`text-lg font-bold ${calc.sobrou >= 0 ? "text-green-600" : "text-red-500"}`}>
-          {fmt(calc.sobrou)}
-        </span>
-      </div>
+      <HealthStatus status={calc.status === "verde" ? "healthy" : calc.status === "amarelo" ? "warning" : "danger"} />
 
       {/* ═══ BLOCO 2 — 3 NÚMEROS GRANDES ═══ */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="pt-6 text-center">
-            <p className="text-sm text-muted-foreground mb-1">💰 Entrou</p>
-            <p className="text-3xl font-bold text-green-600">{fmt(calc.totalEntrou)}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6 text-center">
-            <p className="text-sm text-muted-foreground mb-1">💸 Saiu</p>
-            <p className="text-3xl font-bold text-red-500">{fmt(calc.totalSaiu)}</p>
-          </CardContent>
-        </Card>
-        <Card className={calc.sobrou >= 0 ? "border-green-300 bg-green-50/40 dark:bg-green-950/20" : "border-red-300 bg-red-50/40 dark:bg-red-950/20"}>
-          <CardContent className="pt-6 text-center">
-            <p className="text-sm text-muted-foreground mb-1">
-              {calc.sobrou >= 0 ? "✅ Sobrou" : "❌ Faltou"}
-            </p>
-            <p className={`text-3xl font-bold ${calc.sobrou >= 0 ? "text-green-600" : "text-red-500"}`}>
-              {fmt(Math.abs(calc.sobrou))}
-            </p>
-            <p className={`text-sm mt-1 ${calc.sobrou >= 0 ? "text-green-600" : "text-red-500"}`}>
-              {calc.sobrouPct.toFixed(1)}% da receita
-            </p>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="card-premium p-6">
+          <p className="label-upper mb-4">💰 Faturamento Total</p>
+          <p className="kpi-number text-[#27AE60]">{fmt(calc.totalEntrou)}</p>
+        </div>
+        <div className="card-premium p-6">
+          <p className="label-upper mb-4">💸 Saída Total</p>
+          <p className="kpi-number text-[#C0392B]">{fmt(calc.totalSaiu)}</p>
+        </div>
+        <div className={cn(
+          "card-premium p-6",
+          calc.sobrou >= 0 ? "border-[#27AE60]/30 shadow-sm shadow-[#27AE60]/5" : "border-[#C0392B]/30 shadow-sm shadow-[#C0392B]/5"
+        )}>
+          <p className="label-upper mb-4">
+            {calc.sobrou >= 0 ? "✅ Lucro Líquido" : "❌ Prejuízo"}
+          </p>
+          <p className={cn("kpi-number", calc.sobrou >= 0 ? "text-[#27AE60]" : "text-[#C0392B]")}>
+            {fmt(Math.abs(calc.sobrou))}
+          </p>
+          <p className={cn("text-[11px] mt-1 font-bold", calc.sobrou >= 0 ? "text-[#27AE60]" : "text-[#C0392B]")}>
+            {calc.sobrouPct.toFixed(1)}% de margem
+          </p>
+        </div>
       </div>
 
       {/* ═══ BLOCO 3 — META + EQUILÍBRIO ═══ */}
