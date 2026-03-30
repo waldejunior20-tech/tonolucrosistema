@@ -498,39 +498,41 @@ export default function FinanceiroDRE() {
                 </p>
               </>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Card Ponto de Equilíbrio */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
+        <div className="card-premium p-6">
+          <div className="pb-4">
+            <h3 className="text-base font-bold flex items-center gap-2 font-syne uppercase">
               <Target className="h-5 w-5 text-orange-500" />
               Ponto de Equilíbrio
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <p className="text-center text-3xl font-bold text-orange-500">
+            </h3>
+            <p className="text-[11px] text-text3 font-medium uppercase tracking-wider">Zero a Zero</p>
+          </div>
+          <div className="space-y-4">
+            <p className="text-center text-3xl font-bold text-orange-500 font-syne">
               {fmt(calc.pontoEquilibrio)}
             </p>
-            <div className="relative h-6 bg-muted rounded-full overflow-hidden">
+            <div className="progress-premium">
               <div
-                className={`h-full rounded-full transition-all duration-700 ${
+                className={cn(
+                  "progress-premium-bar",
                   calc.atingiuPE
                     ? "bg-gradient-to-r from-red-400 via-yellow-400 to-green-500"
                     : "bg-gradient-to-r from-red-400 to-red-500"
-                }`}
+                )}
                 style={{ width: `${Math.min(calc.progressPE, 100)}%` }}
               />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-xs font-bold text-foreground/80">
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <span className="text-[10px] font-bold text-foreground/80 font-syne">
                   {calc.pontoEquilibrio > 0
                     ? `${((calc.totalEntrou / calc.pontoEquilibrio) * 100).toFixed(0)}%`
                     : "—"}
                 </span>
               </div>
             </div>
-            <div className="text-xs space-y-1 text-muted-foreground">
+            <div className="text-xs space-y-1 text-text2">
               <div className="flex justify-between">
                 <span>Despesas fixas</span>
                 <span className="font-medium text-foreground">{fmt(calc.despFixasTotal)}</span>
@@ -540,15 +542,15 @@ export default function FinanceiroDRE() {
                 <span className="font-medium text-foreground">{calc.margemContribuicaoPct.toFixed(1)}%</span>
               </div>
             </div>
-            <p className={`text-sm text-center font-medium ${calc.atingiuPE ? "text-green-600" : "text-red-500"}`}>
+            <p className={cn("text-xs text-center font-bold uppercase tracking-tight", calc.atingiuPE ? "text-green-600" : "text-red-500")}>
               {calc.atingiuPE
                 ? `Tudo acima disso é lucro puro! 🎯`
                 : calc.pontoEquilibrio > 0
                 ? `Faltam ${fmt(calc.faltaPE)} para atingir`
                 : "Cadastre receitas e despesas"}
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* ═══ BLOCO 4 — 4 CARDS ANALÍTICOS ═══ */}
