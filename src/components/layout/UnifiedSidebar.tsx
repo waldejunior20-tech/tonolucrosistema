@@ -44,10 +44,15 @@ const sidebarItems: SidebarItem[] = [
     label: "Fichas Técnicas",
     icon: BookOpen,
     subItems: [
-      { label: "Tradicionais", path: "/fichas/pizzas" },
-      { label: "Especiais", path: "/fichas/pizzas" },
-      { label: "Premium", path: "/fichas/pizzas" },
-      { label: "Doces", path: "/fichas/pizzas" },
+      { 
+        label: "Pizzas", 
+        subItems: [
+          { label: "Tradicionais", path: "/fichas/pizzas?tipo=tradicional" },
+          { label: "Especiais", path: "/fichas/pizzas?tipo=especial" },
+          { label: "Premium", path: "/fichas/pizzas?tipo=premium" },
+          { label: "Doces", path: "/fichas/pizzas?tipo=doce" },
+        ]
+      },
       { label: "Sanduíches", path: "/fichas/sanduiches" },
       { label: "Pratos", path: "/fichas/pratos" },
       { label: "Sobremesas", path: "/fichas/sobremesas" },
