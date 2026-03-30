@@ -32,9 +32,9 @@ export default function Login() {
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center">
           <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg mx-auto mb-4">
-            DC
+            TL
           </div>
-          <h1 className="text-xl font-bold">Bem-vindo de volta</h1>
+          <h1 className="text-xl font-bold">Bem-vindo ao TôNoLucro</h1>
           <p className="text-sm text-muted-foreground mt-1">Faça login para acessar o sistema</p>
         </div>
         <form onSubmit={handleLogin} className="space-y-4">
