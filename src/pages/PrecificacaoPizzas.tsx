@@ -418,37 +418,37 @@ export default function PrecificacaoPizzas() {
       )}
 
       {/* Indicators */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">CMV Médio Atual</p>
-            <p className={`text-3xl font-bold ${cmvColor(indicators.avgCmv)}`}>
-              {fmtPct(indicators.avgCmv)}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Semáforo CMV</p>
-            <p className="text-3xl">
-              {cmvEmoji(indicators.avgCmv)}{" "}
-              <span className={`text-lg font-semibold ${cmvColor(indicators.avgCmv)}`}>
-                {cmvMessage(indicators.avgCmv)}
-              </span>
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Pizzas Fora da Meta</p>
-            <p className="text-3xl font-bold text-foreground flex items-center gap-2">
-              {indicators.foraMetaCount}
-              {indicators.foraMetaCount > 0 && (
-                <AlertTriangle className="h-6 w-6 text-red-500" />
-              )}
-            </p>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="card-premium p-6">
+          <p className="label-upper mb-4">📊 CMV Médio Atual</p>
+          <p className={cn("kpi-number", indicators.avgCmv > 40 ? "text-[#C0392B]" : indicators.avgCmv > 32 ? "text-[#F39C12]" : "text-[#27AE60]")}>
+            {fmtPct(indicators.avgCmv)}
+          </p>
+          <p className="text-[11px] text-text3 font-medium mt-1">Média entre todos os tamanhos</p>
+        </div>
+        <div className="card-premium p-6">
+          <p className="label-upper mb-4">🚦 Semáforo de Saúde</p>
+          <div className="flex items-center gap-3">
+            <div className={cn(
+              "health-pulse",
+              indicators.avgCmv > 40 ? "health-pulse" : indicators.avgCmv > 32 ? "health-pulse-amber" : "health-pulse-green",
+              indicators.avgCmv > 40 ? "bg-[#C0392B]" : indicators.avgCmv > 32 ? "bg-[#F39C12]" : "bg-[#27AE60]"
+            )} />
+            <span className={cn("text-lg font-bold font-syne uppercase", indicators.avgCmv > 40 ? "text-[#C0392B]" : indicators.avgCmv > 32 ? "text-[#F39C12]" : "text-[#27AE60]")}>
+              {cmvMessage(indicators.avgCmv)}
+            </span>
+          </div>
+        </div>
+        <div className="card-premium p-6">
+          <p className="label-upper mb-4">⚠️ Pizzas Fora da Meta</p>
+          <div className="flex items-center gap-3">
+            <p className="kpi-number">{indicators.foraMetaCount}</p>
+            {indicators.foraMetaCount > 0 && (
+              <AlertTriangle className="h-6 w-6 text-[#C0392B]" />
+            )}
+          </div>
+          <p className="text-[11px] text-text3 font-medium mt-1">Tamanhos com CMV acima de 40%</p>
+        </div>
       </div>
 
       {/* Pizza pricing table */}
