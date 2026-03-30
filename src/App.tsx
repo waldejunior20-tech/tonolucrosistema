@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
