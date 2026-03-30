@@ -34,7 +34,7 @@ export default function PasswordRecovery() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-[#C0392B] mb-2">Dom Corleone</h1>
+          <h1 className="text-4xl font-bold text-primary mb-2">TôNoLucro</h1>
           <p className="text-muted-foreground">Recuperar sua senha</p>
         </div>
         

@@ -154,7 +154,7 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
           <div className="w-9 h-9 rounded-full bg-[#C0392B] flex items-center justify-center shrink-0">
             <span className="text-white font-['Syne'] font-extrabold text-sm leading-none">TL</span>
           </div>
-          <span className="text-[#F5F0F0] font-['Syne'] font-bold text-lg leading-none whitespace-nowrap">ToLucro</span>
+          <span className="text-[#F5F0F0] font-['Syne'] font-bold text-lg leading-none whitespace-nowrap">TôNoLucro</span>
         </div>
         
         <button
