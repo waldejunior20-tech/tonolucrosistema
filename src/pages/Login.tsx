@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,51 +29,33 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md space-y-8">
+      <div className="w-full max-w-sm space-y-6">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-[#C0392B] mb-2">Dom Corleone</h1>
-          <p className="text-muted-foreground">Faça login para acessar o sistema</p>
+          <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg mx-auto mb-4">
+            DC
+          </div>
+          <h1 className="text-xl font-bold">Bem-vindo de volta</h1>
+          <p className="text-sm text-muted-foreground mt-1">Faça login para acessar o sistema</p>
         </div>
-        <form onSubmit={handleLogin} className="space-y-4 bg-card p-8 rounded-lg border shadow-sm">
+        <form onSubmit={handleLogin} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="seu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+            <Input id="email" type="email" placeholder="seu@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Senha</Label>
-              <Button variant="link" className="px-0 font-normal text-sm text-[#C0392B]" asChild>
-                <Link to="/recovery">Esqueci minha senha</Link>
-              </Button>
+              <Link to="/recovery" className="text-xs text-primary hover:underline">Esqueci minha senha</Link>
             </div>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
           </div>
-          <Button 
-            type="submit" 
-            className="w-full bg-[#C0392B] hover:bg-[#A93226]" 
-            disabled={loading}
-          >
+          <Button type="submit" className="w-full" disabled={loading}>
             {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Entrar"}
           </Button>
-          <div className="text-center mt-4">
-            <span className="text-sm text-muted-foreground">Não tem uma conta? </span>
-            <Link to="/signup" className="text-sm text-[#C0392B] hover:underline font-medium">
-              Criar conta
-            </Link>
-          </div>
+          <p className="text-center text-sm text-muted-foreground">
+            Não tem uma conta?{" "}
+            <Link to="/signup" className="text-primary hover:underline font-medium">Criar conta</Link>
+          </p>
         </form>
       </div>
     </div>
