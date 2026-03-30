@@ -460,17 +460,16 @@ export default function FinanceiroDRE() {
       </div>
 
       {/* ═══ BLOCO 3 — META + EQUILÍBRIO ═══ */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         {/* Card Meta */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
+        <div className="card-premium p-6">
+          <div className="pb-4">
+            <h3 className="text-base font-bold flex items-center gap-2 font-syne uppercase">
               🎯 Meta do mês
-            </CardTitle>
-            <p className="text-xs text-muted-foreground">Quanto você quer faturar</p>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div>
+            </h3>
+            <p className="text-[11px] text-text3 font-medium uppercase tracking-wider">Objetivo de Faturamento</p>
+          </div>
+          <div className="space-y-4">
               <Label className="text-xs">Meta R$</Label>
               <MoneyInput
                 value={metaFaturamento}
