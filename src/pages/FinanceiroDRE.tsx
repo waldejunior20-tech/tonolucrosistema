@@ -554,47 +554,48 @@ export default function FinanceiroDRE() {
       </div>
 
       {/* ═══ BLOCO 4 — 4 CARDS ANALÍTICOS ═══ */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         {/* CARD 1: Sobra das Vendas */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold">Sobra das vendas</CardTitle>
-            <p className="text-xs text-muted-foreground">Margem de contribuição</p>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <p className="text-2xl font-bold text-green-600">{fmt(calc.margemContribuicao)}</p>
-            <p className="text-xs text-muted-foreground">Sobraram para pagar despesas fixas</p>
-            <div className="text-xs space-y-1 border-t pt-2">
+        <div className="card-premium p-6">
+          <div className="pb-4">
+            <h3 className="text-sm font-bold font-syne uppercase">Sobra das vendas</h3>
+            <p className="text-[10px] text-text3 font-medium uppercase tracking-wider">Margem de contribuição</p>
+          </div>
+          <div className="space-y-4">
+            <p className="text-2xl font-bold text-[#27AE60] font-syne">{fmt(calc.margemContribuicao)}</p>
+            <p className="text-[11px] text-text2">Sobraram para pagar despesas fixas</p>
+            <div className="text-[11px] space-y-1 border-t pt-2 text-text2">
               <div className="flex justify-between">
                 <span>Faturamento Bruto</span>
-                <span className="font-medium">{fmt(calc.totalEntrou)}</span>
+                <span className="font-medium text-foreground">{fmt(calc.totalEntrou)}</span>
               </div>
-              <div className="flex justify-between text-red-500">
+              <div className="flex justify-between text-[#C0392B]">
                 <span>(-) Desp. s/ vendas</span>
                 <span>-{fmt(calc.despesasSobreVendas)}</span>
               </div>
-              <div className="flex justify-between text-red-500">
+              <div className="flex justify-between text-[#C0392B]">
                 <span>(-) CMV</span>
                 <span>-{fmt(calc.cmv)}</span>
               </div>
               <div className="flex justify-between font-bold border-t pt-1">
-                <span>(=) Sobra</span>
-                <span className="text-green-600">{fmt(calc.margemContribuicao)}</span>
+                <span className="text-foreground">(=) Sobra</span>
+                <span className="text-[#27AE60]">{fmt(calc.margemContribuicao)}</span>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* CARD 2: Para cada R$100 */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold">Para cada R$100 vendidos</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <p className={`text-2xl font-bold ${lucroLiquidoPer100 >= 0 ? "text-green-600" : "text-red-500"}`}>
+        <div className="card-premium p-6">
+          <div className="pb-4">
+            <h3 className="text-sm font-bold font-syne uppercase">Para cada R$100 vendidos</h3>
+            <p className="text-[10px] text-text3 font-medium uppercase tracking-wider">Raio-X de Lucratividade</p>
+          </div>
+          <div className="space-y-4">
+            <p className={cn("text-2xl font-bold font-syne", lucroLiquidoPer100 >= 0 ? "text-[#27AE60]" : "text-[#C0392B]")}>
               R$ {Math.abs(lucroLiquidoPer100).toFixed(2).replace(".", ",")}
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-[11px] text-text2">
               {lucroLiquidoPer100 >= 0 ? "sobram de lucro líquido" : "de prejuízo líquido"}
             </p>
             <div className="space-y-2 border-t pt-2">
@@ -602,17 +603,17 @@ export default function FinanceiroDRE() {
                 const maxVal = Math.max(...per100Items.map(i => Math.abs(i.value)), 1);
                 const barW = (Math.abs(item.value) / maxVal) * 100;
                 return (
-                  <div key={item.label} className="space-y-0.5">
-                    <div className="flex items-center justify-between text-xs">
+                  <div key={item.label} className="space-y-1">
+                    <div className="flex items-center justify-between text-[10px]">
                       <div className="flex items-center gap-1.5">
-                        <span className={`h-2.5 w-2.5 rounded-full ${item.color} shrink-0`} />
-                        <span>{item.label}</span>
+                        <span className={cn("h-2 w-2 rounded-full shrink-0", item.color)} />
+                        <span className="text-text2">{item.label}</span>
                       </div>
-                      <span className="font-medium">R$ {Math.abs(item.value).toFixed(2).replace(".", ",")}</span>
+                      <span className="font-bold text-foreground">R$ {Math.abs(item.value).toFixed(2).replace(".", ",")}</span>
                     </div>
-                    <div className="h-2 bg-muted rounded-full overflow-hidden">
+                    <div className="h-1.5 bg-bg3 rounded-full overflow-hidden">
                       <div
-                        className={`h-full rounded-full ${item.color} transition-all duration-500`}
+                        className={cn("h-full rounded-full transition-all duration-500", item.color)}
                         style={{ width: `${barW}%` }}
                       />
                     </div>
@@ -620,79 +621,76 @@ export default function FinanceiroDRE() {
                 );
               })}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* CARD 3: CMV */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold">CMV</CardTitle>
-            <p className="text-xs text-muted-foreground">Custo dos ingredientes</p>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <p className={`text-3xl font-bold text-center ${cmvColor}`}>
+        <div className="card-premium p-6">
+          <div className="pb-4">
+            <h3 className="text-sm font-bold font-syne uppercase">CMV</h3>
+            <p className="text-[10px] text-text3 font-medium uppercase tracking-wider">Custo dos ingredientes</p>
+          </div>
+          <div className="space-y-4">
+            <p className={cn("text-3xl font-bold text-center font-syne", calc.cmvPct > 40 ? "text-[#C0392B]" : calc.cmvPct > 32 ? "text-[#F39C12]" : "text-[#27AE60]")}>
               {calc.cmvPct.toFixed(1)}%
             </p>
-            <div className="relative h-4 bg-muted rounded-full overflow-hidden">
+            <div className="progress-premium">
               <div
-                className={`h-full rounded-full transition-all duration-500 ${cmvBg}`}
-                style={{ width: `${Math.min(calc.cmvPct * 2, 100)}%` }}
+                className={cn("progress-premium-bar", calc.cmvPct > 40 ? "bg-[#C0392B]" : calc.cmvPct > 32 ? "bg-[#F39C12]" : "bg-[#27AE60]")}
+                style={{ width: `${Math.min(calc.cmvPct * 2.5, 100)}%` }}
               />
             </div>
-            <div className="text-xs space-y-1 text-muted-foreground">
+            <div className="text-[11px] space-y-1 text-text2">
               <div className="flex justify-between">
                 <span>Meta máxima</span>
-                <span className="font-medium text-foreground">32%</span>
-              </div>
-              <div className="flex justify-between">
-                <span>CMV atual</span>
-                <span className={`font-medium ${cmvColor}`}>{calc.cmvPct.toFixed(1)}%</span>
+                <span className="font-bold text-foreground">32%</span>
               </div>
               <div className="flex justify-between">
                 <span>Folga</span>
-                <span className={`font-medium ${cmvFolga >= 0 ? "text-green-600" : "text-red-500"}`}>
+                <span className={cn("font-bold", cmvFolga >= 0 ? "text-[#27AE60]" : "text-[#C0392B]")}>
                   {cmvFolga >= 0 ? `${cmvFolga.toFixed(1)}%` : `${Math.abs(cmvFolga).toFixed(1)}% acima`}
                 </span>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* CARD 4: Alertas */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-yellow-500" />
+        <div className="card-premium p-6">
+          <div className="pb-4">
+            <h3 className="text-sm font-bold font-syne uppercase flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-[#F39C12]" />
               Alertas
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h3>
+            <p className="text-[10px] text-text3 font-medium uppercase tracking-wider">Situações Críticas</p>
+          </div>
+          <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
             {alertas.length === 0 && contasAtrasadas.length === 0 ? (
               <div className="text-center py-4">
-                <p className="text-sm text-green-600 font-medium">✅ Tudo em dia!</p>
-                <p className="text-xs text-muted-foreground mt-1">Nenhum alerta no momento</p>
+                <p className="text-xs text-[#27AE60] font-bold uppercase tracking-tight">✅ Tudo em dia!</p>
+                <p className="text-[10px] text-text3 mt-1 font-medium">Nenhum alerta no momento</p>
               </div>
             ) : (
               <div className="space-y-2">
                 {alertas.map((a, i) => (
-                  <div key={i} className="flex items-start gap-2 text-xs bg-yellow-50 dark:bg-yellow-950/20 rounded-md p-2">
-                    <span className="text-yellow-500 shrink-0">⚠️</span>
-                    <span className="text-foreground">{a}</span>
+                  <div key={i} className="flex items-start gap-2 text-[11px] bg-[#F39C12]/10 border border-[#F39C12]/20 rounded-md p-2">
+                    <span className="text-[#F39C12] shrink-0">⚠️</span>
+                    <span className="text-foreground font-medium">{a}</span>
                   </div>
                 ))}
                 {contasAtrasadas.map((c) => (
-                  <div key={c.id} className="flex items-start gap-2 text-xs bg-red-50 dark:bg-red-950/20 rounded-md p-2">
-                    <span className="text-red-500 shrink-0">🔴</span>
+                  <div key={c.id} className="flex items-start gap-2 text-[11px] bg-[#C0392B]/10 border border-[#C0392B]/20 rounded-md p-2">
+                    <span className="text-[#C0392B] shrink-0">🔴</span>
                     <div>
-                      <p className="font-medium text-foreground">{c.descricao}</p>
-                      <p className="text-muted-foreground">{fmt(c.valor)} — {new Date(c.data_lancamento + "T12:00:00").toLocaleDateString("pt-BR")}</p>
+                      <p className="font-bold text-foreground">{c.descricao}</p>
+                      <p className="text-text2">{fmt(c.valor)} — {new Date(c.data_lancamento + "T12:00:00").toLocaleDateString("pt-BR")}</p>
                     </div>
                   </div>
                 ))}
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {/* ═══ BLOCO 5 — ONDE FOI O DINHEIRO? ═══ */}
