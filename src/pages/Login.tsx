@@ -31,7 +31,7 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center">
-          <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg mx-auto mb-4">
+          <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center text-accent-foreground font-bold text-lg mx-auto mb-4">
             TL
           </div>
           <h1 className="text-xl font-bold">Bem-vindo ao TôNoLucro</h1>

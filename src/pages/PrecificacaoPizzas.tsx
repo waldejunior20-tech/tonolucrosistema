@@ -422,7 +422,7 @@ export default function PrecificacaoPizzas() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="card-premium p-6">
           <p className="label-upper mb-4">📊 CMV Médio Atual</p>
-          <p className={cn("kpi-number", indicators.avgCmv > 40 ? "text-[#C0392B]" : indicators.avgCmv > 32 ? "text-[#F39C12]" : "text-[#27AE60]")}>
+          <p className={cn("kpi-number", indicators.avgCmv > 40 ? "text-destructive" : indicators.avgCmv > 32 ? "text-warning" : "text-success")}>
             {fmtPct(indicators.avgCmv)}
           </p>
           <p className="text-[11px] text-text3 font-medium mt-1">Média entre todos os tamanhos</p>
@@ -433,9 +433,9 @@ export default function PrecificacaoPizzas() {
             <div className={cn(
               "health-pulse",
               indicators.avgCmv > 40 ? "health-pulse" : indicators.avgCmv > 32 ? "health-pulse-amber" : "health-pulse-green",
-              indicators.avgCmv > 40 ? "bg-[#C0392B]" : indicators.avgCmv > 32 ? "bg-[#F39C12]" : "bg-[#27AE60]"
+              indicators.avgCmv > 40 ? "bg-destructive" : indicators.avgCmv > 32 ? "bg-warning" : "bg-success"
             )} />
-            <span className={cn("text-lg font-bold font-syne uppercase", indicators.avgCmv > 40 ? "text-[#C0392B]" : indicators.avgCmv > 32 ? "text-[#F39C12]" : "text-[#27AE60]")}>
+            <span className={cn("text-lg font-bold font-heading uppercase", indicators.avgCmv > 40 ? "text-destructive" : indicators.avgCmv > 32 ? "text-warning" : "text-success")}>
               {cmvMessage(indicators.avgCmv)}
             </span>
           </div>
@@ -445,7 +445,7 @@ export default function PrecificacaoPizzas() {
           <div className="flex items-center gap-3">
             <p className="kpi-number">{indicators.foraMetaCount}</p>
             {indicators.foraMetaCount > 0 && (
-              <AlertTriangle className="h-6 w-6 text-[#C0392B]" />
+              <AlertTriangle className="h-6 w-6 text-destructive" />
             )}
           </div>
           <p className="text-[11px] text-text3 font-medium mt-1">Tamanhos com CMV acima de 40%</p>
@@ -552,7 +552,7 @@ export default function PrecificacaoPizzas() {
                               <Input
                                 type={localPrices[ficha.id]?.[s] !== undefined ? "number" : "text"}
                                 step={localPrices[ficha.id]?.[s] !== undefined ? "0.01" : undefined}
-                                className="h-8 w-28 text-xs text-center pr-6 border-b-2 border-b-[#C0392B] border-t-0 border-l-0 border-r-0 rounded-none bg-[#FEF2F2] focus-visible:ring-[#C0392B]/30"
+                                className="h-8 w-28 text-xs text-center pr-6 border-b-2 border-b-primary border-t-0 border-l-0 border-r-0 rounded-none bg-primary/5 focus-visible:ring-primary/30"
                                 value={
                                   localPrices[ficha.id]?.[s] !== undefined
                                     ? localPrices[ficha.id][s]

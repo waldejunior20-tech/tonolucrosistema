@@ -144,23 +144,23 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
   return (
     <aside 
       className={cn(
-        "h-screen bg-[#161212] transition-all duration-300 flex flex-col border-r border-white/5 relative z-50",
+        "h-screen bg-sidebar transition-all duration-300 flex flex-col border-r border-sidebar-border relative z-50",
         collapsed ? "w-16" : "w-[240px]"
       )}
     >
       {/* Sidebar Header */}
       <div className="h-16 flex items-center px-4 shrink-0 overflow-hidden relative">
         <div className={cn("flex items-center gap-3 transition-opacity duration-200", collapsed ? "opacity-0 w-0" : "opacity-100")}>
-          <div className="w-9 h-9 rounded-full bg-[#C0392B] flex items-center justify-center shrink-0">
-            <span className="text-white font-['Syne'] font-extrabold text-sm leading-none">TL</span>
+          <div className="w-9 h-9 rounded-full bg-accent flex items-center justify-center shrink-0">
+            <span className="text-accent-foreground font-sans font-extrabold text-sm leading-none">TL</span>
           </div>
-          <span className="text-[#F5F0F0] font-['Syne'] font-bold text-lg leading-none whitespace-nowrap">TôNoLucro</span>
+          <span className="text-sidebar-accent-foreground font-sans font-bold text-lg leading-none whitespace-nowrap">TôNoLucro</span>
         </div>
         
         <button
           onClick={onToggle}
           className={cn(
-            "p-1.5 rounded-lg text-[#A89898] hover:text-[#F5F0F0] hover:bg-white/5 transition-colors",
+            "p-1.5 rounded-lg text-sidebar-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent transition-colors",
             collapsed ? "mx-auto" : "ml-auto"
           )}
         >
@@ -186,13 +186,13 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
                 <button
                   onClick={() => handleItemClick(item)}
                   className={cn(
-                    "group relative w-full h-10 flex items-center rounded transition-all duration-200 overflow-hidden",
-                    isActive ? "bg-[#C0392B]/15 text-[#F5F0F0]" : "text-[#A89898] hover:bg-white/5 hover:text-[#F5F0F0]"
+                    "group relative w-full h-10 flex items-center rounded-lg transition-all duration-200 overflow-hidden",
+                    isActive ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                   )}
                 >
                   {/* Left Active Bar */}
                   {isActive && !collapsed && (
-                    <div className="absolute left-0 top-0 w-[3px] h-full bg-[#C0392B]" />
+                    <div className="absolute left-0 top-0 w-[3px] h-full bg-accent" />
                   )}
                   
                   <div className={cn("flex items-center w-full px-3 gap-3", collapsed ? "justify-center" : "")}>
@@ -205,7 +205,7 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
                         <span className="text-sm font-medium truncate">{item.label}</span>
                         {hasSubItems && (
                           <div className={cn("transition-transform duration-200", isExpanded ? "rotate-180" : "")}>
-                            <ChevronDown size={14} className="text-[#A89898]" />
+                            <ChevronDown size={14} className="text-sidebar-foreground" />
                           </div>
                         )}
                       </div>
@@ -230,8 +230,8 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
                               if (hasNestedItems) toggleSubExpand(sub.label);
                             }}
                             className={cn(
-                              "h-8 pl-11 pr-4 flex items-center justify-between text-sm font-medium transition-colors rounded group",
-                              isSubActive ? "text-[#C0392B]" : "text-[#A89898] hover:text-[#F5F0F0] hover:bg-white/5"
+                              "h-8 pl-11 pr-4 flex items-center justify-between text-sm font-medium transition-colors rounded-lg group",
+                              isSubActive ? "text-accent" : "text-sidebar-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent"
                             )}
                           >
                             <span className="truncate">→ {sub.label}</span>
@@ -241,7 +241,7 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
                           </button>
 
                           {hasNestedItems && isNestedExpanded && (
-                            <div className="flex flex-col gap-1 ml-4 border-l border-white/5 pl-2">
+                            <div className="flex flex-col gap-1 ml-4 border-l border-sidebar-border pl-2">
                               {sub.subItems?.map((nested, nIdx) => {
                                 const isNestedActive = currentPath.includes(nested.path);
                                 return (
@@ -249,8 +249,8 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
                                     key={`${nested.path}-${nIdx}`}
                                     onClick={() => navigate(nested.path)}
                                     className={cn(
-                                      "h-7 px-3 flex items-center text-xs font-medium transition-colors rounded",
-                                      isNestedActive ? "text-[#C0392B]" : "text-[#A89898] hover:text-[#F5F0F0] hover:bg-white/5"
+                                      "h-7 px-3 flex items-center text-xs font-medium transition-colors rounded-lg",
+                                      isNestedActive ? "text-accent" : "text-sidebar-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent"
                                     )}
                                   >
                                     <span className="truncate">• {nested.label}</span>
