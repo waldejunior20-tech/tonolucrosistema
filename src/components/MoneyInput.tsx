@@ -133,7 +133,7 @@ export function MoneyInput({
       id={id}
       type="text"
       inputMode="decimal"
-      className={cn(className)}
+      className={cn("pricing-input", className)}
       value={displayValue}
       onChange={handleChange}
       onFocus={handleFocus}
