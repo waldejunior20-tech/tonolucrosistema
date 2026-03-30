@@ -1,27 +1,33 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
+const currencyFormatter = new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "BRL",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+const qtyFormatter = new Intl.NumberFormat("pt-BR", {
+  minimumFractionDigits: 3,
+  maximumFractionDigits: 3,
+});
+
 /**
- * Format a number as Brazilian currency display: R$ 1.500,00
+ * Format a number as Brazilian currency: R$ 1.500,00
  */
 export const formatMoney = (value: number): string => {
-  if (!value && value !== 0) return "";
-  return value.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
+  if (value == null) return "";
+  return currencyFormatter.format(value);
 };
 
 /**
  * Format a quantity with 3 decimal places: 200,000
  */
 export const formatQty = (value: number): string => {
-  if (!value && value !== 0) return "";
-  return value.toLocaleString("pt-BR", {
-    minimumFractionDigits: 3,
-    maximumFractionDigits: 3,
-  });
+  if (value == null) return "";
+  return qtyFormatter.format(value);
 };
 
 /**
@@ -30,9 +36,7 @@ export const formatQty = (value: number): string => {
  */
 export const parseFormattedNumber = (str: string): number => {
   if (!str) return 0;
-  // Remove currency symbol, spaces
   let clean = str.replace(/R\$\s?/g, "").trim();
-  // If uses comma as decimal (Brazilian format): remove dots (thousands), replace comma with dot
   if (clean.includes(",")) {
     clean = clean.replace(/\./g, "").replace(",", ".");
   }
@@ -40,44 +44,16 @@ export const parseFormattedNumber = (str: string): number => {
 };
 
 /**
- * Format a raw numeric string with thousand separators while typing.
- * Input: "2000" → "2.000"
- * Input: "1500.5" → "1.500,5"
+ * Convert cents integer to formatted currency string
  */
-const formatWhileTyping = (raw: string, isMoney: boolean): string => {
-  if (!raw) return "";
-  // Remove anything that's not digit, dot, minus, comma
-  let clean = raw.replace(/[^\d.,-]/g, "");
-  if (!clean) return "";
-
-  // Determine decimal part
-  // Accept both . and , as decimal separator input
-  let parts: string[];
-  if (clean.includes(",")) {
-    parts = clean.split(",");
-  } else if (clean.includes(".")) {
-    parts = clean.split(".");
-  } else {
-    parts = [clean];
-  }
-
-  // Integer part — add thousand separators
-  let intPart = parts[0].replace(/\D/g, "");
-  if (!intPart) intPart = "0";
-  const intFormatted = parseInt(intPart, 10).toLocaleString("pt-BR");
-
-  let result = intFormatted;
-  if (parts.length > 1) {
-    // Keep decimal part as-is (user is still typing)
-    result += "," + parts[1].replace(/\D/g, "");
-  }
-
-  if (isMoney) {
-    result = "R$ " + result;
-  }
-
-  return result;
+const centsToDisplay = (cents: number): string => {
+  return currencyFormatter.format(cents / 100);
 };
+
+/**
+ * Extract only digits from a string
+ */
+const onlyDigits = (str: string): string => str.replace(/\D/g, "");
 
 interface MoneyInputProps {
   value: number;
@@ -99,42 +75,49 @@ export function MoneyInput({
   required,
 }: MoneyInputProps) {
   const [focused, setFocused] = useState(false);
-  const [localValue, setLocalValue] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const displayValue = focused
-    ? localValue
-    : value
-    ? formatMoney(value)
-    : "";
+  const [displayText, setDisplayText] = useState("");
 
   const handleFocus = useCallback(() => {
     setFocused(true);
-    setLocalValue(value ? formatWhileTyping(String(value), true) : "");
+    // Convert current value to cents and show formatted
+    const cents = Math.round((value || 0) * 100);
+    setDisplayText(cents > 0 ? centsToDisplay(cents) : "");
   }, [value]);
 
   const handleBlur = useCallback(() => {
     setFocused(false);
-    const parsed = parseFormattedNumber(localValue);
-    onChange(parsed);
-  }, [localValue, onChange]);
+    // Parse cents from display and emit number
+    const digits = onlyDigits(displayText);
+    const cents = parseInt(digits, 10) || 0;
+    onChange(cents / 100);
+  }, [displayText, onChange]);
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value;
-    // Strip formatting to get raw digits, then reformat
-    const stripped = raw.replace(/R\$\s?/g, "").replace(/\./g, "").replace(",", ".");
-    // If user is typing, keep the raw feel but format with separators
-    setLocalValue(formatWhileTyping(raw.replace(/R\$\s?/g, ""), true));
+    const digits = onlyDigits(raw);
+
+    if (!digits) {
+      setDisplayText("");
+      return;
+    }
+
+    const cents = parseInt(digits, 10) || 0;
+    setDisplayText(centsToDisplay(cents));
   }, []);
+
+  const shownValue = focused
+    ? displayText
+    : value
+      ? formatMoney(value)
+      : "";
 
   return (
     <Input
-      ref={inputRef}
       id={id}
       type="text"
-      inputMode="decimal"
+      inputMode="numeric"
       className={cn("pricing-input", className)}
-      value={displayValue}
+      value={shownValue}
       onChange={handleChange}
       onFocus={handleFocus}
       onBlur={handleBlur}
@@ -168,15 +151,10 @@ export function QuantityInput({
   const [focused, setFocused] = useState(false);
   const [localValue, setLocalValue] = useState("");
 
-  const displayValue = focused
-    ? localValue
-    : value
-    ? formatQty(value)
-    : "";
-
   const handleFocus = useCallback(() => {
     setFocused(true);
-    setLocalValue(value ? formatWhileTyping(String(value), false) : "");
+    // Show raw number with comma as decimal for editing
+    setLocalValue(value ? String(value).replace(".", ",") : "");
   }, [value]);
 
   const handleBlur = useCallback(() => {
@@ -186,8 +164,21 @@ export function QuantityInput({
   }, [localValue, onChange]);
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setLocalValue(formatWhileTyping(e.target.value, false));
+    // Allow digits and one comma
+    let raw = e.target.value.replace(/[^\d,]/g, "");
+    // Only one comma allowed
+    const parts = raw.split(",");
+    if (parts.length > 2) {
+      raw = parts[0] + "," + parts.slice(1).join("");
+    }
+    setLocalValue(raw);
   }, []);
+
+  const displayValue = focused
+    ? localValue
+    : value
+      ? formatQty(value)
+      : "";
 
   return (
     <Input
