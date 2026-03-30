@@ -9,12 +9,18 @@ import { cn } from "@/lib/utils";
 
 export type ModuleKey = "dashboard" | "insumos" | "fichas" | "precificacao" | "financeiro" | "promocoes";
 
+interface SubItem {
+  label: string;
+  path?: string;
+  subItems?: { label: string; path: string; }[];
+}
+
 interface SidebarItem {
   key: ModuleKey;
   label: string;
   icon: React.ElementType;
   path?: string;
-  subItems?: { label: string; path: string; }[];
+  subItems?: SubItem[];
 }
 
 const sidebarItems: SidebarItem[] = [
