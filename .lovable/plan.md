@@ -1,56 +1,39 @@
 
-Objetivo: corrigir o campo monetário para funcionar no padrão brasileiro de forma simples, previsível e profissional, sem quebrar cálculos nem os fluxos já existentes.
 
-1. Reescrever a lógica do `MoneyInput`
-- Substituir a máscara atual por uma abordagem baseada em centavos inteiros.
-- Enquanto o usuário digita, considerar apenas dígitos e formatar sempre como moeda BR.
-- Exemplo de comportamento:
-  - `1` → `R$ 0,01`
-  - `10` → `R$ 0,10`
-  - `100` → `R$ 1,00`
-  - `7000` → `R$ 70,00`
-  - `7000000` → `R$ 70.000,00`
-- Isso elimina casas decimais infinitas, erros com ponto/vírgula e inconsistências de parse.
+## Plano: Redesenhar sidebar no estilo do Admin Dashboard
 
-2. Padronizar helpers de formatação
-- Ajustar `formatMoney` para sempre exibir 2 casas decimais em `pt-BR`.
-- Criar/ajustar helpers internos do `MoneyInput` para:
-  - limpar texto para dígitos
-  - converter dígitos em centavos
-  - formatar centavos em `R$ X.XXX,XX`
-- Manter `parseFormattedNumber` compatível com o restante do sistema, mas deixar o `MoneyInput` menos dependente do parse textual atual.
+Baseado na imagem de referência, a sidebar atual precisa de ajustes visuais para ficar mais limpa e profissional, no estilo do painel admin mostrado.
 
-3. Corrigir interação do input
-- Manter `type="text"` e `inputMode="numeric"`/`decimal` apropriado.
-- Ao focar, continuar mostrando máscara consistente em vez de entrar num estado “quebrado”.
-- Ao digitar, atualizar visualmente em tempo real.
-- Ao sair do campo, enviar `number` limpo para o estado pai e para o Supabase.
+### Mudancas visuais principais
 
-4. Garantir compatibilidade nos pontos já usados
-- Validar os usos atuais do `MoneyInput` em:
-  - `Onboarding`
-  - `FinanceiroDRE`
-  - `FinanceiroContasPagar`
-  - `InsumosComprados`
-- Confirmar que todos continuam recebendo `number` no `onChange`, sem precisar alterar regra de negócio.
+1. **Fundo da sidebar**: Mudar de `#161212` (quase preto) para um **branco/claro** (`#FFFFFF` ou usar o token `card`), seguindo o estilo claro da imagem de referência. Adicionar sombra sutil à direita em vez de border.
 
-5. Ajustar o `AutoSaveInput` para exibição monetária consistente
-- Hoje ele usa `formatMoney`, então deve se beneficiar da padronização.
-- Vou verificar se o comportamento focado/desfocado continua coerente para evitar aparecer valor cru ou mal formatado em campos com autosave.
+2. **Ícones dos módulos**: Trocar os ícones Lucide atuais por ícones de grid/quadrados (`LayoutGrid` ou `Grid2x2`) para os módulos com subitens, igual ao padrão `⊞` da imagem. Dashboard mantém seu ícone atual.
 
-6. Validação final
-- Conferir cenários principais:
-  - digitar `70000`
-  - digitar `7000000`
-  - apagar tudo
-  - colar valores como `70000`, `70.000`, `70.000,00`
-  - salvar e reabrir campo
-- Garantir que o onboarding em `/onboarding` passe a aceitar preenchimento natural de “faturamento médio mensal”.
+3. **Tipografia e cores dos itens**:
+   - Texto do item pai: **preto/escuro** (`foreground`) com `font-semibold`
+   - Subitens: cor mais suave (`muted-foreground`), sem o prefixo `→`
+   - Item ativo (subitem): texto na cor primária vermelha, sem fundo colorido
+   - Chevron à direita, virando para cima quando expandido (já existe)
 
-Se você aprovar, vou implementar a correção diretamente no componente compartilhado para resolver o problema em todos os campos de valor do sistema de uma vez.
+4. **Espaçamento e indentação dos subitens**:
+   - Subitens com `pl-10` (indentação generosa, sem ícone)
+   - Sem bordas laterais nem bullets nos itens aninhados
+   - Altura dos subitens: `h-9` com espaçamento vertical uniforme
 
-Seção técnica
-- Arquivo principal: `src/components/MoneyInput.tsx`
-- Arquivo relacionado para conferência: `src/components/AutoSaveInput.tsx`
-- Estratégia recomendada: armazenar e manipular a digitação como centavos inteiros e formatar com `Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" })`
-- Benefício: evita erro clássico de interpretar `.` como decimal quando no Brasil ele deve ser milhar.
+5. **Remover barra vermelha lateral** do item ativo e o fundo `rgba(red, 0.15)`. Usar apenas cor do texto para indicar ativo.
+
+6. **Header da sidebar**: Manter o logo TL + ToLucro, mas com cores adaptadas ao tema claro (texto escuro).
+
+7. **Suporte a tema**: Usar variáveis CSS do design system (`bg-card`, `text-foreground`, `text-muted-foreground`) para que funcione tanto no modo claro quanto no escuro, em vez de cores hardcoded.
+
+### Arquivos a editar
+
+- `src/components/layout/UnifiedSidebar.tsx` — refatorar classes visuais
+
+### O que NÃO muda
+- Estrutura de dados dos itens/subitens
+- Lógica de navegação e expansão
+- Larguras (240px / 64px) e funcionalidade de colapsar
+- Rotas e paths
+
