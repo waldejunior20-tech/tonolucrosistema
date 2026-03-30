@@ -1,5 +1,14 @@
 import { LayoutDashboard, Package, BookOpen, DollarSign, TrendingUp, Tag } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/components/ThemeProvider";
+
+const accentColors = [
+  { name: "Vermelho", value: "#C0392B" },
+  { name: "Azul Marinho", value: "#1A5276" },
+  { name: "Verde", value: "#1E8449" },
+  { name: "Roxo", value: "#6C3483" },
+  { name: "Marrom", value: "#784212" },
+];
 
 export type ModuleKey = "dashboard" | "insumos" | "fichas" | "precificacao" | "financeiro" | "promocoes";
 
