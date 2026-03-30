@@ -445,7 +445,7 @@ export default function PrecificacaoPizzas() {
           <div className="flex items-center gap-3">
             <p className="kpi-number">{indicators.foraMetaCount}</p>
             {indicators.foraMetaCount > 0 && (
-              <AlertTriangle className="h-6 w-6 text-[#C0392B]" />
+              <AlertTriangle className="h-6 w-6 text-destructive" />
             )}
           </div>
           <p className="text-[11px] text-text3 font-medium mt-1">Tamanhos com CMV acima de 40%</p>
