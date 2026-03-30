@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export function Header() {
+  const { theme, setTheme } = useTheme();
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const navigate = useNavigate();
