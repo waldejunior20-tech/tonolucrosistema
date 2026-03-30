@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -40,20 +39,19 @@ export function Header() {
   };
 
   return (
-    <header className="h-16 border-b bg-card flex items-center justify-between px-8 sticky top-0 z-10">
-      <div className="flex items-center gap-4">
-        <h2 className="text-xl font-bold text-[#C0392B]">Dom Corleone</h2>
+    <header className="h-14 border-b border-border bg-card/80 backdrop-blur-sm flex items-center justify-between px-6 sticky top-0 z-10">
+      <div className="flex items-center gap-3">
         {profile?.business_name && (
-          <span className="text-muted-foreground border-l pl-4 hidden sm:block">
+          <span className="text-sm font-medium text-foreground">
             {profile.business_name}
           </span>
         )}
       </div>
       
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-9 w-9">
+            <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
               {theme === "light" ? (
                 <Sun className="h-4 w-4" />
               ) : theme === "dark" ? (
@@ -61,37 +59,38 @@ export function Header() {
               ) : (
                 <Monitor className="h-4 w-4" />
               )}
-              <span className="sr-only">Alternar tema</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => setTheme("light")}>
-              <Sun className="mr-2 h-4 w-4" />
-              <span>Claro</span>
+              <Sun className="mr-2 h-4 w-4" /> Claro
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setTheme("dark")}>
-              <Moon className="mr-2 h-4 w-4" />
-              <span>Escuro</span>
+              <Moon className="mr-2 h-4 w-4" /> Escuro
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setTheme("system")}>
-              <Monitor className="mr-2 h-4 w-4" />
-              <span>Automático</span>
+              <Monitor className="mr-2 h-4 w-4" /> Automático
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
+        <div className="h-5 w-px bg-border" />
+
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <User className="h-4 w-4" />
-          <span className="hidden sm:block">{user?.email}</span>
+          <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
+            <User className="h-3.5 w-3.5 text-primary" />
+          </div>
+          <span className="hidden sm:block text-xs">{user?.email}</span>
         </div>
+
         <Button 
-          variant="outline" 
+          variant="ghost" 
           size="sm" 
           onClick={handleLogout}
-          className="btn-3d-red h-9 border-none text-white hover:text-white"
+          className="h-8 text-muted-foreground hover:text-destructive text-xs gap-1.5"
         >
-          <LogOut className="h-4 w-4" />
-          <span className="hidden sm:block ml-1">Sair</span>
+          <LogOut className="h-3.5 w-3.5" />
+          <span className="hidden sm:block">Sair</span>
         </Button>
       </div>
     </header>
