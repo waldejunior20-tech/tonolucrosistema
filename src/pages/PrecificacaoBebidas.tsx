@@ -78,10 +78,10 @@ const fmtPct = (v: number) => `${v.toFixed(1)}%`;
 
 // ─── Faixas CMV para bebidas PREPARADAS (padrão Abrasel) ─────────
 const cmvColor = (pct: number): string => {
-  if (pct < 25) return "text-blue-600";
-  if (pct <= 35) return "text-green-600";
-  if (pct <= 40) return "text-yellow-600";
-  return "text-red-600";
+  if (pct < 25) return "text-info";
+  if (pct <= 35) return "text-success";
+  if (pct <= 40) return "text-warning";
+  return "text-destructive";
 };
 const cmvBg = (pct: number): string => {
   if (pct < 25) return "bg-blue-100 text-blue-800";
@@ -104,10 +104,10 @@ const cmvMessage = (pct: number): string => {
 
 // ─── Faixas CMV para bebidas INDUSTRIALIZADAS ────────────────────
 const indCmvColor = (pct: number): string => {
-  if (pct < 75) return "text-blue-600";
-  if (pct <= 85) return "text-green-600";
-  if (pct <= 92) return "text-yellow-600";
-  return "text-red-600";
+  if (pct < 75) return "text-info";
+  if (pct <= 85) return "text-success";
+  if (pct <= 92) return "text-warning";
+  return "text-destructive";
 };
 const indCmvBg = (pct: number): string => {
   if (pct < 75) return "bg-blue-100 text-blue-800";
@@ -420,7 +420,7 @@ export default function PrecificacaoBebidas() {
             <p className="text-3xl font-bold text-foreground flex items-center gap-2">
               {indIndicators.foraMetaCount + prepIndicators.foraMetaCount}
               {(indIndicators.foraMetaCount + prepIndicators.foraMetaCount) > 0 && (
-                <AlertTriangle className="h-6 w-6 text-red-500" />
+                <AlertTriangle className="h-6 w-6 text-destructive" />
               )}
             </p>
           </CardContent>
@@ -477,7 +477,7 @@ export default function PrecificacaoBebidas() {
                         <TableRow key={bebida.id} className={hasAlert ? "bg-red-50/50" : ""}>
                           <TableCell className="font-medium">
                             <div className="flex items-center gap-1">
-                              {hasAlert && <AlertTriangle className="h-4 w-4 text-red-500 flex-shrink-0" />}
+                              {hasAlert && <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0" />}
                               {bebida.nome}
                             </div>
                           </TableCell>
@@ -508,7 +508,7 @@ export default function PrecificacaoBebidas() {
                                 placeholder="R$ 0,00"
                               />
                               {savedFields[`ind-${bebida.id}`] && (
-                                <Check className="absolute right-1 h-3.5 w-3.5 text-green-500 animate-in fade-in duration-200" />
+                                <Check className="absolute right-1 h-3.5 w-3.5 text-success animate-in fade-in duration-200" />
                               )}
                             </div>
                           </TableCell>
@@ -576,7 +576,7 @@ export default function PrecificacaoBebidas() {
                         <TableRow key={ficha.id} className={hasAlert ? "bg-red-50/50" : ""}>
                           <TableCell className="font-medium">
                             <div className="flex items-center gap-1">
-                              {hasAlert && <AlertTriangle className="h-4 w-4 text-red-500 flex-shrink-0" />}
+                              {hasAlert && <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0" />}
                               {ficha.nome}
                             </div>
                           </TableCell>
@@ -606,7 +606,7 @@ export default function PrecificacaoBebidas() {
                                 placeholder="R$ 0,00"
                               />
                               {savedFields[`prep-${ficha.id}`] && (
-                                <Check className="absolute right-1 h-3.5 w-3.5 text-green-500 animate-in fade-in duration-200" />
+                                <Check className="absolute right-1 h-3.5 w-3.5 text-success animate-in fade-in duration-200" />
                               )}
                             </div>
                           </TableCell>

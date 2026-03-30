@@ -793,7 +793,7 @@ export default function FichasTecnicasPizza() {
                                 placeholder="0,000"
                               />
                               {ing.db_id && savedFields[`${ing.db_id}-${qtdKey}`] && (
-                                <Check className="absolute right-1 top-[50%] h-3.5 w-3.5 text-green-500 animate-in fade-in duration-200" />
+                                <Check className="absolute right-1 top-[50%] h-3.5 w-3.5 text-success animate-in fade-in duration-200" />
                               )}
                             </div>
                             <div className="min-w-[70px] text-center pb-1">
