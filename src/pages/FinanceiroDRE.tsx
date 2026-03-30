@@ -9,7 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { MoneyInput } from "@/components/MoneyInput";
 import { toast } from "sonner";
-import { Plus, Target, AlertTriangle, TrendingUp, TrendingDown } from "lucide-react";
+import { Plus, Target, AlertTriangle, TrendingUp, TrendingDown, Pizza } from "lucide-react";
+import { HealthStatus } from "@/components/HealthStatus";
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
