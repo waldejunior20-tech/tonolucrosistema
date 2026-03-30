@@ -2,70 +2,76 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@500;600;700;800&display=swap');
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
-    --foreground: 220 15% 15%;
+    --background: 0 4% 96%;
+    --foreground: 0 23% 8%;
     --card: 0 0% 100%;
-    --card-foreground: 220 15% 15%;
+    --card-foreground: 0 23% 8%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 15% 15%;
-    --primary: 4 62% 46%;
+    --popover-foreground: 0 23% 8%;
+    --primary: 4 64% 46%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 220 15% 30%;
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 9% 46%;
-    --accent: 220 14% 96%;
-    --accent-foreground: 220 15% 15%;
+    --primary-dark: 4 62% 35%;
+    --secondary: 0 4% 94%;
+    --secondary-foreground: 0 9% 35%;
+    --muted: 0 4% 94%;
+    --muted-foreground: 0 9% 39%;
+    --accent: 0 4% 94%;
+    --accent-foreground: 0 23% 8%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 4 62% 46%;
+    --success: 145 61% 42%;
+    --warning: 37 90% 51%;
+    --border: 0 0% 0% / 0.07;
+    --input: 0 0% 0% / 0.07;
+    --ring: 4 64% 46%;
     --radius: 0.625rem;
 
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 220 9% 46%;
-    --sidebar-primary: 4 62% 46%;
+    --sidebar-background: 0 6% 8%;
+    --sidebar-foreground: 0 9% 39%;
+    --sidebar-primary: 4 64% 46%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 14% 96%;
-    --sidebar-accent-foreground: 220 15% 15%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 4 62% 46%;
+    --sidebar-accent: 0 6% 12%;
+    --sidebar-accent-foreground: 0 4% 96%;
+    --sidebar-border: 0 0% 100% / 0.05;
+    --sidebar-ring: 4 64% 46%;
   }
 
   .dark {
-    --background: 224 15% 8%;
-    --foreground: 210 20% 95%;
-    --card: 224 15% 10%;
-    --card-foreground: 210 20% 95%;
-    --popover: 224 15% 10%;
-    --popover-foreground: 210 20% 95%;
-    --primary: 4 62% 50%;
+    --background: 0 6% 8%;
+    --foreground: 0 4% 92%;
+    --card: 0 6% 11%;
+    --card-foreground: 0 4% 92%;
+    --popover: 0 6% 11%;
+    --popover-foreground: 0 4% 92%;
+    --primary: 4 64% 50%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 15% 16%;
-    --secondary-foreground: 210 20% 90%;
-    --muted: 220 15% 16%;
-    --muted-foreground: 220 10% 55%;
-    --accent: 220 15% 16%;
-    --accent-foreground: 210 20% 95%;
+    --primary-dark: 4 62% 35%;
+    --secondary: 0 6% 16%;
+    --secondary-foreground: 0 4% 85%;
+    --muted: 0 6% 16%;
+    --muted-foreground: 0 6% 50%;
+    --accent: 0 6% 16%;
+    --accent-foreground: 0 4% 92%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 0 0% 96%;
-    --border: 220 15% 18%;
-    --input: 220 15% 18%;
-    --ring: 4 62% 50%;
+    --success: 145 61% 42%;
+    --warning: 37 90% 51%;
+    --border: 0 0% 100% / 0.08;
+    --input: 0 0% 100% / 0.08;
+    --ring: 4 64% 50%;
 
-    --sidebar-background: 224 15% 9%;
-    --sidebar-foreground: 220 10% 55%;
-    --sidebar-primary: 4 62% 50%;
+    --sidebar-background: 0 6% 7%;
+    --sidebar-foreground: 0 6% 50%;
+    --sidebar-primary: 4 64% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 15% 14%;
-    --sidebar-accent-foreground: 210 20% 95%;
-    --sidebar-border: 220 15% 16%;
-    --sidebar-ring: 4 62% 50%;
+    --sidebar-accent: 0 6% 14%;
+    --sidebar-accent-foreground: 0 4% 92%;
+    --sidebar-border: 0 0% 100% / 0.05;
+    --sidebar-ring: 4 64% 50%;
   }
 }
 
@@ -76,7 +82,7 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
     font-size: 14px;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
@@ -84,7 +90,7 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Syne', system-ui, sans-serif;
     font-weight: 700;
     letter-spacing: -0.02em;
   }
@@ -96,10 +102,12 @@
 @layer components {
   .label-upper {
     @apply text-xs font-semibold uppercase tracking-wider text-muted-foreground;
+    font-family: 'Syne', system-ui, sans-serif;
   }
 
   .kpi-number {
     @apply text-3xl font-bold tracking-tight;
+    font-family: 'Syne', system-ui, sans-serif;
   }
 
   .card-premium {
