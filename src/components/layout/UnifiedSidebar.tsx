@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, Package, BookOpen, DollarSign, 
   TrendingUp, Tag, ChevronDown, 
-  PanelLeftClose, PanelLeft, Pizza
+  PanelLeftClose, PanelLeft, Pizza, Settings2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
