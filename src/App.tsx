@@ -26,6 +26,7 @@ import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import PasswordRecovery from "@/pages/PasswordRecovery";
 import ComboSimulator from "@/pages/ComboSimulator";
+import Configuracoes from "@/pages/Configuracoes";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
