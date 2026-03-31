@@ -25,6 +25,7 @@ import Onboarding from "@/pages/Onboarding";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import PasswordRecovery from "@/pages/PasswordRecovery";
+import ComboSimulator from "@/pages/ComboSimulator";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -98,7 +99,7 @@ function AppRoutes() {
         <Route path="/financeiro/contas-a-pagar" element={<FinanceiroContasPagar />} />
         <Route path="/financeiro/ponto-de-equilibrio" element={<FinanceiroPontoEquilibrio />} />
         <Route path="/promocoes/ativas" element={<SectionPage />} />
-        <Route path="/promocoes/combos" element={<SectionPage />} />
+        <Route path="/promocoes/combos" element={<ComboSimulator />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
