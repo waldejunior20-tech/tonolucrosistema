@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      combos_fixos: {
+        Row: {
+          created_at: string | null
+          custo_total: number
+          id: string
+          itens: Json
+          margem: number
+          nome: string
+          preco_separado: number
+          preco_venda: number
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          custo_total?: number
+          id?: string
+          itens?: Json
+          margem?: number
+          nome: string
+          preco_separado?: number
+          preco_venda?: number
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          custo_total?: number
+          id?: string
+          itens?: Json
+          margem?: number
+          nome?: string
+          preco_separado?: number
+          preco_venda?: number
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       configuracoes_negocio: {
         Row: {
           aluguel: number
