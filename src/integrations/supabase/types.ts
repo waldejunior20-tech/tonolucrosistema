@@ -55,13 +55,18 @@ export type Database = {
       }
       configuracoes_negocio: {
         Row: {
+          agua: number
           aluguel: number
+          cidade: string
           contador: number
           created_at: string
+          custos_fixos_detalhados: Json
           energia: number
+          estado: string
           faturamento_medio: number
           id: string
           internet: number
+          lucro_desejado_pct: number
           nome_estabelecimento: string
           num_funcionarios: number
           onboarding_completo: boolean
@@ -71,17 +76,23 @@ export type Database = {
           pct_dinheiro_pix: number
           pct_ifood: number
           salarios: number
+          tamanhos_pizza: Json
           updated_at: string
           user_id: string | null
         }
         Insert: {
+          agua?: number
           aluguel?: number
+          cidade?: string
           contador?: number
           created_at?: string
+          custos_fixos_detalhados?: Json
           energia?: number
+          estado?: string
           faturamento_medio?: number
           id?: string
           internet?: number
+          lucro_desejado_pct?: number
           nome_estabelecimento?: string
           num_funcionarios?: number
           onboarding_completo?: boolean
@@ -91,17 +102,23 @@ export type Database = {
           pct_dinheiro_pix?: number
           pct_ifood?: number
           salarios?: number
+          tamanhos_pizza?: Json
           updated_at?: string
           user_id?: string | null
         }
         Update: {
+          agua?: number
           aluguel?: number
+          cidade?: string
           contador?: number
           created_at?: string
+          custos_fixos_detalhados?: Json
           energia?: number
+          estado?: string
           faturamento_medio?: number
           id?: string
           internet?: number
+          lucro_desejado_pct?: number
           nome_estabelecimento?: string
           num_funcionarios?: number
           onboarding_completo?: boolean
@@ -111,6 +128,7 @@ export type Database = {
           pct_dinheiro_pix?: number
           pct_ifood?: number
           salarios?: number
+          tamanhos_pizza?: Json
           updated_at?: string
           user_id?: string | null
         }
@@ -120,15 +138,19 @@ export type Database = {
         Row: {
           app_aiqfome_ativo: boolean
           app_ifood_ativo: boolean
+          app_outro_ativo: boolean
+          app_outro_nome: string
           app_rappi_ativo: boolean
           cmv_meta_pct: number
           created_at: string
           custos_fixos_pct: number
           id: string
+          ifood_plano: string
           taxa_aiqfome_pct: number
           taxa_credito_pct: number
           taxa_debito_pct: number
           taxa_ifood_pct: number
+          taxa_outro_pct: number
           taxa_pix_pct: number
           taxa_rappi_pct: number
           updated_at: string
@@ -137,15 +159,19 @@ export type Database = {
         Insert: {
           app_aiqfome_ativo?: boolean
           app_ifood_ativo?: boolean
+          app_outro_ativo?: boolean
+          app_outro_nome?: string
           app_rappi_ativo?: boolean
           cmv_meta_pct?: number
           created_at?: string
           custos_fixos_pct?: number
           id?: string
+          ifood_plano?: string
           taxa_aiqfome_pct?: number
           taxa_credito_pct?: number
           taxa_debito_pct?: number
           taxa_ifood_pct?: number
+          taxa_outro_pct?: number
           taxa_pix_pct?: number
           taxa_rappi_pct?: number
           updated_at?: string
@@ -154,15 +180,19 @@ export type Database = {
         Update: {
           app_aiqfome_ativo?: boolean
           app_ifood_ativo?: boolean
+          app_outro_ativo?: boolean
+          app_outro_nome?: string
           app_rappi_ativo?: boolean
           cmv_meta_pct?: number
           created_at?: string
           custos_fixos_pct?: number
           id?: string
+          ifood_plano?: string
           taxa_aiqfome_pct?: number
           taxa_credito_pct?: number
           taxa_debito_pct?: number
           taxa_ifood_pct?: number
+          taxa_outro_pct?: number
           taxa_pix_pct?: number
           taxa_rappi_pct?: number
           updated_at?: string

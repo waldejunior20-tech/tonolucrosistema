@@ -3,11 +3,11 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, Package, BookOpen, DollarSign, 
   TrendingUp, Tag, ChevronDown, 
-  PanelLeftClose, PanelLeft, Pizza
+  PanelLeftClose, PanelLeft, Pizza, Settings2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type ModuleKey = "dashboard" | "insumos" | "fichas" | "precificacao" | "financeiro" | "promocoes";
+export type ModuleKey = "dashboard" | "insumos" | "fichas" | "precificacao" | "financeiro" | "promocoes" | "configuracoes";
 
 interface SubItem {
   label: string;
@@ -71,6 +71,7 @@ const sidebarItems: SidebarItem[] = [
       { label: "Combos Fixos", path: "/promocoes/combos" },
     ],
   },
+  { key: "configuracoes", label: "Configurações", icon: Settings2, path: "/configuracoes" },
 ];
 
 interface UnifiedSidebarProps {

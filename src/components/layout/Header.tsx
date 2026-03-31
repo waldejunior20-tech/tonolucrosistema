@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LogOut, User, Search } from "lucide-react";
+import { LogOut, User, Search, Settings2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export function Header() {
@@ -50,6 +50,14 @@ export function Header() {
             className="bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none w-full"
           />
         </div>
+
+        <button
+          onClick={() => navigate("/configuracoes")}
+          className="p-2 rounded-sm text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+          title="Configurações"
+        >
+          <Settings2 className="h-4 w-4" />
+        </button>
 
         <div className="h-5 w-px bg-border" />
 

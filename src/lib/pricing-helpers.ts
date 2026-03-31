@@ -94,6 +94,10 @@ export interface ConfigPrecificacao {
   app_aiqfome_ativo: boolean;
   taxa_rappi_pct: number;
   taxa_aiqfome_pct: number;
+  app_outro_ativo?: boolean;
+  app_outro_nome?: string;
+  taxa_outro_pct?: number;
+  ifood_plano?: string;
 }
 
 export const getActiveApps = (config: ConfigPrecificacao | undefined): AppInfo[] => {
@@ -102,6 +106,9 @@ export const getActiveApps = (config: ConfigPrecificacao | undefined): AppInfo[]
   if (config.app_ifood_ativo) apps.push({ key: "ifood", label: "iFood", taxa: config.taxa_ifood_pct });
   if (config.app_rappi_ativo) apps.push({ key: "rappi", label: "Rappi", taxa: config.taxa_rappi_pct });
   if (config.app_aiqfome_ativo) apps.push({ key: "aiqfome", label: "Aiqfome", taxa: config.taxa_aiqfome_pct });
+  if (config.app_outro_ativo && config.app_outro_nome) {
+    apps.push({ key: "outro", label: config.app_outro_nome, taxa: config.taxa_outro_pct ?? 12 });
+  }
   return apps;
 };
 
