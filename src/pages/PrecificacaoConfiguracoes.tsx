@@ -3,20 +3,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Save, Settings2 } from "lucide-react";
 import { useState, useEffect } from "react";
-
-interface ConfigPrecificacao {
-  id: string;
-  custos_fixos_pct: number;
-  cmv_meta_pct: number;
-  taxa_ifood_pct: number;
-  taxa_debito_pct: number;
-  taxa_credito_pct: number;
-  taxa_pix_pct: number;
-}
+import { type ConfigPrecificacao } from "@/lib/pricing-helpers";
 
 export default function PrecificacaoConfiguracoes() {
   const queryClient = useQueryClient();
@@ -50,6 +42,11 @@ export default function PrecificacaoConfiguracoes() {
           taxa_debito_pct: c.taxa_debito_pct,
           taxa_credito_pct: c.taxa_credito_pct,
           taxa_pix_pct: c.taxa_pix_pct,
+          app_ifood_ativo: c.app_ifood_ativo,
+          app_rappi_ativo: c.app_rappi_ativo,
+          app_aiqfome_ativo: c.app_aiqfome_ativo,
+          taxa_rappi_pct: c.taxa_rappi_pct,
+          taxa_aiqfome_pct: c.taxa_aiqfome_pct,
         })
         .eq("id", c.id);
       if (error) throw error;
@@ -71,13 +68,18 @@ export default function PrecificacaoConfiguracoes() {
 
   if (!form) return null;
 
-  const fields: [keyof ConfigPrecificacao, string, string][] = [
+  const percentFields: [keyof ConfigPrecificacao, string, string][] = [
     ["custos_fixos_pct", "% Custos Fixos", "Percentual dos custos fixos sobre o faturamento"],
     ["cmv_meta_pct", "% CMV Meta", "Meta de custo da mercadoria vendida"],
-    ["taxa_ifood_pct", "% Taxa iFood", "Comissão cobrada pelo iFood"],
     ["taxa_debito_pct", "% Taxa Débito", "Taxa da maquininha no débito"],
     ["taxa_credito_pct", "% Taxa Crédito", "Taxa da maquininha no crédito"],
     ["taxa_pix_pct", "% Taxa PIX", "Taxa para pagamentos via PIX"],
+  ];
+
+  const appFields: { activeKey: keyof ConfigPrecificacao; taxaKey: keyof ConfigPrecificacao; label: string }[] = [
+    { activeKey: "app_ifood_ativo", taxaKey: "taxa_ifood_pct", label: "iFood" },
+    { activeKey: "app_rappi_ativo", taxaKey: "taxa_rappi_pct", label: "Rappi" },
+    { activeKey: "app_aiqfome_ativo", taxaKey: "taxa_aiqfome_pct", label: "Aiqfome" },
   ];
 
   return (
@@ -101,16 +103,14 @@ export default function PrecificacaoConfiguracoes() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {fields.map(([key, label, desc]) => (
+            {percentFields.map(([key, label, desc]) => (
               <div key={key} className="space-y-1.5">
                 <Label className="text-sm font-medium">{label}</Label>
                 <Input
                   type="number"
                   step="0.01"
                   value={form[key] as number}
-                  onChange={(e) =>
-                    setForm({ ...form, [key]: parseFloat(e.target.value) || 0 })
-                  }
+                  onChange={(e) => setForm({ ...form, [key]: parseFloat(e.target.value) || 0 })}
                   disabled={key === "taxa_pix_pct"}
                   className="h-10"
                 />
@@ -118,14 +118,50 @@ export default function PrecificacaoConfiguracoes() {
               </div>
             ))}
           </div>
-          <div className="flex justify-end mt-6">
-            <Button onClick={() => mutation.mutate(form)} disabled={mutation.isPending}>
-              <Save className="h-4 w-4 mr-2" />
-              Salvar Configurações
-            </Button>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Apps de Delivery</CardTitle>
+          <CardDescription>
+            Ative os apps que você usa. As telas de precificação mostrarão automaticamente o preço sugerido para cada app ativo.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {appFields.map(({ activeKey, taxaKey, label }) => (
+              <div key={activeKey} className="space-y-3 rounded-lg border border-border p-4">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm font-medium">{label}</Label>
+                  <Switch
+                    checked={form[activeKey] as boolean}
+                    onCheckedChange={(checked) => setForm({ ...form, [activeKey]: checked })}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">Taxa (%)</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={form[taxaKey] as number}
+                    onChange={(e) => setForm({ ...form, [taxaKey]: parseFloat(e.target.value) || 0 })}
+                    disabled={!(form[activeKey] as boolean)}
+                    className="h-9"
+                  />
+                </div>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>
+
+      <div className="flex justify-end">
+        <Button onClick={() => mutation.mutate(form)} disabled={mutation.isPending}>
+          <Save className="h-4 w-4 mr-2" />
+          Salvar Configurações
+        </Button>
+      </div>
     </div>
   );
 }

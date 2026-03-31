@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
+import { cn } from "@/lib/utils";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -7,129 +8,27 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { AlertTriangle, Beer, GlassWater, Check } from "lucide-react";
 import { formatMoney } from "@/components/MoneyInput";
+import {
+  fmt, fmtPct, calcCmv, converterQuantidade,
+  cmvBg, cmvColor, cmvMessage,
+  indCmvBg, indCmvColor, indCmvMessage,
+  calcAppPrice, getActiveApps, APP_TOOLTIP,
+  type ConfigPrecificacao,
+} from "@/lib/pricing-helpers";
 
 // ─── Types ───────────────────────────────────────────────────────────
-interface InsumoComprado {
-  id: string;
-  nome: string;
-  preco_pago: number;
-  quantidade: number;
-  unidade: string;
-  categoria: string;
-}
-
-interface PrecificacaoBebida {
-  id: string;
-  insumo_comprado_id: string;
-  preco_venda: number;
-}
-
-interface FichaProduto {
-  id: string;
-  nome: string;
-  categoria: string;
-  preco_venda: number | null;
-}
-
-interface FichaProdutoIngrediente {
-  ficha_id: string;
-  tipo_insumo: string;
-  insumo_comprado_id: string | null;
-  insumo_proprio_id: string | null;
-  quantidade: number;
-  unidade: string;
-}
-
-interface InsumoProprio {
-  id: string;
-  nome: string;
-  rendimento: number;
-  unidade_rendimento: string;
-}
-
-interface InsumoProprioIngrediente {
-  insumo_proprio_id: string | null;
-  insumo_comprado_id: string | null;
-  quantidade: number;
-  unidade: string;
-}
-
-interface ConfigPrecificacao {
-  id: string;
-  custos_fixos_pct: number;
-  cmv_meta_pct: number;
-  taxa_ifood_pct: number;
-  taxa_debito_pct: number;
-  taxa_credito_pct: number;
-  taxa_pix_pct: number;
-}
-
-// ─── Helpers ─────────────────────────────────────────────────────────
-const converterQuantidade = (qtd: number, unidade: string) =>
-  unidade === "g" || unidade === "ml" ? qtd / 1000 : qtd;
-
-const fmt = (v: number) =>
-  v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-
-const fmtPct = (v: number) => `${v.toFixed(1)}%`;
-
-// ─── Faixas CMV para bebidas PREPARADAS (padrão Abrasel) ─────────
-const cmvColor = (pct: number): string => {
-  if (pct < 25) return "text-info";
-  if (pct <= 35) return "text-success";
-  if (pct <= 40) return "text-warning";
-  return "text-destructive";
-};
-const cmvBg = (pct: number): string => {
-  if (pct < 25) return "bg-blue-100 text-blue-800";
-  if (pct <= 35) return "bg-green-100 text-green-800";
-  if (pct <= 40) return "bg-yellow-100 text-yellow-800";
-  return "bg-red-100 text-red-800";
-};
-const cmvEmoji = (pct: number): string => {
-  if (pct < 25) return "🔵";
-  if (pct <= 35) return "🟢";
-  if (pct <= 40) return "🟡";
-  return "🔴";
-};
-const cmvMessage = (pct: number): string => {
-  if (pct < 25) return "Preço alto — verifique se está correto";
-  if (pct <= 35) return "Ideal";
-  if (pct <= 40) return "Atenção — margem apertada";
-  return "Rever preços — prejuízo";
-};
-
-// ─── Faixas CMV para bebidas INDUSTRIALIZADAS ────────────────────
-const indCmvColor = (pct: number): string => {
-  if (pct < 75) return "text-info";
-  if (pct <= 85) return "text-success";
-  if (pct <= 92) return "text-warning";
-  return "text-destructive";
-};
-const indCmvBg = (pct: number): string => {
-  if (pct < 75) return "bg-blue-100 text-blue-800";
-  if (pct <= 85) return "bg-green-100 text-green-800";
-  if (pct <= 92) return "bg-yellow-100 text-yellow-800";
-  return "bg-red-100 text-red-800";
-};
-const indCmvEmoji = (pct: number): string => {
-  if (pct < 75) return "🔵";
-  if (pct <= 85) return "🟢";
-  if (pct <= 92) return "🟡";
-  return "🔴";
-};
-const indCmvMessage = (pct: number): string => {
-  if (pct < 75) return "Ótima margem — acima do mercado";
-  if (pct <= 85) return "Margem normal para revenda";
-  if (pct <= 92) return "Atenção — margem muito apertada";
-  return "Prejuízo — rever preço";
-};
-
-const calcCmv = (custo: number, preco: number) =>
-  preco > 0 ? (custo / preco) * 100 : 0;
+interface InsumoComprado { id: string; nome: string; preco_pago: number; quantidade: number; unidade: string; categoria: string; }
+interface PrecificacaoBebida { id: string; insumo_comprado_id: string; preco_venda: number; }
+interface FichaProduto { id: string; nome: string; categoria: string; preco_venda: number | null; }
+interface FichaProdutoIngrediente { ficha_id: string; tipo_insumo: string; insumo_comprado_id: string | null; insumo_proprio_id: string | null; quantidade: number; unidade: string; }
+interface InsumoProprio { id: string; rendimento: number; }
+interface InsumoProprioIngrediente { insumo_proprio_id: string | null; insumo_comprado_id: string | null; quantidade: number; unidade: string; }
 
 // ─── Component ───────────────────────────────────────────────────────
 export default function PrecificacaoBebidas() {
@@ -138,15 +37,10 @@ export default function PrecificacaoBebidas() {
   const [localPricesPrep, setLocalPricesPrep] = useState<Record<string, string>>({});
   const [savedFields, setSavedFields] = useState<Record<string, boolean>>({});
 
-  // ─── Queries ─────────────────────────────────────────────────────
   const { data: config } = useQuery({
     queryKey: ["configuracoes_precificacao"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("configuracoes_precificacao")
-        .select("*")
-        .limit(1)
-        .single();
+      const { data, error } = await supabase.from("configuracoes_precificacao").select("*").limit(1).single();
       if (error) throw error;
       return data as ConfigPrecificacao;
     },
@@ -184,11 +78,7 @@ export default function PrecificacaoBebidas() {
   const { data: fichasBebidas = [] } = useQuery({
     queryKey: ["fichas_tecnicas_produtos", "bebidas"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("fichas_tecnicas_produtos")
-        .select("*")
-        .eq("categoria", "bebida")
-        .order("nome");
+      const { data, error } = await supabase.from("fichas_tecnicas_produtos").select("*").eq("categoria", "bebida").order("nome");
       if (error) throw error;
       return data as FichaProduto[];
     },
@@ -197,9 +87,7 @@ export default function PrecificacaoBebidas() {
   const { data: ingredientesProdutos = [] } = useQuery({
     queryKey: ["fichas_tecnicas_produtos_ingredientes"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("fichas_tecnicas_produtos_ingredientes")
-        .select("*");
+      const { data, error } = await supabase.from("fichas_tecnicas_produtos_ingredientes").select("*");
       if (error) throw error;
       return data as FichaProdutoIngrediente[];
     },
@@ -226,9 +114,7 @@ export default function PrecificacaoBebidas() {
   // ─── Cost maps ───────────────────────────────────────────────────
   const custoCompradoMap = useMemo(() => {
     const m = new Map<string, number>();
-    insumosComprados.forEach((ic) =>
-      m.set(ic.id, Number(ic.preco_pago) / Number(ic.quantidade))
-    );
+    insumosComprados.forEach((ic) => m.set(ic.id, Number(ic.preco_pago) / Number(ic.quantidade)));
     return m;
   }, [insumosComprados]);
 
@@ -238,24 +124,21 @@ export default function PrecificacaoBebidas() {
       const ings = ingredientesProprios.filter((i) => i.insumo_proprio_id === ip.id);
       const custoTotal = ings.reduce((acc, ing) => {
         const custoUnit = custoCompradoMap.get(ing.insumo_comprado_id ?? "") ?? 0;
-        const qtd = converterQuantidade(Number(ing.quantidade), ing.unidade);
-        return acc + custoUnit * qtd;
+        return acc + custoUnit * converterQuantidade(Number(ing.quantidade), ing.unidade);
       }, 0);
       m.set(ip.id, Number(ip.rendimento) > 0 ? custoTotal / Number(ip.rendimento) : 0);
     });
     return m;
   }, [insumosProprios, ingredientesProprios, custoCompradoMap]);
 
-  // ─── Prepared beverage costs ─────────────────────────────────────
   const custoPrepMap = useMemo(() => {
     const m = new Map<string, number>();
     fichasBebidas.forEach((f) => {
       const ings = ingredientesProdutos.filter((i) => i.ficha_id === f.id);
       const custo = ings.reduce((acc, ing) => {
-        const custoUnit =
-          ing.tipo_insumo === "comprado"
-            ? custoCompradoMap.get(ing.insumo_comprado_id ?? "") ?? 0
-            : custoProprioMap.get(ing.insumo_proprio_id ?? "") ?? 0;
+        const custoUnit = ing.tipo_insumo === "comprado"
+          ? custoCompradoMap.get(ing.insumo_comprado_id ?? "") ?? 0
+          : custoProprioMap.get(ing.insumo_proprio_id ?? "") ?? 0;
         return acc + custoUnit * converterQuantidade(Number(ing.quantidade), ing.unidade);
       }, 0);
       m.set(f.id, custo);
@@ -282,48 +165,27 @@ export default function PrecificacaoBebidas() {
     [localPricesPrep]
   );
 
-  // ─── Indicators (separados por tipo) ──────────────────────────────
+  // ─── Indicators ──────────────────────────────────────────────────
   const indIndicators = useMemo(() => {
-    let totalCmv = 0;
-    let count = 0;
-    let foraMetaCount = 0;
-
+    let totalCmv = 0, count = 0, foraMetaCount = 0;
     bebidasIndustrializadas.forEach((b) => {
       const custo = Number(b.preco_pago) / Number(b.quantidade);
       const preco = getPrecoInd(b.id);
-      if (preco > 0) {
-        const cmv = calcCmv(custo, preco);
-        totalCmv += cmv;
-        count++;
-        if (cmv > 92) foraMetaCount++;
-      }
+      if (preco > 0) { const cmv = calcCmv(custo, preco); totalCmv += cmv; count++; if (cmv > 92) foraMetaCount++; }
     });
-
-    const avgCmv = count > 0 ? totalCmv / count : 0;
-    return { avgCmv, foraMetaCount };
+    return { avgCmv: count > 0 ? totalCmv / count : 0, foraMetaCount };
   }, [bebidasIndustrializadas, getPrecoInd]);
 
   const prepIndicators = useMemo(() => {
-    let totalCmv = 0;
-    let count = 0;
-    let foraMetaCount = 0;
-
+    let totalCmv = 0, count = 0, foraMetaCount = 0;
     fichasBebidas.forEach((f) => {
       const custo = custoPrepMap.get(f.id) ?? 0;
       const preco = getPrecoPrep(f.id, f);
-      if (preco > 0) {
-        const cmv = calcCmv(custo, preco);
-        totalCmv += cmv;
-        count++;
-        if (cmv > 40) foraMetaCount++;
-      }
+      if (preco > 0) { const cmv = calcCmv(custo, preco); totalCmv += cmv; count++; if (cmv > 40) foraMetaCount++; }
     });
+    return { avgCmv: count > 0 ? totalCmv / count : 0, foraMetaCount };
+  }, [fichasBebidas, custoPrepMap, getPrecoPrep]);
 
-    const avgCmv = count > 0 ? totalCmv / count : 0;
-    return { avgCmv, foraMetaCount };
-  }, [bebidasIndustrializadas, fichasBebidas, custoPrepMap, getPrecoInd, getPrecoPrep]);
-
-  // ─── Mutations ───────────────────────────────────────────────────
   // ─── Auto-save helpers ─────────────────────────────────────────
   const showSavedCheck = useCallback((key: string) => {
     setSavedFields((prev) => ({ ...prev, [key]: true }));
@@ -338,15 +200,10 @@ export default function PrecificacaoBebidas() {
       const existing = precificacaoMap.get(insumoId);
       try {
         if (existing) {
-          const { error } = await supabase
-            .from("precificacao_bebidas")
-            .update({ preco_venda: numVal })
-            .eq("id", existing.id);
+          const { error } = await supabase.from("precificacao_bebidas").update({ preco_venda: numVal }).eq("id", existing.id);
           if (error) throw error;
         } else {
-          const { error } = await supabase
-            .from("precificacao_bebidas")
-            .insert({ insumo_comprado_id: insumoId, preco_venda: numVal });
+          const { error } = await supabase.from("precificacao_bebidas").insert({ insumo_comprado_id: insumoId, preco_venda: numVal });
           if (error) throw error;
         }
         queryClient.invalidateQueries({ queryKey: ["precificacao_bebidas"] });
@@ -365,10 +222,7 @@ export default function PrecificacaoBebidas() {
       if (local === undefined) return;
       const numVal = parseFloat(local) || 0;
       try {
-        const { error } = await supabase
-          .from("fichas_tecnicas_produtos")
-          .update({ preco_venda: numVal || null })
-          .eq("id", fichaId);
+        const { error } = await supabase.from("fichas_tecnicas_produtos").update({ preco_venda: numVal || null }).eq("id", fichaId);
         if (error) throw error;
         queryClient.invalidateQueries({ queryKey: ["fichas_tecnicas_produtos"] });
         showSavedCheck(`prep-${fichaId}`);
@@ -381,262 +235,280 @@ export default function PrecificacaoBebidas() {
   );
 
   const cmvMeta = config?.cmv_meta_pct ?? 32;
-  const taxaIfood = config?.taxa_ifood_pct ?? 12;
-  const taxaDebito = config?.taxa_debito_pct ?? 1.35;
-  const taxaCredito = config?.taxa_credito_pct ?? 3.15;
+  const activeApps = getActiveApps(config);
 
-  const lucro = (preco: number, custo: number, taxaPct: number) =>
-    preco - custo - preco * (taxaPct / 100);
+  // ─── Shared render for a single-item table (industrialized or prepared) ───
+  const renderIndTable = () => (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="min-w-[200px]">Bebida</TableHead>
+          <TableHead className="text-center">Custo</TableHead>
+          <TableHead className="text-center">Sugerido</TableHead>
+          <TableHead className="text-center bg-primary/10">Seu Preço</TableHead>
+          <TableHead className="text-center bg-primary/10">CMV Balcão</TableHead>
+          {activeApps.map((app) => (
+            <TableHead key={`app-${app.key}`} className="text-center">
+              <Tooltip><TooltipTrigger asChild><span className="cursor-help">{app.label}</span></TooltipTrigger>
+                <TooltipContent><p className="max-w-[200px] text-xs">{APP_TOOLTIP}</p></TooltipContent></Tooltip>
+            </TableHead>
+          ))}
+          {activeApps.map((app) => (
+            <TableHead key={`cmv-${app.key}`} className="text-center">CMV {app.label}</TableHead>
+          ))}
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {bebidasIndustrializadas.map((bebida) => {
+          const custoUnit = Number(bebida.preco_pago) / Number(bebida.quantidade);
+          const preco = getPrecoInd(bebida.id);
+          const cmv = calcCmv(custoUnit, preco);
+          const sugerido = custoUnit / 0.80;
+          const hasAlert = cmv > 92 && preco > 0;
+
+          return (
+            <TableRow key={bebida.id} className={hasAlert ? "bg-destructive/5" : ""}>
+              <TableCell className="font-medium">
+                <div className="flex items-center gap-1">
+                  {hasAlert && <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0" />}
+                  {bebida.nome}
+                </div>
+              </TableCell>
+              <TableCell className="text-center text-xs">{fmt(custoUnit)}</TableCell>
+              <TableCell className="text-center text-xs text-muted-foreground">{fmt(sugerido)}</TableCell>
+              <TableCell className="bg-primary/5">
+                <div className="relative flex items-center justify-center">
+                  <Input
+                    type={localPricesInd[bebida.id] !== undefined ? "number" : "text"}
+                    step={localPricesInd[bebida.id] !== undefined ? "0.01" : undefined}
+                    className="h-8 w-28 text-xs text-center pr-6 border-b-2 border-b-primary border-t-0 border-l-0 border-r-0 rounded-none bg-transparent focus-visible:ring-primary/30"
+                    value={
+                      localPricesInd[bebida.id] !== undefined
+                        ? localPricesInd[bebida.id]
+                        : (precificacaoMap.get(bebida.id)?.preco_venda ? formatMoney(Number(precificacaoMap.get(bebida.id)?.preco_venda)) : "")
+                    }
+                    onChange={(e) => setLocalPricesInd((prev) => ({ ...prev, [bebida.id]: e.target.value }))}
+                    onFocus={() => {
+                      if (localPricesInd[bebida.id] === undefined) {
+                        const v = precificacaoMap.get(bebida.id)?.preco_venda;
+                        setLocalPricesInd((prev) => ({ ...prev, [bebida.id]: String(v ?? "") }));
+                      }
+                    }}
+                    onBlur={() => autoSaveInd(bebida.id)}
+                    placeholder="R$ 0,00"
+                  />
+                  {savedFields[`ind-${bebida.id}`] && (
+                    <Check className="absolute right-1 h-3.5 w-3.5 text-success animate-in fade-in duration-200" />
+                  )}
+                </div>
+              </TableCell>
+              <TableCell className="text-center bg-primary/5">
+                <span className={cn("text-xs font-semibold px-1.5 py-0.5 rounded", indCmvBg(cmv))}>
+                  {preco > 0 ? fmtPct(cmv) : "—"}
+                </span>
+              </TableCell>
+              {activeApps.map((app) => {
+                const appPrice = preco > 0 ? calcAppPrice(preco, app.taxa) : 0;
+                return (
+                  <TableCell key={`app-${app.key}`} className="text-center text-xs text-muted-foreground">
+                    {preco > 0 ? fmt(appPrice) : "—"}
+                  </TableCell>
+                );
+              })}
+              {activeApps.map((app) => {
+                const appPrice = preco > 0 ? calcAppPrice(preco, app.taxa) : 0;
+                const appCmv = calcCmv(custoUnit, appPrice);
+                return (
+                  <TableCell key={`cmv-${app.key}`} className="text-center">
+                    <span className={cn("text-xs font-semibold px-1.5 py-0.5 rounded", indCmvBg(appCmv))}>
+                      {appPrice > 0 ? fmtPct(appCmv) : "—"}
+                    </span>
+                  </TableCell>
+                );
+              })}
+            </TableRow>
+          );
+        })}
+        {bebidasIndustrializadas.length === 0 && (
+          <TableRow>
+            <TableCell colSpan={5 + activeApps.length * 2} className="text-center py-8 text-muted-foreground">
+              Nenhuma bebida industrializada cadastrada.
+            </TableCell>
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
+  );
+
+  const renderPrepTable = () => (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="min-w-[200px]">Bebida</TableHead>
+          <TableHead className="text-center">Custo</TableHead>
+          <TableHead className="text-center">Sugerido</TableHead>
+          <TableHead className="text-center bg-primary/10">Seu Preço</TableHead>
+          <TableHead className="text-center bg-primary/10">CMV Balcão</TableHead>
+          {activeApps.map((app) => (
+            <TableHead key={`app-${app.key}`} className="text-center">
+              <Tooltip><TooltipTrigger asChild><span className="cursor-help">{app.label}</span></TooltipTrigger>
+                <TooltipContent><p className="max-w-[200px] text-xs">{APP_TOOLTIP}</p></TooltipContent></Tooltip>
+            </TableHead>
+          ))}
+          {activeApps.map((app) => (
+            <TableHead key={`cmv-${app.key}`} className="text-center">CMV {app.label}</TableHead>
+          ))}
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {fichasBebidas.map((ficha) => {
+          const custo = custoPrepMap.get(ficha.id) ?? 0;
+          const preco = getPrecoPrep(ficha.id, ficha);
+          const cmv = calcCmv(custo, preco);
+          const sugerido = cmvMeta > 0 ? custo / (cmvMeta / 100) : 0;
+          const hasAlert = cmv > 40 && preco > 0;
+
+          return (
+            <TableRow key={ficha.id} className={hasAlert ? "bg-destructive/5" : ""}>
+              <TableCell className="font-medium">
+                <div className="flex items-center gap-1">
+                  {hasAlert && <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0" />}
+                  {ficha.nome}
+                </div>
+              </TableCell>
+              <TableCell className="text-center text-xs">{fmt(custo)}</TableCell>
+              <TableCell className="text-center text-xs text-muted-foreground">{fmt(sugerido)}</TableCell>
+              <TableCell className="bg-primary/5">
+                <div className="relative flex items-center justify-center">
+                  <Input
+                    type={localPricesPrep[ficha.id] !== undefined ? "number" : "text"}
+                    step={localPricesPrep[ficha.id] !== undefined ? "0.01" : undefined}
+                    className="h-8 w-28 text-xs text-center pr-6 border-b-2 border-b-primary border-t-0 border-l-0 border-r-0 rounded-none bg-transparent focus-visible:ring-primary/30"
+                    value={
+                      localPricesPrep[ficha.id] !== undefined
+                        ? localPricesPrep[ficha.id]
+                        : (ficha.preco_venda ? formatMoney(Number(ficha.preco_venda)) : "")
+                    }
+                    onChange={(e) => setLocalPricesPrep((prev) => ({ ...prev, [ficha.id]: e.target.value }))}
+                    onFocus={() => {
+                      if (localPricesPrep[ficha.id] === undefined) {
+                        setLocalPricesPrep((prev) => ({ ...prev, [ficha.id]: String(ficha.preco_venda ?? "") }));
+                      }
+                    }}
+                    onBlur={() => autoSavePrep(ficha.id)}
+                    placeholder="R$ 0,00"
+                  />
+                  {savedFields[`prep-${ficha.id}`] && (
+                    <Check className="absolute right-1 h-3.5 w-3.5 text-success animate-in fade-in duration-200" />
+                  )}
+                </div>
+              </TableCell>
+              <TableCell className="text-center bg-primary/5">
+                <span className={cn("text-xs font-semibold px-1.5 py-0.5 rounded", cmvBg(cmv))}>
+                  {preco > 0 ? fmtPct(cmv) : "—"}
+                </span>
+              </TableCell>
+              {activeApps.map((app) => {
+                const appPrice = preco > 0 ? calcAppPrice(preco, app.taxa) : 0;
+                return (
+                  <TableCell key={`app-${app.key}`} className="text-center text-xs text-muted-foreground">
+                    {preco > 0 ? fmt(appPrice) : "—"}
+                  </TableCell>
+                );
+              })}
+              {activeApps.map((app) => {
+                const appPrice = preco > 0 ? calcAppPrice(preco, app.taxa) : 0;
+                const appCmv = calcCmv(custo, appPrice);
+                return (
+                  <TableCell key={`cmv-${app.key}`} className="text-center">
+                    <span className={cn("text-xs font-semibold px-1.5 py-0.5 rounded", cmvBg(appCmv))}>
+                      {appPrice > 0 ? fmtPct(appCmv) : "—"}
+                    </span>
+                  </TableCell>
+                );
+              })}
+            </TableRow>
+          );
+        })}
+        {fichasBebidas.length === 0 && (
+          <TableRow>
+            <TableCell colSpan={5 + activeApps.length * 2} className="text-center py-8 text-muted-foreground">
+              Nenhuma bebida preparada cadastrada.
+            </TableCell>
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
+  );
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <h1 className="text-2xl font-bold text-foreground">Precificação de Bebidas</h1>
+    <TooltipProvider>
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold text-foreground">Precificação de Bebidas</h1>
 
-      {/* Indicators — Industrializadas */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">CMV Médio — Industrializadas</p>
-            <p className={`text-3xl font-bold ${indCmvColor(indIndicators.avgCmv)}`}>
-              {fmtPct(indIndicators.avgCmv)}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Semáforo — Industrializadas</p>
-            <p className="text-3xl">
-              {indCmvEmoji(indIndicators.avgCmv)}{" "}
-              <span className={`text-lg font-semibold ${indCmvColor(indIndicators.avgCmv)}`}>
-                {indCmvMessage(indIndicators.avgCmv)}
-              </span>
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Fora da Meta</p>
-            <p className="text-3xl font-bold text-foreground flex items-center gap-2">
-              {indIndicators.foraMetaCount + prepIndicators.foraMetaCount}
-              {(indIndicators.foraMetaCount + prepIndicators.foraMetaCount) > 0 && (
-                <AlertTriangle className="h-6 w-6 text-destructive" />
-              )}
-            </p>
-          </CardContent>
-        </Card>
+        {/* Indicators */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-sm text-muted-foreground">CMV Médio — Industrializadas</p>
+              <p className={cn("text-3xl font-bold", indCmvColor(indIndicators.avgCmv))}>
+                {fmtPct(indIndicators.avgCmv)}
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-sm text-muted-foreground">Semáforo</p>
+              <div className="flex items-center gap-2">
+                <div className={cn("h-4 w-4 rounded-full", indIndicators.avgCmv > 92 ? "bg-destructive" : indIndicators.avgCmv > 85 ? "bg-warning" : "bg-success")} />
+                <span className={cn("text-lg font-semibold", indCmvColor(indIndicators.avgCmv))}>
+                  {indCmvMessage(indIndicators.avgCmv)}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-sm text-muted-foreground">Fora da Meta</p>
+              <p className="text-3xl font-bold text-foreground flex items-center gap-2">
+                {indIndicators.foraMetaCount + prepIndicators.foraMetaCount}
+                {(indIndicators.foraMetaCount + prepIndicators.foraMetaCount) > 0 && <AlertTriangle className="h-6 w-6 text-destructive" />}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Tabs defaultValue="industrializadas" className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="industrializadas" className="gap-2"><Beer className="h-4 w-4" />Industrializadas</TabsTrigger>
+            <TabsTrigger value="preparadas" className="gap-2"><GlassWater className="h-4 w-4" />Preparadas</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="industrializadas">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Bebidas Industrializadas</CardTitle>
+                <p className="text-xs text-muted-foreground">CMV = custo ÷ preço de venda.</p>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="overflow-x-auto">{renderIndTable()}</div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="preparadas">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Bebidas Preparadas</CardTitle>
+                <p className="text-xs text-muted-foreground">Custo calculado pela ficha técnica.</p>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="overflow-x-auto">{renderPrepTable()}</div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
-
-      {/* Tabs */}
-      <Tabs defaultValue="industrializadas" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="industrializadas" className="gap-2">
-            <Beer className="h-4 w-4" />
-            Industrializadas
-          </TabsTrigger>
-          <TabsTrigger value="preparadas" className="gap-2">
-            <GlassWater className="h-4 w-4" />
-            Preparadas
-          </TabsTrigger>
-        </TabsList>
-
-        {/* ─── Industrializadas ─────────────────────────────────── */}
-        <TabsContent value="industrializadas">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Bebidas Industrializadas</CardTitle>
-              <p className="text-xs text-muted-foreground">
-                Cadastradas em Insumos Comprados (categoria Bebidas). Sem ficha técnica — CMV = custo ÷ preço de venda.
-              </p>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="min-w-[200px]">Bebida</TableHead>
-                      <TableHead className="text-center">Custo Unit.</TableHead>
-                      <TableHead className="text-center">Preço Praticado</TableHead>
-                      <TableHead className="text-center">CMV %</TableHead>
-                      <TableHead className="text-center">Preço Sugerido</TableHead>
-                      <TableHead className="text-center">Lucro PIX</TableHead>
-                      <TableHead className="text-center">Lucro Débito</TableHead>
-                      <TableHead className="text-center">Lucro Crédito</TableHead>
-                      <TableHead className="text-center">Lucro iFood</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {bebidasIndustrializadas.map((bebida) => {
-                      const custoUnit = Number(bebida.preco_pago) / Number(bebida.quantidade);
-                      const preco = getPrecoInd(bebida.id);
-                      const cmv = calcCmv(custoUnit, preco);
-                      const sugerido = custoUnit / 0.80;
-                      const hasAlert = cmv > 92 && preco > 0;
-
-                      return (
-                        <TableRow key={bebida.id} className={hasAlert ? "bg-red-50/50" : ""}>
-                          <TableCell className="font-medium">
-                            <div className="flex items-center gap-1">
-                              {hasAlert && <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0" />}
-                              {bebida.nome}
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-center text-xs">{fmt(custoUnit)}</TableCell>
-                          <TableCell>
-                            <div className="relative flex items-center justify-center">
-                              <Input
-                                type={localPricesInd[bebida.id] !== undefined ? "number" : "text"}
-                                step={localPricesInd[bebida.id] !== undefined ? "0.01" : undefined}
-                                className="h-8 w-28 text-xs text-center pr-6 border-b-2 border-b-primary border-t-0 border-l-0 border-r-0 rounded-none bg-primary/5 focus-visible:ring-primary/30"
-                                value={
-                                  localPricesInd[bebida.id] !== undefined
-                                    ? localPricesInd[bebida.id]
-                                    : (precificacaoMap.get(bebida.id)?.preco_venda
-                                      ? formatMoney(Number(precificacaoMap.get(bebida.id)?.preco_venda))
-                                      : "")
-                                }
-                                onChange={(e) =>
-                                  setLocalPricesInd((prev) => ({ ...prev, [bebida.id]: e.target.value }))
-                                }
-                                onFocus={() => {
-                                  if (localPricesInd[bebida.id] === undefined) {
-                                    const v = precificacaoMap.get(bebida.id)?.preco_venda;
-                                    setLocalPricesInd((prev) => ({ ...prev, [bebida.id]: String(v ?? "") }));
-                                  }
-                                }}
-                                onBlur={() => autoSaveInd(bebida.id)}
-                                placeholder="R$ 0,00"
-                              />
-                              {savedFields[`ind-${bebida.id}`] && (
-                                <Check className="absolute right-1 h-3.5 w-3.5 text-success animate-in fade-in duration-200" />
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-center">
-                            <span className={`text-xs font-semibold px-1.5 py-0.5 rounded ${indCmvBg(cmv)}`}>
-                              {preco > 0 ? fmtPct(cmv) : "—"}
-                            </span>
-                          </TableCell>
-                          <TableCell className="text-center text-xs">{fmt(sugerido)}</TableCell>
-                          <TableCell className="text-center text-xs">{preco > 0 ? fmt(lucro(preco, custoUnit, 0)) : "—"}</TableCell>
-                          <TableCell className="text-center text-xs">{preco > 0 ? fmt(lucro(preco, custoUnit, taxaDebito)) : "—"}</TableCell>
-                          <TableCell className="text-center text-xs">{preco > 0 ? fmt(lucro(preco, custoUnit, taxaCredito)) : "—"}</TableCell>
-                          <TableCell className="text-center text-xs">{preco > 0 ? fmt(lucro(preco, custoUnit, taxaIfood)) : "—"}</TableCell>
-                        </TableRow>
-                      );
-                    })}
-                    {bebidasIndustrializadas.length === 0 && (
-                      <TableRow>
-                        <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
-                          Nenhuma bebida industrializada cadastrada. Cadastre em Insumos Comprados com categoria "Bebidas".
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* ─── Preparadas ───────────────────────────────────────── */}
-        <TabsContent value="preparadas">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Bebidas Preparadas</CardTitle>
-              <p className="text-xs text-muted-foreground">
-                Cadastradas em Fichas Técnicas de Bebidas. O custo é calculado automaticamente pelos ingredientes.
-              </p>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="min-w-[200px]">Bebida</TableHead>
-                      <TableHead className="text-center">Custo (Ficha)</TableHead>
-                      <TableHead className="text-center">Preço Praticado</TableHead>
-                      <TableHead className="text-center">CMV %</TableHead>
-                      <TableHead className="text-center">Preço Sugerido</TableHead>
-                      <TableHead className="text-center">Lucro PIX</TableHead>
-                      <TableHead className="text-center">Lucro Débito</TableHead>
-                      <TableHead className="text-center">Lucro Crédito</TableHead>
-                      <TableHead className="text-center">Lucro iFood</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {fichasBebidas.map((ficha) => {
-                      const custo = custoPrepMap.get(ficha.id) ?? 0;
-                      const preco = getPrecoPrep(ficha.id, ficha);
-                      const cmv = calcCmv(custo, preco);
-                      const sugerido = cmvMeta > 0 ? custo / (cmvMeta / 100) : 0;
-                      const hasAlert = cmv > 40 && preco > 0;
-
-                      return (
-                        <TableRow key={ficha.id} className={hasAlert ? "bg-red-50/50" : ""}>
-                          <TableCell className="font-medium">
-                            <div className="flex items-center gap-1">
-                              {hasAlert && <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0" />}
-                              {ficha.nome}
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-center text-xs">{fmt(custo)}</TableCell>
-                          <TableCell>
-                            <div className="relative flex items-center justify-center">
-                              <Input
-                                type={localPricesPrep[ficha.id] !== undefined ? "number" : "text"}
-                                step={localPricesPrep[ficha.id] !== undefined ? "0.01" : undefined}
-                                className="h-8 w-28 text-xs text-center pr-6 border-b-2 border-b-primary border-t-0 border-l-0 border-r-0 rounded-none bg-primary/5 focus-visible:ring-primary/30"
-                                value={
-                                  localPricesPrep[ficha.id] !== undefined
-                                    ? localPricesPrep[ficha.id]
-                                    : (ficha.preco_venda
-                                      ? formatMoney(Number(ficha.preco_venda))
-                                      : "")
-                                }
-                                onChange={(e) =>
-                                  setLocalPricesPrep((prev) => ({ ...prev, [ficha.id]: e.target.value }))
-                                }
-                                onFocus={() => {
-                                  if (localPricesPrep[ficha.id] === undefined) {
-                                    setLocalPricesPrep((prev) => ({ ...prev, [ficha.id]: String(ficha.preco_venda ?? "") }));
-                                  }
-                                }}
-                                onBlur={() => autoSavePrep(ficha.id)}
-                                placeholder="R$ 0,00"
-                              />
-                              {savedFields[`prep-${ficha.id}`] && (
-                                <Check className="absolute right-1 h-3.5 w-3.5 text-success animate-in fade-in duration-200" />
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-center">
-                            <span className={`text-xs font-semibold px-1.5 py-0.5 rounded ${cmvBg(cmv)}`}>
-                              {preco > 0 ? fmtPct(cmv) : "—"}
-                            </span>
-                          </TableCell>
-                          <TableCell className="text-center text-xs">{fmt(sugerido)}</TableCell>
-                          <TableCell className="text-center text-xs">{preco > 0 ? fmt(lucro(preco, custo, 0)) : "—"}</TableCell>
-                          <TableCell className="text-center text-xs">{preco > 0 ? fmt(lucro(preco, custo, taxaDebito)) : "—"}</TableCell>
-                          <TableCell className="text-center text-xs">{preco > 0 ? fmt(lucro(preco, custo, taxaCredito)) : "—"}</TableCell>
-                          <TableCell className="text-center text-xs">{preco > 0 ? fmt(lucro(preco, custo, taxaIfood)) : "—"}</TableCell>
-                        </TableRow>
-                      );
-                    })}
-                    {fichasBebidas.length === 0 && (
-                      <TableRow>
-                        <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
-                          Nenhuma bebida preparada cadastrada. Cadastre fichas técnicas de bebidas primeiro.
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
+    </TooltipProvider>
   );
 }

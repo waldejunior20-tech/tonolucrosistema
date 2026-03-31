@@ -118,38 +118,53 @@ export type Database = {
       }
       configuracoes_precificacao: {
         Row: {
+          app_aiqfome_ativo: boolean
+          app_ifood_ativo: boolean
+          app_rappi_ativo: boolean
           cmv_meta_pct: number
           created_at: string
           custos_fixos_pct: number
           id: string
+          taxa_aiqfome_pct: number
           taxa_credito_pct: number
           taxa_debito_pct: number
           taxa_ifood_pct: number
           taxa_pix_pct: number
+          taxa_rappi_pct: number
           updated_at: string
           user_id: string | null
         }
         Insert: {
+          app_aiqfome_ativo?: boolean
+          app_ifood_ativo?: boolean
+          app_rappi_ativo?: boolean
           cmv_meta_pct?: number
           created_at?: string
           custos_fixos_pct?: number
           id?: string
+          taxa_aiqfome_pct?: number
           taxa_credito_pct?: number
           taxa_debito_pct?: number
           taxa_ifood_pct?: number
           taxa_pix_pct?: number
+          taxa_rappi_pct?: number
           updated_at?: string
           user_id?: string | null
         }
         Update: {
+          app_aiqfome_ativo?: boolean
+          app_ifood_ativo?: boolean
+          app_rappi_ativo?: boolean
           cmv_meta_pct?: number
           created_at?: string
           custos_fixos_pct?: number
           id?: string
+          taxa_aiqfome_pct?: number
           taxa_credito_pct?: number
           taxa_debito_pct?: number
           taxa_ifood_pct?: number
           taxa_pix_pct?: number
+          taxa_rappi_pct?: number
           updated_at?: string
           user_id?: string | null
         }

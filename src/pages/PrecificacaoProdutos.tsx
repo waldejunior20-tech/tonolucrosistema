@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
+import { cn } from "@/lib/utils";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -6,9 +7,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
+import {
+  Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { AlertTriangle, Check } from "lucide-react";
 import { formatMoney } from "@/components/MoneyInput";
+import {
+  fmt, fmtPct, calcCmv, converterQuantidade, cmvBg, cmvColor, cmvMessage,
+  calcAppPrice, getActiveApps, APP_TOOLTIP,
+  type ConfigPrecificacao,
+} from "@/lib/pricing-helpers";
 
 // ─── Types ───────────────────────────────────────────────────────────
 interface FichaProduto {
@@ -27,90 +36,16 @@ interface FichaProdutoIngrediente {
   unidade: string;
 }
 
-interface InsumoComprado {
-  id: string;
-  nome: string;
-  preco_pago: number;
-  quantidade: number;
-  unidade: string;
-}
-
-interface InsumoProprio {
-  id: string;
-  nome: string;
-  rendimento: number;
-  unidade_rendimento: string;
-}
-
-interface InsumoProprioIngrediente {
-  insumo_proprio_id: string | null;
-  insumo_comprado_id: string | null;
-  quantidade: number;
-  unidade: string;
-}
-
-interface ConfigPrecificacao {
-  id: string;
-  custos_fixos_pct: number;
-  cmv_meta_pct: number;
-  taxa_ifood_pct: number;
-  taxa_debito_pct: number;
-  taxa_credito_pct: number;
-  taxa_pix_pct: number;
-}
-
-interface PrecificacaoProduto {
-  id: string;
-  ficha_id: string;
-  preco_venda: number;
-}
-
-// ─── Helpers ─────────────────────────────────────────────────────────
-const converterQuantidade = (qtd: number, unidade: string) =>
-  unidade === "g" || unidade === "ml" ? qtd / 1000 : qtd;
-
-const fmt = (v: number) =>
-  v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-
-const fmtPct = (v: number) => `${v.toFixed(1)}%`;
-
-const cmvColor = (pct: number): string => {
-  if (pct < 25) return "text-info";
-  if (pct <= 35) return "text-success";
-  if (pct <= 40) return "text-warning";
-  return "text-destructive";
-};
-
-const cmvBg = (pct: number): string => {
-  if (pct < 25) return "bg-blue-100 text-blue-800";
-  if (pct <= 35) return "bg-green-100 text-green-800";
-  if (pct <= 40) return "bg-yellow-100 text-yellow-800";
-  return "bg-red-100 text-red-800";
-};
-
-const cmvEmoji = (pct: number): string => {
-  if (pct < 25) return "🔵";
-  if (pct <= 35) return "🟢";
-  if (pct <= 40) return "🟡";
-  return "🔴";
-};
-
-const cmvMessage = (pct: number): string => {
-  if (pct < 25) return "Preço alto — verifique se está correto";
-  if (pct <= 35) return "Ideal";
-  if (pct <= 40) return "Atenção — margem apertada";
-  return "Rever preços — prejuízo";
-};
-
-const calcCmv = (custo: number, preco: number) =>
-  preco > 0 ? (custo / preco) * 100 : 0;
+interface InsumoComprado { id: string; preco_pago: number; quantidade: number; }
+interface InsumoProprio { id: string; rendimento: number; }
+interface InsumoProprioIngrediente { insumo_proprio_id: string | null; insumo_comprado_id: string | null; quantidade: number; unidade: string; }
+interface PrecificacaoProduto { id: string; ficha_id: string; preco_venda: number; }
 
 const categoriaLabel: Record<string, string> = {
   sanduiche: "Sanduíches e Lanches",
   prato: "Pratos",
   sobremesa: "Sobremesas",
 };
-
 const categoriaOrder = ["sanduiche", "prato", "sobremesa"];
 
 // ─── Component ───────────────────────────────────────────────────────
@@ -119,15 +54,10 @@ export default function PrecificacaoProdutos() {
   const [localPrices, setLocalPrices] = useState<Record<string, string>>({});
   const [savedFields, setSavedFields] = useState<Record<string, boolean>>({});
 
-  // ─── Queries ─────────────────────────────────────────────────────
   const { data: config } = useQuery({
     queryKey: ["configuracoes_precificacao"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("configuracoes_precificacao")
-        .select("*")
-        .limit(1)
-        .single();
+      const { data, error } = await supabase.from("configuracoes_precificacao").select("*").limit(1).single();
       if (error) throw error;
       return data as ConfigPrecificacao;
     },
@@ -150,9 +80,7 @@ export default function PrecificacaoProdutos() {
   const { data: ingredientes = [] } = useQuery({
     queryKey: ["fichas_tecnicas_produtos_ingredientes"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("fichas_tecnicas_produtos_ingredientes")
-        .select("*");
+      const { data, error } = await supabase.from("fichas_tecnicas_produtos_ingredientes").select("*");
       if (error) throw error;
       return data as FichaProdutoIngrediente[];
     },
@@ -197,9 +125,7 @@ export default function PrecificacaoProdutos() {
   // ─── Cost maps ───────────────────────────────────────────────────
   const custoCompradoMap = useMemo(() => {
     const m = new Map<string, number>();
-    insumosComprados.forEach((ic) =>
-      m.set(ic.id, Number(ic.preco_pago) / Number(ic.quantidade))
-    );
+    insumosComprados.forEach((ic) => m.set(ic.id, Number(ic.preco_pago) / Number(ic.quantidade)));
     return m;
   }, [insumosComprados]);
 
@@ -209,15 +135,13 @@ export default function PrecificacaoProdutos() {
       const ings = ingredientesProprios.filter((i) => i.insumo_proprio_id === ip.id);
       const custoTotal = ings.reduce((acc, ing) => {
         const custoUnit = custoCompradoMap.get(ing.insumo_comprado_id ?? "") ?? 0;
-        const qtd = converterQuantidade(Number(ing.quantidade), ing.unidade);
-        return acc + custoUnit * qtd;
+        return acc + custoUnit * converterQuantidade(Number(ing.quantidade), ing.unidade);
       }, 0);
       m.set(ip.id, Number(ip.rendimento) > 0 ? custoTotal / Number(ip.rendimento) : 0);
     });
     return m;
   }, [insumosProprios, ingredientesProprios, custoCompradoMap]);
 
-  // ─── Product costs ──────────────────────────────────────────────
   const custoMap = useMemo(() => {
     const m = new Map<string, number>();
     fichas.forEach((f) => {
@@ -240,7 +164,6 @@ export default function PrecificacaoProdutos() {
     return m;
   }, [precificacoes]);
 
-  // ─── Price helpers ───────────────────────────────────────────────
   const getPreco = useCallback(
     (fichaId: string) => {
       const local = localPrices[fichaId];
@@ -252,10 +175,7 @@ export default function PrecificacaoProdutos() {
 
   // ─── Indicators ──────────────────────────────────────────────────
   const indicators = useMemo(() => {
-    let totalCmv = 0;
-    let count = 0;
-    let foraMetaCount = 0;
-
+    let totalCmv = 0, count = 0, foraMetaCount = 0;
     fichas.forEach((f) => {
       const custo = custoMap.get(f.id) ?? 0;
       const preco = getPreco(f.id);
@@ -266,9 +186,7 @@ export default function PrecificacaoProdutos() {
         if (cmv > 40) foraMetaCount++;
       }
     });
-
-    const avgCmv = count > 0 ? totalCmv / count : 0;
-    return { avgCmv, foraMetaCount };
+    return { avgCmv: count > 0 ? totalCmv / count : 0, foraMetaCount };
   }, [fichas, custoMap, getPreco]);
 
   // ─── Auto-save ───────────────────────────────────────────────────
@@ -285,15 +203,10 @@ export default function PrecificacaoProdutos() {
       const existing = precificacaoMap.get(fichaId);
       try {
         if (existing) {
-          const { error } = await supabase
-            .from("precificacao_produtos")
-            .update({ preco_venda: numVal })
-            .eq("id", existing.id);
+          const { error } = await supabase.from("precificacao_produtos").update({ preco_venda: numVal }).eq("id", existing.id);
           if (error) throw error;
         } else {
-          const { error } = await supabase
-            .from("precificacao_produtos")
-            .insert({ ficha_id: fichaId, preco_venda: numVal });
+          const { error } = await supabase.from("precificacao_produtos").insert({ ficha_id: fichaId, preco_venda: numVal });
           if (error) throw error;
         }
         queryClient.invalidateQueries({ queryKey: ["precificacao_produtos"] });
@@ -307,14 +220,8 @@ export default function PrecificacaoProdutos() {
   );
 
   const cmvMeta = config?.cmv_meta_pct ?? 32;
-  const taxaIfood = config?.taxa_ifood_pct ?? 12;
-  const taxaDebito = config?.taxa_debito_pct ?? 1.35;
-  const taxaCredito = config?.taxa_credito_pct ?? 3.15;
+  const activeApps = getActiveApps(config);
 
-  const lucro = (preco: number, custo: number, taxaPct: number) =>
-    preco - custo - preco * (taxaPct / 100);
-
-  // ─── Group by category ──────────────────────────────────────────
   const grouped = useMemo(() => {
     const groups: Record<string, FichaProduto[]> = {};
     fichas.forEach((f) => {
@@ -330,14 +237,23 @@ export default function PrecificacaoProdutos() {
         <TableHeader>
           <TableRow>
             <TableHead className="min-w-[200px]">Produto</TableHead>
-            <TableHead className="text-center">Custo (Ficha)</TableHead>
-            <TableHead className="text-center">Preço Praticado</TableHead>
-            <TableHead className="text-center">CMV %</TableHead>
-            <TableHead className="text-center">Preço Sugerido</TableHead>
-            <TableHead className="text-center">Lucro PIX</TableHead>
-            <TableHead className="text-center">Lucro Débito</TableHead>
-            <TableHead className="text-center">Lucro Crédito</TableHead>
-            <TableHead className="text-center">Lucro iFood</TableHead>
+            <TableHead className="text-center">Custo</TableHead>
+            <TableHead className="text-center">Sugerido</TableHead>
+            <TableHead className="text-center bg-primary/10">Seu Preço</TableHead>
+            <TableHead className="text-center bg-primary/10">CMV Balcão</TableHead>
+            {activeApps.map((app) => (
+              <TableHead key={`app-${app.key}`} className="text-center">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="cursor-help">{app.label}</span>
+                  </TooltipTrigger>
+                  <TooltipContent><p className="max-w-[200px] text-xs">{APP_TOOLTIP}</p></TooltipContent>
+                </Tooltip>
+              </TableHead>
+            ))}
+            {activeApps.map((app) => (
+              <TableHead key={`cmv-${app.key}`} className="text-center">CMV {app.label}</TableHead>
+            ))}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -349,7 +265,7 @@ export default function PrecificacaoProdutos() {
             const hasAlert = cmv > 40 && preco > 0;
 
             return (
-              <TableRow key={ficha.id} className={hasAlert ? "bg-red-50/50" : ""}>
+              <TableRow key={ficha.id} className={hasAlert ? "bg-destructive/5" : ""}>
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-1">
                     {hasAlert && <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0" />}
@@ -357,12 +273,13 @@ export default function PrecificacaoProdutos() {
                   </div>
                 </TableCell>
                 <TableCell className="text-center text-xs">{fmt(custo)}</TableCell>
-                <TableCell>
+                <TableCell className="text-center text-xs text-muted-foreground">{fmt(sugerido)}</TableCell>
+                <TableCell className="bg-primary/5">
                   <div className="relative flex items-center justify-center">
                     <Input
                       type={localPrices[ficha.id] !== undefined ? "number" : "text"}
                       step={localPrices[ficha.id] !== undefined ? "0.01" : undefined}
-                      className="h-8 w-28 text-xs text-center pr-6 border-b-2 border-b-primary border-t-0 border-l-0 border-r-0 rounded-none bg-primary/5 focus-visible:ring-primary/30"
+                      className="h-8 w-28 text-xs text-center pr-6 border-b-2 border-b-primary border-t-0 border-l-0 border-r-0 rounded-none bg-transparent focus-visible:ring-primary/30"
                       value={
                         localPrices[ficha.id] !== undefined
                           ? localPrices[ficha.id]
@@ -370,9 +287,7 @@ export default function PrecificacaoProdutos() {
                             ? formatMoney(Number(precificacaoMap.get(ficha.id)?.preco_venda))
                             : "")
                       }
-                      onChange={(e) =>
-                        setLocalPrices((prev) => ({ ...prev, [ficha.id]: e.target.value }))
-                      }
+                      onChange={(e) => setLocalPrices((prev) => ({ ...prev, [ficha.id]: e.target.value }))}
                       onFocus={() => {
                         if (localPrices[ficha.id] === undefined) {
                           const v = precificacaoMap.get(ficha.id)?.preco_venda;
@@ -387,22 +302,36 @@ export default function PrecificacaoProdutos() {
                     )}
                   </div>
                 </TableCell>
-                <TableCell className="text-center">
-                  <span className={`text-xs font-semibold px-1.5 py-0.5 rounded ${cmvBg(cmv)}`}>
+                <TableCell className="text-center bg-primary/5">
+                  <span className={cn("text-xs font-semibold px-1.5 py-0.5 rounded", cmvBg(cmv))}>
                     {preco > 0 ? fmtPct(cmv) : "—"}
                   </span>
                 </TableCell>
-                <TableCell className="text-center text-xs">{fmt(sugerido)}</TableCell>
-                <TableCell className="text-center text-xs">{preco > 0 ? fmt(lucro(preco, custo, 0)) : "—"}</TableCell>
-                <TableCell className="text-center text-xs">{preco > 0 ? fmt(lucro(preco, custo, taxaDebito)) : "—"}</TableCell>
-                <TableCell className="text-center text-xs">{preco > 0 ? fmt(lucro(preco, custo, taxaCredito)) : "—"}</TableCell>
-                <TableCell className="text-center text-xs">{preco > 0 ? fmt(lucro(preco, custo, taxaIfood)) : "—"}</TableCell>
+                {activeApps.map((app) => {
+                  const appPrice = preco > 0 ? calcAppPrice(preco, app.taxa) : 0;
+                  return (
+                    <TableCell key={`app-${app.key}`} className="text-center text-xs text-muted-foreground">
+                      {preco > 0 ? fmt(appPrice) : "—"}
+                    </TableCell>
+                  );
+                })}
+                {activeApps.map((app) => {
+                  const appPrice = preco > 0 ? calcAppPrice(preco, app.taxa) : 0;
+                  const appCmv = calcCmv(custo, appPrice);
+                  return (
+                    <TableCell key={`cmv-${app.key}`} className="text-center">
+                      <span className={cn("text-xs font-semibold px-1.5 py-0.5 rounded", cmvBg(appCmv))}>
+                        {appPrice > 0 ? fmtPct(appCmv) : "—"}
+                      </span>
+                    </TableCell>
+                  );
+                })}
               </TableRow>
             );
           })}
           {items.length === 0 && (
             <TableRow>
-              <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+              <TableCell colSpan={5 + activeApps.length * 2} className="text-center py-8 text-muted-foreground">
                 Nenhum produto cadastrado nesta categoria.
               </TableCell>
             </TableRow>
@@ -413,57 +342,57 @@ export default function PrecificacaoProdutos() {
   );
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-foreground">Precificação de Produtos</h1>
+    <TooltipProvider>
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold text-foreground">Precificação de Produtos</h1>
 
-      {/* Indicators */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">CMV Médio Atual</p>
-            <p className={`text-3xl font-bold ${cmvColor(indicators.avgCmv)}`}>
-              {fmtPct(indicators.avgCmv)}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Semáforo CMV</p>
-            <p className="text-3xl">
-              {cmvEmoji(indicators.avgCmv)}{" "}
-              <span className={`text-lg font-semibold ${cmvColor(indicators.avgCmv)}`}>
-                {cmvMessage(indicators.avgCmv)}
-              </span>
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">Produtos Fora da Meta</p>
-            <p className="text-3xl font-bold text-foreground flex items-center gap-2">
-              {indicators.foraMetaCount}
-              {indicators.foraMetaCount > 0 && (
-                <AlertTriangle className="h-6 w-6 text-destructive" />
-              )}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Grouped tables */}
-      {categoriaOrder.map((cat) => {
-        const items = grouped[cat] ?? [];
-        return (
-          <Card key={cat}>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">{categoriaLabel[cat]}</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              {renderTable(items)}
+        {/* Indicators */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-sm text-muted-foreground">CMV Médio Atual</p>
+              <p className={cn("text-3xl font-bold", cmvColor(indicators.avgCmv))}>
+                {fmtPct(indicators.avgCmv)}
+              </p>
             </CardContent>
           </Card>
-        );
-      })}
-    </div>
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-sm text-muted-foreground">Semáforo CMV</p>
+              <div className="flex items-center gap-2">
+                <div className={cn("h-4 w-4 rounded-full", indicators.avgCmv > 40 ? "bg-destructive" : indicators.avgCmv > 35 ? "bg-warning" : "bg-success")} />
+                <span className={cn("text-lg font-semibold", cmvColor(indicators.avgCmv))}>
+                  {cmvMessage(indicators.avgCmv)}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-sm text-muted-foreground">Produtos Fora da Meta</p>
+              <p className="text-3xl font-bold text-foreground flex items-center gap-2">
+                {indicators.foraMetaCount}
+                {indicators.foraMetaCount > 0 && <AlertTriangle className="h-6 w-6 text-destructive" />}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Grouped tables */}
+        {categoriaOrder.map((cat) => {
+          const items = grouped[cat] ?? [];
+          return (
+            <Card key={cat}>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">{categoriaLabel[cat]}</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                {renderTable(items)}
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+    </TooltipProvider>
   );
 }
