@@ -51,6 +51,14 @@ export function Header() {
           />
         </div>
 
+        <button
+          onClick={() => navigate("/configuracoes")}
+          className="p-2 rounded-sm text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+          title="Configurações"
+        >
+          <Settings2 className="h-4 w-4" />
+        </button>
+
         <div className="h-5 w-px bg-border" />
 
         <div className="flex items-center gap-2 text-sm text-muted-foreground">

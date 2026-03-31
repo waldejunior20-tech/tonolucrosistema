@@ -71,6 +71,7 @@ const sidebarItems: SidebarItem[] = [
       { label: "Combos Fixos", path: "/promocoes/combos" },
     ],
   },
+  { key: "configuracoes", label: "Configurações", icon: Settings2, path: "/configuracoes" },
 ];
 
 interface UnifiedSidebarProps {

@@ -101,6 +101,7 @@ function AppRoutes() {
         <Route path="/financeiro/ponto-de-equilibrio" element={<FinanceiroPontoEquilibrio />} />
         <Route path="/promocoes/ativas" element={<SectionPage />} />
         <Route path="/promocoes/combos" element={<ComboSimulator />} />
+        <Route path="/configuracoes" element={<Configuracoes />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
