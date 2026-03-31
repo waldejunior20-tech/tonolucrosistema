@@ -19,7 +19,7 @@ const pathLabels: Record<string, string> = {
   "/financeiro/contas-a-pagar": "Financeiro — Contas a Pagar",
   "/financeiro/ponto-de-equilibrio": "Financeiro — Ponto de Equilíbrio",
   "/promocoes/ativas": "Promoções Ativas",
-  "/promocoes/combos": "Combos Fixos",
+  
 };
 
 export default function SectionPage() {

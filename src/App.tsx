@@ -99,7 +99,7 @@ function AppRoutes() {
         <Route path="/financeiro/contas-a-pagar" element={<FinanceiroContasPagar />} />
         <Route path="/financeiro/ponto-de-equilibrio" element={<FinanceiroPontoEquilibrio />} />
         <Route path="/promocoes/ativas" element={<SectionPage />} />
-        <Route path="/promocoes/combos" element={<SectionPage />} />
+        <Route path="/promocoes/combos" element={<ComboSimulator />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
