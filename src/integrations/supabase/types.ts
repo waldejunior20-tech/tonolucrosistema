@@ -713,6 +713,78 @@ export type Database = {
         }
         Relationships: []
       }
+      promocoes: {
+        Row: {
+          categoria_alvo: string | null
+          created_at: string | null
+          data_fim: string | null
+          data_inicio: string
+          desconto_aplicado: number | null
+          dias_semana: string[] | null
+          horario_fim: string | null
+          horario_inicio: string | null
+          id: string
+          lucro_real_pct: number | null
+          lucro_real_rs: number | null
+          margem_minima_aceitavel: number | null
+          nome: string
+          preco_final_promocional: number | null
+          produto_ids: string[] | null
+          regra_descricao: string | null
+          status: string | null
+          tipo: string
+          updated_at: string | null
+          user_id: string | null
+          valor_original: number | null
+        }
+        Insert: {
+          categoria_alvo?: string | null
+          created_at?: string | null
+          data_fim?: string | null
+          data_inicio: string
+          desconto_aplicado?: number | null
+          dias_semana?: string[] | null
+          horario_fim?: string | null
+          horario_inicio?: string | null
+          id?: string
+          lucro_real_pct?: number | null
+          lucro_real_rs?: number | null
+          margem_minima_aceitavel?: number | null
+          nome: string
+          preco_final_promocional?: number | null
+          produto_ids?: string[] | null
+          regra_descricao?: string | null
+          status?: string | null
+          tipo: string
+          updated_at?: string | null
+          user_id?: string | null
+          valor_original?: number | null
+        }
+        Update: {
+          categoria_alvo?: string | null
+          created_at?: string | null
+          data_fim?: string | null
+          data_inicio?: string
+          desconto_aplicado?: number | null
+          dias_semana?: string[] | null
+          horario_fim?: string | null
+          horario_inicio?: string | null
+          id?: string
+          lucro_real_pct?: number | null
+          lucro_real_rs?: number | null
+          margem_minima_aceitavel?: number | null
+          nome?: string
+          preco_final_promocional?: number | null
+          produto_ids?: string[] | null
+          regra_descricao?: string | null
+          status?: string | null
+          tipo?: string
+          updated_at?: string | null
+          user_id?: string | null
+          valor_original?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
