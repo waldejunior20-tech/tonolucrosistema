@@ -26,6 +26,7 @@ import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import PasswordRecovery from "@/pages/PasswordRecovery";
 import ComboSimulator from "@/pages/ComboSimulator";
+import PromocoesAtivas from "@/pages/PromocoesAtivas";
 import Configuracoes from "@/pages/Configuracoes";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -99,7 +100,7 @@ function AppRoutes() {
         <Route path="/financeiro/dre" element={<FinanceiroDRE />} />
         <Route path="/financeiro/contas-a-pagar" element={<FinanceiroContasPagar />} />
         <Route path="/financeiro/ponto-de-equilibrio" element={<FinanceiroPontoEquilibrio />} />
-        <Route path="/promocoes/ativas" element={<SectionPage />} />
+        <Route path="/promocoes/ativas" element={<PromocoesAtivas />} />
         <Route path="/promocoes/combos" element={<ComboSimulator />} />
         <Route path="/configuracoes" element={<Configuracoes />} />
       </Route>
