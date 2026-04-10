@@ -246,9 +246,10 @@ export default function PrecificacaoPizzas() {
     async (fichaId: string, size: "p" | "m" | "g", value: string) => {
       const numVal = parseFloat(value) || 0;
       const colMap = { p: "preco_venda_p", m: "preco_venda_m", g: "preco_venda_g" } as const;
+      const updateData = { [colMap[size]]: numVal || null };
       const { error } = await supabase
         .from("fichas_tecnicas_pizza")
-        .update({ [colMap[size]]: numVal || null })
+        .update(updateData as any)
         .eq("id", fichaId);
       if (error) {
         toast.error("Erro ao salvar preço.");
