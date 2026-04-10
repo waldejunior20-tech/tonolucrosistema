@@ -200,39 +200,6 @@ export type Database = {
         }
         Relationships: []
       }
-      configuracoes_preco: {
-        Row: {
-          comissao_marketplace: number | null
-          created_at: string | null
-          custos_fixos: number | null
-          id: string
-          impostos: number | null
-          margem_desejada: number | null
-          outros_custos_variaveis: number | null
-          updated_at: string | null
-        }
-        Insert: {
-          comissao_marketplace?: number | null
-          created_at?: string | null
-          custos_fixos?: number | null
-          id?: string
-          impostos?: number | null
-          margem_desejada?: number | null
-          outros_custos_variaveis?: number | null
-          updated_at?: string | null
-        }
-        Update: {
-          comissao_marketplace?: number | null
-          created_at?: string | null
-          custos_fixos?: number | null
-          id?: string
-          impostos?: number | null
-          margem_desejada?: number | null
-          outros_custos_variaveis?: number | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
       fichas_tecnicas_pizza: {
         Row: {
           created_at: string | null
