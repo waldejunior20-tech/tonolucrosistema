@@ -456,9 +456,10 @@ export default function FichasTecnicasPizza() {
     async (ing: IngredienteForm, field: "qtd_p" | "qtd_m" | "qtd_g", value: number) => {
       if (!editingId || !ing.db_id) return;
       try {
+        const updateData: Record<string, number> = { [field]: value };
         const { error } = await supabase
           .from("fichas_tecnicas_pizza_ingredientes")
-          .update({ [field]: value })
+          .update(updateData as any)
           .eq("id", ing.db_id);
         if (error) throw error;
         queryClient.invalidateQueries({ queryKey: ["fichas_tecnicas_pizza_ingredientes"] });
