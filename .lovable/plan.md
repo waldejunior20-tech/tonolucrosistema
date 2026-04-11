@@ -1,73 +1,37 @@
 
 
-## Plan: Simulador de Combos (substituir Combos Fixos)
+## Plano: Adicionar Login com Google
 
-### Summary
-Replace the placeholder "Combos Fixos" page at `/promocoes/combos` with a fully functional ComboSimulator component connected to Supabase. Users can build combos by selecting items from pizzas, products, and beverages, see real-time cost/margin calculations, and save promotions.
+### O que muda para o usuário
+Um botão "Entrar com Google" aparecerá nas páginas de Login e Cadastro, permitindo acesso rápido sem precisar digitar email e senha.
 
-### Database
+### Configuração necessária no Supabase (manual)
 
-**New table: `combos_fixos`**
-```sql
-CREATE TABLE public.combos_fixos (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  nome text NOT NULL,
-  itens jsonb NOT NULL DEFAULT '[]',
-  preco_venda numeric NOT NULL DEFAULT 0,
-  custo_total numeric NOT NULL DEFAULT 0,
-  preco_separado numeric NOT NULL DEFAULT 0,
-  margem numeric NOT NULL DEFAULT 0,
-  user_id uuid DEFAULT auth.uid(),
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
-);
+Antes de funcionar, você precisará configurar o Google OAuth no painel do Supabase e no Google Cloud Console:
 
-ALTER TABLE public.combos_fixos ENABLE ROW LEVEL SECURITY;
+1. **Google Cloud Console** (https://console.cloud.google.com):
+   - Criar um projeto (ou usar existente)
+   - Ir em APIs & Services > Credentials > Create OAuth Client ID (Web application)
+   - Em "Authorized JavaScript origins": adicionar `https://id-preview--661827de-d1a0-4733-8b47-293c9eeb6611.lovable.app` (e seu domínio final quando publicar)
+   - Em "Authorized redirect URIs": adicionar `https://lokqongxioqbesejavdm.supabase.co/auth/v1/callback`
+   - Copiar o **Client ID** e **Client Secret**
 
--- RLS policies
-CREATE POLICY "Users can view own combos" ON combos_fixos FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can create own combos" ON combos_fixos FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can update own combos" ON combos_fixos FOR UPDATE USING (auth.uid() = user_id);
-CREATE POLICY "Users can delete own combos" ON combos_fixos FOR DELETE USING (auth.uid() = user_id);
-```
+2. **Supabase Dashboard** (https://supabase.com/dashboard/project/lokqongxioqbesejavdm/auth/providers):
+   - Ativar o provider "Google"
+   - Colar o Client ID e Client Secret obtidos acima
 
-The `itens` JSONB column stores an array of objects: `{ tipo, id, nome, quantidade, custo_unitario, preco_unitario }`.
+### Alterações no código
 
-### Frontend
+1. **`src/pages/Login.tsx`** — Adicionar botão "Entrar com Google" que chama `supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } })`
 
-**1. Create `src/pages/ComboSimulator.tsx`**
+2. **`src/pages/Signup.tsx`** — Adicionar o mesmo botão com separador visual "ou"
 
-Based on the provided component layout, but fully wired:
+3. **`src/App.tsx`** — Nenhuma alteração necessária; o `onAuthStateChange` já captura sessões OAuth
 
-- **State**: `nome`, `itens[]`, `precoVenda`, `showProductPicker`
-- **Data fetching** (React Query):
-  - `fichas_tecnicas_pizza` with their ingredients to compute cost per pizza (same logic as PrecificacaoPizzas)
-  - `fichas_tecnicas_produtos` with their ingredients for product costs
-  - `insumos_comprados` WHERE `categoria = 'Bebidas'` for beverage costs
-- **Product picker dialog**: A modal/sheet listing available items grouped by type (Pizzas, Produtos, Bebidas). Selecting an item adds it to the combo with its computed cost and sale price.
-- **Cost computation**:
-  - Pizza cost: sum of ingredient costs (same formula as existing precificacao pages)
-  - Product cost: sum of ingredient costs from fichas_tecnicas_produtos_ingredientes
-  - Beverage cost: `preco_pago` from insumos_comprados (unit cost)
-- **Sale price sources**:
-  - Pizza: `preco_venda_p/m/g` from fichas_tecnicas_pizza (user picks size)
-  - Product: `preco_venda` from precificacao_produtos or fichas_tecnicas_produtos
-  - Beverage: `preco_venda` from precificacao_bebidas
-- **Right panel calculations**:
-  - Custo Real Total = sum of all item costs
-  - Preco Separado = sum of all item sale prices
-  - Margem % = `(precoVenda - custoTotal) / precoVenda * 100`
-  - Traffic light: green (>50%), yellow (30-50%), red (<30%)
-- **Save**: upsert to `combos_fixos` table
-- **List saved combos**: show existing combos below the simulator with edit/delete
+### Detalhes técnicos
 
-**2. Update `src/App.tsx`**
-- Import ComboSimulator
-- Replace `<SectionPage />` at `/promocoes/combos` with `<ComboSimulator />`
-
-**3. Update `src/pages/SectionPage.tsx`**
-- Remove the `/promocoes/combos` entry from the titles map (no longer needed)
-
-### Styling
-Uses the Midnight Ember design system already in place -- dark surfaces, ember/gold accents, monospace numbers, semantic profit/loss colors for the traffic light.
+- Usar `signInWithOAuth` do Supabase JS SDK (já instalado)
+- O `redirectTo` aponta para a origem atual, garantindo que o callback funcione em preview e produção
+- O trigger `handle_new_user` já existente criará o perfil automaticamente no signup via Google
+- O botão usará um ícone SVG do Google inline para manter a identidade visual padrão
 
