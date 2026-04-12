@@ -177,7 +177,7 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
                     "group relative w-full h-9 flex items-center rounded-lg transition-all duration-200 overflow-hidden",
                     isActive 
                       ? "bg-sidebar-accent text-sidebar-primary" 
-                      : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
+                      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                   )}
                 >
                   {/* Left Active Bar */}
@@ -221,7 +221,7 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
                             }}
                             className={cn(
                             "h-8 pl-11 pr-4 flex items-center justify-between text-sm transition-all duration-200 rounded-sm group",
-                              isSubActive ? "text-sidebar-primary font-semibold" : "text-sidebar-foreground hover:text-sidebar-accent-foreground hover:translate-x-0.5 hover:bg-sidebar-accent/40 font-medium"
+                              isSubActive ? "text-sidebar-primary font-semibold" : "text-sidebar-foreground hover:text-sidebar-accent-foreground hover:translate-x-0.5 hover:bg-sidebar-accent font-medium"
                             )}
                           >
                             <span className="truncate">{sub.label}</span>
@@ -240,7 +240,7 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
                                     onClick={() => { navigate(nested.path); onNavigate?.(); }}
                                     className={cn(
                                       "h-7 px-3 flex items-center text-xs transition-all duration-200 rounded-sm",
-                                      isNestedActive ? "text-sidebar-primary font-semibold" : "text-sidebar-foreground hover:text-sidebar-accent-foreground hover:translate-x-0.5 hover:bg-sidebar-accent/40 font-medium"
+                                      isNestedActive ? "text-sidebar-primary font-semibold" : "text-sidebar-foreground hover:text-sidebar-accent-foreground hover:translate-x-0.5 hover:bg-sidebar-accent font-medium"
                                     )}
                                   >
                                     <span className="truncate">{nested.label}</span>
