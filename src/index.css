@@ -319,7 +319,7 @@
     border-bottom: 2px solid hsl(var(--border));
   }
   .table-premium thead th {
-    font-family: 'DM Sans', 'Inter', system-ui, sans-serif;
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.06em;
