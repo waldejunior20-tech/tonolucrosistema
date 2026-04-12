@@ -31,11 +31,13 @@ function MiniKPI({ label, value, icon: Icon, trend, trendLabel, variant }: {
 }) {
   const bgMap = {
     green: "bg-[hsl(var(--success)/0.06)] border-[hsl(var(--success)/0.15)]",
-    red: "border-red-600/20",
+    red: "border-[rgba(220,20,20,0.2)]",
     dynamic: trend === "up"
       ? "bg-[hsl(var(--success)/0.06)] border-[hsl(var(--success)/0.15)]"
-      : "border-red-600/20",
+      : "border-[rgba(220,20,20,0.2)]",
   };
+  const redBg = { backgroundColor: "rgba(220, 20, 20, 0.06)" };
+  const needsRedBg = (variant === "red") || (variant === "dynamic" && trend !== "up");
   const bg = variant ? bgMap[variant] : "bg-card border-border/60";
 
   return (
