@@ -387,15 +387,15 @@ export default function PrecificacaoPizzas() {
               </span>
             </div>
           </div>
-          <div className="card-premium p-6" style={{ background: '#FFF4E5', borderColor: 'hsl(var(--orange-accent) / 0.25)' }}>
+          <div className="rounded-2xl p-6 border border-destructive/20" style={{ background: 'linear-gradient(135deg, rgba(127,29,29,0.06), rgba(185,28,28,0.1))' }}>
             <div className="flex items-center gap-2 mb-4">
-              <AlertTriangle className="h-5 w-5 text-orange" />
-              <p className="text-xs font-semibold uppercase tracking-wider text-orange">Pizzas Fora da Meta</p>
+              <AlertTriangle className="h-5 w-5 text-destructive" />
+              <p className="text-xs font-semibold uppercase tracking-wider text-destructive">Pizzas Fora da Meta</p>
             </div>
             <div className="flex items-center gap-3">
-              <p className="kpi-number text-orange">{indicators.foraMetaCount}</p>
+              <p className="kpi-number text-destructive">{indicators.foraMetaCount}</p>
             </div>
-            <p className="text-[11px] text-orange/70 font-medium mt-1">Tamanhos com CMV acima de 40%</p>
+            <p className="text-[11px] text-destructive/70 font-medium mt-1">Tamanhos com CMV acima de 40%</p>
           </div>
         </div>
 
@@ -404,16 +404,16 @@ export default function PrecificacaoPizzas() {
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <Table>
-                <TableHeader className="bg-[#F8F9FA]">
-                  <TableRow className="border-b-2 border-border">
-                    <TableHead rowSpan={2} className="align-bottom min-w-[180px]">Pizza</TableHead>
-                    <TableHead rowSpan={2} className="align-bottom">Tipo</TableHead>
-                    <TableHead colSpan={3} className="text-center border-l border-border">Custo</TableHead>
-                    <TableHead colSpan={3} className="text-center border-l border-border">Sugerido</TableHead>
-                    <TableHead colSpan={3} className="text-center border-l border-border bg-primary/10">Seu Preço</TableHead>
-                    <TableHead colSpan={3} className="text-center border-l border-border bg-primary/10">CMV Balcão</TableHead>
+                <TableHeader style={{ background: 'linear-gradient(135deg, #1E293B, #334155)' }}>
+                  <TableRow className="border-b-2 border-white/10">
+                    <TableHead rowSpan={2} className="align-bottom min-w-[180px] text-white font-bold">Pizza</TableHead>
+                    <TableHead rowSpan={2} className="align-bottom text-white font-bold">Tipo</TableHead>
+                    <TableHead colSpan={3} className="text-center border-l border-white/10 text-white font-bold">Custo</TableHead>
+                    <TableHead colSpan={3} className="text-center border-l border-white/10 text-white font-bold">Sugerido</TableHead>
+                    <TableHead colSpan={3} className="text-center border-l border-white/10 bg-white/10 text-white font-bold">Seu Preço</TableHead>
+                    <TableHead colSpan={3} className="text-center border-l border-white/10 bg-white/10 text-white font-bold">CMV Balcão</TableHead>
                     {activeApps.map((app) => (
-                      <TableHead key={`app-${app.key}`} colSpan={3} className="text-center border-l border-border">
+                      <TableHead key={`app-${app.key}`} colSpan={3} className="text-center border-l border-white/10 text-white font-bold">
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <span className="cursor-help">{app.label}</span>
@@ -423,38 +423,38 @@ export default function PrecificacaoPizzas() {
                       </TableHead>
                     ))}
                     {activeApps.map((app) => (
-                      <TableHead key={`cmv-${app.key}`} colSpan={3} className="text-center border-l border-border">
+                      <TableHead key={`cmv-${app.key}`} colSpan={3} className="text-center border-l border-white/10 text-white font-bold">
                         CMV {app.label}
                       </TableHead>
                     ))}
                   </TableRow>
-                  <TableRow>
+                  <TableRow style={{ background: 'linear-gradient(135deg, #1E293B, #334155)' }}>
                     {/* Custo P/M/G */}
                     {sizes.map((s, i) => (
-                      <TableHead key={`c-${s}`} className={cn("text-center text-xs", i === 0 && "border-l border-border")}>{sizeLabels[s]}</TableHead>
+                      <TableHead key={`c-${s}`} className={cn("text-center text-xs text-white/80 font-bold", i === 0 && "border-l border-white/10")}>{sizeLabels[s]}</TableHead>
                     ))}
                     {/* Sugerido P/M/G */}
                     {sizes.map((s, i) => (
-                      <TableHead key={`sug-${s}`} className={cn("text-center text-xs", i === 0 && "border-l border-border")}>{sizeLabels[s]}</TableHead>
+                      <TableHead key={`sug-${s}`} className={cn("text-center text-xs text-white/80 font-bold", i === 0 && "border-l border-white/10")}>{sizeLabels[s]}</TableHead>
                     ))}
                     {/* Seu Preço P/M/G */}
                     {sizes.map((s, i) => (
-                      <TableHead key={`pr-${s}`} className={cn("text-center text-xs bg-primary/10", i === 0 && "border-l border-border")}>{sizeLabels[s]}</TableHead>
+                      <TableHead key={`pr-${s}`} className={cn("text-center text-xs bg-white/10 text-white/80 font-bold", i === 0 && "border-l border-white/10")}>{sizeLabels[s]}</TableHead>
                     ))}
                     {/* CMV Balcão P/M/G */}
                     {sizes.map((s, i) => (
-                      <TableHead key={`cmvb-${s}`} className={cn("text-center text-xs bg-primary/10", i === 0 && "border-l border-border")}>{sizeLabels[s]}</TableHead>
+                      <TableHead key={`cmvb-${s}`} className={cn("text-center text-xs bg-white/10 text-white/80 font-bold", i === 0 && "border-l border-white/10")}>{sizeLabels[s]}</TableHead>
                     ))}
                     {/* App prices P/M/G */}
                     {activeApps.map((app) =>
                       sizes.map((s, i) => (
-                        <TableHead key={`ap-${app.key}-${s}`} className={cn("text-center text-xs", i === 0 && "border-l border-border")}>{sizeLabels[s]}</TableHead>
+                        <TableHead key={`ap-${app.key}-${s}`} className={cn("text-center text-xs text-white/80 font-bold", i === 0 && "border-l border-white/10")}>{sizeLabels[s]}</TableHead>
                       ))
                     )}
                     {/* CMV App P/M/G */}
                     {activeApps.map((app) =>
                       sizes.map((s, i) => (
-                        <TableHead key={`ca-${app.key}-${s}`} className={cn("text-center text-xs", i === 0 && "border-l border-border")}>{sizeLabels[s]}</TableHead>
+                        <TableHead key={`ca-${app.key}-${s}`} className={cn("text-center text-xs text-white/80 font-bold", i === 0 && "border-l border-white/10")}>{sizeLabels[s]}</TableHead>
                       ))
                     )}
                   </TableRow>
@@ -566,7 +566,7 @@ export default function PrecificacaoPizzas() {
                           <p className="text-muted-foreground">Nenhuma pizza cadastrada ainda.</p>
                           <Button
                             onClick={() => window.location.href = '/fichas/pizzas?tipo=tradicional'}
-                            className="bg-orange hover:bg-orange/90 text-orange-foreground gap-1"
+                            className="bg-primary hover:bg-primary/90 text-primary-foreground gap-1"
                           >
                             <span className="text-lg leading-none">+</span> Cadastrar Primeira Pizza
                           </Button>
