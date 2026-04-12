@@ -38,11 +38,11 @@ function KPICard({ label, value, icon: Icon, trend, trendLabel, detailLabel, det
       </div>
 
       {/* Label */}
-      <p className="label-upper mb-1.5">{label}</p>
+      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
 
       {/* Big number + trend inline */}
       <div className="flex items-baseline gap-3 mb-3">
-        <p className="kpi-number text-foreground">{value}</p>
+        <p className="kpi-number text-primary">{value}</p>
         {trendLabel !== "—" && (
           <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full inline-flex items-center gap-0.5 ${
             trend === "up" ? "text-[hsl(var(--success))] bg-[hsl(var(--success)/0.08)]" : "text-[hsl(var(--destructive))] bg-[hsl(var(--destructive)/0.08)]"
