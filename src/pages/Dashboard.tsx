@@ -249,6 +249,8 @@ export default function Dashboard() {
         <MiniKPI
           label="Faturamento"
           value={formatBRL(faturamentoMes)}
+          numericValue={faturamentoMes}
+          formatter={formatBRL}
           icon={Wallet}
           trendLabel={faturamentoMes > 0 ? "+32.5%" : undefined}
           kpiType="faturamento"
@@ -256,6 +258,8 @@ export default function Dashboard() {
         <MiniKPI
           label="Gastos"
           value={formatBRL(despesasMes)}
+          numericValue={despesasMes}
+          formatter={formatBRL}
           icon={Receipt}
           trendLabel={despesasMes > 0 ? "-8.2%" : undefined}
           kpiType="gastos"
@@ -263,6 +267,8 @@ export default function Dashboard() {
         <MiniKPI
           label="Lucro"
           value={formatBRL(lucroMes)}
+          numericValue={lucroMes}
+          formatter={formatBRL}
           icon={PiggyBank}
           trendLabel={lucroMes !== 0 ? (lucroMes > 0 ? "↑ Positivo" : "↓ Negativo") : undefined}
           kpiType={lucroMes >= 0 ? "lucro_pos" : "lucro_neg"}
@@ -270,6 +276,8 @@ export default function Dashboard() {
         <MiniKPI
           label="CMV"
           value={faturamentoMes > 0 ? `${cmvPct.toFixed(1)}%` : "—"}
+          numericValue={faturamentoMes > 0 ? cmvPct : undefined}
+          formatter={(v) => `${v.toFixed(1)}%`}
           icon={TrendingDown}
           trendLabel={faturamentoMes > 0 ? `Meta ${cmvMeta}%` : undefined}
           kpiType={cmvPct <= cmvMeta ? "cmv_ok" : "cmv_bad"}
