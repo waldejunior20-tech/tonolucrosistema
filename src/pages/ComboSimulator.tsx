@@ -522,7 +522,7 @@ export default function ComboSimulator() {
 
             <button
               onClick={() => setShowPicker(true)}
-              className="w-full py-3 border border-dashed border-border text-muted-foreground hover:text-foreground hover:border-primary hover:bg-primary/5 rounded-lg flex items-center justify-center gap-2 transition text-sm"
+              className="btn-action-add w-full py-3 rounded-lg flex items-center justify-center gap-2 text-sm"
             >
               <Plus className="w-4 h-4" /> Adicionar Produto ao Combo
             </button>

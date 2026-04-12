@@ -107,6 +107,25 @@
 }
 
 @layer components {
+  /* Orange gradient action button — used for all "Add" / "New" CTAs */
+  .btn-action-add {
+    background: linear-gradient(135deg, #FF8C00, #F27121);
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(242, 113, 33, 0.3);
+    transition: all 0.2s ease;
+  }
+  .btn-action-add:hover {
+    filter: brightness(1.1);
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(242, 113, 33, 0.4);
+  }
+  .btn-action-add:active {
+    transform: scale(0.98);
+  }
+
   .label-upper {
     font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
     font-size: 12px;

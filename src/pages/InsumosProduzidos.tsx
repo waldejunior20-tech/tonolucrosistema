@@ -326,15 +326,9 @@ export default function InsumosProduzidos() {
       <PageHeader title="Insumos Produzidos" description="Pré-preparos e produções internas.">
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) resetForm(); setDialogOpen(open); }}>
           <DialogTrigger asChild>
-            <Button className="gap-2">
+            <Button className="btn-action-add gap-2">
               <Plus className="h-4 w-4" /> Novo Pré-Preparo
             </Button>
-          </DialogTrigger>
-          <DialogTrigger asChild>
-            <Button className="gap-2">
-              <Plus className="h-4 w-4" /> Novo Pré-Preparo
-            </Button>
-          </DialogTrigger>
           <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingId ? "Editar Pré-Preparo" : "Novo Pré-Preparo"}</DialogTitle>
@@ -382,7 +376,7 @@ export default function InsumosProduzidos() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <Label className="text-base">Ingredientes</Label>
-                  <Button type="button" variant="outline" size="sm" className="gap-1" onClick={addIngrediente}>
+                  <Button type="button" size="sm" className="btn-action-add gap-1" onClick={addIngrediente}>
                     <Plus className="h-3 w-3" /> Adicionar
                   </Button>
                 </div>

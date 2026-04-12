@@ -144,7 +144,7 @@ export default function InsumosComprados() {
       <PageHeader title="Insumos Comprados" description="Gerencie seus insumos e matérias-primas.">
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) resetForm(); setDialogOpen(open); }}>
           <DialogTrigger asChild>
-            <Button className="gap-2">
+            <Button className="btn-action-add gap-2">
               <Plus className="h-4 w-4" /> Novo Insumo
             </Button>
           </DialogTrigger>

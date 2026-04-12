@@ -420,8 +420,8 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
       <PageHeader title={`Fichas Técnicas — ${label}`} description="Gerencie receitas e custos dos seus produtos.">
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) resetForm(); setDialogOpen(open); }}>
           <DialogTrigger asChild>
-            <Button onClick={() => { resetForm(); setDialogOpen(true); }}>
-              <Plus className="mr-2 h-4 w-4" /> Nova Ficha
+            <Button onClick={() => { resetForm(); setDialogOpen(true); }} className="btn-action-add gap-2">
+              <Plus className="mr-1 h-4 w-4" /> Nova Ficha
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -585,12 +585,11 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
 
                 <Button
                   type="button"
-                  variant="destructive"
                   size="sm"
                   onClick={addIngrediente}
-                  className="w-full"
+                  className="w-full btn-action-add gap-2"
                 >
-                  <Plus className="mr-2 h-4 w-4" /> Adicionar Ingrediente
+                  <Plus className="h-4 w-4" /> Adicionar Ingrediente
                 </Button>
               </div>
 

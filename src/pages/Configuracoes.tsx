@@ -288,7 +288,7 @@ export default function Configuracoes() {
             </div>
           ))}
           {tamanhosPizza.length < 6 && (
-            <Button variant="outline" size="sm" onClick={addTamanho} className="gap-1">
+            <Button size="sm" onClick={addTamanho} className="btn-action-add gap-1">
               <Plus className="h-3.5 w-3.5" /> Adicionar tamanho
             </Button>
           )}
@@ -471,7 +471,7 @@ export default function Configuracoes() {
             </div>
           ))}
 
-          <Button variant="outline" size="sm" onClick={addCustoFixo} className="gap-1">
+          <Button size="sm" onClick={addCustoFixo} className="btn-action-add gap-1">
             <Plus className="h-3.5 w-3.5" /> Adicionar linha
           </Button>
 
