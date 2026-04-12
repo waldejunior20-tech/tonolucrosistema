@@ -77,9 +77,10 @@ const sidebarItems: SidebarItem[] = [
 interface UnifiedSidebarProps {
   collapsed: boolean;
   onToggle: () => void;
+  onNavigate?: () => void;
 }
 
-export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
+export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
