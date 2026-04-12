@@ -134,14 +134,14 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
       )}
     >
       {/* Logo */}
-      <div className="h-16 flex items-center px-4 shrink-0 overflow-hidden relative border-b border-sidebar-border">
-        <div className={cn("flex items-center gap-3 transition-opacity duration-200", collapsed ? "opacity-0 w-0" : "opacity-100")}>
-          <div className="w-9 h-9 rounded-sm bg-primary flex items-center justify-center shrink-0 shadow-[0_0_12px_rgba(255,107,43,0.3)]">
-            <Pizza size={18} className="text-primary-foreground" />
+      <div className="h-14 flex items-center px-4 shrink-0 overflow-hidden relative border-b border-sidebar-border/60">
+        <div className={cn("flex items-center gap-2.5 transition-opacity duration-200", collapsed ? "opacity-0 w-0" : "opacity-100")}>
+          <div className="w-8 h-8 rounded-lg bg-primary/90 flex items-center justify-center shrink-0 shadow-[0_0_10px_rgba(255,107,43,0.2)]">
+            <Pizza size={15} className="text-primary-foreground" />
           </div>
           <div className="flex flex-col">
-            <span className="text-foreground font-sans font-extrabold text-lg leading-none whitespace-nowrap tracking-tight">TôNoLucro</span>
-            <span className="text-[10px] text-muted-foreground font-medium tracking-wider uppercase">Gestão Food</span>
+            <span className="text-foreground font-sans font-bold text-[15px] leading-none whitespace-nowrap tracking-tight">TôNoLucro</span>
+            <span className="text-[9px] text-muted-foreground/60 font-medium tracking-widest uppercase">Gestão Food</span>
           </div>
         </div>
         
@@ -174,10 +174,10 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
                 <button
                   onClick={() => handleItemClick(item)}
                   className={cn(
-                    "group relative w-full h-10 flex items-center rounded-sm transition-all duration-200 overflow-hidden",
+                    "group relative w-full h-9 flex items-center rounded-lg transition-all duration-200 overflow-hidden",
                     isActive 
-                      ? "bg-primary/10 text-primary" 
-                      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                      ? "bg-primary/8 text-primary" 
+                      : "text-sidebar-foreground/70 hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground"
                   )}
                 >
                   {/* Left Active Bar — ember orange */}
@@ -185,14 +185,14 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
                     <div className="absolute left-0 top-0 w-[3px] h-full bg-primary rounded-r" />
                   )}
                   
-                  <div className={cn("flex items-center w-full px-3 gap-3", collapsed ? "justify-center" : "")}>
+                  <div className={cn("flex items-center w-full px-3 gap-2.5", collapsed ? "justify-center" : "")}>
                     <div className="shrink-0">
-                      <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
+                      <Icon size={16} strokeWidth={isActive ? 2.5 : 1.8} />
                     </div>
                     
                     {!collapsed && (
                       <div className="flex-1 flex items-center justify-between min-w-0">
-                        <span className={cn("text-sm truncate", isActive ? "font-semibold" : "font-medium")}>{item.label}</span>
+                        <span className={cn("text-[13px] truncate", isActive ? "font-semibold" : "font-normal")}>{item.label}</span>
                         {hasSubItems && (
                           <div className={cn("transition-transform duration-200", isExpanded ? "rotate-180" : "")}>
                             <ChevronDown size={14} className="text-sidebar-foreground" />

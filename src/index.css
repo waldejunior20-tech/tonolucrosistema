@@ -180,6 +180,7 @@
   }
   .health-pulse-green { color: hsl(var(--success)); background-color: hsl(var(--success)); }
   .health-pulse-amber { color: hsl(var(--warning)); background-color: hsl(var(--warning)); }
+  .health-pulse-red { color: hsl(var(--destructive)); background-color: hsl(var(--destructive)); }
 
   /* Status pills */
   .status-profit {
