@@ -160,29 +160,29 @@ export default function CaixaRapido() {
   });
 
   return (
-    <div className="bg-card border border-border/60 rounded-2xl transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)]">
+    <div style={{ background: "linear-gradient(135deg, #92400E, #D97706)", boxShadow: "0 8px 24px rgba(146,64,14,0.15)" }} className="rounded-2xl border border-white/10 transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)]">
       {/* Header — always visible */}
       <button
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center justify-between px-5 py-4 text-left"
       >
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-[hsl(var(--primary)/0.08)] flex items-center justify-center">
-            <Wallet size={16} className="text-[hsl(var(--primary))]" />
+          <div className="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center">
+            <Wallet size={16} className="text-white" />
           </div>
           <div>
-            <h3 className="text-[14px] font-semibold text-foreground">Lançar Vendas</h3>
-            <p className="text-[10px] text-muted-foreground/60">Registre o caixa do dia ou período</p>
+            <h3 className="text-[14px] font-semibold text-white">Lançar Vendas</h3>
+            <p className="text-[10px] text-white/60">Registre o caixa do dia ou período</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           {totalPeriodo > 0 && (
-            <span className="text-[12px] font-bold text-[hsl(var(--primary))]">
+            <span className="text-[12px] font-bold text-white">
               {formatMoney(totalPeriodo)} no período
             </span>
           )}
           <ChevronDown size={16} className={cn(
-            "text-muted-foreground transition-transform duration-200",
+            "text-white/70 transition-transform duration-200",
             expanded && "rotate-180"
           )} />
         </div>
@@ -190,7 +190,7 @@ export default function CaixaRapido() {
 
       {/* Expandable content */}
       {expanded && (
-        <div className="px-5 pb-5 space-y-4 border-t border-border/40 pt-4">
+        <div className="px-5 pb-5 space-y-4 border-t border-white/15 pt-4 bg-card rounded-b-2xl">
           {/* Date range picker */}
           <div className="flex flex-wrap items-center gap-3">
             <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
