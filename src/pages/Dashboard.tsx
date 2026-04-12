@@ -41,7 +41,7 @@ function MiniKPI({ label, value, icon: Icon, trend, trendLabel, variant }: {
   const bg = variant ? bgMap[variant] : "bg-card border-border/60";
 
   return (
-    <div className={`group rounded-2xl px-5 py-4 border transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 ${bg}`}>
+    <div style={needsRedBg ? redBg : undefined} className={`group rounded-2xl px-5 py-4 border transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 ${bg}`}>
       <div className="flex items-center justify-between mb-1">
         <span className="text-[11px] font-medium text-muted-foreground/70 uppercase tracking-wider">{label}</span>
         <Icon size={15} className="text-muted-foreground/40" />
