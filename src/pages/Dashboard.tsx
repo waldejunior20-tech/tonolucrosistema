@@ -33,12 +33,18 @@ function MiniKPI({ label, value, icon: Icon, trendLabel, kpiType }: {
   kpiType: KpiVariant;
 }) {
   // Only Lucro positive gets colored bg. Everything else is clean white.
+  const isFaturamento = kpiType === "faturamento";
+  const isGastos = kpiType === "gastos";
   const isHighlight = kpiType === "lucro_pos";
   const isLucroNeg = kpiType === "lucro_neg";
+  const isColored = isFaturamento || isGastos || isHighlight || isLucroNeg;
 
-  // Icon accent colors for white cards
-  const iconColorMap: Record<KpiVariant, string> = {
-    faturamento: "text-[#3B82F6]",
+  const gradientMap: Record<string, { bg: string; shadow: string }> = {
+    faturamento: { bg: "linear-gradient(135deg, #166534, #2D7C5E)", shadow: "0 8px 24px rgba(22,101,52,0.2)" },
+    gastos: { bg: "linear-gradient(135deg, #92400E, #D97706)", shadow: "0 8px 24px rgba(146,64,14,0.2)" },
+    lucro_pos: { bg: "linear-gradient(135deg, #15803D, #22C55E)", shadow: "0 8px 24px rgba(34,197,94,0.3)" },
+    lucro_neg: { bg: "linear-gradient(135deg, #7F1D1D, #B91C1C)", shadow: "0 8px 24px rgba(127,29,29,0.2)" },
+  };
     gastos: "text-[#F59E0B]",
     lucro_pos: "text-white/80",
     lucro_neg: "text-white/80",
