@@ -105,17 +105,19 @@ function AlertItem({ severity, title, detail, value }: {
   const isCritical = severity === "critical";
   return (
     <div
-      className={`flex items-start gap-3 p-3.5 rounded-xl border transition-all duration-200 ${
+      style={
         isCritical
-          ? "bg-[hsl(var(--destructive)/0.04)] border-[hsl(var(--destructive)/0.15)]"
-          : "border-[#FF8000]/20"
+          ? { background: "linear-gradient(135deg, rgba(127,29,29,0.06), rgba(185,28,28,0.1))" }
+          : { background: "linear-gradient(135deg, rgba(30,41,59,0.04), rgba(51,65,85,0.08))" }
+      }
+      className={`flex items-start gap-3 p-3.5 rounded-xl border transition-all duration-200 ${
+        isCritical ? "border-[#B91C1C]/15" : "border-[#334155]/15"
       }`}
-      style={!isCritical ? { background: "linear-gradient(135deg, rgba(255,128,0,0.06) 0%, rgba(255,160,50,0.12) 100%)" } : undefined}
     >
-      <div className={`mt-0.5 health-pulse ${isCritical ? "health-pulse-red" : "health-pulse-amber"}`} />
+      <div className={`mt-1 w-2 h-2 rounded-full flex-shrink-0 ${isCritical ? "bg-[#B91C1C]" : "bg-[#D97706]"}`} />
       <div className="flex-1 min-w-0">
         <p className={`text-[12px] font-semibold flex items-center gap-1.5 ${
-          isCritical ? "text-[hsl(var(--destructive))]" : "text-foreground"
+          isCritical ? "text-[#7F1D1D]" : "text-[#1E293B]"
         }`}>
           {isCritical && <AlertTriangle size={12} />}
           {title}
@@ -124,7 +126,7 @@ function AlertItem({ severity, title, detail, value }: {
       </div>
       {value && (
         <span className={`text-[11px] font-bold whitespace-nowrap font-mono ${
-          isCritical ? "text-[hsl(var(--destructive))]" : "text-foreground"
+          isCritical ? "text-[#B91C1C]" : "text-[#1E293B]"
         }`}>{value}</span>
       )}
     </div>
@@ -309,15 +311,19 @@ export default function Dashboard() {
               <AreaChart data={graficoMensal}>
                 <defs>
                   <linearGradient id="gradReceita" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.12} />
-                    <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                    <stop offset="0%" stopColor="#166534" stopOpacity={0.15} />
+                    <stop offset="100%" stopColor="#2D7C5E" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="gradDespesa" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#D97706" stopOpacity={0.1} />
+                    <stop offset="100%" stopColor="#D97706" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <XAxis dataKey="mes" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`} axisLine={false} tickLine={false} width={50} />
                 <Tooltip contentStyle={tooltipStyle} formatter={(value: number) => formatBRL(value)} />
-                <Area type="monotone" dataKey="receita" name="Receita" stroke="hsl(var(--primary))" fill="url(#gradReceita)" strokeWidth={2} dot={false} />
-                <Area type="monotone" dataKey="despesa" name="Despesa" stroke="hsl(var(--destructive))" fill="transparent" strokeWidth={1.5} strokeDasharray="4 3" dot={false} />
+                <Area type="monotone" dataKey="receita" name="Receita" stroke="#166534" fill="url(#gradReceita)" strokeWidth={2.5} dot={false} />
+                <Area type="monotone" dataKey="despesa" name="Despesa" stroke="#D97706" fill="url(#gradDespesa)" strokeWidth={1.5} strokeDasharray="6 3" dot={false} />
               </AreaChart>
             </ResponsiveContainer>
           ) : (
@@ -333,9 +339,9 @@ export default function Dashboard() {
 
       {/* ─── ALERTAS COMPACTO ─── */}
       <div className="fade-up fade-up-d3">
-        <div className="bg-card border border-border/60 rounded-2xl px-5 py-4">
-          <h3 className="text-[13px] font-semibold text-foreground mb-2.5 flex items-center gap-2">
-            <Bell size={14} className="text-muted-foreground/50" />
+        <div style={{ background: "linear-gradient(135deg, #1E293B, #334155)" }} className="border border-white/10 rounded-2xl px-5 py-4">
+          <h3 className="text-[13px] font-semibold text-white mb-2.5 flex items-center gap-2">
+            <Bell size={14} className="text-white/50" />
             Alertas
           </h3>
           {contasVencendo.length > 0 || (cmvPct > cmvMeta && faturamentoMes > 0) ? (
@@ -359,10 +365,10 @@ export default function Dashboard() {
             </div>
           ) : (
             <div className="flex items-center gap-2 py-1">
-              <div className="w-6 h-6 rounded-full bg-[hsl(var(--success)/0.06)] flex items-center justify-center">
-                <Clock size={12} className="text-[hsl(var(--success))]" />
+              <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">
+                <Clock size={12} className="text-white/60" />
               </div>
-              <p className="text-[11px] text-muted-foreground">Nenhum alerta no momento.</p>
+              <p className="text-[11px] text-white/50">Nenhum alerta no momento.</p>
             </div>
           )}
         </div>
