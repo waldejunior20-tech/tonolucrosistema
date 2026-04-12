@@ -20,6 +20,7 @@ import {
   calcAppPrice, getActiveApps, APP_TOOLTIP,
   type ConfigPrecificacao, type AppInfo,
 } from "@/lib/pricing-helpers";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 // ─── Types ───────────────────────────────────────────────────────────
 interface FichaPizza {
@@ -309,24 +310,20 @@ export default function PrecificacaoPizzas() {
 
   return (
     <TooltipProvider>
-      <div className="space-y-6 max-w-[1400px] mx-auto">
+      <div className="space-y-6 max-w-[1400px] mx-auto page-enter">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-syne uppercase">Precificação de Pizzas</h1>
-            <p className="text-muted-foreground font-medium">Gestão de margem por tamanho</p>
-          </div>
+        <PageHeader title="Precificação de Pizzas" description="Gestão de margem por tamanho">
           <button
             onClick={() => {
               setConfigForm(config ?? null);
               setConfigOpen(!configOpen);
             }}
-            className="btn-3d-ghost h-10 px-6 flex items-center gap-2"
+            className="flex items-center gap-2 px-4 h-9 rounded-md border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
             <Settings2 className="h-4 w-4" />
             <span>Configurações</span>
           </button>
-        </div>
+        </PageHeader>
 
         {/* Config panel */}
         {configOpen && configForm && (
@@ -370,7 +367,7 @@ export default function PrecificacaoPizzas() {
         )}
 
         {/* Indicators */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-fade-in">
           <div className="card-premium p-6">
             <p className="label-upper mb-4">📊 CMV Médio Atual</p>
             <p className={cn("kpi-number", indicators.avgCmv > 40 ? "text-destructive" : indicators.avgCmv > 32 ? "text-warning" : "text-success")}>
