@@ -134,12 +134,15 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
       )}
     >
       {/* Logo */}
-      <div className="h-16 flex items-center px-4 shrink-0 overflow-hidden relative">
+      <div className="h-16 flex items-center px-4 shrink-0 overflow-hidden relative border-b border-sidebar-border">
         <div className={cn("flex items-center gap-3 transition-opacity duration-200", collapsed ? "opacity-0 w-0" : "opacity-100")}>
-          <div className="w-9 h-9 rounded-sm bg-primary flex items-center justify-center shrink-0">
+          <div className="w-9 h-9 rounded-sm bg-primary flex items-center justify-center shrink-0 shadow-[0_0_12px_rgba(255,107,43,0.3)]">
             <Pizza size={18} className="text-primary-foreground" />
           </div>
-          <span className="text-foreground font-sans font-extrabold text-lg leading-none whitespace-nowrap">TôNoLucro</span>
+          <div className="flex flex-col">
+            <span className="text-foreground font-sans font-extrabold text-lg leading-none whitespace-nowrap tracking-tight">TôNoLucro</span>
+            <span className="text-[10px] text-muted-foreground font-medium tracking-wider uppercase">Gestão Food</span>
+          </div>
         </div>
         
         <button
