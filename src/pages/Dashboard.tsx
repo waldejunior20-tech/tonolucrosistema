@@ -46,7 +46,7 @@ function KPICard({ label, value, icon: Icon, trend, trendLabel, detailLabel, det
 }) {
   const borderColor = badge?.type === "success" ? "hsl(var(--success))" : badge?.type === "warning" ? "hsl(var(--warning))" : badge?.type === "danger" ? "hsl(var(--destructive))" : "hsl(var(--primary))";
   return (
-    <div className="group bg-card border border-border rounded-2xl p-5 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-[5px]" style={{ borderTop: `4px solid ${borderColor}` }}>
+    <div className="group bg-card border border-border rounded-2xl p-5 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-1" style={{ borderTop: `2px solid ${borderColor}` }}>
       {/* Badge + Icon */}
       <div className="flex items-center justify-between mb-4">
         <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
