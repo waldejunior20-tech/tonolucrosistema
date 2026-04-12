@@ -551,7 +551,7 @@ export default function FichasTecnicasPizza() {
       <PageHeader title="Fichas Técnicas de Pizza" description="Gerencie suas receitas de pizza com custos por tamanho.">
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) resetForm(); setDialogOpen(open); }}>
           <DialogTrigger asChild>
-            <Button className="gap-2">
+            <Button className="btn-action-add gap-2">
               <Plus className="h-4 w-4" /> Nova Ficha
             </Button>
           </DialogTrigger>
@@ -831,7 +831,7 @@ export default function FichasTecnicasPizza() {
                   <Button
                     type="button"
                     size="sm"
-                    className="gap-1 flex-1 bg-orange hover:bg-orange/90 text-orange-foreground"
+                    className="btn-action-add gap-1 flex-1"
                     onClick={addIngrediente}
                   >
                     <Plus className="h-3 w-3" /> Adicionar Ingrediente
