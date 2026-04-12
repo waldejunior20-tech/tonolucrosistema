@@ -123,8 +123,8 @@ function ChartCard({ title, hint, action, children, className = "" }: {
 }
 
 // ─── Insight Card ───────────────────────────────────────────────────
-function InsightCard({ tipo, titulo, descricao, icon }: {
-  tipo: "positivo" | "alerta" | "sucesso"; titulo: string; descricao: string; icon: string;
+function InsightCard({ tipo, titulo, descricao }: {
+  tipo: "positivo" | "alerta" | "sucesso"; titulo: string; descricao: string;
 }) {
   const variants = {
     positivo: "bg-[hsl(var(--success)/0.05)] border-[hsl(var(--success)/0.15)]",
@@ -133,7 +133,7 @@ function InsightCard({ tipo, titulo, descricao, icon }: {
   };
   return (
     <div className={`rounded-xl p-4 border transition-all duration-200 hover:shadow-sm ${variants[tipo]}`}>
-      <p className="text-[13px] font-semibold text-foreground mb-1">{icon} {titulo}</p>
+      <p className="text-[13px] font-semibold text-foreground mb-1">{titulo}</p>
       <p className="text-[11px] text-muted-foreground leading-relaxed">{descricao}</p>
     </div>
   );
@@ -178,12 +178,12 @@ export default function Dashboard() {
     { name: "Outros", value: 1, percentual: 5, color: CATEGORY_COLORS[4] },
   ];
 
-  const insights: { tipo: "positivo" | "alerta" | "sucesso"; titulo: string; descricao: string; icon: string }[] = [];
-  if (lucroMes > 0) insights.push({ tipo: "sucesso", titulo: "Lucro Positivo", descricao: `${formatBRL(lucroMes)} este mês`, icon: "💰" });
-  if (cmvPct > cmvMeta && faturamentoMes > 0) insights.push({ tipo: "alerta", titulo: "CMV Acima da Meta", descricao: `${cmvPct.toFixed(1)}% vs meta ${cmvMeta}%`, icon: "⚠️" });
-  if (contasVencendo.length > 0) insights.push({ tipo: "alerta", titulo: `${contasVencendo.length} Contas Vencendo`, descricao: "Nos próximos 3 dias", icon: "📋" });
-  if (totalFichas > 0) insights.push({ tipo: "positivo", titulo: `${totalFichas} Fichas Ativas`, descricao: "Produtos cadastrados", icon: "📈" });
-  if (insights.length === 0) insights.push({ tipo: "positivo", titulo: "Tudo em Dia", descricao: "Nenhum alerta no momento", icon: "✅" });
+  const insights: { tipo: "positivo" | "alerta" | "sucesso"; titulo: string; descricao: string }[] = [];
+  if (lucroMes > 0) insights.push({ tipo: "sucesso", titulo: "Lucro Positivo", descricao: `${formatBRL(lucroMes)} este mês` });
+  if (cmvPct > cmvMeta && faturamentoMes > 0) insights.push({ tipo: "alerta", titulo: "CMV Acima da Meta", descricao: `${cmvPct.toFixed(1)}% vs meta ${cmvMeta}%` });
+  if (contasVencendo.length > 0) insights.push({ tipo: "alerta", titulo: `${contasVencendo.length} Contas Vencendo`, descricao: "Nos próximos 3 dias" });
+  if (totalFichas > 0) insights.push({ tipo: "positivo", titulo: `${totalFichas} Fichas Ativas`, descricao: "Produtos cadastrados" });
+  if (insights.length === 0) insights.push({ tipo: "positivo", titulo: "Tudo em Dia", descricao: "Nenhum alerta no momento" });
 
   const tooltipStyle = {
     backgroundColor: "#fff",
@@ -201,7 +201,7 @@ export default function Dashboard() {
         <div>
           <p className="text-[13px] text-muted-foreground mb-1">Dashboard</p>
           <h1 className="text-[24px] sm:text-[28px] font-bold text-foreground tracking-tight leading-tight">
-            {getGreeting()}{businessName ? `, ${businessName}` : ""} 👋
+            {getGreeting()}{businessName ? `, ${businessName}` : ""}
           </h1>
         </div>
 

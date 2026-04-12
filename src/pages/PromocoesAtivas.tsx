@@ -82,10 +82,10 @@ const lucroColor = (pct: number) => {
 };
 
 const lucroEmoji = (pct: number) => {
-  if (pct >= 30) return "🟢";
-  if (pct >= 15) return "🟡";
-  if (pct > 0) return "🟠";
-  return "🔴";
+  if (pct >= 30) return "●";
+  if (pct >= 15) return "●";
+  if (pct > 0) return "●";
+  return "●";
 };
 
 const lucroBadgeCls = (pct: number) => {

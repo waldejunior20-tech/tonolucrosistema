@@ -357,15 +357,15 @@ export default function FinanceiroDRE() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="card-premium p-6">
-          <p className="label-upper mb-4">💰 Faturamento Total</p>
+          <p className="label-upper mb-4">Faturamento Total</p>
           <p className="kpi-number text-[#27AE60]">{fmt(calc.totalEntrou)}</p>
         </div>
         <div className="card-premium p-6">
-          <p className="label-upper mb-4">💸 Saída Total</p>
+          <p className="label-upper mb-4">Saída Total</p>
           <p className="kpi-number text-[#C0392B]">{fmt(calc.totalSaiu)}</p>
         </div>
         <div className={cn("card-premium p-6", calc.sobrou >= 0 ? "border-[#27AE60]/30 shadow-sm shadow-[#27AE60]/5" : "border-[#C0392B]/30 shadow-sm shadow-[#C0392B]/5")}>
-          <p className="label-upper mb-4">{calc.sobrou >= 0 ? "✅ Lucro Líquido" : "❌ Prejuízo"}</p>
+          <p className="label-upper mb-4">{calc.sobrou >= 0 ? "Lucro Líquido" : "Prejuízo"}</p>
           <p className={cn("kpi-number", calc.sobrou >= 0 ? "text-[#27AE60]" : "text-[#C0392B]")}>{fmt(Math.abs(calc.sobrou))}</p>
           <p className={cn("text-[11px] mt-1 font-bold", calc.sobrou >= 0 ? "text-[#27AE60]" : "text-[#C0392B]")}>{calc.sobrouPct.toFixed(1)}% de margem</p>
         </div>
@@ -374,7 +374,7 @@ export default function FinanceiroDRE() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div className="card-premium p-6">
           <div className="pb-4">
-            <h3 className="text-base font-bold flex items-center gap-2 font-syne uppercase">🎯 Meta do mês</h3>
+            <h3 className="text-base font-bold flex items-center gap-2 font-syne uppercase">Meta do mês</h3>
             <p className="text-[11px] text-text3 font-medium uppercase tracking-wider">Objetivo de Faturamento</p>
           </div>
           <div className="space-y-4">
@@ -388,7 +388,7 @@ export default function FinanceiroDRE() {
                   <div className={cn("progress-premium-bar", metaAtingida ? "bg-green-500" : "bg-red-400")} style={{ width: `${metaProgress}%` }} />
                 </div>
                 <p className={cn("text-xs text-center font-bold uppercase", metaAtingida ? "text-green-600" : "text-red-500")}>
-                  {metaAtingida ? `🎉 Meta batida! Você faturou ${metaPctAcima.toFixed(0)}% acima` : `Faltam ${fmt(metaFaturamento - calc.totalEntrou)} para bater a meta`}
+                  {metaAtingida ? `Meta batida! Você faturou ${metaPctAcima.toFixed(0)}% acima` : `Faltam ${fmt(metaFaturamento - calc.totalEntrou)} para bater a meta`}
                 </p>
               </>
             )}
@@ -410,7 +410,7 @@ export default function FinanceiroDRE() {
               <div className="flex justify-between"><span>Margem contrib. %</span><span className="font-medium text-foreground">{calc.margemContribuicaoPct.toFixed(1)}%</span></div>
             </div>
             <p className={cn("text-xs text-center font-bold uppercase", calc.atingiuPE ? "text-green-600" : "text-red-500")}>
-              {calc.atingiuPE ? "Tudo acima disso é lucro puro! 🎯" : calc.pontoEquilibrio > 0 ? `Faltam ${fmt(calc.faltaPE)} para atingir` : "Cadastre receitas e despesas"}
+              {calc.atingiuPE ? "Tudo acima disso é lucro puro!" : calc.pontoEquilibrio > 0 ? `Faltam ${fmt(calc.faltaPE)} para atingir` : "Cadastre receitas e despesas"}
             </p>
           </div>
         </div>
@@ -465,11 +465,11 @@ export default function FinanceiroDRE() {
           <div className="pb-4"><h3 className="text-sm font-bold font-syne uppercase flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-[#F39C12]" />Alertas</h3><p className="text-[10px] text-text3 font-medium uppercase tracking-wider">Situações Críticas</p></div>
           <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
             {alertas.length === 0 && contasAtrasadas.length === 0 ? (
-              <div className="text-center py-4"><p className="text-xs text-[#27AE60] font-bold uppercase tracking-tight">✅ Tudo em dia!</p></div>
+              <div className="text-center py-4"><p className="text-xs text-[#27AE60] font-bold uppercase tracking-tight">Tudo em dia!</p></div>
             ) : (
               <div className="space-y-2">
-                {alertas.map((a, i) => (<div key={i} className="flex items-start gap-2 text-[11px] bg-[#F39C12]/10 border border-[#F39C12]/20 rounded-md p-2"><span className="text-[#F39C12] shrink-0">⚠️</span><span className="text-foreground font-medium">{a}</span></div>))}
-                {contasAtrasadas.map((c) => (<div key={c.id} className="flex items-start gap-2 text-[11px] bg-[#C0392B]/10 border border-[#C0392B]/20 rounded-md p-2"><span className="text-[#C0392B] shrink-0">🔴</span><div><p className="font-bold text-foreground">{c.descricao}</p><p className="text-text2">{fmt(c.valor)} — {new Date(c.data_lancamento + "T12:00:00").toLocaleDateString("pt-BR")}</p></div></div>))}
+                {alertas.map((a, i) => (<div key={i} className="flex items-start gap-2 text-[11px] bg-[#F39C12]/10 border border-[#F39C12]/20 rounded-md p-2"><AlertTriangle className="h-3.5 w-3.5 text-[#F39C12] shrink-0 mt-0.5" /><span className="text-foreground font-medium">{a}</span></div>))}
+                {contasAtrasadas.map((c) => (<div key={c.id} className="flex items-start gap-2 text-[11px] bg-[#C0392B]/10 border border-[#C0392B]/20 rounded-md p-2"><div className="h-2.5 w-2.5 rounded-full bg-[#C0392B] shrink-0 mt-1" /><div><p className="font-bold text-foreground">{c.descricao}</p><p className="text-text2">{fmt(c.valor)} — {new Date(c.data_lancamento + "T12:00:00").toLocaleDateString("pt-BR")}</p></div></div>))}
               </div>
             )}
           </div>
@@ -495,7 +495,7 @@ export default function FinanceiroDRE() {
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
-          <DialogHeader><DialogTitle>{dialogTipo === "receita" ? "💰 Nova Receita" : "💸 Nova Despesa"}</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{dialogTipo === "receita" ? "Nova Receita" : "Nova Despesa"}</DialogTitle></DialogHeader>
           <div className="space-y-4">
             <div><Label>Descrição</Label><Input value={form.descricao} onChange={(e) => setForm((f) => ({ ...f, descricao: e.target.value }))} placeholder={dialogTipo === "receita" ? "Ex: Vendas do dia, Evento..." : "Ex: Conta de luz, Fornecedor..."} /></div>
             <div><Label>Valor</Label><MoneyInput value={form.valor} onChange={(v) => setForm((f) => ({ ...f, valor: v }))} /></div>
