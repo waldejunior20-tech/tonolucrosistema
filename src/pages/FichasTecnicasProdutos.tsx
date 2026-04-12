@@ -607,7 +607,7 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
             </form>
           </DialogContent>
         </Dialog>
-      </div>
+      </PageHeader>
 
       {/* Table */}
       {isLoading ? (
