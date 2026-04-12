@@ -295,7 +295,7 @@ export default function Dashboard() {
 
       {/* ─── CHART: Revenue ─── */}
       <div className="fade-up fade-up-d2">
-        <div className="bg-card border border-border/60 rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)]">
+        <div className="bg-card border border-[#334155]/40 rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)]">
           {/* Chart header with inline legend */}
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -396,7 +396,7 @@ export default function Dashboard() {
 
       {/* ─── ALERTAS COMPACTO ─── */}
       <div className="fade-up fade-up-d3">
-        <div style={{ background: "linear-gradient(135deg, #1E293B, #334155)" }} className="border border-white/10 rounded-2xl px-5 py-4">
+        <div style={{ background: "linear-gradient(135deg, #1E293B, #334155)" }} className="border border-[#334155]/60 rounded-2xl px-5 py-4">
           <h3 className="text-[13px] font-semibold text-white mb-2.5 flex items-center gap-2">
             <Bell size={14} className="text-white/50" />
             Alertas
