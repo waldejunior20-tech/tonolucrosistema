@@ -339,9 +339,9 @@ export default function Dashboard() {
 
       {/* ─── ALERTAS COMPACTO ─── */}
       <div className="fade-up fade-up-d3">
-        <div className="bg-card border border-border/60 rounded-2xl px-5 py-4">
-          <h3 className="text-[13px] font-semibold text-foreground mb-2.5 flex items-center gap-2">
-            <Bell size={14} className="text-muted-foreground/50" />
+        <div style={{ background: "linear-gradient(135deg, #1E293B, #334155)" }} className="border border-white/10 rounded-2xl px-5 py-4">
+          <h3 className="text-[13px] font-semibold text-white mb-2.5 flex items-center gap-2">
+            <Bell size={14} className="text-white/50" />
             Alertas
           </h3>
           {contasVencendo.length > 0 || (cmvPct > cmvMeta && faturamentoMes > 0) ? (
