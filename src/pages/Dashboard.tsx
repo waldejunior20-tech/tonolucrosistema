@@ -249,6 +249,11 @@ export default function Dashboard() {
         />
       </div>
 
+      {/* ─── CAIXA RÁPIDO ─── */}
+      <div className="fade-up fade-up-d1">
+        <CaixaRapido />
+      </div>
+
       {/* ─── CHARTS ROW 1: Revenue + Donut ─── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 fade-up fade-up-d2">
         {/* Area Chart — 2 cols */}
