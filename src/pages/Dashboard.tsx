@@ -132,8 +132,6 @@ function AlertItem({ severity, title, detail, value }: {
     </div>
   );
 }
-  );
-}
 
 // ─── Chart Card wrapper ──────────────────────────────────────────────
 function ChartCard({ title, hint, action, children, className = "" }: {
