@@ -134,14 +134,14 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
       )}
     >
       {/* Logo */}
-      <div className="h-14 flex items-center px-4 shrink-0 overflow-hidden relative border-b border-sidebar-border/60">
+      <div className="h-14 flex items-center px-4 shrink-0 overflow-hidden relative border-b border-sidebar-border/30">
         <div className={cn("flex items-center gap-2.5 transition-opacity duration-200", collapsed ? "opacity-0 w-0" : "opacity-100")}>
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
-            <Pizza size={15} className="text-primary-foreground" />
+          <div className="w-8 h-8 rounded-lg bg-sidebar-primary flex items-center justify-center shrink-0">
+            <Pizza size={15} className="text-sidebar-primary-foreground" />
           </div>
           <div className="flex flex-col">
-            <span className="text-foreground font-sans font-bold text-[15px] leading-none whitespace-nowrap tracking-tight">TôNoLucro</span>
-            <span className="text-[9px] text-muted-foreground/60 font-medium tracking-widest uppercase">Gestão Food</span>
+            <span className="text-sidebar-accent-foreground font-sans font-bold text-[15px] leading-none whitespace-nowrap tracking-tight">TôNoLucro</span>
+            <span className="text-[9px] text-sidebar-foreground/60 font-medium tracking-widest uppercase">Gestão Food</span>
           </div>
         </div>
         
@@ -176,13 +176,13 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
                   className={cn(
                     "group relative w-full h-9 flex items-center rounded-lg transition-all duration-200 overflow-hidden",
                     isActive 
-                      ? "bg-primary/8 text-primary" 
-                      : "text-sidebar-foreground/70 hover:bg-sidebar-accent/60 hover:text-primary"
+                      ? "bg-sidebar-accent text-sidebar-primary" 
+                      : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
                   )}
                 >
                   {/* Left Active Bar */}
                   {isActive && !collapsed && (
-                    <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] bg-primary rounded-r" />
+                    <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] bg-sidebar-primary rounded-r" />
                   )}
                   
                   <div className={cn("flex items-center w-full px-3 gap-2.5 transition-transform duration-200", collapsed ? "justify-center" : "group-hover:translate-x-0.5")}>
@@ -195,7 +195,7 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
                         <span className={cn("text-[13px] truncate", isActive ? "font-semibold" : "font-normal")}>{item.label}</span>
                         {hasSubItems && (
                           <div className={cn("transition-transform duration-200", isExpanded ? "rotate-180" : "")}>
-                            <ChevronDown size={14} className="text-sidebar-foreground" />
+                            <ChevronDown size={14} className="text-sidebar-foreground/60" />
                           </div>
                         )}
                       </div>
@@ -221,7 +221,7 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
                             }}
                             className={cn(
                             "h-8 pl-11 pr-4 flex items-center justify-between text-sm transition-all duration-200 rounded-sm group",
-                              isSubActive ? "text-primary font-semibold" : "text-sidebar-foreground hover:text-primary hover:translate-x-0.5 hover:bg-sidebar-accent font-medium"
+                              isSubActive ? "text-sidebar-primary font-semibold" : "text-sidebar-foreground hover:text-sidebar-accent-foreground hover:translate-x-0.5 hover:bg-sidebar-accent/40 font-medium"
                             )}
                           >
                             <span className="truncate">{sub.label}</span>
@@ -231,7 +231,7 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
                           </button>
 
                           {hasNestedItems && isNestedExpanded && (
-                            <div className="flex flex-col gap-0.5 ml-4 border-l border-sidebar-border pl-2">
+                            <div className="flex flex-col gap-0.5 ml-4 border-l border-sidebar-border/30 pl-2">
                               {sub.subItems?.map((nested, nIdx) => {
                                 const isNestedActive = currentPath.includes(nested.path);
                                 return (
@@ -240,7 +240,7 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
                                     onClick={() => { navigate(nested.path); onNavigate?.(); }}
                                     className={cn(
                                       "h-7 px-3 flex items-center text-xs transition-all duration-200 rounded-sm",
-                                      isNestedActive ? "text-primary font-semibold" : "text-sidebar-foreground hover:text-primary hover:translate-x-0.5 hover:bg-sidebar-accent font-medium"
+                                      isNestedActive ? "text-sidebar-primary font-semibold" : "text-sidebar-foreground hover:text-sidebar-accent-foreground hover:translate-x-0.5 hover:bg-sidebar-accent/40 font-medium"
                                     )}
                                   >
                                     <span className="truncate">{nested.label}</span>
