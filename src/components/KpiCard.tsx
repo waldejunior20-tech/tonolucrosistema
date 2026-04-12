@@ -17,29 +17,37 @@ export function KpiCard({
   label, value, formatter, icon: Icon, trend, trendPositive = true, subtitle, className,
 }: KpiCardProps) {
   return (
-    <div className={cn("card-premium group cursor-default", className)}>
-      <div className="flex items-start justify-between mb-3">
-        <div className="w-10 h-10 rounded-sm bg-primary/10 flex items-center justify-center">
-          <Icon size={20} className="text-primary" />
-        </div>
-        {trend && (
-          <span className={cn(
-            "text-[11px] font-semibold px-2 py-0.5 rounded-sm",
-            trendPositive ? "trend-positive" : "trend-negative"
-          )}>
-            {trend}
-          </span>
-        )}
+    <div className={cn("card-interactive group cursor-default", className)}>
+      {/* Icon badge */}
+      <div className="w-10 h-10 rounded-sm bg-primary/10 border border-primary/20 flex items-center justify-center mb-4 group-hover:bg-primary/15 transition-colors">
+        <Icon size={20} className="text-primary" />
       </div>
-      <p className="label-upper mb-2">{label}</p>
+
+      {/* Label */}
+      <p className="label-upper mb-1.5">{label}</p>
+
+      {/* Big number */}
       <AnimatedNumber
         value={value}
         formatter={formatter}
         className="kpi-number text-foreground"
       />
-      {subtitle && (
-        <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>
-      )}
+
+      {/* Subtitle + trend inline */}
+      <div className="flex items-center gap-2 mt-2.5 flex-wrap">
+        {subtitle && (
+          <span className="text-xs text-muted-foreground">{subtitle}</span>
+        )}
+        {trend && (
+          <span className={cn(
+            "text-[11px] font-semibold px-2 py-0.5 rounded-sm inline-flex items-center gap-1",
+            trendPositive ? "trend-positive" : "trend-negative"
+          )}>
+            <span className="text-[10px]">{trendPositive ? "↑" : "↓"}</span>
+            {trend}
+          </span>
+        )}
+      </div>
     </div>
   );
 }

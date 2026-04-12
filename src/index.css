@@ -235,4 +235,77 @@
   .glow-profit {
     box-shadow: 0 0 16px rgba(0,214,143,0.15);
   }
+
+  /* Staggered entrance animations */
+  .stagger-fade-in > * {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: stagger-item 0.5s ease-out forwards;
+  }
+  .stagger-fade-in > *:nth-child(1) { animation-delay: 0ms; }
+  .stagger-fade-in > *:nth-child(2) { animation-delay: 80ms; }
+  .stagger-fade-in > *:nth-child(3) { animation-delay: 160ms; }
+  .stagger-fade-in > *:nth-child(4) { animation-delay: 240ms; }
+  .stagger-fade-in > *:nth-child(5) { animation-delay: 320ms; }
+  .stagger-fade-in > *:nth-child(6) { animation-delay: 400ms; }
+  .stagger-fade-in > *:nth-child(7) { animation-delay: 480ms; }
+  .stagger-fade-in > *:nth-child(8) { animation-delay: 560ms; }
+
+  @keyframes stagger-item {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Fade up animation for sections */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: fade-up-anim 0.6s ease-out forwards;
+  }
+  @keyframes fade-up-anim {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .fade-up-d1 { animation-delay: 100ms; }
+  .fade-up-d2 { animation-delay: 200ms; }
+  .fade-up-d3 { animation-delay: 300ms; }
+  .fade-up-d4 { animation-delay: 400ms; }
+
+  /* Background grain/noise texture */
+  .bg-grain::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.015;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Ember gradient line */
+  .ember-line {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, hsl(var(--primary)), transparent);
+    opacity: 0.3;
+  }
+
+  /* Card with hover glow */
+  .card-interactive {
+    @apply bg-card border border-border transition-all duration-300;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.3);
+  }
+  .card-interactive:hover {
+    border-color: hsl(var(--primary) / 0.25);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,107,43,0.08);
+    transform: translateY(-2px);
+  }
 }
