@@ -59,6 +59,7 @@ const sidebarItems: SidebarItem[] = [
   {
     key: "financeiro", label: "Financeiro", icon: TrendingUp,
     subItems: [
+      { label: "Caixa Diário", path: "/financeiro/caixa-diario" },
       { label: "DRE", path: "/financeiro/dre" },
       { label: "Contas a Pagar", path: "/financeiro/contas-a-pagar" },
       { label: "Ponto de Equilíbrio", path: "/financeiro/ponto-de-equilibrio" },
