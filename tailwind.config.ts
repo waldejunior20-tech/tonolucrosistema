@@ -80,14 +80,15 @@ export default {
         pill: "9999px",
       },
       boxShadow: {
-        card: "0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03)",
-        "card-hover": "0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06)",
-        "card-ember": "0 0 0 1px hsl(168 76% 42% / 0.1), 0 4px 16px rgba(0,0,0,0.04)",
-        "glow-ember": "0 0 16px hsl(168 76% 42% / 0.15)",
+        card: "0 4px 20px rgba(0,0,0,0.05)",
+        "card-hover": "0 8px 30px rgba(0,0,0,0.08)",
+        "card-ember": "0 0 0 1px hsl(145 63% 42% / 0.1), 0 4px 20px rgba(0,0,0,0.05)",
+        "glow-ember": "0 0 16px hsl(145 63% 42% / 0.15)",
         "glow-profit": "0 0 12px rgba(0,214,143,0.10)",
-        button: "0 4px 16px hsl(168 76% 42% / 0.25)",
+        button: "0 6px 20px hsl(145 63% 42% / 0.30)",
         tooltip: "0 8px 32px rgba(0,0,0,0.12)",
         sidebar: "1px 0 4px rgba(0,0,0,0.04)",
+        glass: "0 25px 60px rgba(0,0,0,0.15)",
       },
       keyframes: {
         "accordion-down": {
