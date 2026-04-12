@@ -123,8 +123,8 @@ function ChartCard({ title, hint, action, children, className = "" }: {
 }
 
 // ─── Insight Card ───────────────────────────────────────────────────
-function InsightCard({ tipo, titulo, descricao, icon }: {
-  tipo: "positivo" | "alerta" | "sucesso"; titulo: string; descricao: string; icon: string;
+function InsightCard({ tipo, titulo, descricao }: {
+  tipo: "positivo" | "alerta" | "sucesso"; titulo: string; descricao: string;
 }) {
   const variants = {
     positivo: "bg-[hsl(var(--success)/0.05)] border-[hsl(var(--success)/0.15)]",
@@ -133,7 +133,7 @@ function InsightCard({ tipo, titulo, descricao, icon }: {
   };
   return (
     <div className={`rounded-xl p-4 border transition-all duration-200 hover:shadow-sm ${variants[tipo]}`}>
-      <p className="text-[13px] font-semibold text-foreground mb-1">{icon} {titulo}</p>
+      <p className="text-[13px] font-semibold text-foreground mb-1">{titulo}</p>
       <p className="text-[11px] text-muted-foreground leading-relaxed">{descricao}</p>
     </div>
   );
