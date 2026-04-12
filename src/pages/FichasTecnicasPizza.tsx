@@ -628,10 +628,13 @@ export default function FichasTecnicasPizza() {
 
               {/* Ingredientes */}
               <div className="space-y-3">
-                <Label className="text-base">Ingredientes</Label>
+                <Label className="text-base">Ingredientes *</Label>
 
                 {form.ingredientes.length === 0 && (
-                  <p className="text-sm text-muted-foreground">Nenhum ingrediente adicionado.</p>
+                  <div className={ingredientesInvalid ? "rounded-lg border-2 border-destructive/50 p-3 bg-destructive/5" : ""}>
+                    <p className="text-sm text-muted-foreground">Nenhum ingrediente adicionado.</p>
+                    {ingredientesInvalid && <p className="text-[11px] text-destructive mt-1 font-medium">Adicione pelo menos um ingrediente</p>}
+                  </div>
                 )}
 
                 {form.ingredientes.map((ing, idx) => {
