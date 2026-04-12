@@ -160,14 +160,14 @@ export default function CaixaRapido() {
   });
 
   return (
-    <div style={{ background: "linear-gradient(135deg, #92400E, #D97706)", boxShadow: "0 8px 24px rgba(146,64,14,0.15)" }} className="rounded-2xl border border-white/10 transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)]">
+    <div style={{ background: "linear-gradient(135deg, #1E293B, #334155)", boxShadow: "0 6px 20px rgba(30,41,59,0.15)" }} className="rounded-2xl border border-white/10 transition-all duration-300">
       {/* Header — always visible */}
       <button
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center justify-between px-5 py-4 text-left"
       >
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
             <Wallet size={16} className="text-white" />
           </div>
           <div>
