@@ -7,9 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import {
-  TrendingUp, TrendingDown, DollarSign, Package, BookOpen, Tag,
-  AlertTriangle, Download, Share2, Bell, Clock, ArrowRight, ChevronRight,
-  Wallet, Receipt, PiggyBank,
+  TrendingUp, TrendingDown, Download, Share2, Bell, Clock,
+  Wallet, Receipt, PiggyBank, AlertTriangle,
 } from "lucide-react";
 import CaixaRapido from "@/components/CaixaRapido";
 
