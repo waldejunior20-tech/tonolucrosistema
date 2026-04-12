@@ -180,9 +180,9 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
                       : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                   )}
                 >
-                  {/* Left Active Bar */}
+                  {/* Left Active Bar — Green Neon */}
                   {isActive && !collapsed && (
-                    <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] bg-sidebar-primary rounded-r" />
+                    <div className="absolute left-0 top-1 bottom-1 w-[3px] rounded-r" style={{ backgroundColor: '#00E676', boxShadow: '0 0 8px rgba(0,230,118,0.4)' }} />
                   )}
                   
                   <div className={cn("flex items-center w-full px-3 gap-2.5 transition-transform duration-200", collapsed ? "justify-center" : "group-hover:translate-x-0.5")}>

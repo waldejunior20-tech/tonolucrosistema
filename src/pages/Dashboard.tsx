@@ -24,17 +24,35 @@ function getGreeting() {
 }
 
 // ─── KPI Card (Panze reference: icon top-left, label, big number, detail row, "See in details") ─
-function KPICard({ label, value, icon: Icon, trend, trendLabel, detailLabel, detailValue, link }: {
+function StatusBadge({ type, label }: { type: "success" | "warning" | "danger"; label: string }) {
+  const styles = {
+    success: "bg-[hsl(var(--success)/0.1)] text-[hsl(var(--success))] border-[hsl(var(--success)/0.2)]",
+    warning: "bg-[hsl(var(--warning)/0.1)] text-[hsl(var(--warning))] border-[hsl(var(--warning)/0.2)]",
+    danger: "bg-[hsl(var(--destructive)/0.1)] text-[hsl(var(--destructive))] border-[hsl(var(--destructive)/0.2)]",
+  };
+  return (
+    <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${styles[type]}`}>
+      {label}
+    </span>
+  );
+}
+
+function KPICard({ label, value, icon: Icon, trend, trendLabel, detailLabel, detailValue, link, badge }: {
   label: string; value: string; icon: any;
   trend: "up" | "down"; trendLabel: string;
   detailLabel?: string; detailValue?: string;
   link?: string;
+  badge?: { type: "success" | "warning" | "danger"; label: string };
 }) {
+  const borderColor = badge?.type === "success" ? "hsl(var(--success))" : badge?.type === "warning" ? "hsl(var(--warning))" : badge?.type === "danger" ? "hsl(var(--destructive))" : "hsl(var(--primary))";
   return (
-    <div className="group bg-card border border-border rounded-xl p-5 transition-all duration-300 hover:shadow-[0_4px_12px_rgba(0,0,0,0.06),0_12px_32px_rgba(0,0,0,0.08)] hover:-translate-y-1 card">
-      {/* Icon badge */}
-      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-        <Icon size={18} className="text-primary" />
+    <div className="group bg-card border border-border rounded-2xl p-5 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-[5px]" style={{ borderTop: `4px solid ${borderColor}` }}>
+      {/* Badge + Icon */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+          <Icon size={18} className="text-primary" />
+        </div>
+        {badge && <StatusBadge type={badge.type} label={badge.label} />}
       </div>
 
       {/* Label */}
@@ -42,12 +60,12 @@ function KPICard({ label, value, icon: Icon, trend, trendLabel, detailLabel, det
 
       {/* Big number + trend inline */}
       <div className="flex items-baseline gap-3 mb-3">
-        <p className="kpi-number text-primary">{value}</p>
+        <p className="kpi-number text-foreground">{value}</p>
         {trendLabel !== "—" && (
           <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full inline-flex items-center gap-0.5 ${
             trend === "up" ? "text-[hsl(var(--success))] bg-[hsl(var(--success)/0.08)]" : "text-[hsl(var(--destructive))] bg-[hsl(var(--destructive)/0.08)]"
           }`}>
-            ↑ {trendLabel}
+            {trend === "up" ? "↑" : "↓"} {trendLabel}
           </span>
         )}
       </div>
@@ -109,7 +127,7 @@ function ChartCard({ title, hint, action, children, className = "" }: {
   title: string; hint?: string; action?: React.ReactNode; children: React.ReactNode; className?: string;
 }) {
   return (
-    <div className={`bg-card border border-border rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_4px_24px_rgba(0,0,0,0.06)] card ${className}`}>
+    <div className={`bg-card border border-border rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-[5px] ${className}`} style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
       <div className="flex items-start justify-between mb-5">
         <div>
           <h3 className="text-[15px] font-semibold text-foreground">{title}</h3>
@@ -253,6 +271,7 @@ export default function Dashboard() {
           trendLabel={faturamentoMes > 0 ? "32.54%" : "—"}
           detailLabel="Lucro líquido:"
           detailValue={lucroMes > 0 ? formatBRL(lucroMes) : undefined}
+          badge={lucroMes > 0 ? { type: "success", label: "Lucro em Alta" } : faturamentoMes > 0 ? { type: "danger", label: "Prejuízo" } : undefined}
         />
         <KPICard
           label="Fichas Técnicas"
@@ -261,6 +280,7 @@ export default function Dashboard() {
           trend="up"
           trendLabel={totalFichas > 0 ? `${totalFichas} ativas` : "—"}
           detailLabel="Cadastradas"
+          badge={totalFichas > 0 ? { type: "success", label: "Ativo" } : { type: "warning", label: "Cadastrar" }}
         />
         <KPICard
           label="Insumos"
@@ -269,6 +289,7 @@ export default function Dashboard() {
           trend="up"
           trendLabel={totalInsumos > 0 ? `${totalInsumos} itens` : "—"}
           detailLabel="Em estoque"
+          badge={totalInsumos > 0 ? { type: "success", label: "Ok" } : { type: "warning", label: "Revisar Custos" }}
         />
         <KPICard
           label="Promoções"
@@ -277,6 +298,7 @@ export default function Dashboard() {
           trend={promocoesAtivas > 0 ? "up" : "down"}
           trendLabel={promocoesAtivas > 0 ? `${promocoesAtivas} ativas` : "—"}
           detailLabel="Ativas agora"
+          badge={promocoesAtivas > 0 ? { type: "success", label: "Ativas" } : undefined}
         />
       </div>
 
