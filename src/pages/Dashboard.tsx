@@ -12,6 +12,7 @@ import {
   AlertTriangle, Download, Share2, Bell, Clock, ArrowRight, ChevronRight,
   Wallet, Receipt, PiggyBank,
 } from "lucide-react";
+import CaixaRapido from "@/components/CaixaRapido";
 
 function formatBRL(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
