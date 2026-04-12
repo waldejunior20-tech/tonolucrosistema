@@ -32,30 +32,20 @@ function MiniKPI({ label, value, icon: Icon, trendLabel, kpiType }: {
   trendLabel?: string;
   kpiType: KpiVariant;
 }) {
-  // Only Lucro positive gets colored bg. Everything else is clean white.
-  const isFaturamento = kpiType === "faturamento";
-  const isGastos = kpiType === "gastos";
-  const isHighlight = kpiType === "lucro_pos";
-  const isLucroNeg = kpiType === "lucro_neg";
-  const isColored = isFaturamento || isGastos || isHighlight || isLucroNeg;
-
-  const gradientMap: Record<string, { bg: string; shadow: string }> = {
+  const gradients: Partial<Record<KpiVariant, { bg: string; shadow: string }>> = {
     faturamento: { bg: "linear-gradient(135deg, #166534, #2D7C5E)", shadow: "0 8px 24px rgba(22,101,52,0.2)" },
     gastos: { bg: "linear-gradient(135deg, #92400E, #D97706)", shadow: "0 8px 24px rgba(146,64,14,0.2)" },
     lucro_pos: { bg: "linear-gradient(135deg, #15803D, #22C55E)", shadow: "0 8px 24px rgba(34,197,94,0.3)" },
     lucro_neg: { bg: "linear-gradient(135deg, #7F1D1D, #B91C1C)", shadow: "0 8px 24px rgba(127,29,29,0.2)" },
   };
-    gastos: "text-[#F59E0B]",
-    lucro_pos: "text-white/80",
-    lucro_neg: "text-white/80",
-    cmv_ok: "text-[hsl(var(--success))]",
-    cmv_bad: "text-[hsl(var(--destructive))]",
-  };
 
-  if (isHighlight) {
+  const grad = gradients[kpiType];
+
+  // Colored gradient card
+  if (grad) {
     return (
       <div
-        style={{ background: "linear-gradient(135deg, #15803D, #22C55E)", boxShadow: "0 8px 24px rgba(34,197,94,0.3)" }}
+        style={{ background: grad.bg, boxShadow: grad.shadow }}
         className="group rounded-2xl px-5 py-4 border border-white/10 transition-all duration-300 hover:scale-[1.02] hover:brightness-110"
       >
         <div className="flex items-center justify-between mb-1.5">
@@ -64,42 +54,27 @@ function MiniKPI({ label, value, icon: Icon, trendLabel, kpiType }: {
         </div>
         <div className="flex items-baseline gap-2">
           <span className="text-[24px] font-extrabold text-white tracking-tight leading-none drop-shadow-sm">{value}</span>
-          {trendLabel && <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-white/20 text-white">{trendLabel}</span>}
+          {trendLabel && trendLabel !== "—" && (
+            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-white/20 text-white">{trendLabel}</span>
+          )}
         </div>
       </div>
     );
   }
 
-  if (isLucroNeg) {
-    return (
-      <div
-        style={{ background: "linear-gradient(135deg, #7F1D1D, #B91C1C)", boxShadow: "0 8px 24px rgba(127,29,29,0.2)" }}
-        className="group rounded-2xl px-5 py-4 border border-white/10 transition-all duration-300 hover:scale-[1.02] hover:brightness-110"
-      >
-        <div className="flex items-center justify-between mb-1.5">
-          <span className="text-[11px] font-semibold text-white/80 uppercase tracking-wider">{label}</span>
-          <Icon size={18} className="text-white/70" />
-        </div>
-        <div className="flex items-baseline gap-2">
-          <span className="text-[24px] font-extrabold text-white tracking-tight leading-none drop-shadow-sm">{value}</span>
-          {trendLabel && <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-white/20 text-white">{trendLabel}</span>}
-        </div>
-      </div>
-    );
-  }
-
-  // Clean white card
+  // Clean white card (CMV)
+  const iconColor = kpiType === "cmv_ok" ? "text-[hsl(var(--success))]" : "text-[hsl(var(--destructive))]";
   return (
     <div className="group bg-card rounded-2xl px-5 py-4 border border-border/60 transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)] hover:-translate-y-0.5">
       <div className="flex items-center justify-between mb-1.5">
         <span className="text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-wider">{label}</span>
-        <Icon size={18} className={iconColorMap[kpiType]} />
+        <Icon size={18} className={iconColor} />
       </div>
       <div className="flex items-baseline gap-2">
         <span className="text-[24px] font-extrabold text-[#1F2937] tracking-tight leading-none">{value}</span>
         {trendLabel && trendLabel !== "—" && (
           <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${
-            kpiType === "cmv_bad" || kpiType === "gastos"
+            kpiType === "cmv_bad"
               ? "text-[hsl(var(--destructive))] bg-[hsl(var(--destructive)/0.08)]"
               : "text-[hsl(var(--success))] bg-[hsl(var(--success)/0.08)]"
           }`}>
