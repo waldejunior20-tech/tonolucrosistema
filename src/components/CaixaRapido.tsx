@@ -190,7 +190,7 @@ export default function CaixaRapido() {
 
       {/* Expandable content */}
       {expanded && (
-        <div className="px-5 pb-5 space-y-4 border-t border-border/40 pt-4">
+        <div className="px-5 pb-5 space-y-4 border-t border-white/15 pt-4 bg-card rounded-b-2xl">
           {/* Date range picker */}
           <div className="flex flex-wrap items-center gap-3">
             <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
