@@ -31,15 +31,17 @@ function MiniKPI({ label, value, icon: Icon, trend, trendLabel, variant }: {
 }) {
   const bgMap = {
     green: "bg-[hsl(var(--success)/0.06)] border-[hsl(var(--success)/0.15)]",
-    red: "bg-[hsl(var(--destructive)/0.06)] border-[hsl(var(--destructive)/0.15)]",
+    red: "border-[rgba(220,20,20,0.2)]",
     dynamic: trend === "up"
       ? "bg-[hsl(var(--success)/0.06)] border-[hsl(var(--success)/0.15)]"
-      : "bg-[hsl(var(--destructive)/0.06)] border-[hsl(var(--destructive)/0.15)]",
+      : "border-[rgba(220,20,20,0.2)]",
   };
+  const redBg = { backgroundColor: "rgba(220, 20, 20, 0.06)" };
+  const needsRedBg = (variant === "red") || (variant === "dynamic" && trend !== "up");
   const bg = variant ? bgMap[variant] : "bg-card border-border/60";
 
   return (
-    <div className={`group rounded-2xl px-5 py-4 border transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 ${bg}`}>
+    <div style={needsRedBg ? redBg : undefined} className={`group rounded-2xl px-5 py-4 border transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 ${bg}`}>
       <div className="flex items-center justify-between mb-1">
         <span className="text-[11px] font-medium text-muted-foreground/70 uppercase tracking-wider">{label}</span>
         <Icon size={15} className="text-muted-foreground/40" />
