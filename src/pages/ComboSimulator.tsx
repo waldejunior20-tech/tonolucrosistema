@@ -2,8 +2,9 @@ import { useState, useMemo, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Plus, Trash2, Calculator, CheckCircle2, AlertTriangle, Edit2, Trash } from "lucide-react";
+import { Plus, Trash2, Calculator, CheckCircle2, AlertTriangle, Edit2, Trash, Sparkles } from "lucide-react";
 import { formatMoney, parseFormattedNumber } from "@/components/MoneyInput";
+import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
@@ -562,6 +563,51 @@ export default function ComboSimulator() {
               />
             </div>
 
+            {/* Doughnut Chart */}
+            {precoVenda > 0 && (
+              <div className="mb-6">
+                <div className="relative w-40 h-40 mx-auto">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={[
+                          { name: "Custo", value: custoTotal },
+                          { name: "Lucro", value: Math.max(precoVenda - custoTotal, 0) },
+                        ]}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius="75%"
+                        outerRadius="95%"
+                        startAngle={90}
+                        endAngle={-270}
+                        dataKey="value"
+                        stroke="none"
+                      >
+                        <Cell fill="#FF9F43" />
+                        <Cell fill="#2ECC71" />
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className={`text-2xl font-mono-data font-bold ${margemColor}`}>
+                      {fmtPct(margem)}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Margem</span>
+                  </div>
+                </div>
+                <div className="flex justify-center gap-6 mt-3">
+                  <div className="flex items-center gap-1.5 text-xs">
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ background: "#FF9F43" }} />
+                    <span className="text-muted-foreground">Custo</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs">
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ background: "#2ECC71" }} />
+                    <span className="text-muted-foreground">Lucro</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Diagnosis */}
             <div className="bg-background border border-border rounded-lg p-4 text-center">
               <p className="text-xs text-muted-foreground mb-1">Margem de Lucro</p>
@@ -582,13 +628,17 @@ export default function ComboSimulator() {
               )}
             </div>
 
-            <Button
-              className="w-full mt-6"
+            <button
+              className="w-full mt-6 py-3 px-6 rounded-lg text-sm font-semibold text-white transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ background: "#2ECC71" }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "#27AE60"; e.currentTarget.style.boxShadow = "0 0 20px rgba(46,204,113,0.4)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "#2ECC71"; e.currentTarget.style.boxShadow = "none"; }}
               onClick={() => saveMutation.mutate()}
               disabled={saveMutation.isPending || itens.length === 0}
             >
+              <Sparkles className="w-4 h-4" />
               {editingId ? "Atualizar Combo" : "Salvar Promoção"}
-            </Button>
+            </button>
 
             {editingId && (
               <Button variant="ghost" className="w-full mt-2" onClick={resetForm}>
