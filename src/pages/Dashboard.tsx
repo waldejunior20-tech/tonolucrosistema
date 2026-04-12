@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import {
-  XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area,
+  XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area, CartesianGrid,
 } from "recharts";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
