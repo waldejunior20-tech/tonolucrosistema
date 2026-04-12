@@ -295,46 +295,103 @@ export default function Dashboard() {
 
       {/* ─── CHART: Revenue ─── */}
       <div className="fade-up fade-up-d2">
-        <ChartCard
-          title="Faturamento vs. Despesas"
-          hint="Evolução mensal"
-          action={
-            <select className="text-[10px] text-muted-foreground bg-muted/40 border border-border/30 rounded-full px-2.5 py-1 outline-none focus:border-primary/30">
-              <option>6 Meses</option>
-              <option>3 Meses</option>
-              <option>1 Ano</option>
-            </select>
-          }
-        >
+        <div className="bg-card border border-border/60 rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)]">
+          {/* Chart header with inline legend */}
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className="text-[15px] font-bold text-foreground">Faturamento vs. Despesas</h3>
+              <p className="text-[10px] text-muted-foreground/50 mt-0.5">Evolução mensal do seu negócio</p>
+            </div>
+            <div className="flex items-center gap-4">
+              {/* Inline legend */}
+              <div className="hidden sm:flex items-center gap-3">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-[3px] rounded-full bg-[#166534]" />
+                  <span className="text-[10px] text-muted-foreground">Receita</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-[3px] rounded-full bg-[#D97706]" style={{ backgroundImage: "repeating-linear-gradient(90deg, #D97706 0, #D97706 4px, transparent 4px, transparent 7px)" }} />
+                  <span className="text-[10px] text-muted-foreground">Despesa</span>
+                </div>
+              </div>
+              <select className="text-[10px] text-muted-foreground bg-muted/40 border border-border/30 rounded-full px-2.5 py-1 outline-none focus:border-primary/30">
+                <option>6 Meses</option>
+                <option>3 Meses</option>
+                <option>1 Ano</option>
+              </select>
+            </div>
+          </div>
+
           {hasChartData ? (
-            <ResponsiveContainer width="100%" height={220}>
-              <AreaChart data={graficoMensal}>
+            <ResponsiveContainer width="100%" height={260}>
+              <AreaChart data={graficoMensal} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="gradReceita" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#166534" stopOpacity={0.15} />
-                    <stop offset="100%" stopColor="#2D7C5E" stopOpacity={0} />
+                    <stop offset="0%" stopColor="#15803D" stopOpacity={0.25} />
+                    <stop offset="50%" stopColor="#22C55E" stopOpacity={0.08} />
+                    <stop offset="100%" stopColor="#22C55E" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="gradDespesa" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#D97706" stopOpacity={0.1} />
+                    <stop offset="0%" stopColor="#F59E0B" stopOpacity={0.15} />
+                    <stop offset="50%" stopColor="#D97706" stopOpacity={0.05} />
                     <stop offset="100%" stopColor="#D97706" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="mes" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`} axisLine={false} tickLine={false} width={50} />
-                <Tooltip contentStyle={tooltipStyle} formatter={(value: number) => formatBRL(value)} />
-                <Area type="monotone" dataKey="receita" name="Receita" stroke="#166534" fill="url(#gradReceita)" strokeWidth={2.5} dot={false} />
-                <Area type="monotone" dataKey="despesa" name="Despesa" stroke="#D97706" fill="url(#gradDespesa)" strokeWidth={1.5} strokeDasharray="6 3" dot={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" strokeOpacity={0.4} vertical={false} />
+                <XAxis
+                  dataKey="mes"
+                  tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11, fontWeight: 500 }}
+                  axisLine={false}
+                  tickLine={false}
+                  dy={8}
+                />
+                <YAxis
+                  tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }}
+                  tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`}
+                  axisLine={false}
+                  tickLine={false}
+                  width={55}
+                />
+                <Tooltip
+                  contentStyle={{
+                    ...tooltipStyle,
+                    padding: "10px 14px",
+                  }}
+                  formatter={(value: number) => formatBRL(value)}
+                  cursor={{ stroke: "hsl(var(--border))", strokeWidth: 1 }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="receita"
+                  name="Receita"
+                  stroke="#15803D"
+                  fill="url(#gradReceita)"
+                  strokeWidth={2.5}
+                  dot={false}
+                  activeDot={{ r: 5, fill: "#15803D", stroke: "#fff", strokeWidth: 2 }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="despesa"
+                  name="Despesa"
+                  stroke="#D97706"
+                  fill="url(#gradDespesa)"
+                  strokeWidth={2}
+                  strokeDasharray="6 3"
+                  dot={false}
+                  activeDot={{ r: 4, fill: "#D97706", stroke: "#fff", strokeWidth: 2 }}
+                />
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex flex-col items-center justify-center h-[220px] text-muted-foreground gap-3">
-              <div className="w-11 h-11 rounded-full bg-muted/60 flex items-center justify-center">
-                <TrendingUp size={18} className="text-muted-foreground/40" />
+            <div className="flex flex-col items-center justify-center h-[260px] text-muted-foreground gap-3">
+              <div className="w-12 h-12 rounded-full bg-muted/60 flex items-center justify-center">
+                <TrendingUp size={20} className="text-muted-foreground/40" />
               </div>
-              <p className="text-[12px] text-center max-w-[200px]">Registre receitas e despesas no módulo Financeiro.</p>
+              <p className="text-[12px] text-center max-w-[220px]">Registre receitas e despesas no módulo Financeiro para ver a evolução aqui.</p>
             </div>
           )}
-        </ChartCard>
+        </div>
       </div>
 
       {/* ─── ALERTAS COMPACTO ─── */}
