@@ -140,7 +140,7 @@ export default function InsumosComprados() {
     : insumos.filter((i) => i.categoria === filtroCategoria);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 page-enter">
       <PageHeader title="Insumos Comprados" description="Gerencie seus insumos e matérias-primas.">
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) resetForm(); setDialogOpen(open); }}>
           <DialogTrigger asChild>
@@ -230,7 +230,7 @@ export default function InsumosComprados() {
           onAction={() => setDialogOpen(true)}
         />
       ) : (
-        <div className="rounded-md border">
+        <div className="table-premium fade-up fade-up-d1">
           <Table>
             <TableHeader>
               <TableRow>

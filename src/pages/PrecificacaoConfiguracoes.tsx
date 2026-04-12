@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Save, Settings2 } from "lucide-react";
+import { Save } from "lucide-react";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { useState, useEffect } from "react";
 import { type ConfigPrecificacao } from "@/lib/pricing-helpers";
 
@@ -83,16 +84,8 @@ export default function PrecificacaoConfiguracoes() {
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Settings2 className="h-6 w-6 text-primary" />
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Configurações de Precificação</h1>
-          <p className="text-sm text-muted-foreground">
-            Parâmetros globais usados no cálculo de preços de Pizzas, Produtos e Bebidas.
-          </p>
-        </div>
-      </div>
+    <div className="space-y-6 page-enter">
+      <PageHeader title="Configurações de Precificação" description="Parâmetros globais usados no cálculo de preços de Pizzas, Produtos e Bebidas." />
 
       <Card>
         <CardHeader>

@@ -16,7 +16,9 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Pencil, Trash2, Plus, Filter, Search, X, Check } from "lucide-react";
+import { Pencil, Trash2, Plus, Filter, Search, X, Check, Pizza } from "lucide-react";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { EmptyState } from "@/components/EmptyState";
 import type { Tables } from "@/integrations/supabase/types";
 import { formatQty } from "@/components/MoneyInput";
 
@@ -534,10 +536,9 @@ export default function FichasTecnicasPizza() {
     ing.tipo_insumo === "comprado" ? !!ing.insumo_comprado_id : !!ing.insumo_proprio_id;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 page-enter">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Fichas Técnicas de Pizza</h1>
+      <PageHeader title="Fichas Técnicas de Pizza" description="Gerencie suas receitas de pizza com custos por tamanho.">
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) resetForm(); setDialogOpen(open); }}>
           <DialogTrigger asChild>
             <Button className="gap-2">
@@ -849,7 +850,7 @@ export default function FichasTecnicasPizza() {
             </form>
           </DialogContent>
         </Dialog>
-      </div>
+      </PageHeader>
 
       {/* Filtro */}
       <div className="flex items-center gap-3">
@@ -873,9 +874,9 @@ export default function FichasTecnicasPizza() {
       {isLoading ? (
         <p className="text-muted-foreground">Carregando...</p>
       ) : filteredFichas.length === 0 ? (
-        <p className="text-muted-foreground">Nenhuma ficha técnica encontrada.</p>
+        <EmptyState icon={Pizza} title="Nenhuma ficha técnica encontrada" description="Crie fichas técnicas para suas pizzas com custos detalhados." actionLabel="Nova Ficha" onAction={() => setDialogOpen(true)} />
       ) : (
-        <div className="rounded-md border">
+        <div className="table-premium fade-up fade-up-d1">
           <Table>
             <TableHeader>
               <TableRow>

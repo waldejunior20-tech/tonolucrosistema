@@ -322,7 +322,7 @@ export default function InsumosProduzidos() {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 page-enter">
       <PageHeader title="Insumos Produzidos" description="Pré-preparos e produções internas.">
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) resetForm(); setDialogOpen(open); }}>
           <DialogTrigger asChild>
@@ -498,7 +498,7 @@ export default function InsumosProduzidos() {
       ) : insumosProprios.length === 0 ? (
         <EmptyState icon={Beaker} title="Nenhum pré-preparo cadastrado" description="Crie seus pré-preparos para calcular custos automaticamente." actionLabel="Novo Pré-Preparo" onAction={() => setDialogOpen(true)} />
       ) : (
-        <div className="rounded-md border">
+        <div className="table-premium fade-up fade-up-d1">
           <Table>
             <TableHeader>
               <TableRow>

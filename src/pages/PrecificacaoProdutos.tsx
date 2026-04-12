@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { cn } from "@/lib/utils";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -343,11 +344,11 @@ export default function PrecificacaoProdutos() {
 
   return (
     <TooltipProvider>
-      <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-foreground">Precificação de Produtos</h1>
+      <div className="space-y-6 page-enter">
+        <PageHeader title="Precificação de Produtos" description="Gestão de margem e CMV por categoria." />
 
         {/* Indicators */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 stagger-fade-in">
           <Card>
             <CardContent className="pt-6">
               <p className="text-sm text-muted-foreground">CMV Médio Atual</p>

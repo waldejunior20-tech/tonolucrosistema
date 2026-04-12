@@ -58,7 +58,7 @@ export default function Dashboard() {
   const hasChartData = graficoMensal.some((m) => m.receita > 0 || m.despesa > 0);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 page-enter">
       {/* Welcome — fade up */}
       <div className="fade-up">
         <PageHeader

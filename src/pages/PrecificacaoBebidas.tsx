@@ -21,6 +21,7 @@ import {
   calcAppPrice, getActiveApps, APP_TOOLTIP,
   type ConfigPrecificacao,
 } from "@/lib/pricing-helpers";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 // ─── Types ───────────────────────────────────────────────────────────
 interface InsumoComprado { id: string; nome: string; preco_pago: number; quantidade: number; unidade: string; categoria: string; }
@@ -443,11 +444,11 @@ export default function PrecificacaoBebidas() {
 
   return (
     <TooltipProvider>
-      <div className="space-y-6">
-        <h1 className="text-2xl font-bold text-foreground">Precificação de Bebidas</h1>
+      <div className="space-y-6 page-enter">
+        <PageHeader title="Precificação de Bebidas" description="Gestão de margem para bebidas industrializadas e preparadas." />
 
         {/* Indicators */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 stagger-fade-in">
           <Card>
             <CardContent className="pt-6">
               <p className="text-sm text-muted-foreground">CMV Médio — Industrializadas</p>
