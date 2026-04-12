@@ -76,14 +76,14 @@ export default {
         pill: "9999px",
       },
       boxShadow: {
-        card: "0 1px 2px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.3)",
-        "card-hover": "0 1px 2px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.35)",
-        "card-ember": "0 0 0 1px rgba(255,107,43,0.15), 0 8px 32px rgba(255,107,43,0.08)",
-        "glow-ember": "0 0 24px rgba(255,107,43,0.20)",
-        "glow-profit": "0 0 16px rgba(0,214,143,0.15)",
-        button: "0 4px 16px rgba(255,107,43,0.30)",
-        tooltip: "0 8px 32px rgba(0,0,0,0.6)",
-        sidebar: "2px 0 20px rgba(0,0,0,0.4)",
+        card: "0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03)",
+        "card-hover": "0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06)",
+        "card-ember": "0 0 0 1px hsl(168 76% 42% / 0.1), 0 4px 16px rgba(0,0,0,0.04)",
+        "glow-ember": "0 0 16px hsl(168 76% 42% / 0.15)",
+        "glow-profit": "0 0 12px rgba(0,214,143,0.10)",
+        button: "0 4px 16px hsl(168 76% 42% / 0.25)",
+        tooltip: "0 8px 32px rgba(0,0,0,0.12)",
+        sidebar: "1px 0 4px rgba(0,0,0,0.04)",
       },
       keyframes: {
         "accordion-down": {
