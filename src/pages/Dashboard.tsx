@@ -12,6 +12,7 @@ import {
   AlertTriangle, Download, Share2, Bell, Clock, ArrowRight, ChevronRight,
   Wallet, Receipt, PiggyBank,
 } from "lucide-react";
+import CaixaRapido from "@/components/CaixaRapido";
 
 function formatBRL(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -246,6 +247,11 @@ export default function Dashboard() {
           trend={cmvPct <= cmvMeta ? "up" : "down"}
           trendLabel={faturamentoMes > 0 ? `Meta ${cmvMeta}%` : undefined}
         />
+      </div>
+
+      {/* ─── CAIXA RÁPIDO ─── */}
+      <div className="fade-up fade-up-d1">
+        <CaixaRapido />
       </div>
 
       {/* ─── CHARTS ROW 1: Revenue + Donut ─── */}
