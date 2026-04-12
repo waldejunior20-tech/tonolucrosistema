@@ -204,7 +204,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="space-y-8 page-enter">
+    <div className="space-y-10 page-enter">
       {/* ─── HEADER ─── */}
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 fade-up">
         <div>
