@@ -67,7 +67,7 @@ function MiniKPI({ label, value, icon: Icon, trendLabel, kpiType }: {
   if (isLucroNeg) {
     return (
       <div
-        style={{ background: "linear-gradient(135deg, #B91C1C, #EF4444)", boxShadow: "0 8px 24px rgba(239,68,68,0.25)" }}
+        style={{ background: "linear-gradient(135deg, #7F1D1D, #B91C1C)", boxShadow: "0 8px 24px rgba(127,29,29,0.2)" }}
         className="group rounded-2xl px-5 py-4 border border-white/10 transition-all duration-300 hover:scale-[1.02] hover:brightness-110"
       >
         <div className="flex items-center justify-between mb-1.5">
