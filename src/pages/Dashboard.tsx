@@ -60,7 +60,7 @@ function KPICard({ label, value, icon: Icon, trend, trendLabel, detailLabel, det
 
       {/* Big number + trend inline */}
       <div className="flex items-baseline gap-3 mb-3">
-        <p className="kpi-number text-foreground">{value}</p>
+        <p className="kpi-number" style={{ color: '#1F2937' }}>{value}</p>
         {trendLabel !== "—" && (
           <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full inline-flex items-center gap-0.5 ${
             trend === "up" ? "text-[hsl(var(--success))] bg-[hsl(var(--success)/0.08)]" : "text-[hsl(var(--destructive))] bg-[hsl(var(--destructive)/0.08)]"
@@ -130,7 +130,7 @@ function ChartCard({ title, hint, action, children, className = "" }: {
   title: string; hint?: string; action?: React.ReactNode; children: React.ReactNode; className?: string;
 }) {
   return (
-    <div className={`bg-card border border-border rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-[5px] ${className}`} style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+    <div className={`bg-card border border-border rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-1 ${className}`} style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
       <div className="flex items-start justify-between mb-5">
         <div>
           <h3 className="text-[15px] font-semibold text-foreground">{title}</h3>
