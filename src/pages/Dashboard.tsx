@@ -311,15 +311,19 @@ export default function Dashboard() {
               <AreaChart data={graficoMensal}>
                 <defs>
                   <linearGradient id="gradReceita" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.12} />
-                    <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                    <stop offset="0%" stopColor="#166534" stopOpacity={0.15} />
+                    <stop offset="100%" stopColor="#2D7C5E" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="gradDespesa" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#D97706" stopOpacity={0.1} />
+                    <stop offset="100%" stopColor="#D97706" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <XAxis dataKey="mes" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`} axisLine={false} tickLine={false} width={50} />
                 <Tooltip contentStyle={tooltipStyle} formatter={(value: number) => formatBRL(value)} />
-                <Area type="monotone" dataKey="receita" name="Receita" stroke="hsl(var(--primary))" fill="url(#gradReceita)" strokeWidth={2} dot={false} />
-                <Area type="monotone" dataKey="despesa" name="Despesa" stroke="hsl(var(--destructive))" fill="transparent" strokeWidth={1.5} strokeDasharray="4 3" dot={false} />
+                <Area type="monotone" dataKey="receita" name="Receita" stroke="#166534" fill="url(#gradReceita)" strokeWidth={2.5} dot={false} />
+                <Area type="monotone" dataKey="despesa" name="Despesa" stroke="#D97706" fill="url(#gradDespesa)" strokeWidth={1.5} strokeDasharray="6 3" dot={false} />
               </AreaChart>
             </ResponsiveContainer>
           ) : (
