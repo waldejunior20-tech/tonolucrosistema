@@ -10,6 +10,7 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import {
   TrendingUp, TrendingDown, DollarSign, Package, BookOpen, Tag,
   AlertTriangle, Download, Share2, Bell, Clock, ArrowRight, ChevronRight,
+  Wallet, Receipt, PiggyBank,
 } from "lucide-react";
 
 function formatBRL(v: number) {
@@ -23,71 +24,29 @@ function getGreeting() {
   return "Boa noite";
 }
 
-// ─── KPI Card (Panze reference: icon top-left, label, big number, detail row, "See in details") ─
-function StatusBadge({ type, label }: { type: "success" | "warning" | "danger"; label: string }) {
-  const styles = {
-    success: "bg-[hsl(var(--success)/0.1)] text-[hsl(var(--success))] border-[hsl(var(--success)/0.2)]",
-    warning: "bg-[hsl(var(--warning)/0.1)] text-[hsl(var(--warning))] border-[hsl(var(--warning)/0.2)]",
-    danger: "bg-[hsl(var(--destructive)/0.1)] text-[hsl(var(--destructive))] border-[hsl(var(--destructive)/0.2)]",
-  };
-  return (
-    <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${styles[type]}`}>
-      {label}
-    </span>
-  );
-}
-
-function KPICard({ label, value, icon: Icon, trend, trendLabel, detailLabel, detailValue, link, badge }: {
+// ─── Minimal KPI Card ────────────────────────────────────────────────
+function MiniKPI({ label, value, icon: Icon, trend, trendLabel }: {
   label: string; value: string; icon: any;
-  trend: "up" | "down"; trendLabel: string;
-  detailLabel?: string; detailValue?: string;
-  link?: string;
-  badge?: { type: "success" | "warning" | "danger"; label: string };
+  trend?: "up" | "down"; trendLabel?: string;
 }) {
-  const borderColor = badge?.type === "success" ? "hsl(var(--success))" : badge?.type === "warning" ? "hsl(var(--warning))" : badge?.type === "danger" ? "hsl(var(--destructive))" : "hsl(var(--primary))";
   return (
-    <div className="group bg-card border border-border rounded-2xl p-5 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-1" style={{ borderTop: `2px solid ${borderColor}` }}>
-      {/* Badge + Icon */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-          <Icon size={18} className="text-primary" />
-        </div>
-        {badge && <StatusBadge type={badge.type} label={badge.label} />}
+    <div className="group bg-card border border-border/60 rounded-2xl px-5 py-4 transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)] hover:-translate-y-0.5">
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-[11px] font-medium text-muted-foreground/70 uppercase tracking-wider">{label}</span>
+        <Icon size={15} className="text-muted-foreground/40" />
       </div>
-
-      {/* Label */}
-      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
-
-      {/* Big number + trend inline */}
-      <div className="flex items-baseline gap-3 mb-3">
-        <p className="kpi-number" style={{ color: '#1F2937' }}>{value}</p>
-        {trendLabel !== "—" && (
-          <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full inline-flex items-center gap-0.5 ${
-            trend === "up" ? "text-[hsl(var(--success))] bg-[hsl(var(--success)/0.08)]" : "text-[hsl(var(--destructive))] bg-[hsl(var(--destructive)/0.08)]"
+      <div className="flex items-baseline gap-2">
+        <span className="text-[22px] font-bold text-foreground tracking-tight leading-none">{value}</span>
+        {trendLabel && trendLabel !== "—" && (
+          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${
+            trend === "up"
+              ? "text-[hsl(var(--success))] bg-[hsl(var(--success)/0.08)]"
+              : "text-[hsl(var(--destructive))] bg-[hsl(var(--destructive)/0.08)]"
           }`}>
             {trend === "up" ? "↑" : "↓"} {trendLabel}
           </span>
         )}
       </div>
-
-      {/* Detail row */}
-      {detailLabel && (
-        <div className="flex items-center justify-between text-[12px] mb-3">
-          <span className="text-muted-foreground flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--success))]" />
-            {detailLabel}
-          </span>
-          {detailValue && (
-            <span className="font-semibold text-[hsl(var(--success))]">{detailValue}</span>
-          )}
-        </div>
-      )}
-
-      {/* See in details link */}
-      <button className="flex items-center gap-1 text-[12px] text-muted-foreground hover:text-primary transition-colors group/link">
-        <span>Ver detalhes</span>
-        <ArrowRight size={12} className="group-hover/link:translate-x-0.5 transition-transform" />
-      </button>
     </div>
   );
 }
@@ -99,25 +58,25 @@ function AlertItem({ severity, title, detail, value }: {
   const isCritical = severity === "critical";
   return (
     <div
-      className={`flex items-start gap-3 p-4 rounded-xl border transition-all duration-200 ${
+      className={`flex items-start gap-3 p-3.5 rounded-xl border transition-all duration-200 ${
         isCritical
           ? "bg-[hsl(var(--destructive)/0.04)] border-[hsl(var(--destructive)/0.15)]"
           : "border-[#FF8000]/20"
       }`}
       style={!isCritical ? { background: "linear-gradient(135deg, rgba(255,128,0,0.06) 0%, rgba(255,160,50,0.12) 100%)" } : undefined}
     >
-      <div className={`mt-1 health-pulse ${isCritical ? "health-pulse-red" : "health-pulse-amber"}`} />
+      <div className={`mt-0.5 health-pulse ${isCritical ? "health-pulse-red" : "health-pulse-amber"}`} />
       <div className="flex-1 min-w-0">
-        <p className={`text-[13px] font-semibold flex items-center gap-1.5 ${
+        <p className={`text-[12px] font-semibold flex items-center gap-1.5 ${
           isCritical ? "text-[hsl(var(--destructive))]" : "text-foreground"
         }`}>
-          {isCritical && <AlertTriangle size={13} />}
+          {isCritical && <AlertTriangle size={12} />}
           {title}
         </p>
-        <p className="text-[11px] text-muted-foreground mt-0.5">{detail}</p>
+        <p className="text-[10px] text-muted-foreground mt-0.5">{detail}</p>
       </div>
       {value && (
-        <span className={`text-[12px] font-bold whitespace-nowrap font-mono ${
+        <span className={`text-[11px] font-bold whitespace-nowrap font-mono ${
           isCritical ? "text-[hsl(var(--destructive))]" : "text-foreground"
         }`}>{value}</span>
       )}
@@ -130,11 +89,11 @@ function ChartCard({ title, hint, action, children, className = "" }: {
   title: string; hint?: string; action?: React.ReactNode; children: React.ReactNode; className?: string;
 }) {
   return (
-    <div className={`bg-card border border-border rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-1 ${className}`} style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+    <div className={`bg-card border border-border/60 rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)] ${className}`}>
       <div className="flex items-start justify-between mb-5">
         <div>
-          <h3 className="text-[15px] font-semibold text-foreground">{title}</h3>
-          {hint && <p className="text-[11px] text-muted-foreground mt-0.5">{hint}</p>}
+          <h3 className="text-[14px] font-semibold text-foreground">{title}</h3>
+          {hint && <p className="text-[10px] text-muted-foreground/60 mt-0.5">{hint}</p>}
         </div>
         {action}
       </div>
@@ -143,20 +102,18 @@ function ChartCard({ title, hint, action, children, className = "" }: {
   );
 }
 
-// ─── Insight Card ───────────────────────────────────────────────────
-function InsightCard({ tipo, titulo, descricao }: {
-  tipo: "positivo" | "alerta" | "sucesso"; titulo: string; descricao: string;
-}) {
-  const variants = {
-    positivo: "bg-[hsl(var(--success)/0.05)] border-[hsl(var(--success)/0.15)]",
-    alerta: "bg-[hsl(var(--warning)/0.05)] border-[hsl(var(--warning)/0.15)]",
-    sucesso: "bg-[hsl(var(--success)/0.05)] border-[hsl(var(--success)/0.15)]",
-  };
+// ─── Donut center label ─────────────────────────────────────────────
+function DonutCenterLabel({ viewBox, value }: any) {
+  const { cx, cy } = viewBox;
   return (
-    <div className={`rounded-xl p-4 border transition-all duration-200 hover:shadow-sm ${variants[tipo]}`}>
-      <p className="text-[13px] font-semibold text-foreground mb-1">{titulo}</p>
-      <p className="text-[11px] text-muted-foreground leading-relaxed">{descricao}</p>
-    </div>
+    <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central">
+      <tspan x={cx} dy="-6" fontSize="20" fontWeight="700" fill="hsl(222,47%,11%)">
+        {value}
+      </tspan>
+      <tspan x={cx} dy="18" fontSize="10" fill="hsl(220,9%,46%)">
+        total
+      </tspan>
+    </text>
   );
 }
 
@@ -198,13 +155,7 @@ export default function Dashboard() {
     { name: "Bebidas", value: 1, percentual: 8, color: CATEGORY_COLORS[3] },
     { name: "Outros", value: 1, percentual: 5, color: CATEGORY_COLORS[4] },
   ];
-
-  const insights: { tipo: "positivo" | "alerta" | "sucesso"; titulo: string; descricao: string }[] = [];
-  if (lucroMes > 0) insights.push({ tipo: "sucesso", titulo: "Lucro Positivo", descricao: `${formatBRL(lucroMes)} este mês` });
-  if (cmvPct > cmvMeta && faturamentoMes > 0) insights.push({ tipo: "alerta", titulo: "CMV Acima da Meta", descricao: `${cmvPct.toFixed(1)}% vs meta ${cmvMeta}%` });
-  if (contasVencendo.length > 0) insights.push({ tipo: "alerta", titulo: `${contasVencendo.length} Contas Vencendo`, descricao: "Nos próximos 3 dias" });
-  if (totalFichas > 0) insights.push({ tipo: "positivo", titulo: `${totalFichas} Fichas Ativas`, descricao: "Produtos cadastrados" });
-  if (insights.length === 0) insights.push({ tipo: "positivo", titulo: "Tudo em Dia", descricao: "Nenhum alerta no momento" });
+  const totalCadastros = vendasPorCategoria.reduce((s, c) => s + c.value, 0);
 
   const tooltipStyle = {
     backgroundColor: "#fff",
@@ -216,25 +167,26 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="space-y-6 page-enter">
+    <div className="space-y-8 page-enter">
       {/* ─── HEADER ─── */}
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 fade-up">
         <div>
-          <p className="text-[13px] text-muted-foreground mb-1">Dashboard</p>
-          <h1 className="text-[24px] sm:text-[28px] font-bold text-foreground tracking-tight leading-tight">
+          <p className="text-[11px] text-muted-foreground/60 mb-0.5 uppercase tracking-wider font-medium">Dashboard</p>
+          <h1 className="text-[22px] sm:text-[26px] font-bold text-foreground tracking-tight leading-tight">
             {getGreeting()}{businessName ? `, ${businessName}` : ""}
           </h1>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex gap-1 bg-secondary/50 p-1 rounded-xl border border-border/40">
+          {/* Period filters — small rounded pills */}
+          <div className="flex gap-1 bg-muted/40 p-0.5 rounded-full border border-border/30">
             {(["1m", "3m", "6m"] as const).map((p) => (
               <button
                 key={p}
                 onClick={() => setPeriod(p)}
-                className={`px-3.5 py-1.5 rounded-lg text-[12px] font-medium transition-all duration-200 ${
+                className={`px-3 py-1 rounded-full text-[11px] font-medium transition-all duration-200 ${
                   period === p
-                    ? "bg-card text-primary shadow-sm"
+                    ? "bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -243,19 +195,19 @@ export default function Dashboard() {
             ))}
           </div>
 
-          <div className="hidden sm:flex items-center gap-1.5">
-            <button className="w-8 h-8 rounded-lg border border-border bg-card flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
-              <Download size={14} />
+          <div className="hidden sm:flex items-center gap-1">
+            <button className="w-7 h-7 rounded-full border border-border/40 bg-card flex items-center justify-center text-muted-foreground/50 hover:text-foreground transition-colors">
+              <Download size={13} />
             </button>
-            <button className="w-8 h-8 rounded-lg border border-border bg-card flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
-              <Share2 size={14} />
+            <button className="w-7 h-7 rounded-full border border-border/40 bg-card flex items-center justify-center text-muted-foreground/50 hover:text-foreground transition-colors">
+              <Share2 size={13} />
             </button>
             <div className="relative">
-              <button className="w-8 h-8 rounded-lg border border-border bg-card flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
-                <Bell size={14} />
+              <button className="w-7 h-7 rounded-full border border-border/40 bg-card flex items-center justify-center text-muted-foreground/50 hover:text-foreground transition-colors">
+                <Bell size={13} />
               </button>
               {contasVencendo.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                <span className="absolute -top-0.5 -right-0.5 bg-destructive text-destructive-foreground text-[8px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center">
                   {contasVencendo.length}
                 </span>
               )}
@@ -264,63 +216,47 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ─── KPI CARDS ─── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 stagger-fade-in">
-        <KPICard
+      {/* ─── MINI KPI CARDS ─── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 stagger-fade-in">
+        <MiniKPI
           label="Faturamento"
           value={formatBRL(faturamentoMes)}
-          icon={DollarSign}
+          icon={Wallet}
           trend="up"
-          trendLabel={faturamentoMes > 0 ? "32.54%" : "—"}
-          detailLabel="Lucro líquido:"
-          detailValue={lucroMes > 0 ? formatBRL(lucroMes) : undefined}
-          badge={lucroMes > 0 ? { type: "success", label: "Lucro em Alta" } : faturamentoMes > 0 ? { type: "danger", label: "Prejuízo" } : undefined}
+          trendLabel={faturamentoMes > 0 ? "+32.5%" : undefined}
         />
-        <KPICard
-          label="Fichas Técnicas"
-          value={String(totalFichas)}
-          icon={BookOpen}
-          trend="up"
-          trendLabel={totalFichas > 0 ? `${totalFichas} ativas` : "—"}
-          detailLabel="Cadastradas"
-          badge={totalFichas > 0 ? { type: "success", label: "Ativo" } : { type: "warning", label: "Cadastrar" }}
+        <MiniKPI
+          label="Gastos"
+          value={formatBRL(despesasMes)}
+          icon={Receipt}
+          trend="down"
+          trendLabel={despesasMes > 0 ? "-8.2%" : undefined}
         />
-        <KPICard
-          label="Insumos"
-          value={String(totalInsumos)}
-          icon={Package}
-          trend="up"
-          trendLabel={totalInsumos > 0 ? `${totalInsumos} itens` : "—"}
-          detailLabel="Em estoque"
-          badge={totalInsumos > 0 ? { type: "success", label: "Ok" } : { type: "warning", label: "Revisar Custos" }}
+        <MiniKPI
+          label="Lucro"
+          value={formatBRL(lucroMes)}
+          icon={PiggyBank}
+          trend={lucroMes >= 0 ? "up" : "down"}
+          trendLabel={lucroMes !== 0 ? (lucroMes > 0 ? "Positivo" : "Negativo") : undefined}
         />
-        <KPICard
-          label="Promoções"
-          value={String(promocoesAtivas)}
-          icon={Tag}
-          trend={promocoesAtivas > 0 ? "up" : "down"}
-          trendLabel={promocoesAtivas > 0 ? `${promocoesAtivas} ativas` : "—"}
-          detailLabel="Ativas agora"
-          badge={promocoesAtivas > 0 ? { type: "success", label: "Ativas" } : undefined}
+        <MiniKPI
+          label="CMV"
+          value={faturamentoMes > 0 ? `${cmvPct.toFixed(1)}%` : "—"}
+          icon={TrendingDown}
+          trend={cmvPct <= cmvMeta ? "up" : "down"}
+          trendLabel={faturamentoMes > 0 ? `Meta ${cmvMeta}%` : undefined}
         />
       </div>
 
-      {/* ─── INSIGHTS ─── */}
-      {insights.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 fade-up fade-up-d1">
-          {insights.slice(0, 3).map((ins, idx) => (
-            <InsightCard key={idx} {...ins} />
-          ))}
-        </div>
-      )}
-
-      {/* ─── CHARTS ROW 1 ─── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 fade-up fade-up-d2">
+      {/* ─── CHARTS ROW 1: Revenue + Donut ─── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 fade-up fade-up-d2">
+        {/* Area Chart — 2 cols */}
         <ChartCard
-          title="Faturamento (6 Meses)"
-          hint="Evolução de receitas vs. despesas"
+          className="lg:col-span-2"
+          title="Faturamento vs. Despesas"
+          hint="Evolução mensal"
           action={
-            <select className="text-[11px] text-muted-foreground bg-secondary/50 border border-border rounded-lg px-2.5 py-1 outline-none focus:border-primary/30">
+            <select className="text-[10px] text-muted-foreground bg-muted/40 border border-border/30 rounded-full px-2.5 py-1 outline-none focus:border-primary/30">
               <option>6 Meses</option>
               <option>3 Meses</option>
               <option>1 Ano</option>
@@ -328,57 +264,100 @@ export default function Dashboard() {
           }
         >
           {hasChartData ? (
-            <ResponsiveContainer width="100%" height={260}>
+            <ResponsiveContainer width="100%" height={240}>
               <AreaChart data={graficoMensal}>
                 <defs>
                   <linearGradient id="gradReceita" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.15} />
+                    <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.12} />
                     <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="mes" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`} axisLine={false} tickLine={false} width={55} />
+                <XAxis dataKey="mes" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`} axisLine={false} tickLine={false} width={50} />
                 <Tooltip contentStyle={tooltipStyle} formatter={(value: number) => formatBRL(value)} />
                 <Area type="monotone" dataKey="receita" name="Receita" stroke="hsl(var(--primary))" fill="url(#gradReceita)" strokeWidth={2} dot={false} />
                 <Area type="monotone" dataKey="despesa" name="Despesa" stroke="hsl(var(--destructive))" fill="transparent" strokeWidth={1.5} strokeDasharray="4 3" dot={false} />
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex flex-col items-center justify-center h-[260px] text-muted-foreground gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-secondary/50 flex items-center justify-center">
-                <TrendingUp size={20} className="text-muted-foreground/50" />
+            <div className="flex flex-col items-center justify-center h-[240px] text-muted-foreground gap-3">
+              <div className="w-11 h-11 rounded-full bg-muted/60 flex items-center justify-center">
+                <TrendingUp size={18} className="text-muted-foreground/40" />
               </div>
-              <p className="text-[13px] text-center max-w-[220px]">Registre receitas e despesas no módulo Financeiro.</p>
+              <p className="text-[12px] text-center max-w-[200px]">Registre receitas e despesas no módulo Financeiro.</p>
             </div>
           )}
         </ChartCard>
 
-        <ChartCard title="CMV vs Meta" hint="Controle de custo mensal">
-          {hasChartData ? (
-            <ResponsiveContainer width="100%" height={260}>
-              <ComposedChart data={cmvChartData}>
-                <XAxis dataKey="mes" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} tickFormatter={(v) => `${v}%`} axisLine={false} tickLine={false} width={40} />
-                <Tooltip contentStyle={tooltipStyle} formatter={(value: number) => `${value.toFixed(1)}%`} />
-                <Bar dataKey="cmv" name="CMV" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} barSize={24} opacity={0.85} />
-                <Line type="monotone" dataKey="meta" name="Meta" stroke="hsl(var(--destructive))" strokeWidth={1.5} strokeDasharray="5 3" dot={false} />
-              </ComposedChart>
+        {/* Donut Chart — 1 col */}
+        <ChartCard title="Distribuição" hint="Por categoria">
+          <div className="flex flex-col items-center gap-5">
+            <ResponsiveContainer width={180} height={180}>
+              <PieChart>
+                <Pie
+                  data={vendasPorCategoria}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={68}
+                  outerRadius={80}
+                  paddingAngle={3}
+                  dataKey="value"
+                  strokeWidth={0}
+                >
+                  {vendasPorCategoria.map((entry, idx) => (
+                    <Cell key={idx} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip contentStyle={tooltipStyle} />
+                {/* Center label */}
+                <text x="50%" y="46%" textAnchor="middle" dominantBaseline="central" fontSize="22" fontWeight="700" fill="hsl(222,47%,11%)">
+                  {totalCadastros}
+                </text>
+                <text x="50%" y="58%" textAnchor="middle" dominantBaseline="central" fontSize="10" fill="hsl(220,9%,46%)">
+                  cadastros
+                </text>
+              </PieChart>
             </ResponsiveContainer>
-          ) : (
-            <div className="flex flex-col items-center justify-center h-[260px] text-muted-foreground gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-secondary/50 flex items-center justify-center">
-                <Package size={20} className="text-muted-foreground/50" />
-              </div>
-              <p className="text-[13px] text-center max-w-[220px]">Dados insuficientes para o gráfico de CMV.</p>
+
+            {/* Vertical legend with circular indicators */}
+            <div className="w-full flex flex-col gap-2.5">
+              {vendasPorCategoria.map((cat, idx) => (
+                <div key={idx} className="flex items-center gap-2.5">
+                  <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: cat.color }} />
+                  <span className="text-[11px] text-muted-foreground flex-1">{cat.name}</span>
+                  <span className="text-[11px] font-semibold text-foreground">{cat.percentual}%</span>
+                </div>
+              ))}
             </div>
-          )}
+          </div>
         </ChartCard>
       </div>
 
       {/* ─── CHARTS ROW 2 ─── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 fade-up fade-up-d3">
-        <ChartCard title="Alertas & Avisos" hint="Contas e alertas que precisam de atenção">
-          <div className="space-y-2.5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 fade-up fade-up-d3">
+        <ChartCard title="CMV vs Meta" hint="Controle de custo mensal">
+          {hasChartData ? (
+            <ResponsiveContainer width="100%" height={240}>
+              <ComposedChart data={cmvChartData}>
+                <XAxis dataKey="mes" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} tickFormatter={(v) => `${v}%`} axisLine={false} tickLine={false} width={36} />
+                <Tooltip contentStyle={tooltipStyle} formatter={(value: number) => `${value.toFixed(1)}%`} />
+                <Bar dataKey="cmv" name="CMV" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} barSize={20} opacity={0.85} />
+                <Line type="monotone" dataKey="meta" name="Meta" stroke="hsl(var(--destructive))" strokeWidth={1.5} strokeDasharray="5 3" dot={false} />
+              </ComposedChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-[240px] text-muted-foreground gap-3">
+              <div className="w-11 h-11 rounded-full bg-muted/60 flex items-center justify-center">
+                <Package size={18} className="text-muted-foreground/40" />
+              </div>
+              <p className="text-[12px] text-center max-w-[200px]">Dados insuficientes para o gráfico de CMV.</p>
+            </div>
+          )}
+        </ChartCard>
+
+        <ChartCard title="Alertas & Avisos" hint="Contas e alertas recentes">
+          <div className="space-y-2">
             {contasVencendo.length > 0 ? (
               contasVencendo.map((c, i) => (
                 <AlertItem
@@ -390,11 +369,11 @@ export default function Dashboard() {
                 />
               ))
             ) : (
-              <div className="flex flex-col items-center justify-center h-[180px] text-muted-foreground gap-2">
-                <div className="w-11 h-11 rounded-xl bg-[hsl(var(--success)/0.06)] flex items-center justify-center">
-                  <Clock size={18} className="text-[hsl(var(--success))]" />
+              <div className="flex flex-col items-center justify-center h-[160px] text-muted-foreground gap-2">
+                <div className="w-10 h-10 rounded-full bg-[hsl(var(--success)/0.06)] flex items-center justify-center">
+                  <Clock size={16} className="text-[hsl(var(--success))]" />
                 </div>
-                <p className="text-[12px]">Nenhuma conta vencendo nos próximos 3 dias.</p>
+                <p className="text-[11px]">Nenhuma conta vencendo nos próximos 3 dias.</p>
               </div>
             )}
 
@@ -407,37 +386,11 @@ export default function Dashboard() {
             )}
           </div>
         </ChartCard>
-
-        <ChartCard title="Distribuição de Cadastros" hint="Visão geral por categoria">
-          <div className="flex flex-col sm:flex-row items-center gap-6">
-            <ResponsiveContainer width={160} height={160}>
-              <PieChart>
-                <Pie data={vendasPorCategoria} cx="50%" cy="50%" innerRadius={50} outerRadius={72} paddingAngle={3} dataKey="value" strokeWidth={0}>
-                  {vendasPorCategoria.map((entry, idx) => (
-                    <Cell key={idx} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip contentStyle={tooltipStyle} />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="flex-1 flex flex-col gap-3">
-              {vendasPorCategoria.map((cat, idx) => (
-                <div key={idx} className="flex items-center gap-2.5">
-                  <div className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ backgroundColor: cat.color }} />
-                  <div className="flex-1 flex items-center justify-between">
-                    <span className="text-[12px] font-medium text-foreground">{cat.name}</span>
-                    <span className="text-[11px] text-muted-foreground">{cat.percentual}%</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </ChartCard>
       </div>
 
       {/* ─── FOOTER ─── */}
-      <div className="border-t border-border pt-4 pb-2 text-center fade-up">
-        <p className="text-[11px] text-muted-foreground">
+      <div className="border-t border-border/40 pt-4 pb-2 text-center fade-up">
+        <p className="text-[10px] text-muted-foreground/50">
           {businessName || "TôNoLucro"} © {new Date().getFullYear()} — Sistema Profissional de Gestão
         </p>
       </div>
