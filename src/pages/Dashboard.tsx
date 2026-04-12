@@ -39,6 +39,8 @@ function MiniKPI({ label, value, numericValue, formatter, icon: Icon, trendLabel
     gastos: { bg: "linear-gradient(135deg, #92400E, #D97706)", shadow: "0 8px 24px rgba(146,64,14,0.2)" },
     lucro_pos: { bg: "linear-gradient(135deg, #15803D, #22C55E)", shadow: "0 8px 24px rgba(34,197,94,0.3)" },
     lucro_neg: { bg: "linear-gradient(135deg, #7F1D1D, #B91C1C)", shadow: "0 8px 24px rgba(127,29,29,0.2)" },
+    cmv_ok: { bg: "linear-gradient(135deg, #1E3A5F, #3B82F6)", shadow: "0 8px 24px rgba(59,130,246,0.2)" },
+    cmv_bad: { bg: "linear-gradient(135deg, #7F1D1D, #B91C1C)", shadow: "0 8px 24px rgba(127,29,29,0.2)" },
   };
 
   const grad = gradients[kpiType];
