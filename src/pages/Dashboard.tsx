@@ -1,16 +1,14 @@
 import { useState, useEffect } from "react";
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, AreaChart, Area, ComposedChart, Line,
+  XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area,
 } from "recharts";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import {
-  TrendingUp, TrendingDown, DollarSign, Package, BookOpen, Tag,
-  AlertTriangle, Download, Share2, Bell, Clock, ArrowRight, ChevronRight,
-  Wallet, Receipt, PiggyBank,
+  TrendingUp, TrendingDown, Download, Share2, Bell, Clock,
+  Wallet, Receipt, PiggyBank, AlertTriangle,
 } from "lucide-react";
 import CaixaRapido from "@/components/CaixaRapido";
 
@@ -118,8 +116,6 @@ function DonutCenterLabel({ viewBox, value }: any) {
   );
 }
 
-const CATEGORY_COLORS = ["#E63946", "#2D7C5E", "#F77F00", "#1FA89F", "#FCBF49"];
-
 // ─── MAIN ────────────────────────────────────────────────────────────
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -142,21 +138,6 @@ export default function Dashboard() {
 
   const lucroMes = faturamentoMes - despesasMes;
   const hasChartData = graficoMensal.some((m) => m.receita > 0 || m.despesa > 0);
-
-  const cmvChartData = graficoMensal.map((m) => ({
-    mes: m.mes,
-    cmv: m.receita > 0 ? ((m.despesa / m.receita) * 100) : 0,
-    meta: cmvMeta,
-  }));
-
-  const vendasPorCategoria = [
-    { name: "Pizzas", value: totalFichas || 1, percentual: 42, color: CATEGORY_COLORS[0] },
-    { name: "Insumos", value: totalInsumos || 1, percentual: 36, color: CATEGORY_COLORS[1] },
-    { name: "Promoções", value: promocoesAtivas || 1, percentual: 11, color: CATEGORY_COLORS[2] },
-    { name: "Bebidas", value: 1, percentual: 8, color: CATEGORY_COLORS[3] },
-    { name: "Outros", value: 1, percentual: 5, color: CATEGORY_COLORS[4] },
-  ];
-  const totalCadastros = vendasPorCategoria.reduce((s, c) => s + c.value, 0);
 
   const tooltipStyle = {
     backgroundColor: "#fff",
@@ -254,11 +235,9 @@ export default function Dashboard() {
         <CaixaRapido />
       </div>
 
-      {/* ─── CHARTS ROW 1: Revenue + Donut ─── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 fade-up fade-up-d2">
-        {/* Area Chart — 2 cols */}
+      {/* ─── CHART: Revenue ─── */}
+      <div className="fade-up fade-up-d2">
         <ChartCard
-          className="lg:col-span-2"
           title="Faturamento vs. Despesas"
           hint="Evolução mensal"
           action={
@@ -270,7 +249,7 @@ export default function Dashboard() {
           }
         >
           {hasChartData ? (
-            <ResponsiveContainer width="100%" height={240}>
+            <ResponsiveContainer width="100%" height={220}>
               <AreaChart data={graficoMensal}>
                 <defs>
                   <linearGradient id="gradReceita" x1="0" y1="0" x2="0" y2="1">
@@ -286,7 +265,7 @@ export default function Dashboard() {
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex flex-col items-center justify-center h-[240px] text-muted-foreground gap-3">
+            <div className="flex flex-col items-center justify-center h-[220px] text-muted-foreground gap-3">
               <div className="w-11 h-11 rounded-full bg-muted/60 flex items-center justify-center">
                 <TrendingUp size={18} className="text-muted-foreground/40" />
               </div>
@@ -294,78 +273,18 @@ export default function Dashboard() {
             </div>
           )}
         </ChartCard>
-
-        {/* Donut Chart — 1 col */}
-        <ChartCard title="Distribuição" hint="Por categoria">
-          <div className="flex flex-col items-center gap-5">
-            <ResponsiveContainer width={180} height={180}>
-              <PieChart>
-                <Pie
-                  data={vendasPorCategoria}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={68}
-                  outerRadius={80}
-                  paddingAngle={3}
-                  dataKey="value"
-                  strokeWidth={0}
-                >
-                  {vendasPorCategoria.map((entry, idx) => (
-                    <Cell key={idx} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip contentStyle={tooltipStyle} />
-                {/* Center label */}
-                <text x="50%" y="46%" textAnchor="middle" dominantBaseline="central" fontSize="22" fontWeight="700" fill="hsl(222,47%,11%)">
-                  {totalCadastros}
-                </text>
-                <text x="50%" y="58%" textAnchor="middle" dominantBaseline="central" fontSize="10" fill="hsl(220,9%,46%)">
-                  cadastros
-                </text>
-              </PieChart>
-            </ResponsiveContainer>
-
-            {/* Vertical legend with circular indicators */}
-            <div className="w-full flex flex-col gap-2.5">
-              {vendasPorCategoria.map((cat, idx) => (
-                <div key={idx} className="flex items-center gap-2.5">
-                  <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: cat.color }} />
-                  <span className="text-[11px] text-muted-foreground flex-1">{cat.name}</span>
-                  <span className="text-[11px] font-semibold text-foreground">{cat.percentual}%</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </ChartCard>
       </div>
 
-      {/* ─── CHARTS ROW 2 ─── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 fade-up fade-up-d3">
-        <ChartCard title="CMV vs Meta" hint="Controle de custo mensal">
-          {hasChartData ? (
-            <ResponsiveContainer width="100%" height={240}>
-              <ComposedChart data={cmvChartData}>
-                <XAxis dataKey="mes" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} tickFormatter={(v) => `${v}%`} axisLine={false} tickLine={false} width={36} />
-                <Tooltip contentStyle={tooltipStyle} formatter={(value: number) => `${value.toFixed(1)}%`} />
-                <Bar dataKey="cmv" name="CMV" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} barSize={20} opacity={0.85} />
-                <Line type="monotone" dataKey="meta" name="Meta" stroke="hsl(var(--destructive))" strokeWidth={1.5} strokeDasharray="5 3" dot={false} />
-              </ComposedChart>
-            </ResponsiveContainer>
-          ) : (
-            <div className="flex flex-col items-center justify-center h-[240px] text-muted-foreground gap-3">
-              <div className="w-11 h-11 rounded-full bg-muted/60 flex items-center justify-center">
-                <Package size={18} className="text-muted-foreground/40" />
-              </div>
-              <p className="text-[12px] text-center max-w-[200px]">Dados insuficientes para o gráfico de CMV.</p>
-            </div>
-          )}
-        </ChartCard>
-
-        <ChartCard title="Alertas & Avisos" hint="Contas e alertas recentes">
-          <div className="space-y-2">
-            {contasVencendo.length > 0 ? (
-              contasVencendo.map((c, i) => (
+      {/* ─── ALERTAS COMPACTO ─── */}
+      <div className="fade-up fade-up-d3">
+        <div className="bg-card border border-border/60 rounded-2xl px-5 py-4">
+          <h3 className="text-[13px] font-semibold text-foreground mb-2.5 flex items-center gap-2">
+            <Bell size={14} className="text-muted-foreground/50" />
+            Alertas
+          </h3>
+          {contasVencendo.length > 0 || (cmvPct > cmvMeta && faturamentoMes > 0) ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              {contasVencendo.map((c, i) => (
                 <AlertItem
                   key={i}
                   severity="warning"
@@ -373,25 +292,24 @@ export default function Dashboard() {
                   detail={`Vence ${format(new Date(c.data_lancamento + "T00:00:00"), "dd/MM")}`}
                   value={formatBRL(Number(c.valor))}
                 />
-              ))
-            ) : (
-              <div className="flex flex-col items-center justify-center h-[160px] text-muted-foreground gap-2">
-                <div className="w-10 h-10 rounded-full bg-[hsl(var(--success)/0.06)] flex items-center justify-center">
-                  <Clock size={16} className="text-[hsl(var(--success))]" />
-                </div>
-                <p className="text-[11px]">Nenhuma conta vencendo nos próximos 3 dias.</p>
+              ))}
+              {cmvPct > cmvMeta && faturamentoMes > 0 && (
+                <AlertItem
+                  severity="critical"
+                  title="CMV acima da meta"
+                  detail={`${cmvPct.toFixed(1)}% vs meta de ${cmvMeta}%`}
+                />
+              )}
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 py-1">
+              <div className="w-6 h-6 rounded-full bg-[hsl(var(--success)/0.06)] flex items-center justify-center">
+                <Clock size={12} className="text-[hsl(var(--success))]" />
               </div>
-            )}
-
-            {cmvPct > cmvMeta && faturamentoMes > 0 && (
-              <AlertItem
-                severity="critical"
-                title="CMV acima da meta"
-                detail={`${cmvPct.toFixed(1)}% vs meta de ${cmvMeta}%`}
-              />
-            )}
-          </div>
-        </ChartCard>
+              <p className="text-[11px] text-muted-foreground">Nenhum alerta no momento.</p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ─── FOOTER ─── */}
