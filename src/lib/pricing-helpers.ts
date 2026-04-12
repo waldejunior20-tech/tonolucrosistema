@@ -27,10 +27,10 @@ export const cmvColor = (pct: number): string => {
 };
 
 export const cmvEmoji = (pct: number): string => {
-  if (pct < 25) return "🔵";
-  if (pct <= 35) return "🟢";
-  if (pct <= 40) return "🟡";
-  return "🔴";
+  if (pct < 25) return "●";
+  if (pct <= 35) return "●";
+  if (pct <= 40) return "●";
+  return "●";
 };
 
 export const cmvMessage = (pct: number): string => {
@@ -56,10 +56,10 @@ export const indCmvColor = (pct: number): string => {
 };
 
 export const indCmvEmoji = (pct: number): string => {
-  if (pct < 75) return "🔵";
-  if (pct <= 85) return "🟢";
-  if (pct <= 92) return "🟡";
-  return "🔴";
+  if (pct < 75) return "●";
+  if (pct <= 85) return "●";
+  if (pct <= 92) return "●";
+  return "●";
 };
 
 export const indCmvMessage = (pct: number): string => {

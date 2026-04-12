@@ -369,14 +369,14 @@ export default function PrecificacaoPizzas() {
         {/* Indicators */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-fade-in">
           <div className="card-premium p-6">
-            <p className="label-upper mb-4">📊 CMV Médio Atual</p>
+            <p className="label-upper mb-4">CMV Médio Atual</p>
             <p className={cn("kpi-number", indicators.avgCmv > 40 ? "text-destructive" : indicators.avgCmv > 32 ? "text-warning" : "text-success")}>
               {fmtPct(indicators.avgCmv)}
             </p>
             <p className="text-[11px] text-muted-foreground font-medium mt-1">Média entre todos os tamanhos</p>
           </div>
           <div className="card-premium p-6">
-            <p className="label-upper mb-4">🚦 Semáforo de Saúde</p>
+            <p className="label-upper mb-4">Semáforo de Saúde</p>
             <div className="flex items-center gap-3">
               <div className={cn(
                 "h-4 w-4 rounded-full",
@@ -388,7 +388,7 @@ export default function PrecificacaoPizzas() {
             </div>
           </div>
           <div className="card-premium p-6">
-            <p className="label-upper mb-4">⚠️ Pizzas Fora da Meta</p>
+            <p className="label-upper mb-4">Pizzas Fora da Meta</p>
             <div className="flex items-center gap-3">
               <p className="kpi-number">{indicators.foraMetaCount}</p>
               {indicators.foraMetaCount > 0 && <AlertTriangle className="h-6 w-6 text-destructive" />}

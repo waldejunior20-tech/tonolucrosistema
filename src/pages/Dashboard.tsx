@@ -178,12 +178,12 @@ export default function Dashboard() {
     { name: "Outros", value: 1, percentual: 5, color: CATEGORY_COLORS[4] },
   ];
 
-  const insights: { tipo: "positivo" | "alerta" | "sucesso"; titulo: string; descricao: string; icon: string }[] = [];
-  if (lucroMes > 0) insights.push({ tipo: "sucesso", titulo: "Lucro Positivo", descricao: `${formatBRL(lucroMes)} este mês`, icon: "💰" });
-  if (cmvPct > cmvMeta && faturamentoMes > 0) insights.push({ tipo: "alerta", titulo: "CMV Acima da Meta", descricao: `${cmvPct.toFixed(1)}% vs meta ${cmvMeta}%`, icon: "⚠️" });
-  if (contasVencendo.length > 0) insights.push({ tipo: "alerta", titulo: `${contasVencendo.length} Contas Vencendo`, descricao: "Nos próximos 3 dias", icon: "📋" });
-  if (totalFichas > 0) insights.push({ tipo: "positivo", titulo: `${totalFichas} Fichas Ativas`, descricao: "Produtos cadastrados", icon: "📈" });
-  if (insights.length === 0) insights.push({ tipo: "positivo", titulo: "Tudo em Dia", descricao: "Nenhum alerta no momento", icon: "✅" });
+  const insights: { tipo: "positivo" | "alerta" | "sucesso"; titulo: string; descricao: string }[] = [];
+  if (lucroMes > 0) insights.push({ tipo: "sucesso", titulo: "Lucro Positivo", descricao: `${formatBRL(lucroMes)} este mês` });
+  if (cmvPct > cmvMeta && faturamentoMes > 0) insights.push({ tipo: "alerta", titulo: "CMV Acima da Meta", descricao: `${cmvPct.toFixed(1)}% vs meta ${cmvMeta}%` });
+  if (contasVencendo.length > 0) insights.push({ tipo: "alerta", titulo: `${contasVencendo.length} Contas Vencendo`, descricao: "Nos próximos 3 dias" });
+  if (totalFichas > 0) insights.push({ tipo: "positivo", titulo: `${totalFichas} Fichas Ativas`, descricao: "Produtos cadastrados" });
+  if (insights.length === 0) insights.push({ tipo: "positivo", titulo: "Tudo em Dia", descricao: "Nenhum alerta no momento" });
 
   const tooltipStyle = {
     backgroundColor: "#fff",
@@ -201,7 +201,7 @@ export default function Dashboard() {
         <div>
           <p className="text-[13px] text-muted-foreground mb-1">Dashboard</p>
           <h1 className="text-[24px] sm:text-[28px] font-bold text-foreground tracking-tight leading-tight">
-            {getGreeting()}{businessName ? `, ${businessName}` : ""} 👋
+            {getGreeting()}{businessName ? `, ${businessName}` : ""}
           </h1>
         </div>
 
