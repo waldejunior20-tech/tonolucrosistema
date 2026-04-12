@@ -98,11 +98,14 @@ function AlertItem({ severity, title, detail, value }: {
 }) {
   const isCritical = severity === "critical";
   return (
-    <div className={`flex items-start gap-3 p-4 rounded-xl border transition-all duration-200 ${
-      isCritical
-        ? "bg-[hsl(var(--destructive)/0.04)] border-[hsl(var(--destructive)/0.15)]"
-        : "bg-[hsl(var(--warning)/0.04)] border-[hsl(var(--warning)/0.15)]"
-    }`}>
+    <div
+      className={`flex items-start gap-3 p-4 rounded-xl border transition-all duration-200 ${
+        isCritical
+          ? "bg-[hsl(var(--destructive)/0.04)] border-[hsl(var(--destructive)/0.15)]"
+          : "border-[#FF8000]/20"
+      }`}
+      style={!isCritical ? { background: "linear-gradient(135deg, rgba(255,128,0,0.06) 0%, rgba(255,160,50,0.12) 100%)" } : undefined}
+    >
       <div className={`mt-1 health-pulse ${isCritical ? "health-pulse-red" : "health-pulse-amber"}`} />
       <div className="flex-1 min-w-0">
         <p className={`text-[13px] font-semibold flex items-center gap-1.5 ${
