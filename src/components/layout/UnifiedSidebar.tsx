@@ -129,14 +129,14 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
   return (
     <aside 
       className={cn(
-        "h-screen bg-sidebar transition-all duration-300 flex flex-col border-r border-sidebar-border relative z-50 shadow-sidebar",
+        "h-screen bg-sidebar transition-all duration-300 flex flex-col border-r border-sidebar-border relative z-50",
         collapsed ? "w-16" : "w-[240px]"
       )}
     >
       {/* Logo */}
       <div className="h-14 flex items-center px-4 shrink-0 overflow-hidden relative border-b border-sidebar-border/60">
         <div className={cn("flex items-center gap-2.5 transition-opacity duration-200", collapsed ? "opacity-0 w-0" : "opacity-100")}>
-          <div className="w-8 h-8 rounded-lg bg-primary/90 flex items-center justify-center shrink-0 shadow-[0_0_10px_rgba(255,107,43,0.2)]">
+          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
             <Pizza size={15} className="text-primary-foreground" />
           </div>
           <div className="flex flex-col">

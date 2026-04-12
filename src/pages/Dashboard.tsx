@@ -29,7 +29,7 @@ function KPICard({ label, value, subtitle, icon: Icon, trend, trendLabel }: {
   trend: "up" | "down"; trendLabel: string;
 }) {
   return (
-    <div className="group bg-card border border-border rounded-2xl p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/20 hover:shadow-[0_8px_32px_rgba(255,107,43,0.06)] card">
+    <div className="group bg-card border border-border rounded-2xl p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/20 hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] card">
       {/* Icon badge top-left */}
       <div className="w-10 h-10 rounded-xl bg-primary/8 border border-primary/15 flex items-center justify-center mb-5 group-hover:bg-primary/12 transition-colors">
         <Icon size={18} className="text-primary" />
@@ -95,7 +95,7 @@ function ChartCard({ title, hint, children, className = "" }: {
   title: string; hint: string; children: React.ReactNode; className?: string;
 }) {
   return (
-    <div className={`bg-card border border-border rounded-2xl p-6 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(0,0,0,0.20)] card ${className}`}>
+    <div className={`bg-card border border-border rounded-2xl p-6 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] card ${className}`}>
       <div className="mb-6">
         <h3 className="text-[16px] font-semibold text-foreground tracking-tight">{title}</h3>
         <p className="text-[11px] text-muted-foreground mt-1 tracking-wide">{hint}</p>

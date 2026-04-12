@@ -54,15 +54,14 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4 bg-grain relative overflow-hidden">
-      {/* Ambient glow */}
-      <div className="absolute top-[-20%] left-[50%] -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] rounded-full bg-primary/3 blur-[100px] pointer-events-none" />
+    <div className="min-h-screen flex items-center justify-center bg-background p-4 relative overflow-hidden">
+      {/* Subtle gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/3 pointer-events-none" />
 
       <div className="w-full max-w-sm space-y-6 relative z-10 fade-up">
         {/* Brand */}
         <div className="text-center">
-          <div className="w-14 h-14 rounded-md bg-primary/15 border border-primary/25 flex items-center justify-center mx-auto mb-5 glow-ember">
+          <div className="w-14 h-14 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-5">
             <Pizza size={28} className="text-primary" />
           </div>
           <h1 className="text-2xl font-extrabold text-foreground tracking-tight">Bem-vindo ao TôNoLucro</h1>
