@@ -177,15 +177,15 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
                     "group relative w-full h-9 flex items-center rounded-lg transition-all duration-200 overflow-hidden",
                     isActive 
                       ? "bg-primary/8 text-primary" 
-                      : "text-sidebar-foreground/70 hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground"
+                      : "text-sidebar-foreground/70 hover:bg-sidebar-accent/60 hover:text-primary"
                   )}
                 >
-                  {/* Left Active Bar — ember orange */}
+                  {/* Left Active Bar */}
                   {isActive && !collapsed && (
-                    <div className="absolute left-0 top-0 w-[3px] h-full bg-primary rounded-r" />
+                    <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] bg-primary rounded-r" />
                   )}
                   
-                  <div className={cn("flex items-center w-full px-3 gap-2.5", collapsed ? "justify-center" : "")}>
+                  <div className={cn("flex items-center w-full px-3 gap-2.5 transition-transform duration-200", collapsed ? "justify-center" : "group-hover:translate-x-0.5")}>
                     <div className="shrink-0">
                       <Icon size={16} strokeWidth={isActive ? 2.5 : 1.8} />
                     </div>
@@ -220,8 +220,8 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
                               if (hasNestedItems) toggleSubExpand(sub.label);
                             }}
                             className={cn(
-                              "h-8 pl-11 pr-4 flex items-center justify-between text-sm transition-colors rounded-sm group",
-                              isSubActive ? "text-primary font-semibold" : "text-sidebar-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent font-medium"
+                            "h-8 pl-11 pr-4 flex items-center justify-between text-sm transition-all duration-200 rounded-sm group",
+                              isSubActive ? "text-primary font-semibold" : "text-sidebar-foreground hover:text-primary hover:translate-x-0.5 hover:bg-sidebar-accent font-medium"
                             )}
                           >
                             <span className="truncate">{sub.label}</span>
@@ -239,8 +239,8 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
                                     key={`${nested.path}-${nIdx}`}
                                     onClick={() => { navigate(nested.path); onNavigate?.(); }}
                                     className={cn(
-                                      "h-7 px-3 flex items-center text-xs transition-colors rounded-sm",
-                                      isNestedActive ? "text-primary font-semibold" : "text-sidebar-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent font-medium"
+                                      "h-7 px-3 flex items-center text-xs transition-all duration-200 rounded-sm",
+                                      isNestedActive ? "text-primary font-semibold" : "text-sidebar-foreground hover:text-primary hover:translate-x-0.5 hover:bg-sidebar-accent font-medium"
                                     )}
                                   >
                                     <span className="truncate">{nested.label}</span>

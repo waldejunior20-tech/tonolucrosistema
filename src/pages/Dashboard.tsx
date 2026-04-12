@@ -31,7 +31,7 @@ function KPICard({ label, value, icon: Icon, trend, trendLabel, detailLabel, det
   link?: string;
 }) {
   return (
-    <div className="group bg-card border border-border rounded-2xl p-5 transition-all duration-300 hover:shadow-[0_4px_24px_rgba(0,0,0,0.06)] card">
+    <div className="group bg-card border border-border rounded-2xl p-5 transition-all duration-300 hover:shadow-[0_4px_24px_rgba(0,0,0,0.08)] hover:-translate-y-1 card">
       {/* Icon badge */}
       <div className="w-9 h-9 rounded-xl bg-primary/8 border border-primary/12 flex items-center justify-center mb-4">
         <Icon size={17} className="text-primary" />
