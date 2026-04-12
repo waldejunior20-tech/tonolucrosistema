@@ -241,21 +241,21 @@ export default function PrecificacaoBebidas() {
   // ─── Shared render for a single-item table (industrialized or prepared) ───
   const renderIndTable = () => (
     <Table>
-      <TableHeader>
+      <TableHeader style={{ background: 'linear-gradient(135deg, #1E293B, #334155)' }}>
         <TableRow>
-          <TableHead className="min-w-[200px]">Bebida</TableHead>
-          <TableHead className="text-center">Custo</TableHead>
-          <TableHead className="text-center">Sugerido</TableHead>
-          <TableHead className="text-center bg-primary/10">Seu Preço</TableHead>
-          <TableHead className="text-center bg-primary/10">CMV Balcão</TableHead>
+          <TableHead className="min-w-[200px] text-white font-bold">Bebida</TableHead>
+          <TableHead className="text-center text-white font-bold">Custo</TableHead>
+          <TableHead className="text-center text-white font-bold">Sugerido</TableHead>
+          <TableHead className="text-center bg-white/10 text-white font-bold">Seu Preço</TableHead>
+          <TableHead className="text-center bg-white/10 text-white font-bold">CMV Balcão</TableHead>
           {activeApps.map((app) => (
-            <TableHead key={`app-${app.key}`} className="text-center">
+            <TableHead key={`app-${app.key}`} className="text-center text-white font-bold">
               <Tooltip><TooltipTrigger asChild><span className="cursor-help">{app.label}</span></TooltipTrigger>
                 <TooltipContent><p className="max-w-[200px] text-xs">{APP_TOOLTIP}</p></TooltipContent></Tooltip>
             </TableHead>
           ))}
           {activeApps.map((app) => (
-            <TableHead key={`cmv-${app.key}`} className="text-center">CMV {app.label}</TableHead>
+            <TableHead key={`cmv-${app.key}`} className="text-center text-white font-bold">CMV {app.label}</TableHead>
           ))}
         </TableRow>
       </TableHeader>
@@ -343,21 +343,21 @@ export default function PrecificacaoBebidas() {
 
   const renderPrepTable = () => (
     <Table>
-      <TableHeader>
+      <TableHeader style={{ background: 'linear-gradient(135deg, #1E293B, #334155)' }}>
         <TableRow>
-          <TableHead className="min-w-[200px]">Bebida</TableHead>
-          <TableHead className="text-center">Custo</TableHead>
-          <TableHead className="text-center">Sugerido</TableHead>
-          <TableHead className="text-center bg-primary/10">Seu Preço</TableHead>
-          <TableHead className="text-center bg-primary/10">CMV Balcão</TableHead>
+          <TableHead className="min-w-[200px] text-white font-bold">Bebida</TableHead>
+          <TableHead className="text-center text-white font-bold">Custo</TableHead>
+          <TableHead className="text-center text-white font-bold">Sugerido</TableHead>
+          <TableHead className="text-center bg-white/10 text-white font-bold">Seu Preço</TableHead>
+          <TableHead className="text-center bg-white/10 text-white font-bold">CMV Balcão</TableHead>
           {activeApps.map((app) => (
-            <TableHead key={`app-${app.key}`} className="text-center">
+            <TableHead key={`app-${app.key}`} className="text-center text-white font-bold">
               <Tooltip><TooltipTrigger asChild><span className="cursor-help">{app.label}</span></TooltipTrigger>
                 <TooltipContent><p className="max-w-[200px] text-xs">{APP_TOOLTIP}</p></TooltipContent></Tooltip>
             </TableHead>
           ))}
           {activeApps.map((app) => (
-            <TableHead key={`cmv-${app.key}`} className="text-center">CMV {app.label}</TableHead>
+            <TableHead key={`cmv-${app.key}`} className="text-center text-white font-bold">CMV {app.label}</TableHead>
           ))}
         </TableRow>
       </TableHeader>
@@ -448,35 +448,33 @@ export default function PrecificacaoBebidas() {
         <PageHeader title="Precificação de Bebidas" description="Gestão de margem para bebidas industrializadas e preparadas." />
 
         {/* Indicators */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 stagger-fade-in">
-          <Card>
-            <CardContent className="pt-6">
-              <p className="text-sm text-muted-foreground">CMV Médio — Industrializadas</p>
-              <p className={cn("text-3xl font-bold", indCmvColor(indIndicators.avgCmv))}>
-                {fmtPct(indIndicators.avgCmv)}
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <p className="text-sm text-muted-foreground">Semáforo</p>
-              <div className="flex items-center gap-2">
-                <div className={cn("h-4 w-4 rounded-full", indIndicators.avgCmv > 92 ? "bg-destructive" : indIndicators.avgCmv > 85 ? "bg-warning" : "bg-success")} />
-                <span className={cn("text-lg font-semibold", indCmvColor(indIndicators.avgCmv))}>
-                  {indCmvMessage(indIndicators.avgCmv)}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <p className="text-sm text-muted-foreground">Fora da Meta</p>
-              <p className="text-3xl font-bold text-foreground flex items-center gap-2">
-                {indIndicators.foraMetaCount + prepIndicators.foraMetaCount}
-                {(indIndicators.foraMetaCount + prepIndicators.foraMetaCount) > 0 && <AlertTriangle className="h-6 w-6 text-destructive" />}
-              </p>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-fade-in">
+          <div className="card-premium p-6">
+            <p className="label-upper mb-4">CMV Médio — Industrializadas</p>
+            <p className={cn("kpi-number", indCmvColor(indIndicators.avgCmv))}>
+              {fmtPct(indIndicators.avgCmv)}
+            </p>
+            <p className="text-[11px] text-muted-foreground font-medium mt-1">Média entre todas as bebidas</p>
+          </div>
+          <div className="card-premium p-6">
+            <p className="label-upper mb-4">Semáforo</p>
+            <div className="flex items-center gap-3">
+              <div className={cn("h-4 w-4 rounded-full", indIndicators.avgCmv > 92 ? "bg-destructive" : indIndicators.avgCmv > 85 ? "bg-warning" : "bg-success")} />
+              <span className={cn("text-lg font-bold uppercase", indCmvColor(indIndicators.avgCmv))}>
+                {indCmvMessage(indIndicators.avgCmv)}
+              </span>
+            </div>
+          </div>
+          <div className="rounded-2xl p-6 border border-destructive/20" style={{ background: 'linear-gradient(135deg, rgba(127,29,29,0.06), rgba(185,28,28,0.1))' }}>
+            <div className="flex items-center gap-2 mb-4">
+              <AlertTriangle className="h-5 w-5 text-destructive" />
+              <p className="text-xs font-semibold uppercase tracking-wider text-destructive">Fora da Meta</p>
+            </div>
+            <p className="kpi-number text-destructive">
+              {indIndicators.foraMetaCount + prepIndicators.foraMetaCount}
+            </p>
+            <p className="text-[11px] text-destructive/70 font-medium mt-1">Bebidas com CMV acima da meta</p>
+          </div>
         </div>
 
         <Tabs defaultValue="industrializadas" className="space-y-4">
