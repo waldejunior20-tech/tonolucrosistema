@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, AreaChart, Area, ComposedChart, Line,
+  XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area,
 } from "recharts";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
