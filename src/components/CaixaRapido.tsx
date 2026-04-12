@@ -171,18 +171,18 @@ export default function CaixaRapido() {
             <Wallet size={16} className="text-white" />
           </div>
           <div>
-            <h3 className="text-[14px] font-semibold text-foreground">Lançar Vendas</h3>
-            <p className="text-[10px] text-muted-foreground/60">Registre o caixa do dia ou período</p>
+            <h3 className="text-[14px] font-semibold text-white">Lançar Vendas</h3>
+            <p className="text-[10px] text-white/60">Registre o caixa do dia ou período</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           {totalPeriodo > 0 && (
-            <span className="text-[12px] font-bold text-[hsl(var(--primary))]">
+            <span className="text-[12px] font-bold text-white">
               {formatMoney(totalPeriodo)} no período
             </span>
           )}
           <ChevronDown size={16} className={cn(
-            "text-muted-foreground transition-transform duration-200",
+            "text-white/70 transition-transform duration-200",
             expanded && "rotate-180"
           )} />
         </div>
