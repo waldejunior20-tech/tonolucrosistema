@@ -148,11 +148,6 @@ export default function InsumosComprados() {
               <Plus className="h-4 w-4" /> Novo Insumo
             </Button>
           </DialogTrigger>
-          <DialogTrigger asChild>
-            <Button className="gap-2">
-              <Plus className="h-4 w-4" /> Novo Insumo
-            </Button>
-          </DialogTrigger>
           <DialogContent className="sm:max-w-lg">
             <DialogHeader>
               <DialogTitle>{editingId ? "Editar Insumo" : "Cadastrar Insumo"}</DialogTitle>
@@ -207,7 +202,7 @@ export default function InsumosComprados() {
             </form>
           </DialogContent>
         </Dialog>
-      </div>
+      </PageHeader>
 
       {/* Filtro */}
       <div className="flex items-center gap-3">
