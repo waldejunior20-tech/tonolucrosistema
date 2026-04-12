@@ -365,10 +365,10 @@ export default function Dashboard() {
             </div>
           ) : (
             <div className="flex items-center gap-2 py-1">
-              <div className="w-6 h-6 rounded-full bg-[hsl(var(--success)/0.06)] flex items-center justify-center">
-                <Clock size={12} className="text-[hsl(var(--success))]" />
+              <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">
+                <Clock size={12} className="text-white/60" />
               </div>
-              <p className="text-[11px] text-muted-foreground">Nenhum alerta no momento.</p>
+              <p className="text-[11px] text-white/50">Nenhum alerta no momento.</p>
             </div>
           )}
         </div>
