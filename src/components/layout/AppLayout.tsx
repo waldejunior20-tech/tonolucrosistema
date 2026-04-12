@@ -32,8 +32,8 @@ export function AppLayout() {
           showMenuButton={isMobile}
           onMenuClick={() => setMobileOpen(true)}
         />
-        <main className="flex-1 p-4 lg:p-8 overflow-auto">
-          <div className="max-w-7xl mx-auto">
+        <main className="flex-1 p-4 lg:p-8 overflow-auto bg-grain relative">
+          <div className="max-w-7xl mx-auto relative z-10">
             <Outlet />
           </div>
         </main>

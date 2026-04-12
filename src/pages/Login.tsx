@@ -54,20 +54,26 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-sm space-y-6">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4 bg-grain relative overflow-hidden">
+      {/* Ambient glow */}
+      <div className="absolute top-[-20%] left-[50%] -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] rounded-full bg-primary/3 blur-[100px] pointer-events-none" />
+
+      <div className="w-full max-w-sm space-y-6 relative z-10 fade-up">
+        {/* Brand */}
         <div className="text-center">
-          <div className="w-12 h-12 rounded-sm bg-primary flex items-center justify-center mx-auto mb-4">
-            <Pizza size={24} className="text-primary-foreground" />
+          <div className="w-14 h-14 rounded-md bg-primary/15 border border-primary/25 flex items-center justify-center mx-auto mb-5 glow-ember">
+            <Pizza size={28} className="text-primary" />
           </div>
-          <h1 className="text-xl font-bold text-foreground">Bem-vindo ao TôNoLucro</h1>
-          <p className="text-sm text-muted-foreground mt-1">Faça login para acessar o sistema</p>
+          <h1 className="text-2xl font-extrabold text-foreground tracking-tight">Bem-vindo ao TôNoLucro</h1>
+          <p className="text-sm text-muted-foreground mt-1.5">Faça login para acessar o sistema</p>
         </div>
 
+        {/* Google OAuth */}
         <Button
           type="button"
           variant="outline"
-          className="w-full gap-2"
+          className="w-full gap-2 h-11 border-border hover:border-primary/30 hover:bg-primary/5 transition-all"
           onClick={handleGoogleLogin}
           disabled={googleLoading}
         >
@@ -75,24 +81,26 @@ export default function Login() {
           Entrar com Google
         </Button>
 
+        {/* Divider */}
         <div className="relative">
           <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
           <div className="relative flex justify-center text-xs uppercase"><span className="bg-background px-2 text-muted-foreground">ou</span></div>
         </div>
 
+        {/* Email form */}
         <form onSubmit={handleLogin} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="seu@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <Label htmlFor="email" className="text-xs font-semibold text-muted-foreground">Email</Label>
+            <Input id="email" type="email" placeholder="seu@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-11 bg-card border-border focus:border-primary/50" />
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="password">Senha</Label>
+              <Label htmlFor="password" className="text-xs font-semibold text-muted-foreground">Senha</Label>
               <Link to="/recovery" className="text-xs text-primary hover:underline">Esqueci minha senha</Link>
             </div>
-            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="h-11 bg-card border-border focus:border-primary/50" />
           </div>
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button type="submit" className="w-full h-11 font-semibold shadow-button" disabled={loading}>
             {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Entrar"}
           </Button>
           <p className="text-center text-sm text-muted-foreground">
