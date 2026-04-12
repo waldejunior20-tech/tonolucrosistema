@@ -1,103 +1,78 @@
 
 
-## Análise Completa do SaaS — Gestão para Food Service no Brasil
+## Diagnóstico e Plano — Upgrade Visual do Layout
 
-### O que você já tem (sólido)
+### Por que o layout parece genérico
 
-| Módulo | Status |
-|--------|--------|
-| Autenticação + Onboarding | Completo (email, Google, recuperação de senha) |
-| Insumos Comprados e Produzidos | Completo |
-| Fichas Técnicas (Pizzas, Sanduíches, Pratos, Sobremesas, Bebidas) | Completo |
-| Precificação inteligente (Balcão + Apps com CMV automático) | Completo |
-| Financeiro (DRE, Contas a Pagar, Ponto de Equilíbrio) | Completo |
-| Promoções e Combos | Completo |
-| Configurações centralizadas | Completo |
-| Segurança RLS por user_id | Completo |
+O problema principal: as páginas usam componentes Shadcn/UI padrão (Table, Dialog, Button, Card) com estilização mínima. Embora o tema "Midnight Ember" esteja bem definido no CSS (cores, tipografia, classes utilitárias), **as páginas não aproveitam esses recursos**. Exemplos concretos:
 
-### O que falta — Análise do mercado brasileiro de Food Service
+- **InsumosComprados**: tabela crua sem cabeçalho visual, sem KPIs resumidos, sem empty state ilustrado
+- **Dashboard**: usa `card-premium` mas os KPIs são textuais sem hierarquia visual forte
+- **Header**: busca sem funcionalidade, sem breadcrumbs, sem saudação personalizada
+- **Tabelas**: sem alternância de cor, sem hover diferenciado, sem paginação estilizada
+- **Mobile (360px)**: sidebar colapsa mas não vira drawer, tabelas não são responsivas
 
-Analisando os concorrentes (Saipos, EPOC, Consumer, Goomer, Yooga) e as dores reais do dono de pizzaria/restaurante no Brasil, identifiquei **7 melhorias de alto impacto** ordenadas por valor:
+### O que vou fazer (redesign aplicado)
 
----
+**1. Componentes compartilhados de layout premium**
+- `PageHeader` — título + descrição + breadcrumb + ação primária (botão), padronizado em todas as páginas
+- `KpiCard` — componente reutilizável com ícone, label-upper, kpi-number animado (contagem progressiva), trend badge, e glow sutil
+- `DataTable` wrapper — tabela com header estilizado (fundo `secondary`), hover com borda ember, empty state com ilustração, paginação integrada
+- `EmptyState` — ícone grande + texto + CTA, usado quando listas estão vazias
 
-### 1. Dashboard Real (PRIORIDADE ALTA)
-**Problema:** O Dashboard atual é estático com dados fictícios ("24 fichas", "142 insumos").
-**Solução:** Dashboard dinâmico com dados reais do banco:
-- Total de fichas técnicas cadastradas
-- Total de insumos
-- Faturamento do mês (soma de `lancamentos_financeiros` tipo receita)
-- CMV real vs meta (com semáforo)
-- Gráfico de faturamento dos últimos 6 meses
-- Alertas (promoções vencendo, CMV acima da meta)
+**2. Dashboard redesenhado**
+- Saudação com nome do negócio + hora do dia ("Boa tarde, Pizzaria do João")
+- KPI cards com animação de contagem (0→valor em 800ms)
+- Gráfico com fundo gradiente sutil, sem grid lines (conforme diretrizes)
+- Card de alertas com timeline visual (bolinha + linha)
+- Seção de atalhos rápidos (cards menores linkando para ações frequentes)
 
-### 2. Controle de Estoque Básico (DIFERENCIAL)
-**Problema:** Nenhum concorrente de baixo custo oferece controle de estoque integrado à ficha técnica.
-**Solução:** 
-- Ao registrar uma venda/receita, dar baixa automática nos insumos baseado na ficha técnica
-- Alertas de estoque mínimo
-- Nova tabela `estoque_movimentacoes` com entradas (compras) e saídas (vendas)
-- Relatório de necessidade de compra
+**3. Sidebar mobile**
+- Em telas < 768px, sidebar vira drawer (Sheet) com overlay, abre via botão hamburger no Header
+- Fecha ao navegar
 
-### 3. Cardápio Digital / Link de Pedidos (DIFERENCIAL BRASILEIRO)
-**Problema:** 72% dos pedidos no Brasil vêm pelo WhatsApp. Os donos precisam de um link de cardápio.
-**Solução:**
-- Gerar um link público (`/cardapio/:slug`) com os produtos precificados
-- Visual bonito com categorias e fotos
-- Botão "Pedir pelo WhatsApp" que monta a mensagem automaticamente
-- Sem custo de app de delivery — é o grande diferencial para o pequeno empreendedor
+**4. Header aprimorado**
+- Breadcrumb dinâmico baseado na rota atual
+- Avatar com iniciais coloridas (em vez de ícone genérico)
+- Busca funcional com Command Palette (Cmd+K) usando o componente Command já existente
 
-### 4. Relatórios em PDF / Exportação
-**Problema:** Dono de restaurante precisa mostrar números para sócio, contador ou banco.
-**Solução:**
-- Exportar DRE em PDF
-- Exportar fichas técnicas em PDF (para cozinha)
-- Exportar lista de compras em PDF/WhatsApp
+**5. Tabelas responsivas**
+- Em mobile: tabelas viram cards empilhados (cada row = um card com labels)
+- Desktop: hover com highlight ember, zebra striping sutil
 
-### 5. Simulador "E se?" de Precificação
-**Problema:** O dono quer saber: "Se eu aumentar 10% o preço, quanto ganho a mais?"
-**Solução:**
-- Tela onde ele ajusta CMV meta, lucro desejado e vê o impacto em tempo real em todos os produtos
-- Comparação lado a lado: cenário atual vs simulado
+**6. Aplicar em todas as páginas existentes**
+- InsumosComprados, InsumosProduzidos, FichasTecnicasPizza, PrecificacaoPizzas, FinanceiroDRE, FinanceiroContasPagar, PromocoesAtivas — todas recebem o novo `PageHeader` + `DataTable` + `EmptyState`
 
-### 6. Multi-unidades (Escalabilidade)
-**Problema:** Quem cresce abre uma segunda loja e precisa gerenciar separado.
-**Solução:**
-- Adicionar campo `unidade_id` nas tabelas
-- Seletor de unidade no header
-- Cada unidade com seus custos fixos e precificação própria
+### Detalhes Técnicos
 
-### 7. Notificações e Lembretes
-**Solução:**
-- Contas a pagar vencendo hoje/amanhã
-- Promoção expirando
-- CMV do mês acima da meta
-- Push via browser notifications ou toast ao entrar
+```text
+src/components/layout/
+  ├── PageHeader.tsx          (novo)
+  ├── MobileSidebar.tsx       (novo — Sheet wrapper)
+  ├── Header.tsx              (reescrito com breadcrumb + avatar + Cmd+K)
+  └── AppLayout.tsx           (ajustado para mobile drawer)
 
----
+src/components/
+  ├── KpiCard.tsx             (novo)
+  ├── DataTableWrapper.tsx    (novo — estilização premium)
+  ├── EmptyState.tsx          (novo)
+  └── AnimatedNumber.tsx      (novo — contagem progressiva)
 
-### Plano de implementação sugerido
+Páginas modificadas:
+  - Dashboard.tsx (redesign completo)
+  - InsumosComprados.tsx, InsumosProduzidos.tsx
+  - FichasTecnicasPizza.tsx, FichasTecnicasProdutos.tsx
+  - PrecificacaoPizzas.tsx, PrecificacaoProdutos.tsx, PrecificacaoBebidas.tsx
+  - FinanceiroDRE.tsx, FinanceiroContasPagar.tsx
+  - PromocoesAtivas.tsx
+```
 
-**Fase 1 (impacto imediato):**
-1. Dashboard real com dados do banco + gráficos
-2. Exportação de DRE e fichas técnicas em PDF
+### O que NÃO muda
+- Tema de cores (Midnight Ember permanece)
+- Lógica de negócio e queries Supabase
+- Estrutura de rotas
+- Autenticação
 
-**Fase 2 (diferencial competitivo):**
-3. Cardápio digital com link público + WhatsApp
-4. Controle de estoque básico
-
-**Fase 3 (escala):**
-5. Simulador de cenários
-6. Multi-unidades
-7. Notificações
-
-### Diferencial competitivo
-
-O que nenhum concorrente barato faz bem no Brasil:
-- **Precificação automática por canal** (Balcão vs iFood vs Rappi) — vocês já têm
-- **Cardápio digital gratuito com WhatsApp** — seria killer feature
-- **DRE simplificado para leigo** — vocês já têm
-- **Ficha técnica + custo real integrado** — vocês já têm
-
-O sistema já tem uma base técnica muito forte. O próximo passo mais impactante é o **Dashboard real** seguido do **Cardápio digital**.
+### Resultado esperado
+Interface com aspecto de **SaaS fintech premium** — consistente entre páginas, responsiva em mobile, com micro-animações e hierarquia visual clara. Sai do "template genérico" para algo que parece produto pago.
 
