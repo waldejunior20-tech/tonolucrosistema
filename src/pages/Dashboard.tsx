@@ -117,8 +117,6 @@ function DonutCenterLabel({ viewBox, value }: any) {
   );
 }
 
-const CATEGORY_COLORS = ["#E63946", "#2D7C5E", "#F77F00", "#1FA89F", "#FCBF49"];
-
 // ─── MAIN ────────────────────────────────────────────────────────────
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -141,21 +139,6 @@ export default function Dashboard() {
 
   const lucroMes = faturamentoMes - despesasMes;
   const hasChartData = graficoMensal.some((m) => m.receita > 0 || m.despesa > 0);
-
-  const cmvChartData = graficoMensal.map((m) => ({
-    mes: m.mes,
-    cmv: m.receita > 0 ? ((m.despesa / m.receita) * 100) : 0,
-    meta: cmvMeta,
-  }));
-
-  const vendasPorCategoria = [
-    { name: "Pizzas", value: totalFichas || 1, percentual: 42, color: CATEGORY_COLORS[0] },
-    { name: "Insumos", value: totalInsumos || 1, percentual: 36, color: CATEGORY_COLORS[1] },
-    { name: "Promoções", value: promocoesAtivas || 1, percentual: 11, color: CATEGORY_COLORS[2] },
-    { name: "Bebidas", value: 1, percentual: 8, color: CATEGORY_COLORS[3] },
-    { name: "Outros", value: 1, percentual: 5, color: CATEGORY_COLORS[4] },
-  ];
-  const totalCadastros = vendasPorCategoria.reduce((s, c) => s + c.value, 0);
 
   const tooltipStyle = {
     backgroundColor: "#fff",
