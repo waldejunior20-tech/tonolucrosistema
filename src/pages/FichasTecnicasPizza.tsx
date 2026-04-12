@@ -108,6 +108,7 @@ export default function FichasTecnicasPizza() {
   const [buscaEmbalagemAberta, setBuscaEmbalagemAberta] = useState<string | null>(null);
   const [buscaEmbalagemTermo, setBuscaEmbalagemTermo] = useState("");
   const [savedFields, setSavedFields] = useState<Record<string, boolean>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   // Queries
   const { data: fichas = [], isLoading } = useQuery({
@@ -359,12 +360,21 @@ export default function FichasTecnicasPizza() {
     setBuscaAberta(null);
     setBuscaEmbalagemAberta(null);
     setBuscaEmbalagemTermo("");
+    setTouched({});
   };
+
+  // Validation
+  const nomeInvalid = touched.nome && !form.nome.trim();
+  const nomeValid = touched.nome && !!form.nome.trim();
+  const ingredientesInvalid = touched.ingredientes && form.ingredientes.length === 0;
+  const hasNormalIngredients = form.ingredientes.some(i => i.tipo_insumo !== "embalagem");
+  const formIsValid = !!form.nome.trim() && hasNormalIngredients;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.nome) {
-      toast.error("Preencha o nome da pizza.");
+    setTouched({ nome: true, ingredientes: true });
+    if (!formIsValid) {
+      toast.error("Preencha os campos obrigatórios.");
       return;
     }
     if (editingId) {
@@ -559,8 +569,11 @@ export default function FichasTecnicasPizza() {
                     placeholder="Ex: Margherita, Calabresa"
                     value={form.nome}
                     onChange={(e) => setForm({ ...form, nome: e.target.value })}
+                    onBlur={() => setTouched(t => ({ ...t, nome: true }))}
+                    className={nomeInvalid ? "border-destructive ring-2 ring-destructive/20" : nomeValid ? "border-[hsl(var(--success))]" : ""}
                     required
                   />
+                  {nomeInvalid && <p className="text-[11px] text-destructive mt-1 font-medium">Este campo é obrigatório</p>}
                 </div>
                 <div>
                   <Label htmlFor="numero_ficha">Nº da Ficha</Label>
@@ -615,10 +628,13 @@ export default function FichasTecnicasPizza() {
 
               {/* Ingredientes */}
               <div className="space-y-3">
-                <Label className="text-base">Ingredientes</Label>
+                <Label className="text-base">Ingredientes *</Label>
 
                 {form.ingredientes.length === 0 && (
-                  <p className="text-sm text-muted-foreground">Nenhum ingrediente adicionado.</p>
+                  <div className={ingredientesInvalid ? "rounded-lg border-2 border-destructive/50 p-3 bg-destructive/5" : ""}>
+                    <p className="text-sm text-muted-foreground">Nenhum ingrediente adicionado.</p>
+                    {ingredientesInvalid && <p className="text-[11px] text-destructive mt-1 font-medium">Adicione pelo menos um ingrediente</p>}
+                  </div>
                 )}
 
                 {form.ingredientes.map((ing, idx) => {
@@ -688,7 +704,7 @@ export default function FichasTecnicasPizza() {
                     return (
                       <div key={idx} className="rounded-md border border-border p-3 space-y-2 bg-muted/20">
                         <div className="flex items-center justify-between">
-                          <Label className="text-sm font-semibold">📦 Embalagem por tamanho</Label>
+                          <Label className="text-sm font-semibold">Embalagem por tamanho</Label>
                           <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => removeIngrediente(idx)}>
                             <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
@@ -828,7 +844,7 @@ export default function FichasTecnicasPizza() {
                     onClick={addEmbalagem}
                     disabled={form.ingredientes.some((i) => i.tipo_insumo === "embalagem")}
                   >
-                    <Plus className="h-3 w-3" /> 📦 Embalagem por Tamanho
+                    <Plus className="h-3 w-3" /> Embalagem por Tamanho
                   </Button>
                 </div>
 
@@ -843,7 +859,7 @@ export default function FichasTecnicasPizza() {
 
               <div className="flex justify-end gap-2 pt-2">
                 <Button type="button" variant="outline" onClick={resetForm}>Cancelar</Button>
-                <Button type="submit" disabled={insertMutation.isPending || updateMutation.isPending}>
+                <Button type="submit" disabled={insertMutation.isPending || updateMutation.isPending || (!editingId && !formIsValid)} className={!editingId && !formIsValid ? "opacity-50" : ""}>
                   {editingId ? "Salvar" : "Cadastrar"}
                 </Button>
               </div>
