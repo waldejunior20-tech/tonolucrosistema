@@ -11,6 +11,7 @@ import {
   Wallet, Receipt, PiggyBank, AlertTriangle,
 } from "lucide-react";
 import CaixaRapido from "@/components/CaixaRapido";
+import { AnimatedNumber } from "@/components/AnimatedNumber";
 
 function formatBRL(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
