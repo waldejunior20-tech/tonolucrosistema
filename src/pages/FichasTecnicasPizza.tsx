@@ -365,7 +365,7 @@ export default function FichasTecnicasPizza() {
 
   // Validation
   const nomeInvalid = touched.nome && !form.nome.trim();
-  const nomeValid = touched.nome && !!form.nome.trim();
+  const nomeValid = form.nome.trim().length > 0;
   const ingredientesInvalid = touched.ingredientes && form.ingredientes.length === 0;
   const hasNormalIngredients = form.ingredientes.some(i => i.tipo_insumo !== "embalagem");
   const formIsValid = !!form.nome.trim() && hasNormalIngredients;
@@ -570,7 +570,7 @@ export default function FichasTecnicasPizza() {
                     value={form.nome}
                     onChange={(e) => setForm({ ...form, nome: e.target.value })}
                     onBlur={() => setTouched(t => ({ ...t, nome: true }))}
-                    className={nomeInvalid ? "border-destructive ring-2 ring-destructive/20" : nomeValid ? "border-[hsl(var(--success))]" : ""}
+                    className={nomeInvalid ? "border-destructive ring-2 ring-destructive/20" : nomeValid ? "border-[hsl(var(--success))] ring-1 ring-[hsl(var(--success))]/20" : ""}
                     required
                   />
                   {nomeInvalid && <p className="text-[11px] text-destructive mt-1 font-medium">Este campo é obrigatório</p>}
@@ -831,7 +831,7 @@ export default function FichasTecnicasPizza() {
                   <Button
                     type="button"
                     size="sm"
-                    className="gap-1 flex-1 bg-[hsl(4,70%,46%)] hover:bg-[hsl(4,70%,40%)] text-primary-foreground"
+                    className="gap-1 flex-1 bg-primary hover:bg-primary-light text-primary-foreground"
                     onClick={addIngrediente}
                   >
                     <Plus className="h-3 w-3" /> Adicionar Ingrediente
