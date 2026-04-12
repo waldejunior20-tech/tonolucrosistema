@@ -570,7 +570,7 @@ export default function FichasTecnicasPizza() {
                     value={form.nome}
                     onChange={(e) => setForm({ ...form, nome: e.target.value })}
                     onBlur={() => setTouched(t => ({ ...t, nome: true }))}
-                    className={nomeInvalid ? "border-destructive ring-2 ring-destructive/20" : nomeValid ? "border-[hsl(var(--success))] ring-1 ring-[hsl(var(--success))]/20" : ""}
+                    className={nomeInvalid ? "border-destructive ring-2 ring-destructive/20" : ""}
                     required
                   />
                   {nomeInvalid && <p className="text-[11px] text-destructive mt-1 font-medium">Este campo é obrigatório</p>}
