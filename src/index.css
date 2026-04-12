@@ -28,18 +28,18 @@
     --success: 160 84% 39%;
     --warning: 38 92% 50%;
     --info: 217 91% 60%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
+    --border: 220 13% 88%;
+    --input: 220 13% 88%;
     --ring: 168 76% 42%;
     --radius: 0.75rem;
 
-    --sidebar-background: 220 20% 18%;
-    --sidebar-foreground: 220 14% 70%;
+    --sidebar-background: 220 22% 14%;
+    --sidebar-foreground: 220 10% 58%;
     --sidebar-primary: 168 76% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 18% 24%;
-    --sidebar-accent-foreground: 220 14% 92%;
-    --sidebar-border: 220 18% 25%;
+    --sidebar-accent: 220 20% 20%;
+    --sidebar-accent-foreground: 220 14% 85%;
+    --sidebar-border: 220 18% 20%;
     --sidebar-ring: 168 76% 42%;
   }
 
@@ -65,17 +65,17 @@
     --success: 160 84% 39%;
     --warning: 38 92% 50%;
     --info: 217 91% 60%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
+    --border: 220 13% 88%;
+    --input: 220 13% 88%;
     --ring: 168 76% 42%;
 
-    --sidebar-background: 220 20% 18%;
-    --sidebar-foreground: 220 14% 70%;
+    --sidebar-background: 220 22% 14%;
+    --sidebar-foreground: 220 10% 58%;
     --sidebar-primary: 168 76% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 18% 24%;
-    --sidebar-accent-foreground: 220 14% 92%;
-    --sidebar-border: 220 18% 25%;
+    --sidebar-accent: 220 20% 20%;
+    --sidebar-accent-foreground: 220 14% 85%;
+    --sidebar-border: 220 18% 20%;
     --sidebar-ring: 168 76% 42%;
   }
 }
@@ -96,14 +96,14 @@
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
-    font-weight: 700;
+    font-weight: 800;
     letter-spacing: -0.025em;
-    color: hsl(var(--foreground));
+    color: hsl(222 47% 11%);
   }
 
-  h1 { font-size: 28px; line-height: 1.2; letter-spacing: -0.02em; }
-  h2 { font-size: 20px; line-height: 1.25; letter-spacing: -0.015em; }
-  h3 { font-size: 16px; font-weight: 600; line-height: 1.35; }
+  h1 { font-size: 28px; line-height: 1.2; letter-spacing: -0.02em; font-weight: 800; }
+  h2 { font-size: 20px; line-height: 1.25; letter-spacing: -0.015em; font-weight: 700; }
+  h3 { font-size: 16px; font-weight: 700; line-height: 1.35; }
 }
 
 @layer components {
