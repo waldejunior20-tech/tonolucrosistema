@@ -28,8 +28,9 @@ function getGreeting() {
 // KPI style variants
 type KpiVariant = "faturamento" | "gastos" | "lucro_pos" | "lucro_neg" | "cmv_ok" | "cmv_bad";
 
-function MiniKPI({ label, value, icon: Icon, trendLabel, kpiType }: {
+function MiniKPI({ label, value, numericValue, formatter, icon: Icon, trendLabel, kpiType }: {
   label: string; value: string; icon: any;
+  numericValue?: number; formatter?: (v: number) => string;
   trendLabel?: string;
   kpiType: KpiVariant;
 }) {
@@ -41,6 +42,14 @@ function MiniKPI({ label, value, icon: Icon, trendLabel, kpiType }: {
   };
 
   const grad = gradients[kpiType];
+
+  const renderValue = (textClass: string) => (
+    numericValue !== undefined && formatter ? (
+      <AnimatedNumber value={numericValue} formatter={formatter} className={`text-[24px] font-extrabold tracking-tight leading-none ${textClass}`} duration={1000} />
+    ) : (
+      <span className={`text-[24px] font-extrabold tracking-tight leading-none ${textClass}`}>{value}</span>
+    )
+  );
 
   // Colored gradient card
   if (grad) {
@@ -54,7 +63,7 @@ function MiniKPI({ label, value, icon: Icon, trendLabel, kpiType }: {
           <Icon size={18} className="text-white/70" />
         </div>
         <div className="flex items-baseline gap-2">
-          <span className="text-[24px] font-extrabold text-white tracking-tight leading-none drop-shadow-sm">{value}</span>
+          {renderValue("text-white drop-shadow-sm")}
           {trendLabel && trendLabel !== "—" && (
             <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-white/20 text-white">{trendLabel}</span>
           )}
@@ -72,7 +81,7 @@ function MiniKPI({ label, value, icon: Icon, trendLabel, kpiType }: {
         <Icon size={18} className={iconColor} />
       </div>
       <div className="flex items-baseline gap-2">
-        <span className="text-[24px] font-extrabold text-[#1F2937] tracking-tight leading-none">{value}</span>
+        {renderValue("text-[#1F2937]")}
         {trendLabel && trendLabel !== "—" && (
           <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${
             kpiType === "cmv_bad"
