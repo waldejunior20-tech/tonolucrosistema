@@ -24,37 +24,36 @@ function getGreeting() {
 }
 
 // ─── Minimal KPI Card ────────────────────────────────────────────────
-function MiniKPI({ label, value, icon: Icon, trend, trendLabel, variant }: {
-  label: string; value: string; icon: any;
-  trend?: "up" | "down"; trendLabel?: string;
-  variant?: "green" | "red" | "dynamic";
-}) {
-  const bgMap = {
-    green: "bg-[hsl(var(--success)/0.06)] border-[hsl(var(--success)/0.15)]",
-    red: "border-[rgba(220,20,20,0.2)]",
-    dynamic: trend === "up"
-      ? "bg-[hsl(var(--success)/0.06)] border-[hsl(var(--success)/0.15)]"
-      : "border-[rgba(220,20,20,0.2)]",
-  };
-  const redBg = { backgroundColor: "rgba(220, 20, 20, 0.06)" };
-  const needsRedBg = (variant === "red") || (variant === "dynamic" && trend !== "up");
-  const bg = variant ? bgMap[variant] : "bg-card border-border/60";
+// Gradient configs per KPI type
+const KPI_STYLES = {
+  faturamento: { gradient: "linear-gradient(135deg, #1E3A8A, #3B82F6)", shadow: "0 8px 24px rgba(59,130,246,0.35)" },
+  gastos: { gradient: "linear-gradient(135deg, #F59E0B, #FBBF24)", shadow: "0 8px 24px rgba(245,158,11,0.35)" },
+  lucro_pos: { gradient: "linear-gradient(135deg, #15803D, #22C55E)", shadow: "0 8px 24px rgba(34,197,94,0.35)" },
+  lucro_neg: { gradient: "linear-gradient(135deg, #B91C1C, #EF4444)", shadow: "0 8px 24px rgba(239,68,68,0.35)" },
+  cmv_ok: { gradient: "linear-gradient(135deg, #15803D, #22C55E)", shadow: "0 8px 24px rgba(34,197,94,0.35)" },
+  cmv_bad: { gradient: "linear-gradient(135deg, #B91C1C, #EF4444)", shadow: "0 8px 24px rgba(239,68,68,0.35)" },
+};
 
+function MiniKPI({ label, value, icon: Icon, trendLabel, kpiType }: {
+  label: string; value: string; icon: any;
+  trendLabel?: string;
+  kpiType: keyof typeof KPI_STYLES;
+}) {
+  const style = KPI_STYLES[kpiType];
   return (
-    <div style={needsRedBg ? redBg : undefined} className={`group rounded-2xl px-5 py-4 border transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 ${bg}`}>
-      <div className="flex items-center justify-between mb-1">
-        <span className="text-[11px] font-medium text-muted-foreground/70 uppercase tracking-wider">{label}</span>
-        <Icon size={15} className="text-muted-foreground/40" />
+    <div
+      style={{ background: style.gradient, boxShadow: style.shadow }}
+      className="group rounded-2xl px-5 py-4 border border-white/10 transition-all duration-300 hover:scale-[1.02] hover:brightness-110"
+    >
+      <div className="flex items-center justify-between mb-1.5">
+        <span className="text-[11px] font-semibold text-white/80 uppercase tracking-wider">{label}</span>
+        <Icon size={18} className="text-white/70" />
       </div>
       <div className="flex items-baseline gap-2">
-        <span className="text-[22px] font-bold text-foreground tracking-tight leading-none">{value}</span>
+        <span className="text-[24px] font-extrabold text-white tracking-tight leading-none drop-shadow-sm">{value}</span>
         {trendLabel && trendLabel !== "—" && (
-          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${
-            trend === "up"
-              ? "text-[hsl(var(--success))] bg-[hsl(var(--success)/0.08)]"
-              : "text-[hsl(var(--destructive))] bg-[hsl(var(--destructive)/0.08)]"
-          }`}>
-            {trend === "up" ? "↑" : "↓"} {trendLabel}
+          <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-white/20 text-white">
+            {trendLabel}
           </span>
         )}
       </div>
