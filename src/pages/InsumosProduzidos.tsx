@@ -329,6 +329,7 @@ export default function InsumosProduzidos() {
             <Button className="btn-action-add gap-2">
               <Plus className="h-4 w-4" /> Novo Pré-Preparo
             </Button>
+          </DialogTrigger>
           <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingId ? "Editar Pré-Preparo" : "Novo Pré-Preparo"}</DialogTitle>
