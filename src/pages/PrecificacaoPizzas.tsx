@@ -387,13 +387,15 @@ export default function PrecificacaoPizzas() {
               </span>
             </div>
           </div>
-          <div className="card-premium p-6">
-            <p className="label-upper mb-4">Pizzas Fora da Meta</p>
-            <div className="flex items-center gap-3">
-              <p className="kpi-number">{indicators.foraMetaCount}</p>
-              {indicators.foraMetaCount > 0 && <AlertTriangle className="h-6 w-6 text-destructive" />}
+          <div className="card-premium p-6" style={{ background: '#FFF4E5', borderColor: 'hsl(var(--orange-accent) / 0.25)' }}>
+            <div className="flex items-center gap-2 mb-4">
+              <AlertTriangle className="h-5 w-5 text-orange" />
+              <p className="text-xs font-semibold uppercase tracking-wider text-orange">Pizzas Fora da Meta</p>
             </div>
-            <p className="text-[11px] text-muted-foreground font-medium mt-1">Tamanhos com CMV acima de 40%</p>
+            <div className="flex items-center gap-3">
+              <p className="kpi-number text-orange">{indicators.foraMetaCount}</p>
+            </div>
+            <p className="text-[11px] text-orange/70 font-medium mt-1">Tamanhos com CMV acima de 40%</p>
           </div>
         </div>
 
@@ -402,8 +404,8 @@ export default function PrecificacaoPizzas() {
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <Table>
-                <TableHeader>
-                  <TableRow>
+                <TableHeader className="bg-[#F8F9FA]">
+                  <TableRow className="border-b-2 border-border">
                     <TableHead rowSpan={2} className="align-bottom min-w-[180px]">Pizza</TableHead>
                     <TableHead rowSpan={2} className="align-bottom">Tipo</TableHead>
                     <TableHead colSpan={3} className="text-center border-l border-border">Custo</TableHead>
@@ -559,8 +561,16 @@ export default function PrecificacaoPizzas() {
                   })}
                   {fichas.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={8 + 6 * appCount} className="text-center py-8 text-muted-foreground">
-                        Nenhuma pizza cadastrada. Cadastre fichas técnicas primeiro.
+                      <TableCell colSpan={8 + 6 * appCount} className="text-center py-12">
+                        <div className="flex flex-col items-center gap-3">
+                          <p className="text-muted-foreground">Nenhuma pizza cadastrada ainda.</p>
+                          <Button
+                            onClick={() => window.location.href = '/fichas/pizzas?tipo=tradicional'}
+                            className="bg-orange hover:bg-orange/90 text-orange-foreground gap-1"
+                          >
+                            <span className="text-lg leading-none">+</span> Cadastrar Primeira Pizza
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   )}
