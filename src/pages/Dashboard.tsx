@@ -323,7 +323,7 @@ export default function Dashboard() {
           ) : (
             <div className="flex flex-col items-center justify-center h-[280px] text-muted-foreground gap-3">
               <div className="w-12 h-12 rounded-2xl bg-secondary/60 flex items-center justify-center">
-                <BarChart size={20} className="text-muted-foreground/60" />
+                <Package size={20} className="text-muted-foreground/60" />
               </div>
               <p className="text-[13px] text-center max-w-[240px]">Dados insuficientes para o gráfico de CMV.</p>
             </div>
