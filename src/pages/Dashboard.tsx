@@ -105,17 +105,19 @@ function AlertItem({ severity, title, detail, value }: {
   const isCritical = severity === "critical";
   return (
     <div
-      className={`flex items-start gap-3 p-3.5 rounded-xl border transition-all duration-200 ${
+      style={
         isCritical
-          ? "bg-[hsl(var(--destructive)/0.04)] border-[hsl(var(--destructive)/0.15)]"
-          : "border-[#FF8000]/20"
+          ? { background: "linear-gradient(135deg, rgba(127,29,29,0.06), rgba(185,28,28,0.1))" }
+          : { background: "linear-gradient(135deg, rgba(30,41,59,0.04), rgba(51,65,85,0.08))" }
+      }
+      className={`flex items-start gap-3 p-3.5 rounded-xl border transition-all duration-200 ${
+        isCritical ? "border-[#B91C1C]/15" : "border-[#334155]/15"
       }`}
-      style={!isCritical ? { background: "linear-gradient(135deg, rgba(255,128,0,0.06) 0%, rgba(255,160,50,0.12) 100%)" } : undefined}
     >
-      <div className={`mt-0.5 health-pulse ${isCritical ? "health-pulse-red" : "health-pulse-amber"}`} />
+      <div className={`mt-1 w-2 h-2 rounded-full flex-shrink-0 ${isCritical ? "bg-[#B91C1C]" : "bg-[#D97706]"}`} />
       <div className="flex-1 min-w-0">
         <p className={`text-[12px] font-semibold flex items-center gap-1.5 ${
-          isCritical ? "text-[hsl(var(--destructive))]" : "text-foreground"
+          isCritical ? "text-[#7F1D1D]" : "text-[#1E293B]"
         }`}>
           {isCritical && <AlertTriangle size={12} />}
           {title}
@@ -124,10 +126,12 @@ function AlertItem({ severity, title, detail, value }: {
       </div>
       {value && (
         <span className={`text-[11px] font-bold whitespace-nowrap font-mono ${
-          isCritical ? "text-[hsl(var(--destructive))]" : "text-foreground"
+          isCritical ? "text-[#B91C1C]" : "text-[#1E293B]"
         }`}>{value}</span>
       )}
     </div>
+  );
+}
   );
 }
 
