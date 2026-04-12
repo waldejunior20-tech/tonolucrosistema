@@ -11,6 +11,7 @@ import {
   Wallet, Receipt, PiggyBank, AlertTriangle,
 } from "lucide-react";
 import CaixaRapido from "@/components/CaixaRapido";
+import { AnimatedNumber } from "@/components/AnimatedNumber";
 
 function formatBRL(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -27,8 +28,9 @@ function getGreeting() {
 // KPI style variants
 type KpiVariant = "faturamento" | "gastos" | "lucro_pos" | "lucro_neg" | "cmv_ok" | "cmv_bad";
 
-function MiniKPI({ label, value, icon: Icon, trendLabel, kpiType }: {
+function MiniKPI({ label, value, numericValue, formatter, icon: Icon, trendLabel, kpiType }: {
   label: string; value: string; icon: any;
+  numericValue?: number; formatter?: (v: number) => string;
   trendLabel?: string;
   kpiType: KpiVariant;
 }) {
@@ -40,6 +42,14 @@ function MiniKPI({ label, value, icon: Icon, trendLabel, kpiType }: {
   };
 
   const grad = gradients[kpiType];
+
+  const renderValue = (textClass: string) => (
+    numericValue !== undefined && formatter ? (
+      <AnimatedNumber value={numericValue} formatter={formatter} className={`text-[24px] font-extrabold tracking-tight leading-none ${textClass}`} duration={1000} />
+    ) : (
+      <span className={`text-[24px] font-extrabold tracking-tight leading-none ${textClass}`}>{value}</span>
+    )
+  );
 
   // Colored gradient card
   if (grad) {
@@ -53,7 +63,7 @@ function MiniKPI({ label, value, icon: Icon, trendLabel, kpiType }: {
           <Icon size={18} className="text-white/70" />
         </div>
         <div className="flex items-baseline gap-2">
-          <span className="text-[24px] font-extrabold text-white tracking-tight leading-none drop-shadow-sm">{value}</span>
+          {renderValue("text-white drop-shadow-sm")}
           {trendLabel && trendLabel !== "—" && (
             <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-white/20 text-white">{trendLabel}</span>
           )}
@@ -71,7 +81,7 @@ function MiniKPI({ label, value, icon: Icon, trendLabel, kpiType }: {
         <Icon size={18} className={iconColor} />
       </div>
       <div className="flex items-baseline gap-2">
-        <span className="text-[24px] font-extrabold text-[#1F2937] tracking-tight leading-none">{value}</span>
+        {renderValue("text-[#1F2937]")}
         {trendLabel && trendLabel !== "—" && (
           <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${
             kpiType === "cmv_bad"
@@ -239,6 +249,8 @@ export default function Dashboard() {
         <MiniKPI
           label="Faturamento"
           value={formatBRL(faturamentoMes)}
+          numericValue={faturamentoMes}
+          formatter={formatBRL}
           icon={Wallet}
           trendLabel={faturamentoMes > 0 ? "+32.5%" : undefined}
           kpiType="faturamento"
@@ -246,6 +258,8 @@ export default function Dashboard() {
         <MiniKPI
           label="Gastos"
           value={formatBRL(despesasMes)}
+          numericValue={despesasMes}
+          formatter={formatBRL}
           icon={Receipt}
           trendLabel={despesasMes > 0 ? "-8.2%" : undefined}
           kpiType="gastos"
@@ -253,6 +267,8 @@ export default function Dashboard() {
         <MiniKPI
           label="Lucro"
           value={formatBRL(lucroMes)}
+          numericValue={lucroMes}
+          formatter={formatBRL}
           icon={PiggyBank}
           trendLabel={lucroMes !== 0 ? (lucroMes > 0 ? "↑ Positivo" : "↓ Negativo") : undefined}
           kpiType={lucroMes >= 0 ? "lucro_pos" : "lucro_neg"}
@@ -260,6 +276,8 @@ export default function Dashboard() {
         <MiniKPI
           label="CMV"
           value={faturamentoMes > 0 ? `${cmvPct.toFixed(1)}%` : "—"}
+          numericValue={faturamentoMes > 0 ? cmvPct : undefined}
+          formatter={(v) => `${v.toFixed(1)}%`}
           icon={TrendingDown}
           trendLabel={faturamentoMes > 0 ? `Meta ${cmvMeta}%` : undefined}
           kpiType={cmvPct <= cmvMeta ? "cmv_ok" : "cmv_bad"}
