@@ -176,13 +176,13 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
                   className={cn(
                     "group relative w-full h-9 flex items-center rounded-lg transition-all duration-200 overflow-hidden",
                     isActive 
-                      ? "bg-sidebar-accent text-sidebar-primary" 
+                      ? "text-sidebar-primary" 
                       : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                   )}
                 >
-                  {/* Left Active Bar — Green Neon */}
+                  {/* Left Active Bar — Emerald */}
                   {isActive && !collapsed && (
-                    <div className="absolute left-0 top-1 bottom-1 w-[3px] rounded-r" style={{ backgroundColor: '#00E676', boxShadow: '0 0 8px rgba(0,230,118,0.4)' }} />
+                    <div className="absolute left-0 top-1 bottom-1 w-[3px] rounded-r bg-[hsl(var(--sidebar-primary))]" />
                   )}
                   
                   <div className={cn("flex items-center w-full px-3 gap-2.5 transition-transform duration-200", collapsed ? "justify-center" : "group-hover:translate-x-0.5")}>
