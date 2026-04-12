@@ -389,3 +389,17 @@
     to { opacity: 1; transform: translateY(0); }
   }
 }
+
+/* Dark Graphite Table Headers */
+thead tr,
+[role="row"]:has(th) {
+  background: #1F2937 !important;
+}
+thead th,
+[role="columnheader"] {
+  color: #FFFFFF !important;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
