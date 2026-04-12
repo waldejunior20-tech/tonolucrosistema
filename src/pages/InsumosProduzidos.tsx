@@ -490,13 +490,13 @@ export default function InsumosProduzidos() {
             </form>
           </DialogContent>
         </Dialog>
-      </div>
+      </PageHeader>
 
       {/* Tabela */}
       {isLoading ? (
         <p className="text-muted-foreground">Carregando...</p>
       ) : insumosProprios.length === 0 ? (
-        <p className="text-muted-foreground">Nenhum insumo produzido cadastrado.</p>
+        <EmptyState icon={Beaker} title="Nenhum pré-preparo cadastrado" description="Crie seus pré-preparos para calcular custos automaticamente." actionLabel="Novo Pré-Preparo" onAction={() => setDialogOpen(true)} />
       ) : (
         <div className="rounded-md border">
           <Table>
