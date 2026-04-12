@@ -15,9 +15,11 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Pencil, Trash2, Plus, Search, X, Check } from "lucide-react";
+import { Pencil, Trash2, Plus, Search, X, Check, BookOpen } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 import { formatMoney, formatQty } from "@/components/MoneyInput";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { EmptyState } from "@/components/EmptyState";
 
 const UNIDADES = ["kg", "g", "L", "ml", "unidade"];
 
@@ -415,8 +417,7 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Fichas Técnicas — {label}</h1>
+      <PageHeader title={`Fichas Técnicas — ${label}`} description="Gerencie receitas e custos dos seus produtos.">
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) resetForm(); setDialogOpen(open); }}>
           <DialogTrigger asChild>
             <Button onClick={() => { resetForm(); setDialogOpen(true); }}>
@@ -606,7 +607,7 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
             </form>
           </DialogContent>
         </Dialog>
-      </div>
+      </PageHeader>
 
       {/* Table */}
       {isLoading ? (

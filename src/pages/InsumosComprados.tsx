@@ -14,9 +14,11 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Pencil, Trash2, Plus, Filter } from "lucide-react";
+import { Pencil, Trash2, Plus, Filter, Package } from "lucide-react";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 import { MoneyInput, QuantityInput, formatMoney, formatQty } from "@/components/MoneyInput";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { EmptyState } from "@/components/EmptyState";
 
 const CATEGORIAS = [
   "Proteínas", "Laticínios", "Hortifruti", "Secos", "Bebidas",
@@ -139,9 +141,7 @@ export default function InsumosComprados() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Insumos Comprados</h1>
+      <PageHeader title="Insumos Comprados" description="Gerencie seus insumos e matérias-primas.">
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) resetForm(); setDialogOpen(open); }}>
           <DialogTrigger asChild>
             <Button className="gap-2">
@@ -202,7 +202,7 @@ export default function InsumosComprados() {
             </form>
           </DialogContent>
         </Dialog>
-      </div>
+      </PageHeader>
 
       {/* Filtro */}
       <div className="flex items-center gap-3">
@@ -222,7 +222,13 @@ export default function InsumosComprados() {
       {isLoading ? (
         <p className="text-muted-foreground">Carregando...</p>
       ) : filtered.length === 0 ? (
-        <p className="text-muted-foreground">Nenhum insumo encontrado.</p>
+        <EmptyState
+          icon={Package}
+          title="Nenhum insumo encontrado"
+          description="Cadastre seus insumos para começar a montar fichas técnicas."
+          actionLabel="Cadastrar Insumo"
+          onAction={() => setDialogOpen(true)}
+        />
       ) : (
         <div className="rounded-md border">
           <Table>

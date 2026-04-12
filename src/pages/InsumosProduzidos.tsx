@@ -14,9 +14,11 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Pencil, Trash2, Plus, Search, X } from "lucide-react";
+import { Pencil, Trash2, Plus, Search, X, Beaker } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 import { QuantityInput, formatMoney } from "@/components/MoneyInput";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { EmptyState } from "@/components/EmptyState";
 
 const UNIDADES_RENDIMENTO = ["kg", "g", "L", "ml", "unidade"];
 const UNIDADES_INGREDIENTE = ["kg", "g", "L", "ml", "unidade", "caixa", "pacote"];
@@ -321,10 +323,13 @@ export default function InsumosProduzidos() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Insumos Produzidos</h1>
+      <PageHeader title="Insumos Produzidos" description="Pré-preparos e produções internas.">
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) resetForm(); setDialogOpen(open); }}>
+          <DialogTrigger asChild>
+            <Button className="gap-2">
+              <Plus className="h-4 w-4" /> Novo Pré-Preparo
+            </Button>
+          </DialogTrigger>
           <DialogTrigger asChild>
             <Button className="gap-2">
               <Plus className="h-4 w-4" /> Novo Pré-Preparo
@@ -485,13 +490,13 @@ export default function InsumosProduzidos() {
             </form>
           </DialogContent>
         </Dialog>
-      </div>
+      </PageHeader>
 
       {/* Tabela */}
       {isLoading ? (
         <p className="text-muted-foreground">Carregando...</p>
       ) : insumosProprios.length === 0 ? (
-        <p className="text-muted-foreground">Nenhum insumo produzido cadastrado.</p>
+        <EmptyState icon={Beaker} title="Nenhum pré-preparo cadastrado" description="Crie seus pré-preparos para calcular custos automaticamente." actionLabel="Novo Pré-Preparo" onAction={() => setDialogOpen(true)} />
       ) : (
         <div className="rounded-md border">
           <Table>

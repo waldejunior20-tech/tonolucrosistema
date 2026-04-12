@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LogOut, User, Search, Settings2 } from "lucide-react";
+import { LogOut, User, Menu, Settings2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-export function Header() {
+interface HeaderProps {
+  onMenuClick?: () => void;
+  showMenuButton?: boolean;
+}
+
+export function Header({ onMenuClick, showMenuButton }: HeaderProps) {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const navigate = useNavigate();
@@ -16,7 +21,7 @@ export function Header() {
         setUser(user);
         const { data } = await supabase
           .from("profiles")
-          .select("business_name")
+          .select("business_name, display_name")
           .eq("id", user.id)
           .single();
         if (data) setProfile(data);
@@ -30,27 +35,33 @@ export function Header() {
     navigate("/login");
   };
 
+  // Avatar initials
+  const initials = (() => {
+    const name = profile?.display_name || profile?.business_name || user?.email || "";
+    const parts = name.split(/[\s@]+/).filter(Boolean);
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return name.slice(0, 2).toUpperCase();
+  })();
+
   return (
-    <header className="h-16 border-b border-border bg-background flex items-center justify-between px-6 sticky top-0 z-10">
+    <header className="h-14 border-b border-border bg-background flex items-center justify-between px-4 lg:px-6 sticky top-0 z-10">
       <div className="flex items-center gap-3">
+        {showMenuButton && (
+          <button
+            onClick={onMenuClick}
+            className="p-2 rounded-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors lg:hidden"
+          >
+            <Menu size={20} />
+          </button>
+        )}
         {profile?.business_name && (
-          <span className="text-sm font-semibold text-foreground">
+          <span className="text-sm font-semibold text-foreground hidden sm:block">
             {profile.business_name}
           </span>
         )}
       </div>
       
-      <div className="flex items-center gap-3">
-        {/* Search */}
-        <div className="hidden md:flex items-center gap-2 bg-card border border-border rounded-sm px-3 py-2 w-[280px]">
-          <Search className="h-4 w-4 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Buscar..."
-            className="bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none w-full"
-          />
-        </div>
-
+      <div className="flex items-center gap-2">
         <button
           onClick={() => navigate("/configuracoes")}
           className="p-2 rounded-sm text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
@@ -61,11 +72,11 @@ export function Header() {
 
         <div className="h-5 w-px bg-border" />
 
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <div className="w-9 h-9 rounded-full border-2 border-primary flex items-center justify-center">
-            <User className="h-4 w-4 text-primary" />
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center">
+            <span className="text-xs font-bold text-primary">{initials}</span>
           </div>
-          <span className="hidden sm:block text-xs text-foreground">{user?.email}</span>
+          <span className="hidden sm:block text-xs text-muted-foreground max-w-[140px] truncate">{user?.email}</span>
         </div>
 
         <Button 

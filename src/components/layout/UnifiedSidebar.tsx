@@ -77,9 +77,10 @@ const sidebarItems: SidebarItem[] = [
 interface UnifiedSidebarProps {
   collapsed: boolean;
   onToggle: () => void;
+  onNavigate?: () => void;
 }
 
-export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
+export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
@@ -119,6 +120,7 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
     }
     if (item.path) {
       navigate(item.path);
+      onNavigate?.();
     } else if (item.subItems) {
       toggleExpand(item.key);
     }
@@ -211,7 +213,7 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
                         <div key={`${sub.label}-${idx}`} className="flex flex-col gap-0.5">
                           <button
                             onClick={() => {
-                              if (sub.path) navigate(sub.path);
+                              if (sub.path) { navigate(sub.path); onNavigate?.(); }
                               if (hasNestedItems) toggleSubExpand(sub.label);
                             }}
                             className={cn(
@@ -232,7 +234,7 @@ export function UnifiedSidebar({ collapsed, onToggle }: UnifiedSidebarProps) {
                                 return (
                                   <button
                                     key={`${nested.path}-${nIdx}`}
-                                    onClick={() => navigate(nested.path)}
+                                    onClick={() => { navigate(nested.path); onNavigate?.(); }}
                                     className={cn(
                                       "h-7 px-3 flex items-center text-xs transition-colors rounded-sm",
                                       isNestedActive ? "text-primary font-semibold" : "text-sidebar-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent font-medium"

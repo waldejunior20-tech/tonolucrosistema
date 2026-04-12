@@ -1,14 +1,35 @@
-import { BookOpen, Package, Tag, TrendingUp, ArrowUpRight, ArrowDownRight, AlertTriangle, DollarSign } from "lucide-react";
+import { BookOpen, Package, Tag, TrendingUp, ArrowUpRight, ArrowDownRight, AlertTriangle, DollarSign, Pizza, BarChart3, Receipt, Megaphone } from "lucide-react";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { HealthStatus } from "@/components/HealthStatus";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import { KpiCard } from "@/components/KpiCard";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { format } from "date-fns";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 function formatBRL(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return "Bom dia";
+  if (h < 18) return "Boa tarde";
+  return "Boa noite";
+}
+
+const SHORTCUTS = [
+  { label: "Fichas de Pizza", icon: Pizza, path: "/fichas/pizzas", color: "text-primary" },
+  { label: "Precificação", icon: BarChart3, path: "/precificacao/pizzas", color: "text-warning" },
+  { label: "DRE Financeiro", icon: Receipt, path: "/financeiro/dre", color: "text-success" },
+  { label: "Promoções", icon: Megaphone, path: "/promocoes/ativas", color: "text-info" },
+];
+
 export default function Dashboard() {
+  const navigate = useNavigate();
+  const [businessName, setBusinessName] = useState("");
   const {
     totalFichas,
     totalInsumos,
@@ -21,54 +42,28 @@ export default function Dashboard() {
     contasVencendo,
   } = useDashboardData();
 
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        supabase.from("profiles").select("business_name").eq("id", user.id).single()
+          .then(({ data }) => { if (data?.business_name) setBusinessName(data.business_name); });
+      }
+    });
+  }, []);
+
   const lucroMes = faturamentoMes - despesasMes;
   const cmvStatus: "healthy" | "warning" | "danger" =
     cmvPct === 0 ? "healthy" : cmvPct <= cmvMeta ? "healthy" : cmvPct <= cmvMeta + 5 ? "warning" : "danger";
 
-  const kpis = [
-    {
-      label: "Fichas Técnicas",
-      value: String(totalFichas),
-      sub: "Produtos cadastrados",
-      icon: BookOpen,
-      trend: totalFichas > 0 ? `${totalFichas} ativas` : "Nenhuma",
-      positive: totalFichas > 0,
-    },
-    {
-      label: "Insumos",
-      value: String(totalInsumos),
-      sub: "Itens cadastrados",
-      icon: Package,
-      trend: totalInsumos > 0 ? `${totalInsumos} itens` : "Nenhum",
-      positive: totalInsumos > 0,
-    },
-    {
-      label: "Promoções Ativas",
-      value: String(promocoesAtivas),
-      sub: "Campanhas ativas",
-      icon: Tag,
-      trend: promocoesAtivas > 0 ? `${promocoesAtivas} ativas` : "Nenhuma",
-      positive: promocoesAtivas > 0,
-    },
-    {
-      label: "Faturamento",
-      value: formatBRL(faturamentoMes),
-      sub: "Este mês",
-      icon: TrendingUp,
-      trend: faturamentoMes > 0 ? `Lucro: ${formatBRL(lucroMes)}` : "Sem lançamentos",
-      positive: lucroMes >= 0,
-    },
-  ];
-
   const hasChartData = graficoMensal.some((m) => m.receita > 0 || m.despesa > 0);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Welcome */}
-      <div>
-        <h1 className="text-foreground">Bem-vindo de volta 👋</h1>
-        <p className="text-muted-foreground text-sm mt-1">Aqui está o resumo do seu negócio.</p>
-      </div>
+      <PageHeader
+        title={`${getGreeting()}${businessName ? `, ${businessName}` : ""} 👋`}
+        description="Aqui está o resumo do seu negócio."
+      />
 
       {/* Health Status - CMV */}
       {faturamentoMes > 0 && (
@@ -79,20 +74,40 @@ export default function Dashboard() {
       )}
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        {kpis.map((card) => (
-          <div key={card.label} className="card-premium group cursor-default">
-            <div className="flex items-start justify-between mb-4">
-              <p className="label-upper">{card.label}</p>
-              <span className={`${card.positive ? "trend-positive" : "trend-negative"} flex items-center gap-1`}>
-                {card.trend}
-                {card.positive ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
-              </span>
-            </div>
-            <p className="kpi-number text-foreground mb-1">{card.value}</p>
-            <p className="text-xs text-muted-foreground">{card.sub}</p>
-          </div>
-        ))}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <KpiCard
+          label="Fichas Técnicas"
+          value={totalFichas}
+          icon={BookOpen}
+          trend={totalFichas > 0 ? `${totalFichas} ativas` : "Nenhuma"}
+          trendPositive={totalFichas > 0}
+          subtitle="Produtos cadastrados"
+        />
+        <KpiCard
+          label="Insumos"
+          value={totalInsumos}
+          icon={Package}
+          trend={totalInsumos > 0 ? `${totalInsumos} itens` : "Nenhum"}
+          trendPositive={totalInsumos > 0}
+          subtitle="Itens cadastrados"
+        />
+        <KpiCard
+          label="Promoções"
+          value={promocoesAtivas}
+          icon={Tag}
+          trend={promocoesAtivas > 0 ? `${promocoesAtivas} ativas` : "Nenhuma"}
+          trendPositive={promocoesAtivas > 0}
+          subtitle="Campanhas ativas"
+        />
+        <KpiCard
+          label="Faturamento"
+          value={faturamentoMes}
+          formatter={formatBRL}
+          icon={TrendingUp}
+          trend={faturamentoMes > 0 ? `Lucro: ${formatBRL(lucroMes)}` : "Sem lançamentos"}
+          trendPositive={lucroMes >= 0}
+          subtitle="Este mês"
+        />
       </div>
 
       {/* Chart + Alerts */}
@@ -101,11 +116,10 @@ export default function Dashboard() {
         <div className="lg:col-span-2 card-premium">
           <h3 className="text-sm font-semibold text-foreground mb-4">Faturamento vs Despesas — Últimos 6 meses</h3>
           {hasChartData ? (
-            <ResponsiveContainer width="100%" height={260}>
+            <ResponsiveContainer width="100%" height={240}>
               <BarChart data={graficoMensal} barCategoryGap="20%">
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="mes" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
-                <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`} />
+                <XAxis dataKey="mes" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`} axisLine={false} tickLine={false} />
                 <Tooltip
                   contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }}
                   labelStyle={{ color: "hsl(var(--foreground))" }}
@@ -116,7 +130,7 @@ export default function Dashboard() {
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex items-center justify-center h-[260px] text-muted-foreground text-sm">
+            <div className="flex items-center justify-center h-[240px] text-muted-foreground text-sm">
               <p>Registre receitas e despesas no módulo Financeiro para visualizar o gráfico.</p>
             </div>
           )}
@@ -131,12 +145,13 @@ export default function Dashboard() {
           {contasVencendo.length > 0 ? (
             <div className="space-y-2">
               {contasVencendo.map((c, i) => (
-                <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-warning/5 border border-warning/20">
-                  <div>
-                    <p className="text-xs font-medium text-foreground">{c.descricao}</p>
+                <div key={i} className="flex items-start gap-3 p-2.5 rounded-sm bg-warning/5 border border-warning/20">
+                  <div className="mt-1.5 w-2 h-2 rounded-full bg-warning flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium text-foreground truncate">{c.descricao}</p>
                     <p className="text-[10px] text-muted-foreground">Vence {format(new Date(c.data_lancamento + "T00:00:00"), "dd/MM")}</p>
                   </div>
-                  <span className="text-xs font-semibold text-warning">{formatBRL(Number(c.valor))}</span>
+                  <span className="text-xs font-semibold text-warning whitespace-nowrap">{formatBRL(Number(c.valor))}</span>
                 </div>
               ))}
             </div>
@@ -145,12 +160,30 @@ export default function Dashboard() {
           )}
 
           {cmvPct > cmvMeta && faturamentoMes > 0 && (
-            <div className="p-2 rounded-lg bg-destructive/5 border border-destructive/20">
+            <div className="flex items-start gap-3 p-2.5 rounded-sm bg-destructive/5 border border-destructive/20">
+              <div className="mt-1.5 w-2 h-2 rounded-full bg-destructive flex-shrink-0" />
               <p className="text-xs font-medium text-destructive flex items-center gap-1">
                 <DollarSign size={12} /> CMV acima da meta ({cmvPct.toFixed(1)}% vs {cmvMeta}%)
               </p>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Quick shortcuts */}
+      <div>
+        <h3 className="text-sm font-semibold text-foreground mb-3">Atalhos Rápidos</h3>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {SHORTCUTS.map((s) => (
+            <button
+              key={s.path}
+              onClick={() => navigate(s.path)}
+              className="card-premium !p-4 flex items-center gap-3 hover:border-primary/30 transition-colors text-left"
+            >
+              <s.icon size={20} className={s.color} />
+              <span className="text-sm font-medium text-foreground">{s.label}</span>
+            </button>
+          ))}
         </div>
       </div>
     </div>
