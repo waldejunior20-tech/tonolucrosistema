@@ -894,14 +894,14 @@ export default function FichasTecnicasPizza() {
       ) : (
         <div className="table-premium fade-up fade-up-d1">
           <Table>
-            <TableHeader>
+            <TableHeader style={{ background: 'linear-gradient(135deg, #1E293B, #334155)' }}>
               <TableRow>
-                <TableHead>Nome</TableHead>
-                <TableHead>Tipo</TableHead>
-                <TableHead className="text-right">Custo P</TableHead>
-                <TableHead className="text-right">Custo M</TableHead>
-                <TableHead className="text-right">Custo G</TableHead>
-                <TableHead className="w-[100px]">Ações</TableHead>
+                <TableHead className="text-white font-bold">Nome</TableHead>
+                <TableHead className="text-white font-bold">Tipo</TableHead>
+                <TableHead className="text-right text-white font-bold">Custo P</TableHead>
+                <TableHead className="text-right text-white font-bold">Custo M</TableHead>
+                <TableHead className="text-right text-white font-bold">Custo G</TableHead>
+                <TableHead className="w-[100px] text-white font-bold">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -916,7 +916,7 @@ export default function FichasTecnicasPizza() {
                     <TableCell className="text-right">R$ {fmt(custos.custoG)}</TableCell>
                     <TableCell>
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" onClick={() => handleEdit(ficha)} className="text-orange hover:text-orange hover:bg-orange/10">
+                        <Button variant="ghost" size="icon" onClick={() => handleEdit(ficha)} className="text-muted-foreground hover:text-foreground hover:bg-muted">
                           <Pencil className="h-4 w-4" />
                         </Button>
                         <Button variant="ghost" size="icon" onClick={() => deleteMutation.mutate(ficha.id)}>

@@ -291,14 +291,14 @@ export default function FinanceiroContasPagar() {
       <Card>
         <CardContent className="p-0">
           <Table>
-            <TableHeader>
+            <TableHeader style={{ background: 'linear-gradient(135deg, #1E293B, #334155)' }}>
               <TableRow>
-                <TableHead className="min-w-[200px]">Descrição</TableHead>
-                <TableHead>Categoria</TableHead>
-                <TableHead className="text-right">Valor</TableHead>
-                <TableHead className="text-center">Vencimento</TableHead>
-                <TableHead className="text-center">Status</TableHead>
-                <TableHead className="text-center">Ações</TableHead>
+                <TableHead className="min-w-[200px] text-white font-bold">Descrição</TableHead>
+                <TableHead className="text-white font-bold">Categoria</TableHead>
+                <TableHead className="text-right text-white font-bold">Valor</TableHead>
+                <TableHead className="text-center text-white font-bold">Vencimento</TableHead>
+                <TableHead className="text-center text-white font-bold">Status</TableHead>
+                <TableHead className="text-center text-white font-bold">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
