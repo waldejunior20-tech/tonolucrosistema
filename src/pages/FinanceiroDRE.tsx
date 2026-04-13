@@ -364,7 +364,7 @@ export default function FinanceiroDRE() {
           <p className="label-upper mb-4">Saída Total</p>
           <p className="kpi-number text-destructive">{fmt(calc.totalSaiu)}</p>
         </div>
-        <div className={cn("card-premium p-7", calc.sobrou >= 0 ? "border-[#10B981]/30 shadow-sm shadow-[#10B981]/5" : "border-destructive/30 shadow-sm shadow-destructive/5")}>
+        <div className={cn("card-premium p-7", calc.sobrou >= 0 ? "border-success/30 shadow-sm shadow-success/5" : "border-destructive/30 shadow-sm shadow-destructive/5")}>
           <p className="label-upper mb-4">{calc.sobrou >= 0 ? "Lucro Líquido" : "Prejuízo"}</p>
           <p className={cn("kpi-number", calc.sobrou >= 0 ? "text-success" : "text-destructive")}>{fmt(Math.abs(calc.sobrou))}</p>
           <p className={cn("text-sm mt-1 font-bold", calc.sobrou >= 0 ? "text-success" : "text-destructive")}>{calc.sobrouPct.toFixed(1)}% de margem</p>
