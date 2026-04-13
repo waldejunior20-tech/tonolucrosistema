@@ -356,6 +356,7 @@ export default function Dashboard() {
                   contentStyle={{
                     ...tooltipStyle,
                     padding: "10px 14px",
+                    fontWeight: 700,
                   }}
                   formatter={(value: number) => formatBRL(value)}
                   cursor={{ stroke: "hsl(var(--border))", strokeWidth: 1 }}
