@@ -421,7 +421,7 @@ export default function Configuracoes() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <Label className="text-xs text-muted-foreground">CMV Meta (%)</Label>
+              <Label className="text-xs text-muted-foreground">Meta de Custo (%)</Label>
               <Input type="number" step="0.1" value={cmvMeta} onChange={e => setCmvMeta(parseFloat(e.target.value) || 0)} className="h-9 mt-1" />
             </div>
             <div>
