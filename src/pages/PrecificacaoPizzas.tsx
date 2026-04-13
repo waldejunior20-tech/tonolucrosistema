@@ -7,13 +7,13 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from "@/components/ui/table";
+  Collapsible, CollapsibleContent, CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
-import { Settings2, Save, AlertTriangle, Check, TrendingUp, TrendingDown, Activity } from "lucide-react";
+import { Settings2, Save, AlertTriangle, Check, TrendingUp, TrendingDown, Activity, ChevronDown } from "lucide-react";
 import { formatMoney } from "@/components/MoneyInput";
 import {
   fmt, fmtPct, calcCmv, converterQuantidade, cmvBg, cmvColor, cmvEmoji, cmvMessage,
@@ -72,6 +72,11 @@ export default function PrecificacaoPizzas() {
   const [localPrices, setLocalPrices] = useState<Record<string, { p: string; m: string; g: string }>>({});
   const [configForm, setConfigForm] = useState<ConfigPrecificacao | null>(null);
   const [savedFields, setSavedFields] = useState<Record<string, boolean>>({});
+  const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
+
+  const toggleCard = (id: string) => {
+    setExpandedCards((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
 
   // ─── Queries ─────────────────────────────────────────────────────
   const { data: config } = useQuery({
@@ -303,19 +308,28 @@ export default function PrecificacaoPizzas() {
 
   const sizes = ["p", "m", "g"] as const;
   const sizeLabels = { p: "P", m: "M", g: "G" };
-  const appCount = activeApps.length;
 
   // CMV pill colors
   const getCmvPillStyle = (cmv: number) => {
-    if (cmv > 35) return { bg: '#EF4444', glow: 'rgba(239,68,68,0.25)' };
-    if (cmv > 30) return { bg: '#F59E0B', glow: 'rgba(245,158,11,0.25)' };
-    return { bg: '#10B981', glow: 'rgba(16,185,129,0.25)' };
+    if (cmv > 35) return { bg: 'hsl(var(--destructive))', text: 'hsl(var(--destructive-foreground))', glow: 'hsl(var(--destructive) / 0.25)' };
+    if (cmv > 30) return { bg: 'hsl(var(--warning))', text: 'hsl(var(--foreground))', glow: 'hsl(var(--warning) / 0.25)' };
+    return { bg: 'hsl(var(--success))', text: 'hsl(var(--primary-foreground))', glow: 'hsl(var(--success) / 0.25)' };
+  };
+
+  // Health dot for card header
+  const getHealthColor = (cmvs: { p: number; m: number; g: number }, precos: { p: number; m: number; g: number }) => {
+    const activeCmvs = sizes.filter(s => precos[s] > 0).map(s => cmvs[s]);
+    if (activeCmvs.length === 0) return { color: 'hsl(var(--muted-foreground))', glow: 'transparent' };
+    const worst = Math.max(...activeCmvs);
+    if (worst > 35) return { color: 'hsl(var(--destructive))', glow: 'hsl(var(--destructive) / 0.4)' };
+    if (worst > 30) return { color: 'hsl(var(--warning))', glow: 'hsl(var(--warning) / 0.4)' };
+    return { color: 'hsl(var(--success))', glow: 'hsl(var(--success) / 0.4)' };
   };
 
   return (
     <TooltipProvider>
       <div className="space-y-8 page-enter bg-grain">
-        {/* ═══ Header — Industrial Display Font ═══ */}
+        {/* ═══ Header ═══ */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-display text-[32px] font-extrabold tracking-tight text-foreground leading-none">
@@ -328,7 +342,7 @@ export default function PrecificacaoPizzas() {
               setConfigForm(config ?? null);
               setConfigOpen(!configOpen);
             }}
-            className="btn-micro flex items-center gap-2 px-5 h-10 rounded-xs border border-border text-sm font-semibold text-muted-foreground hover:text-foreground hover:border-foreground/30 bg-card transition-all"
+            className="btn-micro flex items-center gap-2 px-5 h-10 rounded-lg border border-border text-sm font-semibold text-muted-foreground hover:text-foreground hover:border-foreground/30 bg-card transition-all"
           >
             <Settings2 className="h-4 w-4" />
             <span>Configurações</span>
@@ -376,23 +390,19 @@ export default function PrecificacaoPizzas() {
           </Card>
         )}
 
-        {/* ═══ KPI Cards — Industrial Bento Box ═══ */}
+        {/* ═══ KPI Cards ═══ */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 stagger-fade-in">
-          {/* CMV Médio */}
           <div className="kpi-industrial group">
             <div className="flex items-center gap-2 mb-4">
               <Activity className="h-4 w-4 text-muted-foreground" />
               <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground font-display">CMV Médio Atual</p>
             </div>
-            <p
-              className={cn("text-[48px] font-extrabold leading-none tracking-tight font-terminal", cmvColor(indicators.avgCmv))}
-            >
+            <p className={cn("text-[48px] font-extrabold leading-none tracking-tight font-terminal", cmvColor(indicators.avgCmv))}>
               {fmtPct(indicators.avgCmv)}
             </p>
             <p className="text-[12px] text-muted-foreground font-medium mt-3">Média entre todos os tamanhos</p>
           </div>
 
-          {/* Semáforo */}
           <div className="kpi-industrial group">
             <div className="flex items-center gap-2 mb-4">
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -402,8 +412,8 @@ export default function PrecificacaoPizzas() {
               <div
                 className="h-6 w-6 rounded-full"
                 style={{
-                  background: indicators.avgCmv > 40 ? '#EF4444' : indicators.avgCmv > 35 ? '#F59E0B' : '#10B981',
-                  boxShadow: `0 0 16px ${indicators.avgCmv > 40 ? 'rgba(239,68,68,0.4)' : indicators.avgCmv > 35 ? 'rgba(245,158,11,0.4)' : 'rgba(16,185,129,0.4)'}`,
+                  background: indicators.avgCmv > 40 ? 'hsl(var(--destructive))' : indicators.avgCmv > 35 ? 'hsl(var(--warning))' : 'hsl(var(--success))',
+                  boxShadow: `0 0 16px ${indicators.avgCmv > 40 ? 'hsl(var(--destructive) / 0.4)' : indicators.avgCmv > 35 ? 'hsl(var(--warning) / 0.4)' : 'hsl(var(--success) / 0.4)'}`,
                 }}
               />
               <span className={cn("text-xl font-extrabold uppercase font-display tracking-wide", cmvColor(indicators.avgCmv))}>
@@ -412,7 +422,6 @@ export default function PrecificacaoPizzas() {
             </div>
           </div>
 
-          {/* Fora da Meta */}
           <div className="kpi-industrial group">
             <div className="flex items-center gap-2 mb-4">
               <TrendingDown className="h-4 w-4 text-destructive" />
@@ -423,7 +432,7 @@ export default function PrecificacaoPizzas() {
           </div>
         </div>
 
-        {/* ═══ Pizza Cards — Redesign Completo ═══ */}
+        {/* ═══ Pizza Cards — Summary + Expand ═══ */}
         <div className="space-y-4">
           {fichas.length === 0 ? (
             <div className="card-industrial flex flex-col items-center gap-5 py-20">
@@ -445,175 +454,222 @@ export default function PrecificacaoPizzas() {
               const cmvs = { p: calcCmv(custos.p, precos.p), m: calcCmv(custos.m, precos.m), g: calcCmv(custos.g, precos.g) };
               const sugeridos = { p: cmvMeta > 0 ? custos.p / (cmvMeta / 100) : 0, m: cmvMeta > 0 ? custos.m / (cmvMeta / 100) : 0, g: cmvMeta > 0 ? custos.g / (cmvMeta / 100) : 0 };
               const hasAlert = cmvs.p > 40 || cmvs.m > 40 || cmvs.g > 40;
+              const isOpen = expandedCards[ficha.id] ?? false;
+              const health = getHealthColor(cmvs, precos);
 
               return (
-                <div
+                <Collapsible
                   key={ficha.id}
-                  className={cn(
-                    "row-reveal rounded-sm border bg-card transition-all duration-300 hover:shadow-card-hover overflow-hidden",
-                    hasAlert ? "border-destructive/30 shadow-[0_0_0_1px_hsl(var(--destructive)/0.1)]" : "border-border/60 shadow-card"
-                  )}
-                  style={{ animationDelay: `${rowIndex * 60}ms` }}
+                  open={isOpen}
+                  onOpenChange={() => toggleCard(ficha.id)}
                 >
-                  {/* Card Header — Pizza Name + Type + Global CMV */}
-                  <div className="flex items-center justify-between px-6 py-4 border-b border-border/40" style={{ background: 'hsl(var(--secondary) / 0.4)' }}>
-                    <div className="flex items-center gap-3">
-                      {hasAlert && <AlertTriangle className="h-5 w-5 text-destructive flex-shrink-0" />}
-                      <div>
-                        <h3 className="font-display font-extrabold text-[18px] text-foreground leading-tight">{ficha.nome}</h3>
-                        <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-[0.12em]">{tipoLabel(ficha.tipo)}</span>
-                      </div>
-                    </div>
-                    {/* Quick CMV summary */}
-                    <div className="flex items-center gap-2">
-                      {sizes.map((s) => {
-                        const cmv = cmvs[s];
-                        const pill = getCmvPillStyle(cmv);
-                        return precos[s] > 0 ? (
-                          <div key={s} className="flex flex-col items-center gap-1">
-                            <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{sizeLabels[s]}</span>
-                            <span
-                              className="inline-block text-[11px] font-bold px-2.5 py-1 rounded-full font-terminal"
-                              style={{ background: pill.bg, color: '#fff', boxShadow: `0 2px 8px ${pill.glow}` }}
-                            >
-                              {fmtPct(cmv)}
-                            </span>
+                  <div
+                    className={cn(
+                      "row-reveal rounded-xl border bg-card overflow-hidden transition-all duration-300",
+                      hasAlert ? "border-destructive/30 shadow-[0_0_0_1px_hsl(var(--destructive)/0.08)]" : "border-border/60",
+                      isOpen ? "shadow-lg" : "shadow-sm hover:shadow-md"
+                    )}
+                    style={{ animationDelay: `${rowIndex * 60}ms` }}
+                  >
+                    {/* ── Collapsed Summary (always visible) ── */}
+                    <CollapsibleTrigger asChild>
+                      <button className="w-full flex items-center justify-between px-6 py-4 hover:bg-secondary/30 transition-colors cursor-pointer text-left group">
+                        <div className="flex items-center gap-4">
+                          {/* Health dot */}
+                          <div
+                            className="h-3 w-3 rounded-full flex-shrink-0 transition-all"
+                            style={{ background: health.color, boxShadow: `0 0 8px ${health.glow}` }}
+                          />
+                          <div>
+                            <h3 className="font-display font-extrabold text-lg text-foreground leading-tight">{ficha.nome}</h3>
+                            <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-[0.12em]">{tipoLabel(ficha.tipo)}</span>
                           </div>
-                        ) : (
-                          <div key={s} className="flex flex-col items-center gap-1">
-                            <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{sizeLabels[s]}</span>
-                            <span className="text-muted-foreground/40 text-xs">—</span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Card Body — Size Grid */}
-                  <div className="grid grid-cols-3 divide-x divide-border/40">
-                    {sizes.map((s) => {
-                      const custo = custos[s];
-                      const sug = sugeridos[s];
-                      const preco = precos[s];
-                      const cmv = cmvs[s];
-                      const fieldKey = `${ficha.id}-${s}`;
-                      const borderColor = preco <= 0 ? 'hsl(var(--border))' : cmv > 35 ? '#EF4444' : cmv > 30 ? '#F59E0B' : '#10B981';
-                      const glowColor = preco <= 0 ? 'transparent' : cmv > 35 ? 'rgba(239,68,68,0.10)' : cmv > 30 ? 'rgba(245,158,11,0.10)' : 'rgba(16,185,129,0.10)';
-                      const belowSuggested = preco > 0 && sug > 0 && preco < sug;
-
-                      return (
-                        <div key={s} className="p-5 space-y-4">
-                          {/* Size Label */}
-                          <div className="flex items-center justify-center">
-                            <span className="text-[11px] font-extrabold uppercase tracking-[0.15em] text-muted-foreground bg-muted/60 px-3 py-1 rounded-full">{sizeLabels[s]}</span>
-                          </div>
-
-                          {/* Custo */}
-                          <div className="space-y-1">
-                            <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-muted-foreground block">Custo</span>
-                            <div className="flex items-baseline gap-0.5">
-                              <span className="text-[11px] text-muted-foreground">R$</span>
-                              <span className="text-[16px] font-bold font-terminal text-foreground">{custo.toFixed(2)}</span>
-                            </div>
-                          </div>
-
-                          {/* Sugerido */}
-                          <div className="space-y-1">
-                            <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-muted-foreground block">Sugerido</span>
-                            <div className="flex items-baseline gap-0.5">
-                              <span className="text-[11px] text-muted-foreground">R$</span>
-                              <span className="text-[16px] font-bold font-terminal text-foreground/70">{sug.toFixed(2)}</span>
-                            </div>
-                          </div>
-
-                          {/* Seu Preço — Input */}
-                          <div className="space-y-1.5">
-                            <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-foreground block" style={{ color: '#10B981' }}>Seu Preço</span>
-                            <div className="relative">
-                              <input
-                                type={localPrices[ficha.id]?.[s] !== undefined ? "number" : "text"}
-                                step={localPrices[ficha.id]?.[s] !== undefined ? "0.01" : undefined}
-                                className="input-glow-focus w-full text-center rounded-xs outline-none font-terminal"
-                                style={{
-                                  height: '48px',
-                                  fontSize: '18px',
-                                  fontWeight: 800,
-                                  fontFeatureSettings: "'tnum'",
-                                  color: 'hsl(var(--foreground))',
-                                  background: 'hsl(var(--card))',
-                                  border: `2px solid ${borderColor}`,
-                                  boxShadow: `0 0 12px ${glowColor}`,
-                                }}
-                                onFocus={(e) => {
-                                  e.currentTarget.style.boxShadow = `0 0 0 3px ${borderColor}25, 0 0 20px ${borderColor}15`;
-                                  e.currentTarget.style.transform = 'scale(1.03)';
-                                  e.currentTarget.select();
-                                  if (localPrices[ficha.id]?.[s] === undefined) {
-                                    handlePriceChange(ficha.id, s, String(ficha[`preco_venda_${s}` as keyof FichaPizza] ?? ""));
-                                  }
-                                }}
-                                onBlur={(e) => {
-                                  e.currentTarget.style.boxShadow = `0 0 12px ${glowColor}`;
-                                  e.currentTarget.style.transform = 'scale(1)';
-                                  handlePriceBlur(ficha.id, s, ficha);
-                                }}
-                                value={
-                                  localPrices[ficha.id]?.[s] !== undefined
-                                    ? localPrices[ficha.id][s]
-                                    : (ficha[`preco_venda_${s}` as keyof FichaPizza]
-                                      ? formatMoney(Number(ficha[`preco_venda_${s}` as keyof FichaPizza]))
-                                      : "")
-                                }
-                                onChange={(e) => handlePriceChange(ficha.id, s, e.target.value)}
-                                placeholder="R$ 0,00"
-                              />
-                              {savedFields[fieldKey] && (
-                                <Check className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-primary animate-in fade-in duration-200" />
-                              )}
-                              {belowSuggested && !savedFields[fieldKey] && (
-                                <span className="absolute -right-1 -top-2 text-[13px]" title="Preço abaixo do sugerido">⚠️</span>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* App Prices */}
-                          {activeApps.length > 0 && (
-                            <div className="pt-3 border-t border-border/30 space-y-2">
-                              {activeApps.map((app) => {
-                                const appPrice = preco > 0 ? calcAppPrice(preco, app.taxa) : 0;
-                                const appCmv = calcCmv(custo, appPrice);
-                                const appPill = getCmvPillStyle(appCmv);
-                                return (
-                                  <div key={app.key} className="flex items-center justify-between">
-                                    <div>
-                                      <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">{app.label}</span>
-                                      {appPrice > 0 && (
-                                        <p className="text-[13px] font-bold font-terminal text-foreground">
-                                          <span className="text-[10px] text-muted-foreground mr-0.5">R$</span>
-                                          {appPrice.toFixed(2)}
-                                        </p>
-                                      )}
-                                    </div>
-                                    {appPrice > 0 ? (
-                                      <span
-                                        className="text-[10px] font-bold px-2 py-0.5 rounded-full font-terminal"
-                                        style={{ background: appPill.bg, color: '#fff' }}
-                                      >
-                                        {fmtPct(appCmv)}
-                                      </span>
-                                    ) : (
-                                      <span className="text-muted-foreground/40 text-xs">—</span>
-                                    )}
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          )}
                         </div>
-                      );
-                    })}
+
+                        {/* Quick price + CMV summary */}
+                        <div className="flex items-center gap-5">
+                          {sizes.map((s) => {
+                            const preco = precos[s];
+                            const cmv = cmvs[s];
+                            const pill = getCmvPillStyle(cmv);
+                            return (
+                              <div key={s} className="flex items-center gap-2">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground w-4">{sizeLabels[s]}</span>
+                                {preco > 0 ? (
+                                  <>
+                                    <span className="font-terminal text-sm font-bold text-foreground tabular-nums">
+                                      {formatMoney(preco)}
+                                    </span>
+                                    <span
+                                      className="inline-block text-[11px] font-bold px-2.5 py-0.5 rounded-full font-terminal"
+                                      style={{ background: pill.bg, color: pill.text, boxShadow: `0 2px 8px ${pill.glow}` }}
+                                    >
+                                      {fmtPct(cmv)}
+                                    </span>
+                                  </>
+                                ) : (
+                                  <span className="text-muted-foreground/40 text-xs font-terminal">—</span>
+                                )}
+                              </div>
+                            );
+                          })}
+
+                          <ChevronDown
+                            className={cn(
+                              "h-5 w-5 text-muted-foreground transition-transform duration-300 ml-2",
+                              isOpen && "rotate-180"
+                            )}
+                          />
+                        </div>
+                      </button>
+                    </CollapsibleTrigger>
+
+                    {/* ── Expanded Detail ── */}
+                    <CollapsibleContent className="data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
+                      <div className="border-t border-border/40" />
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-0 md:divide-x md:divide-border/30">
+                        {sizes.map((s, sizeIdx) => {
+                          const custo = custos[s];
+                          const sug = sugeridos[s];
+                          const preco = precos[s];
+                          const cmv = cmvs[s];
+                          const fieldKey = `${ficha.id}-${s}`;
+                          const borderColor = preco <= 0 ? 'hsl(var(--border))' : cmv > 35 ? 'hsl(var(--destructive))' : cmv > 30 ? 'hsl(var(--warning))' : 'hsl(var(--success))';
+                          const glowColor = preco <= 0 ? 'transparent' : cmv > 35 ? 'hsl(var(--destructive) / 0.10)' : cmv > 30 ? 'hsl(var(--warning) / 0.10)' : 'hsl(var(--success) / 0.10)';
+                          const belowSuggested = preco > 0 && sug > 0 && preco < sug;
+                          const pill = getCmvPillStyle(cmv);
+
+                          return (
+                            <div
+                              key={s}
+                              className="p-6 space-y-5 fade-up"
+                              style={{ animationDelay: `${sizeIdx * 50}ms` }}
+                            >
+                              {/* Size badge */}
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs font-extrabold uppercase tracking-[0.15em] text-muted-foreground bg-secondary/60 px-3 py-1.5 rounded-lg">
+                                  Tamanho {sizeLabels[s]}
+                                </span>
+                                {preco > 0 && (
+                                  <span
+                                    className="text-xs font-bold px-3 py-1 rounded-full font-terminal"
+                                    style={{ background: pill.bg, color: pill.text, boxShadow: `0 2px 8px ${pill.glow}` }}
+                                  >
+                                    CMV {fmtPct(cmv)}
+                                  </span>
+                                )}
+                              </div>
+
+                              {/* Info block — Custo + Sugerido */}
+                              <div className="bg-secondary/40 rounded-lg p-4 space-y-3">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">Custo</span>
+                                  <div className="flex items-baseline gap-1">
+                                    <span className="text-xs text-muted-foreground">R$</span>
+                                    <span className="text-base font-bold font-terminal text-foreground">{custo.toFixed(2)}</span>
+                                  </div>
+                                </div>
+                                <div className="h-px bg-border/40" />
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">Sugerido</span>
+                                  <div className="flex items-baseline gap-1">
+                                    <span className="text-xs text-muted-foreground">R$</span>
+                                    <span className="text-base font-bold font-terminal text-foreground/70">{sug.toFixed(2)}</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Action block — Seu Preço */}
+                              <div className="space-y-2">
+                                <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-primary block">Seu Preço</span>
+                                <div className="relative">
+                                  <input
+                                    type={localPrices[ficha.id]?.[s] !== undefined ? "number" : "text"}
+                                    step={localPrices[ficha.id]?.[s] !== undefined ? "0.01" : undefined}
+                                    className="input-glow-focus w-full text-center rounded-lg outline-none font-terminal"
+                                    style={{
+                                      height: '52px',
+                                      fontSize: '20px',
+                                      fontWeight: 800,
+                                      fontFeatureSettings: "'tnum'",
+                                      color: 'hsl(var(--foreground))',
+                                      background: 'hsl(var(--card))',
+                                      border: `2px solid ${borderColor}`,
+                                      boxShadow: `0 0 12px ${glowColor}`,
+                                    }}
+                                    onFocus={(e) => {
+                                      e.currentTarget.style.boxShadow = `0 0 0 3px ${borderColor}25, 0 0 20px ${borderColor}15`;
+                                      e.currentTarget.style.transform = 'scale(1.03)';
+                                      e.currentTarget.select();
+                                      if (localPrices[ficha.id]?.[s] === undefined) {
+                                        handlePriceChange(ficha.id, s, String(ficha[`preco_venda_${s}` as keyof FichaPizza] ?? ""));
+                                      }
+                                    }}
+                                    onBlur={(e) => {
+                                      e.currentTarget.style.boxShadow = `0 0 12px ${glowColor}`;
+                                      e.currentTarget.style.transform = 'scale(1)';
+                                      handlePriceBlur(ficha.id, s, ficha);
+                                    }}
+                                    value={
+                                      localPrices[ficha.id]?.[s] !== undefined
+                                        ? localPrices[ficha.id][s]
+                                        : (ficha[`preco_venda_${s}` as keyof FichaPizza]
+                                          ? formatMoney(Number(ficha[`preco_venda_${s}` as keyof FichaPizza]))
+                                          : "")
+                                    }
+                                    onChange={(e) => handlePriceChange(ficha.id, s, e.target.value)}
+                                    placeholder="R$ 0,00"
+                                  />
+                                  {savedFields[fieldKey] && (
+                                    <Check className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary animate-in fade-in duration-200" />
+                                  )}
+                                  {belowSuggested && !savedFields[fieldKey] && (
+                                    <span className="absolute -right-1 -top-2 text-[13px]" title="Preço abaixo do sugerido">⚠️</span>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* App Prices */}
+                              {activeApps.length > 0 && (
+                                <div className="pt-3 border-t border-border/30 space-y-2.5">
+                                  <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-muted-foreground">Delivery Apps</span>
+                                  {activeApps.map((app) => {
+                                    const appPrice = preco > 0 ? calcAppPrice(preco, app.taxa) : 0;
+                                    const appCmv = calcCmv(custo, appPrice);
+                                    const appPill = getCmvPillStyle(appCmv);
+                                    return (
+                                      <div key={app.key} className="flex items-center justify-between">
+                                        <div>
+                                          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{app.label}</span>
+                                          {appPrice > 0 && (
+                                            <p className="text-sm font-bold font-terminal text-foreground">
+                                              <span className="text-[10px] text-muted-foreground mr-0.5">R$</span>
+                                              {appPrice.toFixed(2)}
+                                            </p>
+                                          )}
+                                        </div>
+                                        {appPrice > 0 ? (
+                                          <span
+                                            className="text-[10px] font-bold px-2 py-0.5 rounded-full font-terminal"
+                                            style={{ background: appPill.bg, color: appPill.text }}
+                                          >
+                                            {fmtPct(appCmv)}
+                                          </span>
+                                        ) : (
+                                          <span className="text-muted-foreground/40 text-xs">—</span>
+                                        )}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </CollapsibleContent>
                   </div>
-                </div>
+                </Collapsible>
               );
             })
           )}
