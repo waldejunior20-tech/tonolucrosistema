@@ -458,7 +458,7 @@ export default function PrecificacaoBebidas() {
               {indIndicators.avgCmv > 92 ? "⚠️ Custo muito alto — revise os preços" : indIndicators.avgCmv > 85 ? "Atenção — custo no limite" : "✅ Custo saudável"}
             </p>
           </div>
-          <div className="rounded-2xl p-6 border border-destructive/20" style={{ background: 'linear-gradient(135deg, rgba(127,29,29,0.06), rgba(185,28,28,0.1))' }}>
+          <div className="card-premium border-destructive/20">
             <div className="flex items-center gap-2 mb-4">
               <AlertTriangle className="h-5 w-5 text-destructive" />
               <p className="text-xs font-semibold uppercase tracking-wider text-destructive">Precisam de Atenção</p>
