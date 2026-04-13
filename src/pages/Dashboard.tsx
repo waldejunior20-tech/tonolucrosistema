@@ -47,9 +47,9 @@ function MiniKPI({ label, value, numericValue, formatter, icon: Icon, trendLabel
 
   const renderValue = (textClass: string) => (
     numericValue !== undefined && formatter ? (
-      <AnimatedNumber value={numericValue} formatter={formatter} className={`text-[24px] font-extrabold tracking-tight leading-none ${textClass}`} duration={1000} />
+      <AnimatedNumber value={numericValue} formatter={formatter} className={`text-[28px] font-extrabold tracking-tight leading-none ${textClass}`} duration={1000} />
     ) : (
-      <span className={`text-[24px] font-extrabold tracking-tight leading-none ${textClass}`}>{value}</span>
+      <span className={`text-[28px] font-extrabold tracking-tight leading-none ${textClass}`}>{value}</span>
     )
   );
 
@@ -58,17 +58,17 @@ function MiniKPI({ label, value, numericValue, formatter, icon: Icon, trendLabel
     return (
       <div
         style={{ background: grad.bg, boxShadow: grad.shadow }}
-        className="group rounded-2xl px-5 py-4 border border-white/10 transition-all duration-300 hover:scale-[1.02] hover:brightness-110"
+        className="group rounded-2xl px-6 py-5 border border-white/10 transition-all duration-300 hover:scale-[1.02] hover:brightness-110"
       >
         <div className="flex items-center justify-between mb-1.5">
-          <span className="text-[11px] font-semibold text-white/80 uppercase tracking-wider">{label}</span>
-          <Icon size={18} className="text-white/70" />
+          <span className="text-[13px] font-bold text-white/80 uppercase tracking-wider">{label}</span>
+          <Icon size={20} className="text-white/70" />
         </div>
         <div className="flex items-baseline gap-2">
           {renderValue("text-white drop-shadow-sm")}
-          {trendLabel && trendLabel !== "—" && (
-            <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-white/20 text-white">{trendLabel}</span>
-          )}
+           {trendLabel && trendLabel !== "—" && (
+             <span className="text-[12px] font-bold px-2 py-1 rounded-md bg-white/20 text-white">{trendLabel}</span>
+           )}
         </div>
       </div>
     );
@@ -77,15 +77,15 @@ function MiniKPI({ label, value, numericValue, formatter, icon: Icon, trendLabel
   // Clean white card (CMV)
   const iconColor = kpiType === "cmv_ok" ? "text-[hsl(var(--success))]" : "text-[hsl(var(--destructive))]";
   return (
-    <div className="group bg-card rounded-2xl px-5 py-4 border border-border/60 transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)] hover:-translate-y-0.5">
-      <div className="flex items-center justify-between mb-1.5">
-        <span className="text-[11px] font-semibold text-muted-foreground/70 uppercase tracking-wider">{label}</span>
-        <Icon size={18} className={iconColor} />
+    <div className="group bg-card rounded-2xl px-6 py-5 border border-border/60 transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)] hover:-translate-y-0.5">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-[13px] font-bold text-muted-foreground/70 uppercase tracking-wider">{label}</span>
+        <Icon size={20} className={iconColor} />
       </div>
       <div className="flex items-baseline gap-2">
         {renderValue("text-[#1F2937]")}
         {trendLabel && trendLabel !== "—" && (
-          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${
+          <span className={`text-[12px] font-bold px-2 py-1 rounded-md ${
             kpiType === "cmv_bad"
               ? "text-[hsl(var(--destructive))] bg-[hsl(var(--destructive)/0.08)]"
               : "text-[hsl(var(--success))] bg-[hsl(var(--success)/0.08)]"
@@ -116,16 +116,16 @@ function AlertItem({ severity, title, detail, value }: {
     >
       <div className={`mt-1 w-2 h-2 rounded-full flex-shrink-0 ${isCritical ? "bg-[#B91C1C]" : "bg-[#D97706]"}`} />
       <div className="flex-1 min-w-0">
-        <p className={`text-[12px] font-semibold flex items-center gap-1.5 ${
+        <p className={`text-[13px] font-bold flex items-center gap-1.5 ${
           isCritical ? "text-[#7F1D1D]" : "text-[#1E293B]"
         }`}>
-          {isCritical && <AlertTriangle size={12} />}
+          {isCritical && <AlertTriangle size={14} />}
           {title}
         </p>
-        <p className="text-[10px] text-muted-foreground mt-0.5">{detail}</p>
+        <p className="text-[12px] text-muted-foreground mt-0.5">{detail}</p>
       </div>
       {value && (
-        <span className={`text-[11px] font-bold whitespace-nowrap font-mono ${
+        <span className={`text-[13px] font-bold whitespace-nowrap font-mono ${
           isCritical ? "text-[#B91C1C]" : "text-[#1E293B]"
         }`}>{value}</span>
       )}
@@ -138,11 +138,11 @@ function ChartCard({ title, hint, action, children, className = "" }: {
   title: string; hint?: string; action?: React.ReactNode; children: React.ReactNode; className?: string;
 }) {
   return (
-    <div className={`bg-card border border-border/60 rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)] ${className}`}>
+    <div className={`bg-card border border-border/60 rounded-2xl p-7 transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)] ${className}`}>
       <div className="flex items-start justify-between mb-5">
         <div>
-          <h3 className="text-[14px] font-semibold text-foreground">{title}</h3>
-          {hint && <p className="text-[10px] text-muted-foreground/60 mt-0.5">{hint}</p>}
+          <h3 className="text-[16px] font-bold text-foreground">{title}</h3>
+          {hint && <p className="text-[12px] text-muted-foreground/60 mt-0.5">{hint}</p>}
         </div>
         {action}
       </div>
@@ -203,8 +203,8 @@ export default function Dashboard() {
       {/* ─── HEADER ─── */}
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 fade-up">
         <div>
-          <p className="text-[11px] text-muted-foreground/60 mb-0.5 uppercase tracking-wider font-medium">Dashboard</p>
-          <h1 className="text-[22px] sm:text-[26px] font-bold text-foreground tracking-tight leading-tight">
+         <p className="text-[13px] text-muted-foreground/60 mb-0.5 uppercase tracking-wider font-bold">Dashboard</p>
+          <h1 className="text-[24px] sm:text-[28px] font-extrabold text-[#1F2937] tracking-tight leading-tight">
             {getGreeting()}{businessName ? `, ${businessName}` : ""}
           </h1>
         </div>
@@ -295,12 +295,12 @@ export default function Dashboard() {
 
       {/* ─── CHART: Revenue ─── */}
       <div className="fade-up fade-up-d2">
-        <div className="bg-card border border-[#334155]/40 rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)]">
+        <div className="bg-card border border-[#334155]/40 rounded-2xl p-7 transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)]">
           {/* Chart header with inline legend */}
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-[15px] font-bold text-foreground">Faturamento vs. Despesas</h3>
-              <p className="text-[10px] text-muted-foreground/50 mt-0.5">Evolução mensal do seu negócio</p>
+              <h3 className="text-[16px] font-bold text-foreground">Faturamento vs. Despesas</h3>
+              <p className="text-[12px] text-muted-foreground/50 mt-0.5">Evolução mensal do seu negócio</p>
             </div>
             <div className="flex items-center gap-4">
               {/* Inline legend */}
