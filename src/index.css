@@ -182,14 +182,16 @@
     @apply font-bold text-center rounded-lg transition-all;
     background: #FFFFFF;
     border: 1.5px solid #D1D5DB;
-    padding: 8px 12px;
+    padding: 10px 12px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 18px;
+    height: 48px;
+    color: #1F2937;
   }
   .pricing-input:focus {
     @apply outline-none;
     border-color: #10B981;
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15), 0 0 8px rgba(16, 185, 129, 0.10);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18), 0 0 10px rgba(16, 185, 129, 0.12);
   }
 
   .health-pulse {
