@@ -123,7 +123,7 @@ export function MoneyInput({
         onChange={handleChange}
         onFocus={handleFocus}
         onBlur={handleBlur}
-        placeholder={placeholder.replace(/R\$\s?/, "0,00")}
+        placeholder="0,00"
         disabled={disabled}
         required={required}
       />
