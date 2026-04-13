@@ -585,7 +585,7 @@ export default function PrecificacaoPizzas() {
                               </div>
 
                               {/* Info block — Custo + Sugerido */}
-                              <div className="bg-secondary/40 rounded-lg p-4 space-y-3">
+                              <div className="rounded-lg p-4 space-y-3" style={{ background: 'rgba(200, 200, 200, 0.3)' }}>
                                 <div className="flex items-center justify-between">
                                   <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">Custo</span>
                                   <div className="flex items-baseline gap-1">
@@ -617,7 +617,7 @@ export default function PrecificacaoPizzas() {
                                       fontWeight: 800,
                                       fontFeatureSettings: "'tnum'",
                                       color: 'hsl(var(--foreground))',
-                                      background: 'hsl(var(--card))',
+                                      background: 'rgba(255, 255, 255, 0.6)',
                                       border: `2px solid ${borderColor}`,
                                       boxShadow: `0 0 12px ${glowColor}`,
                                     }}
