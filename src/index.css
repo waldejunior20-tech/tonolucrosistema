@@ -7,8 +7,8 @@
 @layer base {
   :root {
     /* Elite SaaS Theme — Sophisticated Emerald */
-    --background: 210 11% 95%;
-    --foreground: 220 26% 14%;
+    --background: 210 20% 98%;
+    --foreground: 220 39% 11%;
     --card: 0 0% 100%;
     --card-foreground: 220 26% 14%;
     --popover: 0 0% 100%;
@@ -44,10 +44,10 @@
   }
 
   .dark {
-    --background: 210 11% 95%;
-    --foreground: 220 26% 14%;
+    --background: 210 20% 98%;
+    --foreground: 220 39% 11%;
     --card: 0 0% 100%;
-    --card-foreground: 220 26% 14%;
+    --card-foreground: 220 39% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 220 26% 14%;
     --primary: 160 84% 39%;
@@ -101,9 +101,9 @@
     color: hsl(222 47% 11%);
   }
 
-  h1 { font-size: 24px; line-height: 1.2; letter-spacing: -0.02em; font-weight: 800; color: #1F2937; }
-  h2 { font-size: 20px; line-height: 1.25; letter-spacing: -0.015em; font-weight: 700; color: #1F2937; }
-  h3 { font-size: 18px; font-weight: 700; line-height: 1.35; color: #1F2937; }
+  h1 { font-size: 28px; line-height: 1.2; letter-spacing: -0.02em; font-weight: 800; color: #111827; }
+  h2 { font-size: 24px; line-height: 1.25; letter-spacing: -0.015em; font-weight: 700; color: #111827; }
+  h3 { font-size: 20px; font-weight: 700; line-height: 1.35; color: #111827; }
 }
 
 @layer components {
@@ -181,12 +181,13 @@
   .pricing-input {
     @apply font-bold text-center rounded-lg transition-all;
     background: #FFFFFF;
-    border: 1.5px solid #D1D5DB;
+    border: 2px solid #D1D5DB;
     padding: 10px 12px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 18px;
-    height: 48px;
-    color: #1F2937;
+    font-variant-numeric: tabular-nums;
+    height: 52px;
+    color: #111827;
   }
   .pricing-input:focus {
     @apply outline-none;
@@ -410,10 +411,11 @@ input[type="url"],
 input[type="search"],
 textarea {
   background: #FFFFFF !important;
-  border: 1.5px solid #D1D5DB !important;
+  border: 2px solid #D1D5DB !important;
   border-radius: 8px !important;
   font-size: 16px !important;
-  color: #1F2937 !important;
+  color: #111827 !important;
+  font-variant-numeric: tabular-nums;
   transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
 }
 input[type="text"]:focus,
@@ -464,10 +466,10 @@ thead th,
 tbody td {
   font-size: 15px;
   font-weight: 600;
-  color: #1F2937;
-  padding: 18px 18px;
+  color: #111827;
+  padding: 18px 20px;
   vertical-align: middle;
-  height: 60px;
+  height: 64px;
 }
 /* Read-only cells — subtle gray background */
 tbody td:not(:has(input)):not(:has(button)):not(:has(select)) {
@@ -480,7 +482,7 @@ tbody td:has(select) {
 }
 /* Row height for touch targets */
 tbody tr {
-  height: 60px;
+  height: 64px;
 }
 /* Alternate row stripe on read-only cells */
 tbody tr:nth-child(even) td:not(:has(input)):not(:has(button)):not(:has(select)) {
@@ -493,7 +495,7 @@ tbody tr:nth-child(even) td:not(:has(input)):not(:has(button)):not(:has(select))
 label, .label {
   font-size: 14px;
   font-weight: 700;
-  color: #1F2937;
+  color: #111827;
 }
 
 /* Money values bold */
