@@ -117,10 +117,10 @@ export default function FinanceiroPontoEquilibrio() {
       </div>
 
       {/* Explanation */}
-      <Card className="border-blue-200 bg-blue-50/30">
+      <Card className="border-info/30 bg-info/5">
         <CardContent className="pt-6">
           <div className="flex items-start gap-3">
-            <Info className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+            <Info className="h-5 w-5 text-info mt-0.5 flex-shrink-0" />
             <div>
               <p className="text-sm font-medium text-foreground">O que é a Meta Mínima de Vendas?</p>
               <p className="text-sm text-muted-foreground mt-1">
@@ -186,8 +186,8 @@ export default function FinanceiroPontoEquilibrio() {
               <div
                 className={`h-full rounded-full transition-all duration-500 ${
                   calc.atingiu
-                    ? "bg-gradient-to-r from-red-400 via-yellow-400 to-green-500"
-                    : "bg-gradient-to-r from-red-400 to-red-500"
+                    ? "bg-gradient-to-r from-destructive via-warning to-success"
+                    : "bg-destructive"
                 }`}
                 style={{
                   width: `${Math.min(calc.progressPct, 100)}%`,
@@ -215,8 +215,8 @@ export default function FinanceiroPontoEquilibrio() {
             <div
               className={`flex items-center gap-2 p-3 rounded-lg ${
                 calc.folga >= 0
-                  ? "bg-green-50 text-green-700"
-                  : "bg-red-50 text-red-700"
+                  ? "bg-success/10 text-success"
+                  : "bg-destructive/10 text-destructive"
               }`}
             >
               {calc.folga >= 0 ? (

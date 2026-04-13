@@ -64,20 +64,20 @@ const CAT_LABELS: Record<string, string> = {
 };
 
 const CAT_COLORS: Record<string, string> = {
-  cmv: "bg-orange-500",
-  salarios: "bg-purple-500",
-  pro_labore: "bg-violet-500",
-  aluguel: "bg-blue-500",
-  energia: "bg-yellow-500",
-  agua: "bg-cyan-500",
-  internet: "bg-indigo-500",
-  marketing: "bg-pink-500",
-  manutencao: "bg-amber-600",
-  gasolina_delivery: "bg-slate-500",
-  impostos: "bg-red-500",
-  taxas_apps: "bg-rose-400",
-  custos_fixos: "bg-blue-400",
-  outros: "bg-gray-400",
+  cmv: "bg-orange",
+  salarios: "bg-info",
+  pro_labore: "bg-info",
+  aluguel: "bg-primary",
+  energia: "bg-warning",
+  agua: "bg-primary",
+  internet: "bg-info",
+  marketing: "bg-destructive",
+  manutencao: "bg-warning",
+  gasolina_delivery: "bg-muted-foreground",
+  impostos: "bg-destructive",
+  taxas_apps: "bg-destructive",
+  custos_fixos: "bg-info",
+  outros: "bg-muted-foreground",
 };
 
 interface Lancamento {
@@ -300,11 +300,11 @@ export default function FinanceiroDRE() {
   }, [lancamentos]);
 
   const per100Items = [
-    { label: "Ingredientes", value: calc.per100(calc.cmv), color: "bg-orange-500" },
-    { label: "Desp. fixas", value: calc.per100(calc.despFixas), color: "bg-blue-500" },
-    { label: "Impostos", value: calc.per100(calc.impostos), color: "bg-red-500" },
-    { label: "Salários", value: calc.per100(calc.salarios), color: "bg-purple-500" },
-    { label: "Lucro", value: calc.per100(calc.sobrou), color: calc.sobrou >= 0 ? "bg-green-500" : "bg-red-500" },
+    { label: "Ingredientes", value: calc.per100(calc.cmv), color: "bg-orange" },
+    { label: "Desp. fixas", value: calc.per100(calc.despFixas), color: "bg-info" },
+    { label: "Impostos", value: calc.per100(calc.impostos), color: "bg-destructive" },
+    { label: "Salários", value: calc.per100(calc.salarios), color: "bg-primary" },
+    { label: "Lucro", value: calc.per100(calc.sobrou), color: calc.sobrou >= 0 ? "bg-success" : "bg-destructive" },
   ];
 
   const lucroLiquidoPer100 = calc.per100(calc.sobrou);

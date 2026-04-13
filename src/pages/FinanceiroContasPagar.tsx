@@ -108,11 +108,11 @@ export default function FinanceiroContasPagar() {
   const statusBadge = (status: string) => {
     switch (status) {
       case "pago":
-        return <Badge variant="default" className="bg-green-100 text-green-800 hover:bg-green-100">Pago</Badge>;
+        return <Badge variant="default" className="bg-success/15 text-success hover:bg-success/15 border-success/20">Pago</Badge>;
       case "atrasado":
         return <Badge variant="destructive">Atrasado</Badge>;
       case "vence_7d":
-        return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">Vence em 7 dias</Badge>;
+        return <Badge className="bg-warning/15 text-warning hover:bg-warning/15 border-warning/20">Vence em 7 dias</Badge>;
       default:
         return <Badge variant="outline">A pagar</Badge>;
     }
@@ -262,7 +262,7 @@ export default function FinanceiroContasPagar() {
             <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Vencem em 7 dias</p>
             <p className="text-2xl font-extrabold text-foreground flex items-center gap-2">
               {cards.vence7d}
-              {cards.vence7d > 0 && <Clock className="h-5 w-5 text-yellow-500" />}
+              {cards.vence7d > 0 && <Clock className="h-5 w-5 text-warning" />}
             </p>
           </CardContent>
         </Card>
@@ -305,7 +305,7 @@ export default function FinanceiroContasPagar() {
               {filtered.map((l) => {
                 const status = getStatus(l);
                 return (
-                  <TableRow key={l.id} className={status === "atrasado" ? "bg-red-50/50" : ""}>
+                  <TableRow key={l.id} className={status === "atrasado" ? "bg-destructive/5" : ""}>
                     <TableCell className="font-medium">{l.descricao}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">{catLabel(l.categoria)}</TableCell>
                     <TableCell className="text-right font-mono text-sm">{fmt(Number(l.valor))}</TableCell>

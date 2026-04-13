@@ -66,19 +66,19 @@ const DIAS = [
 
 const statusColor = (s: string) => {
   switch (s) {
-    case "ativa": return "bg-emerald-900/40 text-emerald-400 border-emerald-800";
-    case "agendada": return "bg-blue-900/40 text-blue-400 border-blue-800";
+    case "ativa": return "bg-success/15 text-success border-success/30";
+    case "agendada": return "bg-info/15 text-info border-info/30";
     case "encerrada": return "bg-muted text-muted-foreground border-border";
-    case "inativa": return "bg-red-900/40 text-red-400 border-red-800";
+    case "inativa": return "bg-destructive/15 text-destructive border-destructive/30";
     default: return "bg-muted text-muted-foreground border-border";
   }
 };
 
 const lucroColor = (pct: number) => {
-  if (pct >= 30) return "text-emerald-400";
-  if (pct >= 15) return "text-yellow-400";
-  if (pct > 0) return "text-orange-400";
-  return "text-red-400";
+  if (pct >= 30) return "text-success";
+  if (pct >= 15) return "text-warning";
+  if (pct > 0) return "text-orange";
+  return "text-destructive";
 };
 
 const lucroEmoji = (pct: number) => {
@@ -89,10 +89,10 @@ const lucroEmoji = (pct: number) => {
 };
 
 const lucroBadgeCls = (pct: number) => {
-  if (pct >= 30) return "bg-emerald-900/40 text-emerald-400 border-emerald-800";
-  if (pct >= 15) return "bg-yellow-900/40 text-yellow-400 border-yellow-800";
-  if (pct > 0) return "bg-orange-900/40 text-orange-400 border-orange-800";
-  return "bg-red-900/40 text-red-400 border-red-800";
+  if (pct >= 30) return "bg-success/15 text-success border-success/30";
+  if (pct >= 15) return "bg-warning/15 text-warning border-warning/30";
+  if (pct > 0) return "bg-orange/15 text-orange border-orange/30";
+  return "bg-destructive/15 text-destructive border-destructive/30";
 };
 
 // ─── Types ────────────────────────────────────────────────────────────
@@ -860,7 +860,7 @@ export default function PromocoesAtivas() {
                 />
               </div>
               {calculations.some((c) => c.lucroPct < form.margem_minima_aceitavel) && (
-                <div className="flex items-center gap-2 rounded-md bg-yellow-900/30 border border-yellow-800 px-4 py-3 text-sm text-yellow-400">
+                <div className="flex items-center gap-2 rounded-md bg-warning/15 border border-warning/30 px-4 py-3 text-sm text-warning">
                   <AlertTriangle className="h-4 w-4 shrink-0" />
                   Um ou mais produtos estão abaixo da margem mínima de {form.margem_minima_aceitavel}%
                 </div>
