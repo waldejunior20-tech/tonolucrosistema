@@ -495,7 +495,7 @@ export default function InsumosProduzidos() {
       ) : (
         <div className="table-premium fade-up fade-up-d1">
           <Table>
-            <TableHeader style={{ background: 'linear-gradient(135deg, #1E293B, #334155)' }}>
+            <TableHeader style={{ background: 'linear-gradient(135deg, hsl(var(--surface-table-header)), hsl(var(--surface-table-header-end)))' }}>
               <TableRow>
                 <TableHead className="text-white font-bold">Nome</TableHead>
                 <TableHead className="text-right text-white font-bold">Rendimento</TableHead>

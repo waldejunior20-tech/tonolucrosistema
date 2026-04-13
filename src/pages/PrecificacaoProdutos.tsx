@@ -235,7 +235,7 @@ export default function PrecificacaoProdutos() {
   const renderTable = (items: FichaProduto[]) => (
     <div className="overflow-x-auto">
       <Table>
-        <TableHeader style={{ background: 'linear-gradient(135deg, #1E293B, #334155)' }}>
+        <TableHeader style={{ background: 'linear-gradient(135deg, hsl(var(--surface-table-header)), hsl(var(--surface-table-header-end)))' }}>
           <TableRow>
             <TableHead className="min-w-[200px] text-white font-bold">Produto</TableHead>
             <TableHead className="text-center text-white font-bold">Custo</TableHead>
@@ -359,7 +359,7 @@ export default function PrecificacaoProdutos() {
           <div className="card-premium p-7">
             <p className="label-upper mb-4">Semáforo CMV</p>
             <div className="flex items-center gap-3">
-              <div className={cn("h-5 w-5 rounded-full", indicators.avgCmv > 40 ? "bg-destructive" : indicators.avgCmv > 35 ? "bg-warning" : "bg-[#10B981]")} />
+              <div className={cn("h-5 w-5 rounded-full", indicators.avgCmv > 40 ? "bg-destructive" : indicators.avgCmv > 35 ? "bg-warning" : "bg-success")} />
               <span className={cn("text-xl font-extrabold uppercase", cmvColor(indicators.avgCmv))}>
                 {cmvMessage(indicators.avgCmv)}
               </span>

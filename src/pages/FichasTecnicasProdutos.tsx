@@ -621,7 +621,7 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
       ) : (
         <div className="rounded-lg border">
           <Table>
-            <TableHeader style={{ background: 'linear-gradient(135deg, #1E293B, #334155)' }}>
+            <TableHeader style={{ background: 'linear-gradient(135deg, hsl(var(--surface-table-header)), hsl(var(--surface-table-header-end)))' }}>
               <TableRow>
                 <TableHead className="text-white font-bold">Nome</TableHead>
                 <TableHead className="text-right text-white font-bold">Custo Total</TableHead>

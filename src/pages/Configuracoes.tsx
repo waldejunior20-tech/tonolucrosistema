@@ -234,7 +234,7 @@ export default function Configuracoes() {
       <div className="flex items-center gap-3">
         <Settings2 className="h-6 w-6 text-primary" />
         <div>
-          <h1 className="text-2xl font-extrabold text-[#1F2937]">Configurações</h1>
+          <h1 className="text-2xl font-extrabold text-text-heading">Configurações</h1>
           <p className="text-sm text-muted-foreground font-medium">Gerencie os dados do seu negócio, canais de venda e metas.</p>
         </div>
       </div>
