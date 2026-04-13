@@ -406,10 +406,10 @@ export default function PrecificacaoPizzas() {
                   <TableRow className="border-b border-[#E2E8F0]" style={{ background: '#F1F5F9' }}>
                     <TableHead rowSpan={2} className="align-bottom font-bold text-[11px] uppercase tracking-[0.08em] w-[180px] py-3 px-5" style={{ color: '#475569', background: '#F1F5F9' }}>Pizza</TableHead>
                     <TableHead rowSpan={2} className="align-bottom font-bold text-[11px] uppercase tracking-[0.08em] w-[80px] py-3" style={{ color: '#475569', background: '#F1F5F9' }}>Tipo</TableHead>
-                    <TableHead colSpan={3} className="text-center border-l border-[#E2E8F0] font-bold text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F1F5F9' }}>Custo</TableHead>
-                    <TableHead colSpan={3} className="text-center border-l border-[#E2E8F0] font-bold text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F1F5F9' }}>Sugerido</TableHead>
+                    <TableHead colSpan={3} className="text-center border-l border-[#E2E8F0] font-bold text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F1F5F9' }}>Custo (R$)</TableHead>
+                    <TableHead colSpan={3} className="text-center border-l border-[#E2E8F0] font-bold text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F1F5F9' }}>Sugerido (R$)</TableHead>
                     <TableHead colSpan={3} className="text-center border-l border-[#E2E8F0] font-extrabold text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#10B981', background: '#F1F5F9' }}>
-                      ✏️ Seu Preço
+                      <span className="flex items-center justify-center gap-1.5">✏️ Preencha seu preço</span>
                     </TableHead>
                     <TableHead colSpan={3} className="text-center border-l border-[#E2E8F0] font-bold text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F1F5F9' }}>CMV %</TableHead>
                     {activeApps.map((app) => (
@@ -473,6 +473,7 @@ export default function PrecificacaoPizzas() {
                         {/* Custo — read-only, numbers in dark */}
                         {sizes.map((s, i) => (
                           <TableCell key={`c-${s}`} className={cn("text-center py-6 px-2", i === 0 && "border-l border-[#E2E8F0]")} style={{ background: '#FAFBFC' }}>
+                            <span className="text-[10px] text-slate-400">R$ </span>
                             <span className="text-[13px] font-bold font-mono text-[#111827]" style={{ fontFeatureSettings: "'tnum'" }}>{custos[s].toFixed(2)}</span>
                           </TableCell>
                         ))}
@@ -480,6 +481,7 @@ export default function PrecificacaoPizzas() {
                         {/* Sugerido — read-only */}
                         {sizes.map((s, i) => (
                           <TableCell key={`sug-${s}`} className={cn("text-center py-6 px-2", i === 0 && "border-l border-[#E2E8F0]")} style={{ background: '#FAFBFC' }}>
+                            <span className="text-[10px] text-slate-400">R$ </span>
                             <span className="text-[13px] font-semibold font-mono text-slate-500" style={{ fontFeatureSettings: "'tnum'" }}>{sugeridos[s].toFixed(2)}</span>
                           </TableCell>
                         ))}
