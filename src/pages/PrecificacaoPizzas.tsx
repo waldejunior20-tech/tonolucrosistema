@@ -86,9 +86,9 @@ export default function PrecificacaoPizzas() {
         .from("configuracoes_precificacao")
         .select("*")
         .limit(1)
-        .single();
+        .maybeSingle();
       if (error) throw error;
-      return data as ConfigPrecificacao;
+      return data as ConfigPrecificacao | null;
     },
   });
 
@@ -339,7 +339,28 @@ export default function PrecificacaoPizzas() {
           </div>
           <button
             onClick={() => {
-              setConfigForm(config ?? null);
+              const defaultConfig: ConfigPrecificacao = {
+                id: "",
+                custos_fixos_pct: 15,
+                cmv_meta_pct: 32,
+                taxa_ifood_pct: 12,
+                taxa_debito_pct: 1.5,
+                taxa_credito_pct: 3.5,
+                taxa_pix_pct: 0,
+                app_ifood_ativo: false,
+                app_rappi_ativo: false,
+                app_aiqfome_ativo: false,
+                app_outro_ativo: false,
+                app_outro_nome: "",
+                taxa_rappi_pct: 0,
+                taxa_aiqfome_pct: 0,
+                taxa_outro_pct: 0,
+                ifood_plano: "entrega",
+                created_at: "",
+                updated_at: "",
+                user_id: null,
+              } as any;
+              setConfigForm(config ?? defaultConfig);
               setConfigOpen(!configOpen);
             }}
             className="btn-micro flex items-center gap-2 px-5 h-10 rounded-lg border border-border text-sm font-semibold text-muted-foreground hover:text-foreground hover:border-foreground/30 bg-card transition-all"
