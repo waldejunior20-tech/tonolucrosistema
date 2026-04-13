@@ -226,18 +226,32 @@ export default function PrecificacaoPizzas() {
   // ─── Save config ─────────────────────────────────────────────────
   const configMutation = useMutation({
     mutationFn: async (c: ConfigPrecificacao) => {
-      const { error } = await supabase
-        .from("configuracoes_precificacao")
-        .update({
-          custos_fixos_pct: c.custos_fixos_pct,
-          cmv_meta_pct: c.cmv_meta_pct,
-          taxa_ifood_pct: c.taxa_ifood_pct,
-          taxa_debito_pct: c.taxa_debito_pct,
-          taxa_credito_pct: c.taxa_credito_pct,
-          taxa_pix_pct: c.taxa_pix_pct,
-        })
-        .eq("id", c.id);
-      if (error) throw error;
+      if (c.id) {
+        const { error } = await supabase
+          .from("configuracoes_precificacao")
+          .update({
+            custos_fixos_pct: c.custos_fixos_pct,
+            cmv_meta_pct: c.cmv_meta_pct,
+            taxa_ifood_pct: c.taxa_ifood_pct,
+            taxa_debito_pct: c.taxa_debito_pct,
+            taxa_credito_pct: c.taxa_credito_pct,
+            taxa_pix_pct: c.taxa_pix_pct,
+          })
+          .eq("id", c.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("configuracoes_precificacao")
+          .insert({
+            custos_fixos_pct: c.custos_fixos_pct,
+            cmv_meta_pct: c.cmv_meta_pct,
+            taxa_ifood_pct: c.taxa_ifood_pct,
+            taxa_debito_pct: c.taxa_debito_pct,
+            taxa_credito_pct: c.taxa_credito_pct,
+            taxa_pix_pct: c.taxa_pix_pct,
+          });
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["configuracoes_precificacao"] });
