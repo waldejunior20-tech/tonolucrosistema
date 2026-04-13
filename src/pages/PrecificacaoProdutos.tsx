@@ -345,33 +345,26 @@ export default function PrecificacaoProdutos() {
   return (
     <TooltipProvider>
       <div className="space-y-6 page-enter">
-        <PageHeader title="Precificação de Produtos" description="Gestão de margem e CMV por categoria." />
+        <PageHeader title="Precificação de Produtos" description="Defina preços e acompanhe o custo de cada produto." />
 
         {/* Indicators */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-fade-in">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 stagger-fade-in">
           <div className="card-premium p-7">
-            <p className="label-upper mb-4">CMV Médio Atual</p>
+            <p className="label-upper mb-4">Custo Médio dos Produtos</p>
             <p className={cn("kpi-number", cmvColor(indicators.avgCmv))}>
               {fmtPct(indicators.avgCmv)}
             </p>
-            <p className="text-sm text-muted-foreground font-medium mt-2">Média entre todos os produtos</p>
-          </div>
-          <div className="card-premium p-7">
-            <p className="label-upper mb-4">Semáforo CMV</p>
-            <div className="flex items-center gap-3">
-              <div className={cn("h-5 w-5 rounded-full", indicators.avgCmv > 40 ? "bg-destructive" : indicators.avgCmv > 35 ? "bg-warning" : "bg-success")} />
-              <span className={cn("text-xl font-extrabold uppercase", cmvColor(indicators.avgCmv))}>
-                {cmvMessage(indicators.avgCmv)}
-              </span>
-            </div>
+            <p className="text-sm text-muted-foreground font-medium mt-2">
+              {indicators.avgCmv > 40 ? "⚠️ Custo alto — revise os preços" : indicators.avgCmv > 35 ? "Atenção — custo no limite" : "✅ Custo saudável"}
+            </p>
           </div>
           <div className="rounded-2xl p-7 border border-destructive/20" style={{ background: 'linear-gradient(135deg, rgba(127,29,29,0.06), rgba(185,28,28,0.1))' }}>
             <div className="flex items-center gap-2 mb-4">
               <AlertTriangle className="h-5 w-5 text-destructive" />
-              <p className="text-sm font-bold uppercase tracking-wider text-destructive">Produtos Fora da Meta</p>
+              <p className="text-sm font-bold uppercase tracking-wider text-destructive">Precisam de Atenção</p>
             </div>
             <p className="kpi-number text-destructive">{indicators.foraMetaCount}</p>
-            <p className="text-sm text-destructive/70 font-medium mt-2">Produtos com CMV acima de 40%</p>
+            <p className="text-sm text-destructive/70 font-medium mt-2">Produtos com custo acima de 40%</p>
           </div>
         </div>
 

@@ -230,7 +230,7 @@ export default function Dashboard() {
         <MiniKPI label="Faturamento" value={formatBRL(faturamentoMes)} numericValue={faturamentoMes} formatter={formatBRL} icon={Wallet} kpiType="faturamento" />
         <MiniKPI label="Gastos" value={formatBRL(despesasMes)} numericValue={despesasMes} formatter={formatBRL} icon={Receipt} kpiType="gastos" />
         <MiniKPI label="Lucro" value={formatBRL(lucroMes)} numericValue={lucroMes} formatter={formatBRL} icon={PiggyBank} trendLabel={lucroMes !== 0 ? (lucroMes > 0 ? "↑ Positivo" : "↓ Negativo") : undefined} kpiType={lucroMes >= 0 ? "lucro_pos" : "lucro_neg"} />
-        <MiniKPI label="CMV" value={faturamentoMes > 0 ? `${cmvPct.toFixed(1)}%` : "—"} numericValue={faturamentoMes > 0 ? cmvPct : undefined} formatter={(v) => `${v.toFixed(1)}%`} icon={TrendingDown} trendLabel={faturamentoMes > 0 ? `Meta ${cmvMeta}%` : undefined} kpiType={cmvPct <= cmvMeta ? "cmv_ok" : "cmv_bad"} />
+        <MiniKPI label="Custo" value={faturamentoMes > 0 ? `${cmvPct.toFixed(1)}%` : "—"} numericValue={faturamentoMes > 0 ? cmvPct : undefined} formatter={(v) => `${v.toFixed(1)}%`} icon={TrendingDown} trendLabel={faturamentoMes > 0 ? `Meta ${cmvMeta}%` : undefined} kpiType={cmvPct <= cmvMeta ? "cmv_ok" : "cmv_bad"} />
       </div>
 
       {/* ─── CAIXA RÁPIDO ─── */}
