@@ -355,19 +355,12 @@ export default function FinanceiroDRE() {
 
       <HealthStatus status={calc.status === "verde" ? "healthy" : calc.status === "amarelo" ? "warning" : "danger"} />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="card-premium p-7">
-          <p className="label-upper mb-4">Total que Entrou</p>
-          <p className="kpi-number text-success">{fmt(calc.totalEntrou)}</p>
-        </div>
-        <div className="card-premium p-7">
-          <p className="label-upper mb-4">Total que Saiu</p>
-          <p className="kpi-number text-destructive">{fmt(calc.totalSaiu)}</p>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
         <div className={cn("card-premium p-7", calc.sobrou >= 0 ? "border-success/30 shadow-sm shadow-success/5" : "border-destructive/30 shadow-sm shadow-destructive/5")}>
           <p className="label-upper mb-4">{calc.sobrou >= 0 ? "Sobrou no Final" : "Faltou no Final"}</p>
           <p className={cn("kpi-number", calc.sobrou >= 0 ? "text-success" : "text-destructive")}>{fmt(Math.abs(calc.sobrou))}</p>
           <p className={cn("text-sm mt-1 font-bold", calc.sobrou >= 0 ? "text-success" : "text-destructive")}>{calc.sobrouPct.toFixed(1)}% de margem</p>
+          <p className="text-xs text-muted-foreground mt-2">Entrou: {fmt(calc.totalEntrou)} · Saiu: {fmt(calc.totalSaiu)}</p>
         </div>
       </div>
 
