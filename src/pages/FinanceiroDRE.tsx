@@ -374,8 +374,8 @@ export default function FinanceiroDRE() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div className="card-premium p-6">
           <div className="pb-4">
-            <h3 className="text-base font-bold flex items-center gap-2 font-syne uppercase">Meta do mês</h3>
-            <p className="text-[11px] text-text3 font-medium uppercase tracking-wider">Objetivo de Faturamento</p>
+            <h3 className="text-base font-bold flex items-center gap-2 font-heading uppercase">Meta do mês</h3>
+            <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider">Objetivo de Faturamento</p>
           </div>
           <div className="space-y-4">
             <div>
@@ -384,10 +384,10 @@ export default function FinanceiroDRE() {
             </div>
             {metaFaturamento > 0 && (
               <>
-                <div className="progress-premium">
-                  <div className={cn("progress-premium-bar", metaAtingida ? "bg-green-500" : "bg-red-400")} style={{ width: `${metaProgress}%` }} />
+                <div className="h-2.5 bg-muted rounded-full overflow-hidden">
+                  <div className={cn("h-full rounded-full transition-all duration-500", metaAtingida ? "bg-success" : "bg-destructive")} style={{ width: `${metaProgress}%` }} />
                 </div>
-                <p className={cn("text-xs text-center font-bold uppercase", metaAtingida ? "text-green-600" : "text-red-500")}>
+                <p className={cn("text-xs text-center font-bold uppercase", metaAtingida ? "text-success" : "text-destructive")}>
                   {metaAtingida ? `Meta batida! Você faturou ${metaPctAcima.toFixed(0)}% acima` : `Faltam ${fmt(metaFaturamento - calc.totalEntrou)} para bater a meta`}
                 </p>
               </>
@@ -397,19 +397,19 @@ export default function FinanceiroDRE() {
 
         <div className="card-premium p-6">
           <div className="pb-4">
-            <h3 className="text-base font-bold flex items-center gap-2 font-syne uppercase"><Target className="h-5 w-5 text-orange-500" /> Ponto de Equilíbrio</h3>
-            <p className="text-[11px] text-text3 font-medium uppercase tracking-wider">Zero a Zero</p>
+            <h3 className="text-base font-bold flex items-center gap-2 font-heading uppercase"><Target className="h-5 w-5 text-orange" /> Ponto de Equilíbrio</h3>
+            <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider">Zero a Zero</p>
           </div>
           <div className="space-y-4">
-            <p className="text-center text-3xl font-bold text-orange-500 font-syne">{fmt(calc.pontoEquilibrio)}</p>
-            <div className="progress-premium">
-              <div className={cn("progress-premium-bar", calc.atingiuPE ? "bg-gradient-to-r from-red-400 via-yellow-400 to-green-500" : "bg-gradient-to-r from-red-400 to-red-500")} style={{ width: `${Math.min(calc.progressPE, 100)}%` }} />
+            <p className="text-center text-3xl font-bold text-orange font-heading">{fmt(calc.pontoEquilibrio)}</p>
+            <div className="h-2.5 bg-muted rounded-full overflow-hidden">
+              <div className={cn("h-full rounded-full transition-all duration-500", calc.atingiuPE ? "bg-gradient-to-r from-destructive via-warning to-success" : "bg-destructive")} style={{ width: `${Math.min(calc.progressPE, 100)}%` }} />
             </div>
-            <div className="text-xs space-y-1 text-text2">
+            <div className="text-xs space-y-1 text-muted-foreground">
               <div className="flex justify-between"><span>Despesas fixas</span><span className="font-medium text-foreground">{fmt(calc.despFixasTotal)}</span></div>
               <div className="flex justify-between"><span>Margem contrib. %</span><span className="font-medium text-foreground">{calc.margemContribuicaoPct.toFixed(1)}%</span></div>
             </div>
-            <p className={cn("text-xs text-center font-bold uppercase", calc.atingiuPE ? "text-green-600" : "text-red-500")}>
+            <p className={cn("text-xs text-center font-bold uppercase", calc.atingiuPE ? "text-success" : "text-destructive")}>
               {calc.atingiuPE ? "Tudo acima disso é lucro puro!" : calc.pontoEquilibrio > 0 ? `Faltam ${fmt(calc.faltaPE)} para atingir` : "Cadastre receitas e despesas"}
             </p>
           </div>
@@ -418,10 +418,10 @@ export default function FinanceiroDRE() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         <div className="card-premium p-6">
-          <div className="pb-4"><h3 className="text-sm font-bold font-syne uppercase">Sobra das vendas</h3><p className="text-[10px] text-text3 font-medium uppercase tracking-wider">Margem de contribuição</p></div>
+          <div className="pb-4"><h3 className="text-sm font-bold font-heading uppercase">Sobra das vendas</h3><p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Margem de contribuição</p></div>
           <div className="space-y-4">
-            <p className="text-2xl font-bold text-success font-syne">{fmt(calc.margemContribuicao)}</p>
-            <div className="text-[11px] space-y-1 border-t pt-2 text-text2">
+            <p className="text-2xl font-bold text-success font-heading">{fmt(calc.margemContribuicao)}</p>
+            <div className="text-[11px] space-y-1 border-t pt-2 text-muted-foreground">
               <div className="flex justify-between"><span>Faturamento Bruto</span><span className="font-medium text-foreground">{fmt(calc.totalEntrou)}</span></div>
               <div className="flex justify-between text-destructive"><span>(-) Desp. s/ vendas</span><span>-{fmt(calc.despesasSobreVendas)}</span></div>
               <div className="flex justify-between text-destructive"><span>(-) CMV</span><span>-{fmt(calc.cmv)}</span></div>
@@ -431,17 +431,17 @@ export default function FinanceiroDRE() {
         </div>
 
         <div className="card-premium p-6">
-          <div className="pb-4"><h3 className="text-sm font-bold font-syne uppercase">Para cada R$100 vendidos</h3><p className="text-[10px] text-text3 font-medium uppercase tracking-wider">Raio-X de Lucratividade</p></div>
+          <div className="pb-4"><h3 className="text-sm font-bold font-heading uppercase">Para cada R$100 vendidos</h3><p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Raio-X de Lucratividade</p></div>
           <div className="space-y-4">
-            <p className={cn("text-2xl font-bold font-syne", lucroLiquidoPer100 >= 0 ? "text-success" : "text-destructive")}>R$ {Math.abs(lucroLiquidoPer100).toFixed(2).replace(".", ",")}</p>
+            <p className={cn("text-2xl font-bold font-heading", lucroLiquidoPer100 >= 0 ? "text-success" : "text-destructive")}>R$ {Math.abs(lucroLiquidoPer100).toFixed(2).replace(".", ",")}</p>
             <div className="space-y-2 border-t pt-2">
               {per100Items.map((item) => {
                 const maxVal = Math.max(...per100Items.map(i => Math.abs(i.value)), 1);
                 const barW = (Math.abs(item.value) / maxVal) * 100;
                 return (
                   <div key={item.label} className="space-y-1">
-                    <div className="flex items-center justify-between text-[10px]"><div className="flex items-center gap-1.5"><span className={cn("h-2 w-2 rounded-full shrink-0", item.color)} /><span className="text-text2">{item.label}</span></div><span className="font-bold text-foreground">R$ {Math.abs(item.value).toFixed(2).replace(".", ",")}</span></div>
-                    <div className="h-1.5 bg-bg3 rounded-full overflow-hidden"><div className={cn("h-full rounded-full transition-all duration-500", item.color)} style={{ width: `${barW}%` }} /></div>
+                    <div className="flex items-center justify-between text-[10px]"><div className="flex items-center gap-1.5"><span className={cn("h-2 w-2 rounded-full shrink-0", item.color)} /><span className="text-muted-foreground">{item.label}</span></div><span className="font-bold text-foreground">R$ {Math.abs(item.value).toFixed(2).replace(".", ",")}</span></div>
+                    <div className="h-1.5 bg-muted rounded-full overflow-hidden"><div className={cn("h-full rounded-full transition-all duration-500", item.color)} style={{ width: `${barW}%` }} /></div>
                   </div>
                 );
               })}
@@ -450,11 +450,11 @@ export default function FinanceiroDRE() {
         </div>
 
         <div className="card-premium p-6">
-          <div className="pb-4"><h3 className="text-sm font-bold font-syne uppercase">CMV</h3><p className="text-[10px] text-text3 font-medium uppercase tracking-wider">Custo dos ingredientes</p></div>
+          <div className="pb-4"><h3 className="text-sm font-bold font-heading uppercase">CMV</h3><p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Custo dos ingredientes</p></div>
           <div className="space-y-4">
-            <p className={cn("text-3xl font-bold text-center font-syne", calc.cmvPct > 40 ? "text-destructive" : calc.cmvPct > 32 ? "text-warning" : "text-success")}>{calc.cmvPct.toFixed(1)}%</p>
-            <div className="progress-premium"><div className={cn("progress-premium-bar", calc.cmvPct > 40 ? "bg-destructive" : calc.cmvPct > 32 ? "bg-warning" : "bg-success")} style={{ width: `${Math.min(calc.cmvPct * 2.5, 100)}%` }} /></div>
-            <div className="text-[11px] space-y-1 text-text2">
+            <p className={cn("text-3xl font-bold text-center font-heading", calc.cmvPct > 40 ? "text-destructive" : calc.cmvPct > 32 ? "text-warning" : "text-success")}>{calc.cmvPct.toFixed(1)}%</p>
+            <div className="h-2.5 bg-muted rounded-full overflow-hidden"><div className={cn("h-full rounded-full transition-all duration-500", calc.cmvPct > 40 ? "bg-destructive" : calc.cmvPct > 32 ? "bg-warning" : "bg-success")} style={{ width: `${Math.min(calc.cmvPct * 2.5, 100)}%` }} /></div>
+            <div className="text-[11px] space-y-1 text-muted-foreground">
               <div className="flex justify-between"><span>Meta máxima</span><span className="font-bold text-foreground">32%</span></div>
               <div className="flex justify-between"><span>Folga</span><span className={cn("font-bold", cmvFolga >= 0 ? "text-success" : "text-destructive")}>{cmvFolga >= 0 ? `${cmvFolga.toFixed(1)}%` : `${Math.abs(cmvFolga).toFixed(1)}% acima`}</span></div>
             </div>
@@ -462,14 +462,14 @@ export default function FinanceiroDRE() {
         </div>
 
         <div className="card-premium p-6">
-          <div className="pb-4"><h3 className="text-sm font-bold font-syne uppercase flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-warning" />Alertas</h3><p className="text-[10px] text-text3 font-medium uppercase tracking-wider">Situações Críticas</p></div>
+          <div className="pb-4"><h3 className="text-sm font-bold font-heading uppercase flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-warning" />Alertas</h3><p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Situações Críticas</p></div>
           <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
             {alertas.length === 0 && contasAtrasadas.length === 0 ? (
               <div className="text-center py-4"><p className="text-xs text-success font-bold uppercase tracking-tight">Tudo em dia!</p></div>
             ) : (
               <div className="space-y-2">
                 {alertas.map((a, i) => (<div key={i} className="flex items-start gap-2 text-[11px] bg-warning/10 border border-warning/20 rounded-md p-2"><AlertTriangle className="h-3.5 w-3.5 text-warning shrink-0 mt-0.5" /><span className="text-foreground font-medium">{a}</span></div>))}
-                {contasAtrasadas.map((c) => (<div key={c.id} className="flex items-start gap-2 text-[11px] bg-destructive/10 border border-destructive/20 rounded-md p-2"><div className="h-2.5 w-2.5 rounded-full bg-destructive shrink-0 mt-1" /><div><p className="font-bold text-foreground">{c.descricao}</p><p className="text-text2">{fmt(c.valor)} — {new Date(c.data_lancamento + "T12:00:00").toLocaleDateString("pt-BR")}</p></div></div>))}
+                {contasAtrasadas.map((c) => (<div key={c.id} className="flex items-start gap-2 text-[11px] bg-destructive/10 border border-destructive/20 rounded-md p-2"><div className="h-2.5 w-2.5 rounded-full bg-destructive shrink-0 mt-1" /><div><p className="font-bold text-foreground">{c.descricao}</p><p className="text-muted-foreground">{fmt(c.valor)} — {new Date(c.data_lancamento + "T12:00:00").toLocaleDateString("pt-BR")}</p></div></div>))}
               </div>
             )}
           </div>
@@ -478,7 +478,7 @@ export default function FinanceiroDRE() {
 
       {calc.categoriasOrdenadas.length > 0 && (
         <div className="card-premium p-6">
-          <div className="pb-4"><h3 className="text-base font-bold font-syne uppercase">Onde foi o dinheiro?</h3></div>
+          <div className="pb-4"><h3 className="text-base font-bold font-heading uppercase">Onde foi o dinheiro?</h3></div>
           <div className="space-y-3">
             {calc.categoriasOrdenadas.map((c) => {
               const barColor = CAT_COLORS[c.cat] || "bg-primary/70";
@@ -513,8 +513,8 @@ export default function FinanceiroDRE() {
             </div>
           </div>
           <DialogFooter>
-            <button className="btn-3d-ghost h-10 px-6" onClick={() => setDialogOpen(false)}>Cancelar</button>
-            <button className="btn-3d-red h-10 px-6" onClick={handleSubmit} disabled={createMutation.isPending}>Salvar</button>
+            <button className="h-10 px-6 rounded-lg border border-border bg-card text-foreground font-medium hover:bg-muted transition-colors" onClick={() => setDialogOpen(false)}>Cancelar</button>
+            <button className="h-10 px-6 rounded-lg bg-primary text-primary-foreground font-bold hover:brightness-110 transition-all" onClick={handleSubmit} disabled={createMutation.isPending}>Salvar</button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
