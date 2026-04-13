@@ -1,78 +1,77 @@
 
 
-## Diagnóstico e Plano — Upgrade Visual do Layout
+## Plano: Redesign dos Cards de Precificacao seguindo Best Practices da Eleken
 
-### Por que o layout parece genérico
+### Diagnostico do Layout Atual
 
-O problema principal: as páginas usam componentes Shadcn/UI padrão (Table, Dialog, Button, Card) com estilização mínima. Embora o tema "Midnight Ember" esteja bem definido no CSS (cores, tipografia, classes utilitárias), **as páginas não aproveitam esses recursos**. Exemplos concretos:
+O layout atual tem problemas claros que o artigo da Eleken ajuda a identificar:
 
-- **InsumosComprados**: tabela crua sem cabeçalho visual, sem KPIs resumidos, sem empty state ilustrado
-- **Dashboard**: usa `card-premium` mas os KPIs são textuais sem hierarquia visual forte
-- **Header**: busca sem funcionalidade, sem breadcrumbs, sem saudação personalizada
-- **Tabelas**: sem alternância de cor, sem hover diferenciado, sem paginação estilizada
-- **Mobile (360px)**: sidebar colapsa mas não vira drawer, tabelas não são responsivas
+1. **Sobrecarga de informacao** -- cada card tenta mostrar Custo, Sugerido, Seu Preco, CMV e Apps para 3 tamanhos simultaneamente. O artigo diz: "Less is more. Display only the most useful information."
+2. **Falta de hierarquia visual** -- header, body e footer nao estao claramente separados. Tudo parece um bloco denso.
+3. **Repeticao sem respiro** -- a grid de 3 colunas (P/M/G) com `divide-x` cria um visual de planilha, nao de card premium.
+4. **Sem "entry point"** -- o artigo enfatiza que cards devem ser "entry points" com informacao resumida, expandindo para detalhes sob demanda.
 
-### O que vou fazer (redesign aplicado)
+### O que vou fazer
 
-**1. Componentes compartilhados de layout premium**
-- `PageHeader` — título + descrição + breadcrumb + ação primária (botão), padronizado em todas as páginas
-- `KpiCard` — componente reutilizável com ícone, label-upper, kpi-number animado (contagem progressiva), trend badge, e glow sutil
-- `DataTable` wrapper — tabela com header estilizado (fundo `secondary`), hover com borda ember, empty state com ilustração, paginação integrada
-- `EmptyState` — ícone grande + texto + CTA, usado quando listas estão vazias
+**1. Card com layout "Summary + Expand"**
 
-**2. Dashboard redesenhado**
-- Saudação com nome do negócio + hora do dia ("Boa tarde, Pizzaria do João")
-- KPI cards com animação de contagem (0→valor em 800ms)
-- Gráfico com fundo gradiente sutil, sem grid lines (conforme diretrizes)
-- Card de alertas com timeline visual (bolinha + linha)
-- Seção de atalhos rápidos (cards menores linkando para ações frequentes)
+Cada pizza vira um card compacto que mostra apenas o essencial:
+- Nome da pizza (bold, display font) + tipo (badge discreto)
+- 3 mini-blocos inline (P, M, G) mostrando apenas: preco atual e pill de CMV
+- Um botao/chevron para expandir e ver os detalhes (custo, sugerido, apps)
 
-**3. Sidebar mobile**
-- Em telas < 768px, sidebar vira drawer (Sheet) com overlay, abre via botão hamburger no Header
-- Fecha ao navegar
+Isso segue o principio "reveal more by drop-down" do artigo.
 
-**4. Header aprimorado**
-- Breadcrumb dinâmico baseado na rota atual
-- Avatar com iniciais coloridas (em vez de ícone genérico)
-- Busca funcional com Command Palette (Cmd+K) usando o componente Command já existente
+**2. Header limpo e funcional**
 
-**5. Tabelas responsivas**
-- Em mobile: tabelas viram cards empilhados (cada row = um card com labels)
-- Desktop: hover com highlight ember, zebra striping sutil
+- Nome da pizza a esquerda com badge de tipo
+- Indicador visual de saude geral (um unico dot verde/amarelo/vermelho)
+- Sem pills de CMV repetidos no header (eles ficam no body)
 
-**6. Aplicar em todas as páginas existentes**
-- InsumosComprados, InsumosProduzidos, FichasTecnicasPizza, PrecificacaoPizzas, FinanceiroDRE, FinanceiroContasPagar, PromocoesAtivas — todas recebem o novo `PageHeader` + `DataTable` + `EmptyState`
+**3. Body com grid respirada**
 
-### Detalhes Técnicos
+Quando expandido, cada tamanho (P/M/G) vira uma "mini-card" interna com:
+- Fundo levemente diferenciado (Slate 50)
+- Custo e Sugerido em layout vertical limpo
+- Input de preco com o glow dinamico (mantido)
+- CMV pill grande e legivel
+- Apps abaixo com separador sutil
+
+**4. Spacing e bordas refinadas**
+
+- Gap entre cards: 16px (atualmente 16px, ok)
+- Border-radius: 12px (mais rounded, como recomenda o artigo)
+- Sombra sutil no repouso, mais pronunciada no hover
+- Padding interno generoso (24px)
+
+**5. Micro-animacao no expand/collapse**
+
+- Transicao suave com `max-height` + opacity
+- Stagger de 50ms entre os blocos P/M/G ao abrir
+
+### Detalhes Tecnicos
 
 ```text
-src/components/layout/
-  ├── PageHeader.tsx          (novo)
-  ├── MobileSidebar.tsx       (novo — Sheet wrapper)
-  ├── Header.tsx              (reescrito com breadcrumb + avatar + Cmd+K)
-  └── AppLayout.tsx           (ajustado para mobile drawer)
+Arquivo editado:
+  src/pages/PrecificacaoPizzas.tsx
+    - Refatorar cada card para ter estado collapsed/expanded
+    - Collapsed: nome + tipo + 3 mini-indicadores (preco + cmv pill) inline
+    - Expanded: grid de 3 colunas com custo/sugerido/input/apps
+    - Animacao CSS com Collapsible do Radix (ja existe no projeto)
 
-src/components/
-  ├── KpiCard.tsx             (novo)
-  ├── DataTableWrapper.tsx    (novo — estilização premium)
-  ├── EmptyState.tsx          (novo)
-  └── AnimatedNumber.tsx      (novo — contagem progressiva)
-
-Páginas modificadas:
-  - Dashboard.tsx (redesign completo)
-  - InsumosComprados.tsx, InsumosProduzidos.tsx
-  - FichasTecnicasPizza.tsx, FichasTecnicasProdutos.tsx
-  - PrecificacaoPizzas.tsx, PrecificacaoProdutos.tsx, PrecificacaoBebidas.tsx
-  - FinanceiroDRE.tsx, FinanceiroContasPagar.tsx
-  - PromocoesAtivas.tsx
+  src/index.css
+    - Adicionar classe .card-expand-transition para animacao suave
+    - Ajustar border-radius e spacing dos cards
 ```
 
-### O que NÃO muda
-- Tema de cores (Midnight Ember permanece)
-- Lógica de negócio e queries Supabase
-- Estrutura de rotas
-- Autenticação
+### O que NAO muda
+
+- Toda a logica de calculo de CMV, custos, auto-save
+- KPI cards do topo
+- Paleta de cores e tipografia (Syne + JetBrains Mono)
+- Bordas dinamicas dos inputs baseadas em CMV
 
 ### Resultado esperado
-Interface com aspecto de **SaaS fintech premium** — consistente entre páginas, responsiva em mobile, com micro-animações e hierarquia visual clara. Sai do "template genérico" para algo que parece produto pago.
+
+Cards compactos e escaneiaveis por padrao, com expansao sob demanda. Visual mais proximo de dashboards SaaS premium (como os exemplos Datawisp e Highpoint do artigo). Menos "planilha", mais "ferramenta inteligente".
 
