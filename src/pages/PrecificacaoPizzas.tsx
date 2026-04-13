@@ -577,20 +577,20 @@ export default function PrecificacaoPizzas() {
                           })
                         )}
 
-                        {/* CMV App — saturated pills */}
+                        {/* CMV App — high-contrast pills */}
                         {activeApps.map((app) =>
                           sizes.map((s, i) => {
                             const appPrice = precos[s] > 0 ? calcAppPrice(precos[s], app.taxa) : 0;
                             const appCmv = calcCmv(custos[s], appPrice);
-                            const pillColor = appCmv > 40
-                              ? "bg-[#FEE2E2] text-[#DC2626] border-[#FECACA]"
-                              : appCmv > 35
-                                ? "bg-[#FEF3C7] text-[#D97706] border-[#FDE68A]"
-                                : "bg-[#D1FAE5] text-[#059669] border-[#A7F3D0]";
+                            const pillStyle = appCmv > 35
+                              ? { background: '#EF4444', color: '#FFFFFF' }
+                              : appCmv > 30
+                                ? { background: '#F59E0B', color: '#FFFFFF' }
+                                : { background: '#10B981', color: '#FFFFFF' };
                             return (
                               <TableCell key={`ca-${app.key}-${s}`} className={cn("text-center py-6 px-1.5", i === 0 && "border-l border-[#E2E8F0]")}>
                                 {appPrice > 0 ? (
-                                  <span className={cn("inline-block text-[12px] font-bold px-2.5 py-1 rounded-full border", pillColor)} style={{ fontFeatureSettings: "'tnum'" }}>
+                                  <span className="inline-block text-[12px] font-bold px-2.5 py-1 rounded-full" style={{ ...pillStyle, fontFeatureSettings: "'tnum'" }}>
                                     {fmtPct(appCmv)}
                                   </span>
                                 ) : <span className="text-slate-300">—</span>}
