@@ -489,9 +489,9 @@ export default function PrecificacaoPizzas() {
                     )}
                     style={{
                       animationDelay: `${rowIndex * 60}ms`,
-                      background: 'rgba(255, 255, 255, 0.45)',
+                      background: 'rgba(211, 211, 211, 0.2)',
                       backdropFilter: 'blur(10px)',
-                      border: hasAlert ? '1px solid hsl(var(--destructive) / 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
+                      border: hasAlert ? '1px solid hsl(var(--destructive) / 0.3)' : '1px solid rgba(255, 255, 255, 0.3)',
                       borderRadius: '15px',
                     }}
                   >
