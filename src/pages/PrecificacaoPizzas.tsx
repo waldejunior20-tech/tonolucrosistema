@@ -483,11 +483,17 @@ export default function PrecificacaoPizzas() {
                 >
                   <div
                     className={cn(
-                      "row-reveal rounded-xl border bg-card overflow-hidden transition-all duration-300",
-                      hasAlert ? "border-destructive/30 shadow-[0_0_0_1px_hsl(var(--destructive)/0.08)]" : "border-border/60",
+                      "row-reveal rounded-xl overflow-hidden transition-all duration-300",
+                      hasAlert ? "shadow-[0_0_0_1px_hsl(var(--destructive)/0.08)]" : "",
                       isOpen ? "shadow-lg" : "shadow-sm hover:shadow-md"
                     )}
-                    style={{ animationDelay: `${rowIndex * 60}ms` }}
+                    style={{
+                      animationDelay: `${rowIndex * 60}ms`,
+                      background: 'rgba(128, 128, 128, 0.15)',
+                      backdropFilter: 'blur(10px)',
+                      border: hasAlert ? '1px solid hsl(var(--destructive) / 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
+                      borderRadius: '15px',
+                    }}
                   >
                     {/* ── Collapsed Summary (always visible) ── */}
                     <CollapsibleTrigger asChild>
@@ -565,7 +571,7 @@ export default function PrecificacaoPizzas() {
                             >
                               {/* Size badge */}
                               <div className="flex items-center justify-between">
-                                <span className="text-xs font-extrabold uppercase tracking-[0.15em] text-muted-foreground bg-secondary/60 px-3 py-1.5 rounded-lg">
+                                <span className="text-xs font-extrabold uppercase tracking-[0.15em] text-muted-foreground px-3 py-1.5 rounded-lg" style={{ background: 'rgba(200, 200, 200, 0.35)' }}>
                                   Tamanho {sizeLabels[s]}
                                 </span>
                                 {preco > 0 && (
@@ -579,7 +585,7 @@ export default function PrecificacaoPizzas() {
                               </div>
 
                               {/* Info block — Custo + Sugerido */}
-                              <div className="bg-secondary/40 rounded-lg p-4 space-y-3">
+                              <div className="rounded-lg p-4 space-y-3" style={{ background: 'rgba(200, 200, 200, 0.3)' }}>
                                 <div className="flex items-center justify-between">
                                   <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">Custo</span>
                                   <div className="flex items-baseline gap-1">
@@ -611,7 +617,7 @@ export default function PrecificacaoPizzas() {
                                       fontWeight: 800,
                                       fontFeatureSettings: "'tnum'",
                                       color: 'hsl(var(--foreground))',
-                                      background: 'hsl(var(--card))',
+                                      background: 'rgba(255, 255, 255, 0.6)',
                                       border: `2px solid ${borderColor}`,
                                       boxShadow: `0 0 12px ${glowColor}`,
                                     }}

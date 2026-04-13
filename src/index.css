@@ -9,7 +9,7 @@
     /* ═══ Core Palette ═══ */
     --background: 0 0% 100%;
     --foreground: 220 13% 18%;
-    --card: 0 0% 94%;
+    --card: 0 0% 100%;
     --card-foreground: 220 13% 18%;
     --popover: 0 0% 100%;
     --popover-foreground: 220 13% 18%;
@@ -19,9 +19,9 @@
     --accent: 168 76% 36%;
     --accent-foreground: 0 0% 100%;
     --orange-accent: 24 95% 53%;
-    --secondary: 120 1% 74%;
+    --secondary: 220 14% 96%;
     --secondary-foreground: 220 13% 18%;
-    --muted: 120 1% 74%;
+    --muted: 220 14% 96%;
     --muted-foreground: 220 9% 46%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
@@ -72,7 +72,7 @@
   .dark {
     --background: 0 0% 100%;
     --foreground: 220 13% 18%;
-    --card: 0 0% 94%;
+    --card: 0 0% 100%;
     --card-foreground: 220 13% 18%;
     --popover: 0 0% 100%;
     --popover-foreground: 220 13% 18%;
@@ -82,9 +82,9 @@
     --accent: 168 76% 36%;
     --accent-foreground: 0 0% 100%;
     --orange-accent: 24 95% 53%;
-    --secondary: 120 1% 74%;
+    --secondary: 220 14% 96%;
     --secondary-foreground: 220 13% 18%;
-    --muted: 120 1% 74%;
+    --muted: 220 14% 96%;
     --muted-foreground: 220 9% 46%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
