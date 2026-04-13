@@ -231,7 +231,7 @@ export default function CaixaDiario() {
               <div className="flex flex-wrap items-center gap-5 p-5 rounded-xl bg-muted/50 border border-border/40">
                 <div>
                   <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Total Bruto</p>
-                  <p className="text-xl font-extrabold text-foreground">{formatMoney(totalForm)}</p>
+                  <p className="text-xl font-extrabold text-money">{formatMoney(totalForm)}</p>
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Taxas</p>

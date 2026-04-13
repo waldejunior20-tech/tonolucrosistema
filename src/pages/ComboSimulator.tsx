@@ -539,7 +539,7 @@ export default function ComboSimulator() {
             <div className="space-y-3 mb-6">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Custo Real Total:</span>
-                <span className="font-mono-data text-foreground">{fmt(custoTotal)}</span>
+                <span className="font-mono-data text-money">{fmt(custoTotal)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Preço Separado:</span>
