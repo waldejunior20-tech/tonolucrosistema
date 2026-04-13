@@ -232,14 +232,14 @@ export default function CaixaRapido() {
 
             <div className="space-y-1.5">
               <Label className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
-                <CreditCard size={12} className="text-blue-500" /> Débito
+                <CreditCard size={12} className="text-info" /> Débito
               </Label>
               <MoneyInput value={form.debito} onChange={(v) => setForm(f => ({ ...f, debito: v }))} />
             </div>
 
             <div className="space-y-1.5">
               <Label className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
-                <CreditCard size={12} className="text-purple-500" /> Crédito
+                <CreditCard size={12} className="text-primary" /> Crédito
               </Label>
               <MoneyInput value={form.credito} onChange={(v) => setForm(f => ({ ...f, credito: v }))} />
             </div>
@@ -253,7 +253,7 @@ export default function CaixaRapido() {
 
             <div className="space-y-1.5">
               <Label className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
-                <Smartphone size={12} className="text-orange-500" /> Outros Apps
+                <Smartphone size={12} className="text-orange" /> Outros Apps
               </Label>
               <MoneyInput value={form.outros_apps} onChange={(v) => setForm(f => ({ ...f, outros_apps: v }))} />
             </div>

@@ -176,7 +176,7 @@ export default function CaixaDiario() {
 
               <div className="space-y-2">
                 <Label className="flex items-center gap-2 text-sm font-medium">
-                  <CreditCard size={14} className="text-blue-600" />
+                  <CreditCard size={14} className="text-info" />
                   Cartão Débito
                 </Label>
                 <MoneyInput value={form.debito} onChange={(v) => setForm(f => ({ ...f, debito: v }))} />
@@ -187,7 +187,7 @@ export default function CaixaDiario() {
 
               <div className="space-y-2">
                 <Label className="flex items-center gap-2 text-sm font-medium">
-                  <CreditCard size={14} className="text-purple-600" />
+                  <CreditCard size={14} className="text-primary" />
                   Cartão Crédito
                 </Label>
                 <MoneyInput value={form.credito} onChange={(v) => setForm(f => ({ ...f, credito: v }))} />
@@ -198,7 +198,7 @@ export default function CaixaDiario() {
 
               <div className="space-y-2">
                 <Label className="flex items-center gap-2 text-sm font-medium">
-                  <ShoppingBag size={14} className="text-red-500" />
+                  <ShoppingBag size={14} className="text-destructive" />
                   iFood
                 </Label>
                 <MoneyInput value={form.ifood} onChange={(v) => setForm(f => ({ ...f, ifood: v }))} />
@@ -209,7 +209,7 @@ export default function CaixaDiario() {
 
               <div className="space-y-2">
                 <Label className="flex items-center gap-2 text-sm font-medium">
-                  <Smartphone size={14} className="text-orange-500" />
+                  <Smartphone size={14} className="text-orange" />
                   Outros Apps
                 </Label>
                 <MoneyInput value={form.outros_apps} onChange={(v) => setForm(f => ({ ...f, outros_apps: v }))} />
