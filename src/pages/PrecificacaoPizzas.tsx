@@ -328,11 +328,11 @@ export default function PrecificacaoPizzas() {
 
   return (
     <TooltipProvider>
-      <div className="space-y-8 page-enter bg-grain">
+      <div className="space-y-8 page-enter ">
         {/* ═══ Header ═══ */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="font-display text-[32px] font-extrabold tracking-tight text-foreground leading-none">
+            <h1 className="text-[32px] font-extrabold tracking-tight text-foreground leading-none">
               Precificação de Pizzas
             </h1>
             <p className="text-muted-foreground text-sm mt-1.5 font-medium">Gestão de margem por tamanho · Terminal de precisão</p>
@@ -351,9 +351,9 @@ export default function PrecificacaoPizzas() {
 
         {/* Config panel */}
         {configOpen && configForm && (
-          <Card className="border-primary/30 card-industrial">
+          <Card className="border-primary/30 card-premium">
             <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-display">Configurações Globais de Precificação</CardTitle>
+              <CardTitle className="text-lg">Configurações Globais de Precificação</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -392,10 +392,10 @@ export default function PrecificacaoPizzas() {
 
         {/* ═══ KPI Cards ═══ */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 stagger-fade-in">
-          <div className="kpi-industrial group">
+          <div className="card-premium group">
             <div className="flex items-center gap-2 mb-4">
               <Activity className="h-4 w-4 text-muted-foreground" />
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground font-display">Custo Médio das Pizzas</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Custo Médio das Pizzas</p>
             </div>
             <p className={cn("text-[48px] font-extrabold leading-none tracking-tight font-terminal", cmvColor(indicators.avgCmv))}>
               {fmtPct(indicators.avgCmv)}
@@ -405,10 +405,10 @@ export default function PrecificacaoPizzas() {
             </p>
           </div>
 
-          <div className="kpi-industrial group">
+          <div className="card-premium group">
             <div className="flex items-center gap-2 mb-4">
               <TrendingDown className="h-4 w-4 text-destructive" />
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-destructive font-display">Precisam de Atenção</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-destructive">Precisam de Atenção</p>
             </div>
             <p className="text-[48px] font-extrabold leading-none text-destructive font-terminal">{indicators.foraMetaCount}</p>
             <p className="text-[12px] text-muted-foreground font-medium mt-3">Tamanhos com custo &gt; 40%</p>
@@ -418,11 +418,11 @@ export default function PrecificacaoPizzas() {
         {/* ═══ Pizza Cards — Summary + Expand ═══ */}
         <div className="space-y-4">
           {fichas.length === 0 ? (
-            <div className="card-industrial flex flex-col items-center gap-5 py-20">
+            <div className="card-premium flex flex-col items-center gap-5 py-20">
               <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center">
                 <Activity className="h-7 w-7 text-muted-foreground" />
               </div>
-              <p className="text-muted-foreground text-sm font-display font-semibold">Nenhuma pizza cadastrada ainda.</p>
+              <p className="text-muted-foreground text-sm font-semibold">Nenhuma pizza cadastrada ainda.</p>
               <Button
                 onClick={() => window.location.href = '/fichas/pizzas?tipo=tradicional'}
                 className="btn-micro gap-2"
@@ -464,7 +464,7 @@ export default function PrecificacaoPizzas() {
                             style={{ background: health.color, boxShadow: `0 0 8px ${health.glow}` }}
                           />
                           <div>
-                            <h3 className="font-display font-extrabold text-lg text-foreground leading-tight">{ficha.nome}</h3>
+                            <h3 className="font-extrabold text-lg text-foreground leading-tight">{ficha.nome}</h3>
                             <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-[0.12em]">{tipoLabel(ficha.tipo)}</span>
                           </div>
                         </div>

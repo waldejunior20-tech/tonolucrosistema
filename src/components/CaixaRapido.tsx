@@ -160,29 +160,29 @@ export default function CaixaRapido() {
   });
 
   return (
-    <div style={{ background: "linear-gradient(135deg, #1E293B, #334155)", boxShadow: "0 6px 20px rgba(30,41,59,0.15)" }} className="rounded-2xl border border-white/10 transition-all duration-300">
+    <div className="rounded-xl border border-border bg-card transition-all duration-200">
       {/* Header — always visible */}
       <button
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center justify-between px-5 py-4 text-left"
       >
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-            <Wallet size={16} className="text-white" />
+          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+            <Wallet size={16} className="text-primary" />
           </div>
           <div>
-            <h3 className="text-[14px] font-semibold text-white">Lançar Vendas</h3>
-            <p className="text-[10px] text-white/60">Registre o caixa do dia ou período</p>
+            <h3 className="text-[14px] font-semibold text-foreground">Lançar Vendas</h3>
+            <p className="text-[10px] text-muted-foreground">Registre o caixa do dia ou período</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           {totalPeriodo > 0 && (
-            <span className="text-[12px] font-bold text-white">
+            <span className="text-[12px] font-bold text-foreground">
               {formatMoney(totalPeriodo)} no período
             </span>
           )}
           <ChevronDown size={16} className={cn(
-            "text-white/70 transition-transform duration-200",
+            "text-muted-foreground transition-transform duration-200",
             expanded && "rotate-180"
           )} />
         </div>
@@ -190,7 +190,7 @@ export default function CaixaRapido() {
 
       {/* Expandable content */}
       {expanded && (
-        <div className="px-5 pb-5 space-y-4 border-t border-white/15 pt-4 bg-card rounded-b-2xl">
+        <div className="px-5 pb-5 space-y-4 border-t border-border pt-4">
           {/* Date range picker */}
           <div className="flex flex-wrap items-center gap-3">
             <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>

@@ -495,13 +495,13 @@ export default function InsumosProduzidos() {
       ) : (
         <div className="table-premium fade-up fade-up-d1">
           <Table>
-            <TableHeader style={{ background: 'linear-gradient(135deg, hsl(var(--surface-table-header)), hsl(var(--surface-table-header-end)))' }}>
+            <TableHeader>
               <TableRow>
-                <TableHead className="text-white font-bold">Nome</TableHead>
-                <TableHead className="text-right text-white font-bold">Rendimento</TableHead>
-                <TableHead className="text-right text-white font-bold">Custo/Unidade</TableHead>
-                <TableHead className="text-right text-white font-bold">Custo Total</TableHead>
-                <TableHead className="w-[100px] text-white font-bold">Ações</TableHead>
+                <TableHead className="">Nome</TableHead>
+                <TableHead className="text-right">Rendimento</TableHead>
+                <TableHead className="text-right">Custo/Unidade</TableHead>
+                <TableHead className="text-right">Custo Total</TableHead>
+                <TableHead className="w-[100px]">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

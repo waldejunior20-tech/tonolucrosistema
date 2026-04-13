@@ -894,14 +894,14 @@ export default function FichasTecnicasPizza() {
       ) : (
         <div className="table-premium fade-up fade-up-d1">
           <Table>
-            <TableHeader style={{ background: 'linear-gradient(135deg, hsl(var(--surface-table-header)), hsl(var(--surface-table-header-end)))' }}>
+            <TableHeader>
               <TableRow>
-                <TableHead className="text-white font-bold">Nome</TableHead>
-                <TableHead className="text-white font-bold">Tipo</TableHead>
-                <TableHead className="text-right text-white font-bold">Custo P</TableHead>
-                <TableHead className="text-right text-white font-bold">Custo M</TableHead>
-                <TableHead className="text-right text-white font-bold">Custo G</TableHead>
-                <TableHead className="w-[100px] text-white font-bold">Ações</TableHead>
+                <TableHead className="">Nome</TableHead>
+                <TableHead className="">Tipo</TableHead>
+                <TableHead className="text-right">Custo P</TableHead>
+                <TableHead className="text-right">Custo M</TableHead>
+                <TableHead className="text-right">Custo G</TableHead>
+                <TableHead className="w-[100px]">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

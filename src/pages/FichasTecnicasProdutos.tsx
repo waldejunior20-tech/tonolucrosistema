@@ -621,11 +621,11 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
       ) : (
         <div className="table-premium fade-up fade-up-d1">
           <Table>
-            <TableHeader style={{ background: 'linear-gradient(135deg, hsl(var(--surface-table-header)), hsl(var(--surface-table-header-end)))' }}>
+            <TableHeader>
               <TableRow>
-                <TableHead className="text-white font-bold">Nome</TableHead>
-                <TableHead className="text-right text-white font-bold">Custo Total</TableHead>
-                <TableHead className="w-24 text-center text-white font-bold">Ações</TableHead>
+                <TableHead className="">Nome</TableHead>
+                <TableHead className="text-right">Custo Total</TableHead>
+                <TableHead className="w-24 text-center ">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

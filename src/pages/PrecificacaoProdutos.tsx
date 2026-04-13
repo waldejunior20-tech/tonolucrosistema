@@ -235,15 +235,15 @@ export default function PrecificacaoProdutos() {
   const renderTable = (items: FichaProduto[]) => (
     <div className="table-premium overflow-x-auto">
       <Table>
-        <TableHeader style={{ background: 'linear-gradient(135deg, hsl(var(--surface-table-header)), hsl(var(--surface-table-header-end)))' }}>
+        <TableHeader>
           <TableRow>
-            <TableHead className="min-w-[200px] text-white font-bold">Produto</TableHead>
-            <TableHead className="text-center text-white font-bold">Custo</TableHead>
-            <TableHead className="text-center text-white font-bold">Sugerido</TableHead>
-            <TableHead className="text-center bg-white/10 text-white font-bold">Seu Preço</TableHead>
-            <TableHead className="text-center bg-white/10 text-white font-bold">CMV Balcão</TableHead>
+            <TableHead className="min-w-[200px]">Produto</TableHead>
+            <TableHead className="text-center">Custo</TableHead>
+            <TableHead className="text-center">Sugerido</TableHead>
+            <TableHead className="text-center ">Seu Preço</TableHead>
+            <TableHead className="text-center ">CMV Balcão</TableHead>
             {activeApps.map((app) => (
-              <TableHead key={`app-${app.key}`} className="text-center text-white font-bold">
+              <TableHead key={`app-${app.key}`} className="text-center">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <span className="cursor-help">{app.label}</span>
@@ -253,7 +253,7 @@ export default function PrecificacaoProdutos() {
               </TableHead>
             ))}
             {activeApps.map((app) => (
-              <TableHead key={`cmv-${app.key}`} className="text-center text-white font-bold">CMV {app.label}</TableHead>
+              <TableHead key={`cmv-${app.key}`} className="text-center">CMV {app.label}</TableHead>
             ))}
           </TableRow>
         </TableHeader>
@@ -358,7 +358,7 @@ export default function PrecificacaoProdutos() {
               {indicators.avgCmv > 40 ? "⚠️ Custo alto — revise os preços" : indicators.avgCmv > 35 ? "Atenção — custo no limite" : "✅ Custo saudável"}
             </p>
           </div>
-          <div className="rounded-2xl p-7 border border-destructive/20" style={{ background: 'linear-gradient(135deg, rgba(127,29,29,0.06), rgba(185,28,28,0.1))' }}>
+          <div className="card-premium border-destructive/20">
             <div className="flex items-center gap-2 mb-4">
               <AlertTriangle className="h-5 w-5 text-destructive" />
               <p className="text-sm font-bold uppercase tracking-wider text-destructive">Precisam de Atenção</p>
