@@ -453,7 +453,7 @@ export default function FinanceiroDRE() {
           <div className="pb-4"><h3 className="text-sm font-bold font-syne uppercase">CMV</h3><p className="text-[10px] text-text3 font-medium uppercase tracking-wider">Custo dos ingredientes</p></div>
           <div className="space-y-4">
             <p className={cn("text-3xl font-bold text-center font-syne", calc.cmvPct > 40 ? "text-destructive" : calc.cmvPct > 32 ? "text-warning" : "text-success")}>{calc.cmvPct.toFixed(1)}%</p>
-            <div className="progress-premium"><div className={cn("progress-premium-bar", calc.cmvPct > 40 ? "bg-destructive" : calc.cmvPct > 32 ? "bg-warning" : "bg-[#27AE60]")} style={{ width: `${Math.min(calc.cmvPct * 2.5, 100)}%` }} /></div>
+            <div className="progress-premium"><div className={cn("progress-premium-bar", calc.cmvPct > 40 ? "bg-destructive" : calc.cmvPct > 32 ? "bg-warning" : "bg-success")} style={{ width: `${Math.min(calc.cmvPct * 2.5, 100)}%` }} /></div>
             <div className="text-[11px] space-y-1 text-text2">
               <div className="flex justify-between"><span>Meta máxima</span><span className="font-bold text-foreground">32%</span></div>
               <div className="flex justify-between"><span>Folga</span><span className={cn("font-bold", cmvFolga >= 0 ? "text-success" : "text-destructive")}>{cmvFolga >= 0 ? `${cmvFolga.toFixed(1)}%` : `${Math.abs(cmvFolga).toFixed(1)}% acima`}</span></div>
