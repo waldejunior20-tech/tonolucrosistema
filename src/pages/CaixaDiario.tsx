@@ -165,7 +165,7 @@ export default function CaixaDiario() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="flex items-center gap-2 text-sm font-medium">
-                  <Wallet size={14} className="text-emerald-600" />
+                  <Wallet size={14} className="text-success" />
                   Dinheiro / PIX
                 </Label>
                 <MoneyInput value={form.dinheiro_pix} onChange={(v) => setForm(f => ({ ...f, dinheiro_pix: v }))} />

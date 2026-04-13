@@ -262,7 +262,7 @@ export default function FinanceiroContasPagar() {
             <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Vencem em 7 dias</p>
             <p className="text-2xl font-extrabold text-foreground flex items-center gap-2">
               {cards.vence7d}
-              {cards.vence7d > 0 && <Clock className="h-5 w-5 text-yellow-500" />}
+              {cards.vence7d > 0 && <Clock className="h-5 w-5 text-warning" />}
             </p>
           </CardContent>
         </Card>

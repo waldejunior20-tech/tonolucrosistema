@@ -860,7 +860,7 @@ export default function PromocoesAtivas() {
                 />
               </div>
               {calculations.some((c) => c.lucroPct < form.margem_minima_aceitavel) && (
-                <div className="flex items-center gap-2 rounded-md bg-yellow-900/30 border border-yellow-800 px-4 py-3 text-sm text-yellow-400">
+                <div className="flex items-center gap-2 rounded-md bg-warning/15 border border-warning/30 px-4 py-3 text-sm text-warning">
                   <AlertTriangle className="h-4 w-4 shrink-0" />
                   Um ou mais produtos estão abaixo da margem mínima de {form.margem_minima_aceitavel}%
                 </div>
