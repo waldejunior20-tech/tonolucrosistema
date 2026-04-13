@@ -403,58 +403,50 @@ export default function PrecificacaoPizzas() {
             <div className="overflow-x-auto">
               <Table className="w-full">
                 <TableHeader>
-                  <TableRow className="border-b border-[#E2E8F0]" style={{ background: '#F8FAFC' }}>
-                    <TableHead rowSpan={2} className="align-bottom text-slate-500 font-bold text-[11px] uppercase tracking-[0.08em] w-[160px] py-3 px-4" style={{ color: '#475569', background: '#F8FAFC' }}>Pizza</TableHead>
-                    <TableHead rowSpan={2} className="align-bottom text-[11px] uppercase tracking-[0.08em] w-[80px] py-3" style={{ color: '#475569', background: '#F8FAFC' }}>Tipo</TableHead>
-                    <TableHead colSpan={3} className="text-center border-l border-[#E2E8F0] text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F8FAFC' }}>Custo</TableHead>
-                    <TableHead colSpan={3} className="text-center border-l border-[#E2E8F0] text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F8FAFC' }}>Sugerido</TableHead>
-                    <TableHead colSpan={3} className="text-center border-l border-[#E2E8F0] text-[11px] uppercase tracking-[0.08em] py-2.5 font-extrabold" style={{ color: '#6366F1', background: '#F8FAFC' }}>
-                      Seu Preço
+                  <TableRow className="border-b border-[#E2E8F0]" style={{ background: '#F1F5F9' }}>
+                    <TableHead rowSpan={2} className="align-bottom font-bold text-[11px] uppercase tracking-[0.08em] w-[180px] py-3 px-5" style={{ color: '#475569', background: '#F1F5F9' }}>Pizza</TableHead>
+                    <TableHead rowSpan={2} className="align-bottom font-bold text-[11px] uppercase tracking-[0.08em] w-[80px] py-3" style={{ color: '#475569', background: '#F1F5F9' }}>Tipo</TableHead>
+                    <TableHead colSpan={3} className="text-center border-l border-[#E2E8F0] font-bold text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F1F5F9' }}>Custo</TableHead>
+                    <TableHead colSpan={3} className="text-center border-l border-[#E2E8F0] font-bold text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F1F5F9' }}>Sugerido</TableHead>
+                    <TableHead colSpan={3} className="text-center border-l border-[#E2E8F0] font-extrabold text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#10B981', background: '#F1F5F9' }}>
+                      ✏️ Seu Preço
                     </TableHead>
-                    <TableHead colSpan={3} className="text-center border-l border-[#E2E8F0] text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F8FAFC' }}>CMV %</TableHead>
+                    <TableHead colSpan={3} className="text-center border-l border-[#E2E8F0] font-bold text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F1F5F9' }}>CMV %</TableHead>
                     {activeApps.map((app) => (
-                      <TableHead key={`app-${app.key}`} colSpan={3} className="text-center border-l border-[#E2E8F0] text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F8FAFC' }}>
+                      <TableHead key={`app-${app.key}`} colSpan={3} className="text-center border-l border-[#E2E8F0] font-bold text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F1F5F9' }}>
                         <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="cursor-help">{app.label}</span>
-                          </TooltipTrigger>
+                          <TooltipTrigger asChild><span className="cursor-help">{app.label}</span></TooltipTrigger>
                           <TooltipContent><p className="max-w-[200px] text-xs">{APP_TOOLTIP}</p></TooltipContent>
                         </Tooltip>
                       </TableHead>
                     ))}
                     {activeApps.map((app) => (
-                      <TableHead key={`cmv-${app.key}`} colSpan={3} className="text-center border-l border-[#E2E8F0] text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F8FAFC' }}>
+                      <TableHead key={`cmv-${app.key}`} colSpan={3} className="text-center border-l border-[#E2E8F0] font-bold text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F1F5F9' }}>
                         CMV {app.label}
                       </TableHead>
                     ))}
                   </TableRow>
-                  <TableRow style={{ background: '#F8FAFC' }}>
-                    {/* Custo P/M/G */}
+                  <TableRow style={{ background: '#F1F5F9' }}>
                     {sizes.map((s, i) => (
-                      <TableHead key={`c-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ color: '#94A3B8', background: '#F8FAFC' }}>{sizeLabels[s]}</TableHead>
+                      <TableHead key={`c-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ color: '#94A3B8', background: '#F1F5F9' }}>{sizeLabels[s]}</TableHead>
                     ))}
-                    {/* Sugerido P/M/G */}
                     {sizes.map((s, i) => (
-                      <TableHead key={`sug-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ color: '#94A3B8', background: '#F8FAFC' }}>{sizeLabels[s]}</TableHead>
+                      <TableHead key={`sug-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ color: '#94A3B8', background: '#F1F5F9' }}>{sizeLabels[s]}</TableHead>
                     ))}
-                    {/* Seu Preço P/M/G */}
                     {sizes.map((s, i) => (
-                      <TableHead key={`pr-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ color: '#6366F1', background: '#F8FAFC' }}>{sizeLabels[s]}</TableHead>
+                      <TableHead key={`pr-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ color: '#10B981', background: '#F1F5F9' }}>{sizeLabels[s]}</TableHead>
                     ))}
-                    {/* CMV Balcão P/M/G */}
                     {sizes.map((s, i) => (
-                      <TableHead key={`cmvb-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ color: '#94A3B8', background: '#F8FAFC' }}>{sizeLabels[s]}</TableHead>
+                      <TableHead key={`cmvb-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ color: '#94A3B8', background: '#F1F5F9' }}>{sizeLabels[s]}</TableHead>
                     ))}
-                    {/* App prices P/M/G */}
                     {activeApps.map((app) =>
                       sizes.map((s, i) => (
-                        <TableHead key={`ap-${app.key}-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ color: '#94A3B8', background: '#F8FAFC' }}>{sizeLabels[s]}</TableHead>
+                        <TableHead key={`ap-${app.key}-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ color: '#94A3B8', background: '#F1F5F9' }}>{sizeLabels[s]}</TableHead>
                       ))
                     )}
-                    {/* CMV App P/M/G */}
                     {activeApps.map((app) =>
                       sizes.map((s, i) => (
-                        <TableHead key={`ca-${app.key}-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ color: '#94A3B8', background: '#F8FAFC' }}>{sizeLabels[s]}</TableHead>
+                        <TableHead key={`ca-${app.key}-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ color: '#94A3B8', background: '#F1F5F9' }}>{sizeLabels[s]}</TableHead>
                       ))
                     )}
                   </TableRow>
