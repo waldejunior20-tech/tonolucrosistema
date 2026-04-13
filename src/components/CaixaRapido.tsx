@@ -274,7 +274,7 @@ export default function CaixaRapido() {
             <div className="flex flex-wrap items-center gap-4 p-3 rounded-xl bg-muted/40 border border-border/30">
               <div>
                 <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Bruto</p>
-                <p className="text-[15px] font-bold text-foreground">{formatMoney(totalForm)}</p>
+                <p className="text-[15px] font-bold text-money">{formatMoney(totalForm)}</p>
               </div>
               <div>
                 <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Taxas</p>
@@ -287,7 +287,7 @@ export default function CaixaRapido() {
               {periodDays > 1 && (
                 <div>
                   <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Por dia</p>
-                  <p className="text-[12px] font-semibold text-foreground">{formatMoney(totalForm / periodDays)}</p>
+                  <p className="text-[12px] font-semibold text-money">{formatMoney(totalForm / periodDays)}</p>
                 </div>
               )}
             </div>
@@ -322,7 +322,7 @@ export default function CaixaRapido() {
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-semibold text-foreground">{formatMoney(l.valor)}</span>
+                      <span className="text-[11px] font-semibold text-money">{formatMoney(l.valor)}</span>
                       <button
                         onClick={() => deleteMutation.mutate(l.id)}
                         className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-[hsl(var(--destructive))] transition-all"

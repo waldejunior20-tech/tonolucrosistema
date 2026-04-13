@@ -30,7 +30,7 @@ export function KpiCard({
       <AnimatedNumber
         value={value}
         formatter={formatter}
-        className="kpi-number text-foreground"
+        className="kpi-number text-money"
       />
 
       {/* Subtitle + trend inline */}

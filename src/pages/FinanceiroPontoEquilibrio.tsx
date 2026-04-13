@@ -139,7 +139,7 @@ export default function FinanceiroPontoEquilibrio() {
         <Card>
           <CardContent className="pt-7 pb-6">
             <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Despesas Fixas do Mês</p>
-            <p className="text-2xl font-extrabold text-foreground">{fmt(calc.despesasFixas)}</p>
+            <p className="text-2xl font-extrabold text-money">{fmt(calc.despesasFixas)}</p>
           </CardContent>
         </Card>
         <Card>
@@ -168,7 +168,7 @@ export default function FinanceiroPontoEquilibrio() {
           <div className="space-y-4">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Faturamento Atual</span>
-              <span className="font-bold text-foreground">{fmt(calc.receitaBruta)}</span>
+              <span className="font-bold text-money">{fmt(calc.receitaBruta)}</span>
             </div>
 
             {/* Custom progress bar */}
