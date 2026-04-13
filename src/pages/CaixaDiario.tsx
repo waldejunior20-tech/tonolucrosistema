@@ -127,11 +127,11 @@ export default function CaixaDiario() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="p-2.5 rounded-xl bg-gradient-to-br from-[#FF8C00] to-[#F27121] shadow-md">
+        <div className="p-2.5 rounded-xl bg-gradient-to-br from-orange to-orange/80 shadow-md">
           <Wallet size={22} className="text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-extrabold text-[#1F2937]">Caixa Diário</h1>
+          <h1 className="text-2xl font-extrabold text-text-heading">Caixa Diário</h1>
           <p className="text-sm text-muted-foreground mt-1 font-medium">Registre as vendas do dia por forma de pagamento</p>
         </div>
       </div>
@@ -239,7 +239,7 @@ export default function CaixaDiario() {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Total Líquido</p>
-                  <p className="text-xl font-extrabold text-[#10B981]">{formatMoney(totalLiquido)}</p>
+                  <p className="text-xl font-extrabold text-success">{formatMoney(totalLiquido)}</p>
                 </div>
               </div>
             )}
@@ -267,12 +267,12 @@ export default function CaixaDiario() {
               <p className="text-sm text-muted-foreground text-center py-8">Nenhuma venda lançada neste dia</p>
             ) : (
               <>
-                <div className="mb-4 p-4 rounded-xl bg-gradient-to-r from-[#FF8C00]/10 to-[#F27121]/10 border border-[#FF8C00]/20 text-center">
+                <div className="mb-4 p-4 rounded-xl bg-gradient-to-r from-orange/10 to-orange/5 border border-orange/20 text-center">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total do Dia</p>
-                  <p className="text-2xl font-extrabold text-[#FF8C00]">{formatMoney(totalDia)}</p>
+                  <p className="text-2xl font-extrabold text-orange">{formatMoney(totalDia)}</p>
                 </div>
                 <Table>
-                  <TableHeader style={{ background: 'linear-gradient(135deg, #1E293B, #334155)' }}>
+                  <TableHeader style={{ background: 'linear-gradient(135deg, hsl(var(--surface-table-header)), hsl(var(--surface-table-header-end)))' }}>
                     <TableRow>
                       <TableHead className="text-xs text-white font-bold">Categoria</TableHead>
                       <TableHead className="text-xs text-right text-white font-bold">Valor</TableHead>
