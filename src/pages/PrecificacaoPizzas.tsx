@@ -551,7 +551,7 @@ export default function PrecificacaoPizzas() {
                     {/* ── Expanded Detail ── */}
                     <CollapsibleContent className="data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
                       <div className="border-t border-border/40" />
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-0 md:divide-x md:divide-border/30">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
                         {sizes.map((s, sizeIdx) => {
                           const custo = custos[s];
                           const sug = sugeridos[s];
@@ -566,8 +566,8 @@ export default function PrecificacaoPizzas() {
                           return (
                             <div
                               key={s}
-                              className="p-6 space-y-5 fade-up"
-                              style={{ animationDelay: `${sizeIdx * 50}ms` }}
+                              className="p-6 space-y-5 fade-up rounded-xl"
+                              style={{ animationDelay: `${sizeIdx * 50}ms`, background: 'rgba(211, 211, 211, 0.2)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255, 255, 255, 0.3)' }}
                             >
                               {/* Size badge */}
                               <div className="flex items-center justify-between">
