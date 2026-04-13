@@ -267,10 +267,10 @@ export default function CaixaDiario() {
                   <p className="text-2xl font-bold text-primary">{formatMoney(totalDia)}</p>
                 </div>
                 <Table>
-                  <TableHeader>
+                  <TableHeader style={{ background: 'linear-gradient(135deg, #1E293B, #334155)' }}>
                     <TableRow>
-                      <TableHead className="text-xs">Categoria</TableHead>
-                      <TableHead className="text-xs text-right">Valor</TableHead>
+                      <TableHead className="text-xs text-white font-bold">Categoria</TableHead>
+                      <TableHead className="text-xs text-right text-white font-bold">Valor</TableHead>
                       <TableHead className="w-8"></TableHead>
                     </TableRow>
                   </TableHeader>
