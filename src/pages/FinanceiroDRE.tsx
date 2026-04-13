@@ -348,15 +348,15 @@ export default function FinanceiroDRE() {
 
       {/* Top 3 KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="card-premium">
+        <div className="rounded-2xl border p-5" style={{ backgroundColor: "#DCDCDA20" }}>
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Entrou</p>
           <p className="text-2xl font-bold text-foreground">{fmt(calc.totalEntrou)}</p>
         </div>
-        <div className="card-premium">
+        <div className="rounded-2xl border p-5" style={{ backgroundColor: "#DCDCDA20" }}>
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Saiu</p>
           <p className="text-2xl font-bold text-foreground">{fmt(calc.totalSaiu)}</p>
         </div>
-        <div className={cn("card-premium", calc.sobrou >= 0 ? "border-success/30" : "border-destructive/30")}>
+        <div className={cn("rounded-2xl border p-5", calc.sobrou >= 0 ? "border-success/30" : "border-destructive/30")} style={{ backgroundColor: "#DCDCDA20" }}>
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
             {calc.sobrou >= 0 ? "Sobrou" : "Faltou"}
           </p>
