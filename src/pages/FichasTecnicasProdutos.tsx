@@ -625,7 +625,7 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
               <TableRow>
                 <TableHead className="">Nome</TableHead>
                 <TableHead className="text-right">Custo Total</TableHead>
-                <TableHead className="w-24 text-center text-white font-bold">Ações</TableHead>
+                <TableHead className="w-24 text-center ">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

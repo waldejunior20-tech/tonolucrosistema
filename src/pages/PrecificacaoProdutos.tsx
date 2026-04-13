@@ -240,8 +240,8 @@ export default function PrecificacaoProdutos() {
             <TableHead className="min-w-[200px]">Produto</TableHead>
             <TableHead className="text-center">Custo</TableHead>
             <TableHead className="text-center">Sugerido</TableHead>
-            <TableHead className="text-center bg-white/10 text-white font-bold">Seu Preço</TableHead>
-            <TableHead className="text-center bg-white/10 text-white font-bold">CMV Balcão</TableHead>
+            <TableHead className="text-center ">Seu Preço</TableHead>
+            <TableHead className="text-center ">CMV Balcão</TableHead>
             {activeApps.map((app) => (
               <TableHead key={`app-${app.key}`} className="text-center">
                 <Tooltip>

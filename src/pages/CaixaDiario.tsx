@@ -275,7 +275,7 @@ export default function CaixaDiario() {
                   <TableHeader>
                     <TableRow>
                       <TableHead className="text-xs">Categoria</TableHead>
-                      <TableHead className="text-xs text-right text-white font-bold">Valor</TableHead>
+                      <TableHead className="text-xs text-right ">Valor</TableHead>
                       <TableHead className="w-8"></TableHead>
                     </TableRow>
                   </TableHeader>
