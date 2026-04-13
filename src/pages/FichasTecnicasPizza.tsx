@@ -916,7 +916,7 @@ export default function FichasTecnicasPizza() {
                     <TableCell className="text-right">R$ {fmt(custos.custoG)}</TableCell>
                     <TableCell>
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" onClick={() => handleEdit(ficha)} className="text-orange hover:text-orange hover:bg-orange/10">
+                        <Button variant="ghost" size="icon" onClick={() => handleEdit(ficha)} className="text-muted-foreground hover:text-foreground hover:bg-muted">
                           <Pencil className="h-4 w-4" />
                         </Button>
                         <Button variant="ghost" size="icon" onClick={() => deleteMutation.mutate(ficha.id)}>
