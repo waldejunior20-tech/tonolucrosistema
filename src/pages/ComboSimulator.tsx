@@ -531,7 +531,7 @@ export default function ComboSimulator() {
 
         {/* RIGHT: ANALYSIS */}
         <div className="space-y-4">
-          <div className="card-ember sticky top-6">
+          <div className="card-premium sticky top-6">
             <h3 className="label-upper mb-4 border-b border-border pb-2">
               Análise de Lucro
             </h3>
@@ -556,7 +556,7 @@ export default function ComboSimulator() {
               <input
                 type="text"
                 inputMode="decimal"
-                className="w-full bg-background border-2 border-primary rounded-lg p-4 text-3xl font-mono-data text-foreground text-center focus:outline-none glow-ember"
+                className="w-full bg-background border-2 border-primary rounded-lg p-4 text-3xl font-mono-data text-foreground text-center focus:outline-none "
                 placeholder="0,00"
                 value={precoVendaStr}
                 onChange={(e) => setPrecoVendaStr(e.target.value)}
