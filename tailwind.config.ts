@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         sans: ["Plus Jakarta Sans", "Inter", "system-ui", "sans-serif"],
         heading: ["Plus Jakarta Sans", "Inter", "system-ui", "sans-serif"],
+        display: ["Syne", "Plus Jakarta Sans", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "Fira Code", "monospace"],
       },
       colors: {
