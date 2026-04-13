@@ -245,7 +245,7 @@ export default function FinanceiroContasPagar() {
         <Card>
           <CardContent className="pt-7 pb-6">
             <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Total Pago no Mês</p>
-            <p className="text-2xl font-extrabold text-[#10B981]">{fmt(cards.totalPago)}</p>
+            <p className="text-2xl font-extrabold text-success">{fmt(cards.totalPago)}</p>
           </CardContent>
         </Card>
         <Card>
@@ -291,7 +291,7 @@ export default function FinanceiroContasPagar() {
       <Card>
         <CardContent className="p-0">
           <Table>
-            <TableHeader style={{ background: 'linear-gradient(135deg, #1E293B, #334155)' }}>
+            <TableHeader style={{ background: 'linear-gradient(135deg, hsl(var(--surface-table-header)), hsl(var(--surface-table-header-end)))' }}>
               <TableRow>
                 <TableHead className="min-w-[200px] text-white font-bold">Descrição</TableHead>
                 <TableHead className="text-white font-bold">Categoria</TableHead>

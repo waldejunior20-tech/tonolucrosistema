@@ -325,11 +325,11 @@ export default function FinanceiroDRE() {
     <div className="space-y-5">
       <div className="flex items-center justify-between flex-wrap gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-[#1F2937]">DRE Financeiro</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight text-text-heading">DRE Financeiro</h1>
           <p className="text-sm text-muted-foreground font-medium">Demonstrativo de Resultados do Exercício</p>
         </div>
         <div className="flex gap-3 items-center flex-wrap">
-          <button onClick={() => openDialog("receita")} className="bg-[#10B981] hover:bg-[#059669] text-white font-bold h-10 px-6 rounded-lg flex items-center gap-2 transition-colors">
+          <button onClick={() => openDialog("receita")} className="bg-success hover:bg-success text-white font-bold h-10 px-6 rounded-lg flex items-center gap-2 transition-colors">
             <Plus className="h-4 w-4" /> <span>Receita</span>
           </button>
           <button onClick={() => openDialog("despesa")} className="bg-destructive hover:bg-destructive/90 text-white font-bold h-10 px-6 rounded-lg flex items-center gap-2 transition-colors">
@@ -358,7 +358,7 @@ export default function FinanceiroDRE() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="card-premium p-7">
           <p className="label-upper mb-4">Faturamento Total</p>
-          <p className="kpi-number text-[#10B981]">{fmt(calc.totalEntrou)}</p>
+          <p className="kpi-number text-success">{fmt(calc.totalEntrou)}</p>
         </div>
         <div className="card-premium p-7">
           <p className="label-upper mb-4">Saída Total</p>
@@ -366,8 +366,8 @@ export default function FinanceiroDRE() {
         </div>
         <div className={cn("card-premium p-7", calc.sobrou >= 0 ? "border-[#10B981]/30 shadow-sm shadow-[#10B981]/5" : "border-destructive/30 shadow-sm shadow-destructive/5")}>
           <p className="label-upper mb-4">{calc.sobrou >= 0 ? "Lucro Líquido" : "Prejuízo"}</p>
-          <p className={cn("kpi-number", calc.sobrou >= 0 ? "text-[#10B981]" : "text-destructive")}>{fmt(Math.abs(calc.sobrou))}</p>
-          <p className={cn("text-sm mt-1 font-bold", calc.sobrou >= 0 ? "text-[#10B981]" : "text-destructive")}>{calc.sobrouPct.toFixed(1)}% de margem</p>
+          <p className={cn("kpi-number", calc.sobrou >= 0 ? "text-success" : "text-destructive")}>{fmt(Math.abs(calc.sobrou))}</p>
+          <p className={cn("text-sm mt-1 font-bold", calc.sobrou >= 0 ? "text-success" : "text-destructive")}>{calc.sobrouPct.toFixed(1)}% de margem</p>
         </div>
       </div>
 
@@ -420,12 +420,12 @@ export default function FinanceiroDRE() {
         <div className="card-premium p-6">
           <div className="pb-4"><h3 className="text-sm font-bold font-syne uppercase">Sobra das vendas</h3><p className="text-[10px] text-text3 font-medium uppercase tracking-wider">Margem de contribuição</p></div>
           <div className="space-y-4">
-            <p className="text-2xl font-bold text-[#27AE60] font-syne">{fmt(calc.margemContribuicao)}</p>
+            <p className="text-2xl font-bold text-success font-syne">{fmt(calc.margemContribuicao)}</p>
             <div className="text-[11px] space-y-1 border-t pt-2 text-text2">
               <div className="flex justify-between"><span>Faturamento Bruto</span><span className="font-medium text-foreground">{fmt(calc.totalEntrou)}</span></div>
-              <div className="flex justify-between text-[#C0392B]"><span>(-) Desp. s/ vendas</span><span>-{fmt(calc.despesasSobreVendas)}</span></div>
-              <div className="flex justify-between text-[#C0392B]"><span>(-) CMV</span><span>-{fmt(calc.cmv)}</span></div>
-              <div className="flex justify-between font-bold border-t pt-1"><span className="text-foreground">(=) Sobra</span><span className="text-[#27AE60]">{fmt(calc.margemContribuicao)}</span></div>
+              <div className="flex justify-between text-destructive"><span>(-) Desp. s/ vendas</span><span>-{fmt(calc.despesasSobreVendas)}</span></div>
+              <div className="flex justify-between text-destructive"><span>(-) CMV</span><span>-{fmt(calc.cmv)}</span></div>
+              <div className="flex justify-between font-bold border-t pt-1"><span className="text-foreground">(=) Sobra</span><span className="text-success">{fmt(calc.margemContribuicao)}</span></div>
             </div>
           </div>
         </div>
@@ -433,7 +433,7 @@ export default function FinanceiroDRE() {
         <div className="card-premium p-6">
           <div className="pb-4"><h3 className="text-sm font-bold font-syne uppercase">Para cada R$100 vendidos</h3><p className="text-[10px] text-text3 font-medium uppercase tracking-wider">Raio-X de Lucratividade</p></div>
           <div className="space-y-4">
-            <p className={cn("text-2xl font-bold font-syne", lucroLiquidoPer100 >= 0 ? "text-[#27AE60]" : "text-[#C0392B]")}>R$ {Math.abs(lucroLiquidoPer100).toFixed(2).replace(".", ",")}</p>
+            <p className={cn("text-2xl font-bold font-syne", lucroLiquidoPer100 >= 0 ? "text-success" : "text-destructive")}>R$ {Math.abs(lucroLiquidoPer100).toFixed(2).replace(".", ",")}</p>
             <div className="space-y-2 border-t pt-2">
               {per100Items.map((item) => {
                 const maxVal = Math.max(...per100Items.map(i => Math.abs(i.value)), 1);
@@ -452,24 +452,24 @@ export default function FinanceiroDRE() {
         <div className="card-premium p-6">
           <div className="pb-4"><h3 className="text-sm font-bold font-syne uppercase">CMV</h3><p className="text-[10px] text-text3 font-medium uppercase tracking-wider">Custo dos ingredientes</p></div>
           <div className="space-y-4">
-            <p className={cn("text-3xl font-bold text-center font-syne", calc.cmvPct > 40 ? "text-[#C0392B]" : calc.cmvPct > 32 ? "text-[#F39C12]" : "text-[#27AE60]")}>{calc.cmvPct.toFixed(1)}%</p>
-            <div className="progress-premium"><div className={cn("progress-premium-bar", calc.cmvPct > 40 ? "bg-[#C0392B]" : calc.cmvPct > 32 ? "bg-[#F39C12]" : "bg-[#27AE60]")} style={{ width: `${Math.min(calc.cmvPct * 2.5, 100)}%` }} /></div>
+            <p className={cn("text-3xl font-bold text-center font-syne", calc.cmvPct > 40 ? "text-destructive" : calc.cmvPct > 32 ? "text-warning" : "text-success")}>{calc.cmvPct.toFixed(1)}%</p>
+            <div className="progress-premium"><div className={cn("progress-premium-bar", calc.cmvPct > 40 ? "bg-destructive" : calc.cmvPct > 32 ? "bg-warning" : "bg-[#27AE60]")} style={{ width: `${Math.min(calc.cmvPct * 2.5, 100)}%` }} /></div>
             <div className="text-[11px] space-y-1 text-text2">
               <div className="flex justify-between"><span>Meta máxima</span><span className="font-bold text-foreground">32%</span></div>
-              <div className="flex justify-between"><span>Folga</span><span className={cn("font-bold", cmvFolga >= 0 ? "text-[#27AE60]" : "text-[#C0392B]")}>{cmvFolga >= 0 ? `${cmvFolga.toFixed(1)}%` : `${Math.abs(cmvFolga).toFixed(1)}% acima`}</span></div>
+              <div className="flex justify-between"><span>Folga</span><span className={cn("font-bold", cmvFolga >= 0 ? "text-success" : "text-destructive")}>{cmvFolga >= 0 ? `${cmvFolga.toFixed(1)}%` : `${Math.abs(cmvFolga).toFixed(1)}% acima`}</span></div>
             </div>
           </div>
         </div>
 
         <div className="card-premium p-6">
-          <div className="pb-4"><h3 className="text-sm font-bold font-syne uppercase flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-[#F39C12]" />Alertas</h3><p className="text-[10px] text-text3 font-medium uppercase tracking-wider">Situações Críticas</p></div>
+          <div className="pb-4"><h3 className="text-sm font-bold font-syne uppercase flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-warning" />Alertas</h3><p className="text-[10px] text-text3 font-medium uppercase tracking-wider">Situações Críticas</p></div>
           <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
             {alertas.length === 0 && contasAtrasadas.length === 0 ? (
-              <div className="text-center py-4"><p className="text-xs text-[#27AE60] font-bold uppercase tracking-tight">Tudo em dia!</p></div>
+              <div className="text-center py-4"><p className="text-xs text-success font-bold uppercase tracking-tight">Tudo em dia!</p></div>
             ) : (
               <div className="space-y-2">
-                {alertas.map((a, i) => (<div key={i} className="flex items-start gap-2 text-[11px] bg-[#F39C12]/10 border border-[#F39C12]/20 rounded-md p-2"><AlertTriangle className="h-3.5 w-3.5 text-[#F39C12] shrink-0 mt-0.5" /><span className="text-foreground font-medium">{a}</span></div>))}
-                {contasAtrasadas.map((c) => (<div key={c.id} className="flex items-start gap-2 text-[11px] bg-[#C0392B]/10 border border-[#C0392B]/20 rounded-md p-2"><div className="h-2.5 w-2.5 rounded-full bg-[#C0392B] shrink-0 mt-1" /><div><p className="font-bold text-foreground">{c.descricao}</p><p className="text-text2">{fmt(c.valor)} — {new Date(c.data_lancamento + "T12:00:00").toLocaleDateString("pt-BR")}</p></div></div>))}
+                {alertas.map((a, i) => (<div key={i} className="flex items-start gap-2 text-[11px] bg-warning/10 border border-warning/20 rounded-md p-2"><AlertTriangle className="h-3.5 w-3.5 text-warning shrink-0 mt-0.5" /><span className="text-foreground font-medium">{a}</span></div>))}
+                {contasAtrasadas.map((c) => (<div key={c.id} className="flex items-start gap-2 text-[11px] bg-destructive/10 border border-destructive/20 rounded-md p-2"><div className="h-2.5 w-2.5 rounded-full bg-destructive shrink-0 mt-1" /><div><p className="font-bold text-foreground">{c.descricao}</p><p className="text-text2">{fmt(c.valor)} — {new Date(c.data_lancamento + "T12:00:00").toLocaleDateString("pt-BR")}</p></div></div>))}
               </div>
             )}
           </div>

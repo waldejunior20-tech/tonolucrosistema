@@ -241,7 +241,7 @@ export default function PrecificacaoBebidas() {
   // ─── Shared render for a single-item table (industrialized or prepared) ───
   const renderIndTable = () => (
     <Table>
-      <TableHeader style={{ background: 'linear-gradient(135deg, #1E293B, #334155)' }}>
+      <TableHeader style={{ background: 'linear-gradient(135deg, hsl(var(--surface-table-header)), hsl(var(--surface-table-header-end)))' }}>
         <TableRow>
           <TableHead className="min-w-[200px] text-white font-bold">Bebida</TableHead>
           <TableHead className="text-center text-white font-bold">Custo</TableHead>
@@ -343,7 +343,7 @@ export default function PrecificacaoBebidas() {
 
   const renderPrepTable = () => (
     <Table>
-      <TableHeader style={{ background: 'linear-gradient(135deg, #1E293B, #334155)' }}>
+      <TableHeader style={{ background: 'linear-gradient(135deg, hsl(var(--surface-table-header)), hsl(var(--surface-table-header-end)))' }}>
         <TableRow>
           <TableHead className="min-w-[200px] text-white font-bold">Bebida</TableHead>
           <TableHead className="text-center text-white font-bold">Custo</TableHead>

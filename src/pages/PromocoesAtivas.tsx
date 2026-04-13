@@ -744,7 +744,7 @@ export default function PromocoesAtivas() {
                 <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Cálculo Automático</h3>
                 <div className="overflow-x-auto rounded-md border border-border">
                   <Table>
-                    <TableHeader style={{ background: 'linear-gradient(135deg, #1E293B, #334155)' }}>
+                    <TableHeader style={{ background: 'linear-gradient(135deg, hsl(var(--surface-table-header)), hsl(var(--surface-table-header-end)))' }}>
                       <TableRow>
                         <TableHead className="text-white font-bold">Produto</TableHead>
                         <TableHead className="text-white font-bold">Tam.</TableHead>
