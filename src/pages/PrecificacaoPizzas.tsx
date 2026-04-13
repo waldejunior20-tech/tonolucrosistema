@@ -571,7 +571,7 @@ export default function PrecificacaoPizzas() {
                             >
                               {/* Size badge */}
                               <div className="flex items-center justify-between">
-                                <span className="text-xs font-extrabold uppercase tracking-[0.15em] text-muted-foreground px-3 py-1.5 rounded-lg">
+                                <span className="text-xs font-extrabold uppercase tracking-[0.15em] px-3 py-1.5 rounded-lg" style={{ color: '#5D5D5D' }}>
                                   Tamanho {sizeLabels[s]}
                                 </span>
                                 {preco > 0 && (
@@ -587,18 +587,18 @@ export default function PrecificacaoPizzas() {
                               {/* Info block — Custo + Sugerido */}
                               <div className="rounded-lg p-4 space-y-3">
                                 <div className="flex items-center justify-between">
-                                  <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">Custo</span>
+                                  <span className="text-[10px] font-bold uppercase tracking-[0.12em]" style={{ color: '#5D5D5D' }}>Custo</span>
                                   <div className="flex items-baseline gap-1">
-                                    <span className="text-xs text-muted-foreground">R$</span>
-                                    <span className="text-base font-bold font-terminal text-foreground">{custo.toFixed(2)}</span>
+                                    <span className="text-xs" style={{ color: '#5D5D5D' }}>R$</span>
+                                    <span className="text-base font-bold font-terminal" style={{ color: '#5D5D5D' }}>{custo.toFixed(2)}</span>
                                   </div>
                                 </div>
                                 <div className="h-px bg-border/40" />
                                 <div className="flex items-center justify-between">
-                                  <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">Sugerido</span>
+                                  <span className="text-[10px] font-bold uppercase tracking-[0.12em]" style={{ color: '#5D5D5D' }}>Sugerido</span>
                                   <div className="flex items-baseline gap-1">
-                                    <span className="text-xs text-muted-foreground">R$</span>
-                                    <span className="text-base font-bold font-terminal text-foreground/70">{sug.toFixed(2)}</span>
+                                    <span className="text-xs" style={{ color: '#5D5D5D' }}>R$</span>
+                                    <span className="text-base font-bold font-terminal" style={{ color: '#5D5D5D' }}>{sug.toFixed(2)}</span>
                                   </div>
                                 </div>
                               </div>
