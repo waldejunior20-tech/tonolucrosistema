@@ -445,9 +445,66 @@ export default function FinanceiroDRE() {
         </div>
       )}
 
+      {/* Ponto de Equilíbrio */}
+      <div className="rounded-2xl border p-5" style={{ backgroundColor: "#DCDCDA20" }}>
+        <div className="flex items-center gap-2 mb-4">
+          <Target className="h-5 w-5 text-primary" />
+          <h3 className="text-sm font-semibold text-foreground">Ponto de Equilíbrio</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div>
+            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Despesas Fixas</p>
+            <p className="text-lg font-bold text-foreground">{fmt(calc.despFixasTotal)}</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Margem Contribuição</p>
+            <p className="text-lg font-bold text-foreground">{calc.margemContribuicaoPct.toFixed(1)}%</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Meta Mínima</p>
+            <p className="text-lg font-bold text-primary">{fmt(calc.pontoEquilibrio)}</p>
+          </div>
+        </div>
+        {/* Progress */}
+        <div className="relative h-7 bg-muted rounded-full overflow-hidden">
+          {calc.pontoEquilibrio > 0 && (
+            <div className="absolute top-0 bottom-0 w-0.5 bg-foreground/40 z-10" style={{ left: `${Math.min((100 / Math.max(calc.progressPE, 1)) * 100, 100)}%` }} />
+          )}
+          <div className={cn("h-full rounded-full transition-all duration-500", calc.atingiuPE ? "bg-gradient-to-r from-destructive via-warning to-success" : "bg-destructive")} style={{ width: `${Math.min(calc.progressPE, 100)}%` }} />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-xs font-semibold text-foreground/80">{calc.pontoEquilibrio > 0 ? `${((calc.totalEntrou / calc.pontoEquilibrio) * 100).toFixed(0)}%` : "—"}</span>
+          </div>
+        </div>
+        <div className={cn("flex items-center gap-2 mt-3 p-3 rounded-lg text-sm", calc.faltaPE <= 0 ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive")}>
+          {calc.faltaPE <= 0 ? <TrendingUp className="h-4 w-4" /> : <AlertTriangle className="h-4 w-4" />}
+          <span className="font-semibold">
+            {calc.faltaPE <= 0 ? `Folga de ${fmt(Math.abs(calc.faltaPE))} acima do equilíbrio` : `Faltam ${fmt(calc.faltaPE)} para atingir o equilíbrio`}
+          </span>
+        </div>
+      </div>
+
+      {/* DRE - Para cada R$100 */}
+      <div className="rounded-2xl border p-5" style={{ backgroundColor: "#DCDCDA20" }}>
+        <h3 className="text-sm font-semibold text-foreground mb-1">DRE Simplificado</h3>
+        <p className="text-xs text-muted-foreground mb-4">Para cada R$ 100 vendidos, quanto vai para cada área</p>
+        <div className="space-y-3">
+          {per100Items.map((item) => (
+            <div key={item.label} className="space-y-1">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">{item.label}</span>
+                <span className="font-bold text-foreground">R$ {item.value.toFixed(2)}</span>
+              </div>
+              <div className="h-2 bg-muted rounded-full overflow-hidden">
+                <div className={cn("h-full rounded-full transition-all duration-500", item.color)} style={{ width: `${Math.min(Math.abs(item.value), 100)}%` }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Para onde foi o dinheiro */}
       {calc.categoriasOrdenadas.length > 0 && (
-        <div className="card-premium">
+        <div className="rounded-2xl border p-5" style={{ backgroundColor: "#DCDCDA20" }}>
           <h3 className="text-sm font-semibold text-foreground mb-4">Para onde foi o dinheiro?</h3>
           <div className="space-y-3">
             {calc.categoriasOrdenadas.map((c) => {
