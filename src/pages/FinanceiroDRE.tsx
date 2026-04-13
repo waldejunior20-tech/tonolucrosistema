@@ -348,15 +348,15 @@ export default function FinanceiroDRE() {
 
       {/* Top 3 KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="card-premium">
+        <div className="card-premium dre-card">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Entrou</p>
           <p className="text-2xl font-bold text-foreground">{fmt(calc.totalEntrou)}</p>
         </div>
-        <div className="card-premium">
+        <div className="card-premium dre-card">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Saiu</p>
           <p className="text-2xl font-bold text-foreground">{fmt(calc.totalSaiu)}</p>
         </div>
-        <div className={cn("card-premium", calc.sobrou >= 0 ? "border-success/30" : "border-destructive/30")}>
+        <div className={cn("card-premium dre-card", calc.sobrou >= 0 ? "border-success/30" : "border-destructive/30")}>
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
             {calc.sobrou >= 0 ? "Sobrou" : "Faltou"}
           </p>
@@ -372,7 +372,7 @@ export default function FinanceiroDRE() {
       {/* Custo dos Ingredientes + Meta do Mês */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Custo dos Ingredientes */}
-        <div className="card-premium">
+        <div className="card-premium dre-card">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-sm font-semibold text-foreground">Custo dos Ingredientes</h3>
@@ -397,7 +397,7 @@ export default function FinanceiroDRE() {
         </div>
 
         {/* Meta do Mês */}
-        <div className="card-premium">
+        <div className="card-premium dre-card">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-sm font-semibold text-foreground">Meta do Mês</h3>
@@ -446,7 +446,7 @@ export default function FinanceiroDRE() {
       )}
 
       {/* Ponto de Equilíbrio */}
-      <div className="card-premium">
+      <div className="card-premium dre-card">
         <div className="flex items-center gap-2 mb-4">
           <Target className="h-5 w-5 text-primary" />
           <h3 className="text-sm font-semibold text-foreground">Ponto de Equilíbrio</h3>
@@ -484,7 +484,7 @@ export default function FinanceiroDRE() {
       </div>
 
       {/* DRE - Para cada R$100 */}
-      <div className="card-premium">
+      <div className="card-premium dre-card">
         <h3 className="text-sm font-semibold text-foreground mb-1">DRE Simplificado</h3>
         <p className="text-xs text-muted-foreground mb-4">Para cada R$ 100 vendidos, quanto vai para cada área</p>
         <div className="space-y-3">
@@ -504,7 +504,7 @@ export default function FinanceiroDRE() {
 
       {/* Para onde foi o dinheiro */}
       {calc.categoriasOrdenadas.length > 0 && (
-        <div className="card-premium">
+        <div className="card-premium dre-card">
           <h3 className="text-sm font-semibold text-foreground mb-4">Para onde foi o dinheiro?</h3>
           <div className="space-y-3">
             {calc.categoriasOrdenadas.map((c) => {
