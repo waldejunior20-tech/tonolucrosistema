@@ -191,6 +191,12 @@
     background-color: #BDBEBD;
   }
 
+  /* ═══ Money values — bold #595959 ═══ */
+  .text-money {
+    color: #595959;
+    font-weight: 700;
+  }
+
   /* ═══ Pricing Inputs ═══ */
   .pricing-input {
     @apply font-semibold text-center rounded;
