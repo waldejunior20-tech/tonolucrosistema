@@ -619,7 +619,7 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
           <p className="text-sm text-muted-foreground mt-1">Clique em "+ Nova Ficha" para começar.</p>
         </div>
       ) : (
-        <div className="rounded-lg border">
+        <div className="table-premium fade-up fade-up-d1">
           <Table>
             <TableHeader style={{ background: 'linear-gradient(135deg, hsl(var(--surface-table-header)), hsl(var(--surface-table-header-end)))' }}>
               <TableRow>

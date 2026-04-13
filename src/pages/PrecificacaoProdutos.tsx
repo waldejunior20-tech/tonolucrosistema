@@ -233,7 +233,7 @@ export default function PrecificacaoProdutos() {
   }, [fichas]);
 
   const renderTable = (items: FichaProduto[]) => (
-    <div className="overflow-x-auto">
+    <div className="table-premium overflow-x-auto">
       <Table>
         <TableHeader style={{ background: 'linear-gradient(135deg, hsl(var(--surface-table-header)), hsl(var(--surface-table-header-end)))' }}>
           <TableRow>
