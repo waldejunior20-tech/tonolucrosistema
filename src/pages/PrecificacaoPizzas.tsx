@@ -368,32 +368,32 @@ export default function PrecificacaoPizzas() {
 
         {/* Indicators */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-fade-in">
-          <div className="card-premium p-6">
+          <div className="card-premium p-7">
             <p className="label-upper mb-4">CMV Médio Atual</p>
             <p className={cn("kpi-number", cmvColor(indicators.avgCmv))}>
               {fmtPct(indicators.avgCmv)}
             </p>
-            <p className="text-[11px] text-muted-foreground font-medium mt-1">Média entre todos os tamanhos</p>
+            <p className="text-sm text-muted-foreground font-medium mt-2">Média entre todos os tamanhos</p>
           </div>
-          <div className="card-premium p-6">
+          <div className="card-premium p-7">
             <p className="label-upper mb-4">Semáforo de Saúde</p>
             <div className="flex items-center gap-3">
               <div className={cn(
-                "h-4 w-4 rounded-full",
-                indicators.avgCmv > 40 ? "bg-destructive" : indicators.avgCmv > 35 ? "bg-warning" : "bg-success"
+                "h-5 w-5 rounded-full",
+                indicators.avgCmv > 40 ? "bg-destructive" : indicators.avgCmv > 35 ? "bg-warning" : "bg-[#10B981]"
               )} />
-              <span className={cn("text-lg font-bold uppercase", cmvColor(indicators.avgCmv))}>
+              <span className={cn("text-xl font-extrabold uppercase", cmvColor(indicators.avgCmv))}>
                 {cmvMessage(indicators.avgCmv)}
               </span>
             </div>
           </div>
-          <div className="rounded-2xl p-6 border border-destructive/20" style={{ background: 'linear-gradient(135deg, rgba(127,29,29,0.06), rgba(185,28,28,0.1))' }}>
+          <div className="rounded-2xl p-7 border border-destructive/20" style={{ background: 'linear-gradient(135deg, rgba(127,29,29,0.06), rgba(185,28,28,0.1))' }}>
             <div className="flex items-center gap-2 mb-4">
               <AlertTriangle className="h-5 w-5 text-destructive" />
-              <p className="text-xs font-semibold uppercase tracking-wider text-destructive">Pizzas Fora da Meta</p>
+              <p className="text-sm font-bold uppercase tracking-wider text-destructive">Pizzas Fora da Meta</p>
             </div>
             <p className="kpi-number text-destructive">{indicators.foraMetaCount}</p>
-            <p className="text-[11px] text-destructive/70 font-medium mt-1">Tamanhos com CMV acima de 40%</p>
+            <p className="text-sm text-destructive/70 font-medium mt-2">Tamanhos com CMV acima de 40%</p>
           </div>
         </div>
 

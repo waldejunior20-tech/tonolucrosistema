@@ -135,26 +135,26 @@ export default function FinanceiroPontoEquilibrio() {
       </Card>
 
       {/* Data cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         <Card>
-          <CardContent className="pt-6">
-            <p className="text-xs text-muted-foreground">Despesas Fixas do Mês</p>
-            <p className="text-2xl font-bold text-foreground">{fmt(calc.despesasFixas)}</p>
+          <CardContent className="pt-7 pb-6">
+            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Despesas Fixas do Mês</p>
+            <p className="text-2xl font-extrabold text-[#1F2937]">{fmt(calc.despesasFixas)}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="pt-6">
-            <p className="text-xs text-muted-foreground">Margem de Contribuição</p>
-            <p className="text-2xl font-bold text-foreground">{fmtPct(calc.margemContribuicaoPct)}</p>
+          <CardContent className="pt-7 pb-6">
+            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Margem de Contribuição</p>
+            <p className="text-2xl font-extrabold text-[#1F2937]">{fmtPct(calc.margemContribuicaoPct)}</p>
           </CardContent>
         </Card>
         <Card className="border-primary/30">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2">
+          <CardContent className="pt-7 pb-6">
+            <div className="flex items-center gap-2 mb-2">
               <Target className="h-5 w-5 text-primary" />
-              <p className="text-xs text-muted-foreground">Ponto de Equilíbrio</p>
+              <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Ponto de Equilíbrio</p>
             </div>
-            <p className="text-2xl font-bold text-primary mt-1">{fmt(calc.pontoEquilibrio)}</p>
+            <p className="text-2xl font-extrabold text-primary">{fmt(calc.pontoEquilibrio)}</p>
           </CardContent>
         </Card>
       </div>

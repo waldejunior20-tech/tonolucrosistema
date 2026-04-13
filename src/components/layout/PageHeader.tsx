@@ -51,7 +51,7 @@ export function PageHeader({ title, description, children, className }: PageHead
     <div className={cn("mb-6", className)}>
       {/* Breadcrumb */}
       {breadcrumbs.length > 0 && (
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-2">
+        <div className="flex items-center gap-1.5 text-sm text-muted-foreground mb-2 font-medium">
           <span>Dashboard</span>
           {breadcrumbs.map((crumb, i) => (
             <span key={i} className="flex items-center gap-1.5">
@@ -67,9 +67,9 @@ export function PageHeader({ title, description, children, className }: PageHead
       {/* Title row */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-foreground">{title}</h1>
+          <h1 className="text-2xl font-extrabold text-[#1F2937]">{title}</h1>
           {description && (
-            <p className="text-sm text-muted-foreground mt-1">{description}</p>
+            <p className="text-sm text-muted-foreground mt-1 font-medium">{description}</p>
           )}
         </div>
         {children && <div className="flex items-center gap-2">{children}</div>}

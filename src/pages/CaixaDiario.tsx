@@ -127,8 +127,8 @@ export default function CaixaDiario() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Caixa Diário</h1>
-        <p className="text-sm text-muted-foreground mt-1">Registre as vendas do dia por forma de pagamento</p>
+        <h1 className="text-2xl font-extrabold text-[#1F2937]">Caixa Diário</h1>
+        <p className="text-sm text-muted-foreground mt-1 font-medium">Registre as vendas do dia por forma de pagamento</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -223,18 +223,18 @@ export default function CaixaDiario() {
 
             {/* Summary bar */}
             {totalForm > 0 && (
-              <div className="flex flex-wrap items-center gap-4 p-4 rounded-xl bg-muted/50 border border-border/40">
+              <div className="flex flex-wrap items-center gap-5 p-5 rounded-xl bg-muted/50 border border-border/40">
                 <div>
-                  <p className="text-xs text-muted-foreground">Total Bruto</p>
-                  <p className="text-lg font-bold text-foreground">{formatMoney(totalForm)}</p>
+                  <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Total Bruto</p>
+                  <p className="text-xl font-extrabold text-foreground">{formatMoney(totalForm)}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Taxas</p>
-                  <p className="text-sm font-semibold text-destructive">- {formatMoney(totalTaxas)}</p>
+                  <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Taxas</p>
+                  <p className="text-base font-bold text-destructive">- {formatMoney(totalTaxas)}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Total Líquido</p>
-                  <p className="text-lg font-bold text-primary">{formatMoney(totalLiquido)}</p>
+                  <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Total Líquido</p>
+                  <p className="text-xl font-extrabold text-[#10B981]">{formatMoney(totalLiquido)}</p>
                 </div>
               </div>
             )}
