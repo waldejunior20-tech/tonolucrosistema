@@ -179,16 +179,17 @@
   }
 
   .pricing-input {
-    @apply font-semibold text-center rounded-lg border transition-all;
-    background: hsl(var(--background));
-    border-color: hsl(var(--border));
-    padding: 6px 10px;
+    @apply font-bold text-center rounded-lg transition-all;
+    background: #FFFFFF;
+    border: 1.5px solid #D1D5DB;
+    padding: 8px 12px;
     font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
   }
   .pricing-input:focus {
-    @apply outline-none ring-2;
-    border-color: hsl(var(--primary));
-    --tw-ring-color: rgba(255,107,43,0.20);
+    @apply outline-none;
+    border-color: #10B981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15), 0 0 8px rgba(16, 185, 129, 0.10);
   }
 
   .health-pulse {
