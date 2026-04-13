@@ -762,10 +762,10 @@ export default function PromocoesAtivas() {
                         <TableRow key={i}>
                           <TableCell className="font-medium">{c.nome}</TableCell>
                           <TableCell>{c.tamanho ?? "—"}</TableCell>
-                          <TableCell className="text-right font-mono">{fmt(c.custo)}</TableCell>
-                          <TableCell className="text-right font-mono">{fmt(c.precoVenda)}</TableCell>
-                          <TableCell className="text-right font-mono">{fmt(c.desconto)}</TableCell>
-                          <TableCell className="text-right font-mono font-semibold">{fmt(c.precoFinal)}</TableCell>
+                          <TableCell className="text-right font-mono text-money">{fmt(c.custo)}</TableCell>
+                          <TableCell className="text-right font-mono text-money">{fmt(c.precoVenda)}</TableCell>
+                          <TableCell className="text-right font-mono text-money">{fmt(c.desconto)}</TableCell>
+                          <TableCell className="text-right font-mono font-semibold text-money">{fmt(c.precoFinal)}</TableCell>
                           <TableCell className={`text-right font-mono ${lucroColor(c.lucroPct)}`}>
                             {fmt(c.lucroRs)}
                           </TableCell>
