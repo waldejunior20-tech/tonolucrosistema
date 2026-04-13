@@ -180,15 +180,17 @@
     font-variant-numeric: tabular-nums;
   }
 
-  /* ═══ Card — single clean variant ═══ */
+  /* ═══ Card — glass effect ═══ */
   .card-premium {
-    @apply bg-card border border-border;
-    border-radius: 12px;
+    background: rgba(128, 128, 128, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
     padding: 24px;
   }
 
   .dre-card {
-    background-color: #BDBEBD;
+    background: rgba(128, 128, 128, 0.25);
   }
 
   /* ═══ Money values — bold #595959 ═══ */
