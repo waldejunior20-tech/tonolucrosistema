@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap');
 
 @layer base {
   :root {
@@ -395,6 +395,112 @@
   @keyframes page-enter-anim {
     from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ═══ Industrial Premium Utilities ═══ */
+  .font-display {
+    font-family: 'Syne', 'Plus Jakarta Sans', system-ui, sans-serif;
+    letter-spacing: -0.03em;
+  }
+
+  .font-terminal {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-feature-settings: 'tnum';
+  }
+
+  /* Glow focus ring for inputs */
+  .input-glow-focus {
+    transition: border-color 0.2s ease, box-shadow 0.3s ease, transform 0.15s ease;
+  }
+  .input-glow-focus:focus {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18), 0 0 20px rgba(99, 102, 241, 0.08);
+  }
+
+  /* Industrial card with layer shadows */
+  .card-industrial {
+    @apply bg-card border border-border;
+    border-radius: 12px;
+    box-shadow:
+      0 1px 2px rgba(0,0,0,0.04),
+      0 4px 12px rgba(0,0,0,0.06),
+      0 16px 40px rgba(0,0,0,0.04);
+    position: relative;
+    overflow: hidden;
+  }
+  .card-industrial::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+  .card-industrial > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* KPI card industrial variant */
+  .kpi-industrial {
+    @apply bg-card border border-border transition-all duration-300;
+    border-radius: 14px;
+    padding: 28px;
+    box-shadow:
+      0 1px 3px rgba(0,0,0,0.06),
+      0 8px 24px rgba(0,0,0,0.06),
+      inset 0 1px 0 rgba(255,255,255,0.8);
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi-industrial::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.02;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+  .kpi-industrial > * {
+    position: relative;
+    z-index: 1;
+  }
+  .kpi-industrial:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 2px 4px rgba(0,0,0,0.06),
+      0 12px 32px rgba(0,0,0,0.10),
+      inset 0 1px 0 rgba(255,255,255,0.8);
+  }
+
+  /* Micro-interaction: button press */
+  .btn-micro {
+    transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+  }
+  .btn-micro:hover {
+    transform: translateY(-1px) scale(1.02);
+  }
+  .btn-micro:active {
+    transform: translateY(1px) scale(0.98);
+  }
+
+  /* Staggered row reveal */
+  .row-reveal {
+    opacity: 0;
+    transform: translateY(6px);
+    animation: row-reveal-anim 0.4s ease-out forwards;
+  }
+  @keyframes row-reveal-anim {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Pill glow on hover */
+  .pill-glow {
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+  }
+  .pill-glow:hover {
+    transform: scale(1.08);
   }
 }
 
