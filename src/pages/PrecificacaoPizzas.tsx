@@ -589,7 +589,7 @@ export default function PrecificacaoPizzas() {
                                 <div className="flex items-center justify-between">
                                   <span className="text-[10px] font-bold uppercase tracking-[0.12em]" style={{ color: '#5D5D5D' }}>Custo</span>
                                   <div className="flex items-baseline gap-1">
-                                    <span className="text-xs" style={{ color: '#5D5D5D' }}>R$</span>
+                                    <span className="text-xs font-bold" style={{ color: '#5D5D5D' }}>R$</span>
                                     <span className="text-base font-bold font-terminal" style={{ color: '#5D5D5D' }}>{custo.toFixed(2)}</span>
                                   </div>
                                 </div>
@@ -597,7 +597,7 @@ export default function PrecificacaoPizzas() {
                                 <div className="flex items-center justify-between">
                                   <span className="text-[10px] font-bold uppercase tracking-[0.12em]" style={{ color: '#5D5D5D' }}>Sugerido</span>
                                   <div className="flex items-baseline gap-1">
-                                    <span className="text-xs" style={{ color: '#5D5D5D' }}>R$</span>
+                                    <span className="text-xs font-bold" style={{ color: '#5D5D5D' }}>R$</span>
                                     <span className="text-base font-bold font-terminal" style={{ color: '#5D5D5D' }}>{sug.toFixed(2)}</span>
                                   </div>
                                 </div>
