@@ -9,7 +9,7 @@
     /* ═══ Core Palette ═══ */
     --background: 0 0% 100%;
     --foreground: 220 13% 18%;
-    --card: 60 2% 86%;
+    --card: 0 0% 93%;
     --card-foreground: 220 13% 18%;
     --popover: 0 0% 100%;
     --popover-foreground: 220 13% 18%;
@@ -71,7 +71,7 @@
   .dark {
     --background: 0 0% 100%;
     --foreground: 220 13% 18%;
-    --card: 60 2% 86%;
+    --card: 0 0% 93%;
     --card-foreground: 220 13% 18%;
     --popover: 0 0% 100%;
     --popover-foreground: 220 13% 18%;
