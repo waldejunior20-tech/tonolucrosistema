@@ -61,6 +61,16 @@ export default {
         success: "hsl(var(--success))",
         warning: "hsl(var(--warning))",
         info: "hsl(var(--info))",
+        // ═══ Semantic Surface Tokens ═══
+        "surface-page": "hsl(var(--surface-page))",
+        "surface-card": "hsl(var(--surface-card))",
+        "surface-muted": "hsl(var(--surface-muted))",
+        "surface-stripe": "hsl(var(--surface-stripe))",
+        "surface-table-header": "hsl(var(--surface-table-header))",
+        // ═══ Semantic Text Tokens ═══
+        "text-heading": "hsl(var(--text-heading))",
+        "text-secondary": "hsl(var(--text-secondary))",
+        "text-muted": "hsl(var(--text-muted))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
