@@ -126,9 +126,14 @@ export default function CaixaDiario() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-extrabold text-[#1F2937]">Caixa Diário</h1>
-        <p className="text-sm text-muted-foreground mt-1 font-medium">Registre as vendas do dia por forma de pagamento</p>
+      <div className="flex items-center gap-3">
+        <div className="p-2.5 rounded-xl bg-gradient-to-br from-[#FF8C00] to-[#F27121] shadow-md">
+          <Wallet size={22} className="text-white" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-extrabold text-[#1F2937]">Caixa Diário</h1>
+          <p className="text-sm text-muted-foreground mt-1 font-medium">Registre as vendas do dia por forma de pagamento</p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -262,9 +267,9 @@ export default function CaixaDiario() {
               <p className="text-sm text-muted-foreground text-center py-8">Nenhuma venda lançada neste dia</p>
             ) : (
               <>
-                <div className="mb-4 p-3 rounded-xl bg-primary/10 text-center">
-                  <p className="text-xs text-muted-foreground">Total do Dia</p>
-                  <p className="text-2xl font-bold text-primary">{formatMoney(totalDia)}</p>
+                <div className="mb-4 p-4 rounded-xl bg-gradient-to-r from-[#FF8C00]/10 to-[#F27121]/10 border border-[#FF8C00]/20 text-center">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total do Dia</p>
+                  <p className="text-2xl font-extrabold text-[#FF8C00]">{formatMoney(totalDia)}</p>
                 </div>
                 <Table>
                   <TableHeader style={{ background: 'linear-gradient(135deg, #1E293B, #334155)' }}>
