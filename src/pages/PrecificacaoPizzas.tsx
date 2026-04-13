@@ -397,23 +397,23 @@ export default function PrecificacaoPizzas() {
           </div>
         </div>
 
-        {/* Pizza pricing table */}
-        <Card className="overflow-hidden border-0 shadow-card">
+        {/* Pizza Data Grid */}
+        <Card className="overflow-hidden border border-[#E2E8F0] shadow-sm rounded-lg">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <Table className="w-full">
                 <TableHeader>
-                  <TableRow className="border-b-0" style={{ background: '#1F2937' }}>
-                    <TableHead rowSpan={2} className="align-bottom text-white font-bold text-xs uppercase tracking-wider w-[160px] py-4 px-5">Pizza</TableHead>
-                    <TableHead rowSpan={2} className="align-bottom text-white font-bold text-xs uppercase tracking-wider w-[80px] py-4">Tipo</TableHead>
-                    <TableHead colSpan={3} className="text-center border-l border-white/10 text-white font-bold text-xs uppercase tracking-wider py-3">Custo</TableHead>
-                    <TableHead colSpan={3} className="text-center border-l border-white/10 text-white font-bold text-xs uppercase tracking-wider py-3">Sugerido</TableHead>
-                    <TableHead colSpan={3} className="text-center border-l border-white/10 text-white font-bold text-xs uppercase tracking-wider py-3" style={{ background: 'rgba(255,140,0,0.15)' }}>
-                      ✏️ Seu Preço
+                  <TableRow className="border-b border-[#E2E8F0]" style={{ background: '#F8FAFC' }}>
+                    <TableHead rowSpan={2} className="align-bottom text-slate-500 font-bold text-[11px] uppercase tracking-[0.08em] w-[160px] py-3 px-4" style={{ color: '#475569', background: '#F8FAFC' }}>Pizza</TableHead>
+                    <TableHead rowSpan={2} className="align-bottom text-[11px] uppercase tracking-[0.08em] w-[80px] py-3" style={{ color: '#475569', background: '#F8FAFC' }}>Tipo</TableHead>
+                    <TableHead colSpan={3} className="text-center border-l border-[#E2E8F0] text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F8FAFC' }}>Custo</TableHead>
+                    <TableHead colSpan={3} className="text-center border-l border-[#E2E8F0] text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F8FAFC' }}>Sugerido</TableHead>
+                    <TableHead colSpan={3} className="text-center border-l border-[#E2E8F0] text-[11px] uppercase tracking-[0.08em] py-2.5 font-extrabold" style={{ color: '#6366F1', background: '#F8FAFC' }}>
+                      Seu Preço
                     </TableHead>
-                    <TableHead colSpan={3} className="text-center border-l border-white/10 text-white font-bold text-xs uppercase tracking-wider py-3">CMV Balcão</TableHead>
+                    <TableHead colSpan={3} className="text-center border-l border-[#E2E8F0] text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F8FAFC' }}>CMV %</TableHead>
                     {activeApps.map((app) => (
-                      <TableHead key={`app-${app.key}`} colSpan={3} className="text-center border-l border-white/10 text-white font-bold text-xs uppercase tracking-wider py-3">
+                      <TableHead key={`app-${app.key}`} colSpan={3} className="text-center border-l border-[#E2E8F0] text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F8FAFC' }}>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <span className="cursor-help">{app.label}</span>
@@ -423,38 +423,38 @@ export default function PrecificacaoPizzas() {
                       </TableHead>
                     ))}
                     {activeApps.map((app) => (
-                      <TableHead key={`cmv-${app.key}`} colSpan={3} className="text-center border-l border-white/10 text-white font-bold text-xs uppercase tracking-wider py-3">
+                      <TableHead key={`cmv-${app.key}`} colSpan={3} className="text-center border-l border-[#E2E8F0] text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F8FAFC' }}>
                         CMV {app.label}
                       </TableHead>
                     ))}
                   </TableRow>
-                  <TableRow style={{ background: '#1F2937' }}>
+                  <TableRow style={{ background: '#F8FAFC' }}>
                     {/* Custo P/M/G */}
                     {sizes.map((s, i) => (
-                      <TableHead key={`c-${s}`} className={cn("text-center text-[11px] text-white/70 font-bold py-2", i === 0 && "border-l border-white/10")}>{sizeLabels[s]}</TableHead>
+                      <TableHead key={`c-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ color: '#94A3B8', background: '#F8FAFC' }}>{sizeLabels[s]}</TableHead>
                     ))}
                     {/* Sugerido P/M/G */}
                     {sizes.map((s, i) => (
-                      <TableHead key={`sug-${s}`} className={cn("text-center text-[11px] text-white/70 font-bold py-2", i === 0 && "border-l border-white/10")}>{sizeLabels[s]}</TableHead>
+                      <TableHead key={`sug-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ color: '#94A3B8', background: '#F8FAFC' }}>{sizeLabels[s]}</TableHead>
                     ))}
                     {/* Seu Preço P/M/G */}
                     {sizes.map((s, i) => (
-                      <TableHead key={`pr-${s}`} className={cn("text-center text-[11px] text-white/70 font-bold py-2", i === 0 && "border-l border-white/10")} style={{ background: 'rgba(255,140,0,0.15)' }}>{sizeLabels[s]}</TableHead>
+                      <TableHead key={`pr-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ color: '#6366F1', background: '#F8FAFC' }}>{sizeLabels[s]}</TableHead>
                     ))}
                     {/* CMV Balcão P/M/G */}
                     {sizes.map((s, i) => (
-                      <TableHead key={`cmvb-${s}`} className={cn("text-center text-[11px] text-white/70 font-bold py-2", i === 0 && "border-l border-white/10")}>{sizeLabels[s]}</TableHead>
+                      <TableHead key={`cmvb-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ color: '#94A3B8', background: '#F8FAFC' }}>{sizeLabels[s]}</TableHead>
                     ))}
                     {/* App prices P/M/G */}
                     {activeApps.map((app) =>
                       sizes.map((s, i) => (
-                        <TableHead key={`ap-${app.key}-${s}`} className={cn("text-center text-[11px] text-white/70 font-bold py-2", i === 0 && "border-l border-white/10")}>{sizeLabels[s]}</TableHead>
+                        <TableHead key={`ap-${app.key}-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ color: '#94A3B8', background: '#F8FAFC' }}>{sizeLabels[s]}</TableHead>
                       ))
                     )}
                     {/* CMV App P/M/G */}
                     {activeApps.map((app) =>
                       sizes.map((s, i) => (
-                        <TableHead key={`ca-${app.key}-${s}`} className={cn("text-center text-[11px] text-white/70 font-bold py-2", i === 0 && "border-l border-white/10")}>{sizeLabels[s]}</TableHead>
+                        <TableHead key={`ca-${app.key}-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ color: '#94A3B8', background: '#F8FAFC' }}>{sizeLabels[s]}</TableHead>
                       ))
                     )}
                   </TableRow>
@@ -468,62 +468,57 @@ export default function PrecificacaoPizzas() {
                     const hasAlert = cmvs.p > 40 || cmvs.m > 40 || cmvs.g > 40;
 
                     return (
-                      <TableRow key={ficha.id} className={cn("transition-colors hover:bg-muted/30", hasAlert && "bg-red-50/50")}>
-                        {/* Pizza name — bold, dark */}
-                        <TableCell className="py-5 px-5">
+                      <TableRow key={ficha.id} className={cn("transition-colors hover:bg-slate-50/80 border-b border-[#E2E8F0]", hasAlert && "bg-red-50/30")}>
+                        <TableCell className="py-3.5 px-4">
                           <div className="flex items-center gap-2">
-                            {hasAlert && <AlertTriangle className="h-4 w-4 text-red-500 flex-shrink-0" />}
-                            <span className="font-bold text-[15px] text-[#111827] truncate">{ficha.nome}</span>
+                            {hasAlert && <AlertTriangle className="h-3.5 w-3.5 text-red-500 flex-shrink-0" />}
+                            <span className="font-semibold text-[13px] text-slate-800 truncate">{ficha.nome}</span>
                           </div>
                         </TableCell>
-                        <TableCell className="text-xs text-muted-foreground font-medium py-5 px-3">{tipoLabel(ficha.tipo)}</TableCell>
+                        <TableCell className="text-[11px] text-slate-400 font-medium py-3.5 px-2">{tipoLabel(ficha.tipo)}</TableCell>
 
-                        {/* Custo — read-only, gray bg */}
+                        {/* Custo — read-only */}
                         {sizes.map((s, i) => (
-                          <TableCell key={`c-${s}`} className={cn("text-center py-5 px-2 bg-[#F9FAFB]", i === 0 && "border-l border-border/50")}>
-                            <span className="text-xs text-muted-foreground">R$</span>{' '}
-                            <span className="text-sm font-bold text-[#111827] tabular-nums">{custos[s].toFixed(2)}</span>
+                          <TableCell key={`c-${s}`} className={cn("text-center py-3.5 px-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ background: '#FAFBFC' }}>
+                            <span className="text-[12px] font-mono text-slate-500" style={{ fontFeatureSettings: "'tnum'" }}>{custos[s].toFixed(2)}</span>
                           </TableCell>
                         ))}
 
-                        {/* Sugerido — read-only, gray bg */}
+                        {/* Sugerido — read-only */}
                         {sizes.map((s, i) => (
-                          <TableCell key={`sug-${s}`} className={cn("text-center py-5 px-2 bg-[#F9FAFB]", i === 0 && "border-l border-border/50")}>
-                            <span className="text-xs text-muted-foreground">R$</span>{' '}
-                            <span className="text-sm font-semibold text-muted-foreground tabular-nums">{sugeridos[s].toFixed(2)}</span>
+                          <TableCell key={`sug-${s}`} className={cn("text-center py-3.5 px-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ background: '#FAFBFC' }}>
+                            <span className="text-[12px] font-mono text-slate-400" style={{ fontFeatureSettings: "'tnum'" }}>{sugeridos[s].toFixed(2)}</span>
                           </TableCell>
                         ))}
 
-                        {/* Seu Preço — editable, white bg, orange border, green value */}
+                        {/* Seu Preço — editable with Indigo focus */}
                         {sizes.map((s, i) => {
                           const fieldKey = `${ficha.id}-${s}`;
                           return (
-                            <TableCell key={`pr-${s}`} className={cn("py-3 px-1", i === 0 && "border-l border-border/50")} style={{ background: '#FFFFFF' }}>
+                            <TableCell key={`pr-${s}`} className={cn("py-2 px-1", i === 0 && "border-l border-[#E2E8F0]")} style={{ background: '#FFFFFF' }}>
                               <div className="relative flex items-center justify-center">
                                 <input
                                   type={localPrices[ficha.id]?.[s] !== undefined ? "number" : "text"}
                                   step={localPrices[ficha.id]?.[s] !== undefined ? "0.01" : undefined}
-                                  className="w-full text-center font-bold tabular-nums rounded-lg transition-all duration-200 outline-none"
+                                  className="w-full text-center font-semibold rounded transition-all duration-150 outline-none font-mono"
                                   style={{
-                                    height: '44px',
-                                    fontSize: '18px',
-                                    color: '#059669',
+                                    height: '36px',
+                                    fontSize: '14px',
+                                    fontFeatureSettings: "'tnum'",
+                                    color: '#0F172A',
                                     background: '#FFFFFF',
-                                    border: '2px solid #F27121',
-                                    borderImage: 'linear-gradient(135deg, #FF8C00, #F27121) 1',
+                                    border: '1px solid #E2E8F0',
                                   }}
                                   onFocus={(e) => {
-                                    e.currentTarget.style.borderImage = 'none';
-                                    e.currentTarget.style.borderColor = '#10B981';
-                                    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(16,185,129,0.2), 0 0 12px rgba(16,185,129,0.15)';
+                                    e.currentTarget.style.borderColor = '#6366F1';
+                                    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.15)';
                                     e.currentTarget.select();
                                     if (localPrices[ficha.id]?.[s] === undefined) {
                                       handlePriceChange(ficha.id, s, String(ficha[`preco_venda_${s}` as keyof FichaPizza] ?? ""));
                                     }
                                   }}
                                   onBlur={(e) => {
-                                    e.currentTarget.style.borderImage = 'linear-gradient(135deg, #FF8C00, #F27121) 1';
-                                    e.currentTarget.style.borderColor = '';
+                                    e.currentTarget.style.borderColor = '#E2E8F0';
                                     e.currentTarget.style.boxShadow = 'none';
                                     handlePriceBlur(ficha.id, s, ficha);
                                   }}
@@ -538,7 +533,7 @@ export default function PrecificacaoPizzas() {
                                   placeholder="0,00"
                                 />
                                 {savedFields[fieldKey] && (
-                                  <Check className="absolute right-1 h-4 w-4 text-emerald-500 animate-in fade-in duration-200" />
+                                  <Check className="absolute right-0.5 h-3.5 w-3.5 text-emerald-500 animate-in fade-in duration-200" />
                                 )}
                               </div>
                             </TableCell>
@@ -547,13 +542,13 @@ export default function PrecificacaoPizzas() {
 
                         {/* CMV Balcão — semantic pills */}
                         {sizes.map((s, i) => (
-                          <TableCell key={`cmvb-${s}`} className={cn("text-center py-5 px-2", i === 0 && "border-l border-border/50")}>
+                          <TableCell key={`cmvb-${s}`} className={cn("text-center py-3.5 px-1.5", i === 0 && "border-l border-[#E2E8F0]")}>
                             {precos[s] > 0 ? (
-                              <span className={cn("inline-block text-xs font-bold px-2.5 py-1 rounded-full tabular-nums", cmvBg(cmvs[s]))}>
+                              <span className={cn("inline-block text-[11px] font-bold px-2 py-0.5 rounded-full", cmvBg(cmvs[s]))} style={{ fontFeatureSettings: "'tnum'" }}>
                                 {fmtPct(cmvs[s])}
                               </span>
                             ) : (
-                              <span className="text-muted-foreground">—</span>
+                              <span className="text-slate-300">—</span>
                             )}
                           </TableCell>
                         ))}
@@ -563,13 +558,10 @@ export default function PrecificacaoPizzas() {
                           sizes.map((s, i) => {
                             const appPrice = precos[s] > 0 ? calcAppPrice(precos[s], app.taxa) : 0;
                             return (
-                              <TableCell key={`ap-${app.key}-${s}`} className={cn("text-center py-5 px-2 bg-[#F9FAFB]", i === 0 && "border-l border-border/50")}>
+                              <TableCell key={`ap-${app.key}-${s}`} className={cn("text-center py-3.5 px-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ background: '#FAFBFC' }}>
                                 {precos[s] > 0 ? (
-                                  <>
-                                    <span className="text-xs text-muted-foreground">R$</span>{' '}
-                                    <span className="text-sm font-bold text-[#111827] tabular-nums">{appPrice.toFixed(2)}</span>
-                                  </>
-                                ) : <span className="text-muted-foreground">—</span>}
+                                  <span className="text-[12px] font-mono text-slate-600" style={{ fontFeatureSettings: "'tnum'" }}>{appPrice.toFixed(2)}</span>
+                                ) : <span className="text-slate-300">—</span>}
                               </TableCell>
                             );
                           })
@@ -581,12 +573,12 @@ export default function PrecificacaoPizzas() {
                             const appPrice = precos[s] > 0 ? calcAppPrice(precos[s], app.taxa) : 0;
                             const appCmv = calcCmv(custos[s], appPrice);
                             return (
-                              <TableCell key={`ca-${app.key}-${s}`} className={cn("text-center py-5 px-2", i === 0 && "border-l border-border/50")}>
+                              <TableCell key={`ca-${app.key}-${s}`} className={cn("text-center py-3.5 px-1.5", i === 0 && "border-l border-[#E2E8F0]")}>
                                 {appPrice > 0 ? (
-                                  <span className={cn("inline-block text-xs font-bold px-2.5 py-1 rounded-full tabular-nums", cmvBg(appCmv))}>
+                                  <span className={cn("inline-block text-[11px] font-bold px-2 py-0.5 rounded-full", cmvBg(appCmv))} style={{ fontFeatureSettings: "'tnum'" }}>
                                     {fmtPct(appCmv)}
                                   </span>
-                                ) : <span className="text-muted-foreground">—</span>}
+                                ) : <span className="text-slate-300">—</span>}
                               </TableCell>
                             );
                           })
@@ -598,7 +590,7 @@ export default function PrecificacaoPizzas() {
                     <TableRow>
                       <TableCell colSpan={8 + 6 * appCount} className="text-center py-16">
                         <div className="flex flex-col items-center gap-4">
-                          <p className="text-muted-foreground text-base">Nenhuma pizza cadastrada ainda.</p>
+                          <p className="text-slate-400 text-sm">Nenhuma pizza cadastrada ainda.</p>
                           <Button
                             onClick={() => window.location.href = '/fichas/pizzas?tipo=tradicional'}
                             className="gap-2"
