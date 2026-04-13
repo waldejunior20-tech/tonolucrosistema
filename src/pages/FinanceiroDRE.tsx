@@ -322,157 +322,148 @@ export default function FinanceiroDRE() {
   const anos = Array.from({ length: 5 }, (_, i) => now.getFullYear() - 2 + i);
 
   return (
-    <div className="space-y-5">
-      <div className="flex items-center justify-between flex-wrap gap-4 mb-8">
+    <div className="space-y-6 page-enter">
+      {/* Header */}
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Resumo do Mês</h1>
-          <p className="text-sm text-muted-foreground font-medium">Veja quanto entrou, quanto saiu e quanto sobrou.</p>
+          <h1 className="text-2xl font-bold text-foreground">Resumo do Mês</h1>
+          <p className="text-sm text-muted-foreground">Veja quanto entrou, quanto saiu e quanto sobrou.</p>
         </div>
-        <div className="flex gap-3 items-center flex-wrap">
-          <div className="flex items-center gap-2 bg-muted p-1 rounded-lg border">
-            <Select value={String(mes)} onValueChange={(v) => setMes(Number(v))}>
-              <SelectTrigger className="w-[120px] h-8 border-none bg-transparent shadow-none"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {MESES.map((m, i) => (<SelectItem key={i} value={String(i + 1)}>{m}</SelectItem>))}
-              </SelectContent>
-            </Select>
-            <div className="w-px h-4 bg-border" />
-            <Select value={String(ano)} onValueChange={(v) => setAno(Number(v))}>
-              <SelectTrigger className="w-[80px] h-8 border-none bg-transparent shadow-none"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {anos.map((a) => (<SelectItem key={a} value={String(a)}>{a}</SelectItem>))}
-              </SelectContent>
-            </Select>
-          </div>
+        <div className="flex items-center gap-2 bg-muted p-1 rounded-lg border">
+          <Select value={String(mes)} onValueChange={(v) => setMes(Number(v))}>
+            <SelectTrigger className="w-[120px] h-8 border-none bg-transparent shadow-none"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {MESES.map((m, i) => (<SelectItem key={i} value={String(i + 1)}>{m}</SelectItem>))}
+            </SelectContent>
+          </Select>
+          <div className="w-px h-4 bg-border" />
+          <Select value={String(ano)} onValueChange={(v) => setAno(Number(v))}>
+            <SelectTrigger className="w-[80px] h-8 border-none bg-transparent shadow-none"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {anos.map((a) => (<SelectItem key={a} value={String(a)}>{a}</SelectItem>))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
-      <HealthStatus status={calc.status === "verde" ? "healthy" : calc.status === "amarelo" ? "warning" : "danger"} />
-
-      <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-        <div className={cn("card-premium p-7", calc.sobrou >= 0 ? "border-success/30 shadow-sm shadow-success/5" : "border-destructive/30 shadow-sm shadow-destructive/5")}>
-          <p className="label-upper mb-4">{calc.sobrou >= 0 ? "Sobrou no Final" : "Faltou no Final"}</p>
-          <p className={cn("kpi-number", calc.sobrou >= 0 ? "text-success" : "text-destructive")}>{fmt(Math.abs(calc.sobrou))}</p>
-          <p className={cn("text-sm mt-1 font-bold", calc.sobrou >= 0 ? "text-success" : "text-destructive")}>{calc.sobrouPct.toFixed(1)}% de margem</p>
-          <p className="text-xs text-muted-foreground mt-2">Entrou: {fmt(calc.totalEntrou)} · Saiu: {fmt(calc.totalSaiu)}</p>
+      {/* Top 3 KPIs */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="card-premium">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Entrou</p>
+          <p className="text-2xl font-bold text-foreground">{fmt(calc.totalEntrou)}</p>
+        </div>
+        <div className="card-premium">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Saiu</p>
+          <p className="text-2xl font-bold text-foreground">{fmt(calc.totalSaiu)}</p>
+        </div>
+        <div className={cn("card-premium", calc.sobrou >= 0 ? "border-success/30" : "border-destructive/30")}>
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+            {calc.sobrou >= 0 ? "Sobrou" : "Faltou"}
+          </p>
+          <p className={cn("text-2xl font-bold", calc.sobrou >= 0 ? "text-success" : "text-destructive")}>
+            {fmt(Math.abs(calc.sobrou))}
+          </p>
+          <p className={cn("text-xs font-semibold mt-1", calc.sobrou >= 0 ? "text-success" : "text-destructive")}>
+            {calc.sobrouPct.toFixed(1)}% de margem
+          </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div className="card-premium p-6">
-          <div className="pb-4">
-            <h3 className="text-base font-bold flex items-center gap-2 font-heading uppercase">Meta do mês</h3>
-            <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider">Quanto você quer faturar</p>
-          </div>
-          <div className="space-y-4">
+      {/* Custo dos Ingredientes + Meta do Mês */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Custo dos Ingredientes */}
+        <div className="card-premium">
+          <div className="flex items-center justify-between mb-4">
             <div>
-              <Label className="text-xs">Meta R$</Label>
-              <MoneyInput value={metaFaturamento} onChange={(v) => upsertMetaMutation.mutate(v)} />
+              <h3 className="text-sm font-semibold text-foreground">Custo dos Ingredientes</h3>
+              <p className="text-xs text-muted-foreground">% do faturamento gasto com insumos</p>
             </div>
-            {metaFaturamento > 0 && (
-              <>
-                <div className="h-2.5 bg-muted rounded-full overflow-hidden">
-                  <div className={cn("h-full rounded-full transition-all duration-500", metaAtingida ? "bg-success" : "bg-destructive")} style={{ width: `${metaProgress}%` }} />
-                </div>
-                <p className={cn("text-xs text-center font-bold uppercase", metaAtingida ? "text-success" : "text-destructive")}>
-                  {metaAtingida ? `Meta batida! Você faturou ${metaPctAcima.toFixed(0)}% acima` : `Faltam ${fmt(metaFaturamento - calc.totalEntrou)} para bater a meta`}
-                </p>
-              </>
-            )}
-          </div>
-        </div>
-
-        <div className="card-premium p-6">
-          <div className="pb-4">
-            <h3 className="text-base font-bold flex items-center gap-2 font-heading uppercase"><Target className="h-5 w-5 text-orange" /> Meta Mínima de Vendas</h3>
-            <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider">Venda mínima para não ter prejuízo</p>
-          </div>
-          <div className="space-y-4">
-            <p className="text-center text-3xl font-bold text-orange font-heading">{fmt(calc.pontoEquilibrio)}</p>
-            <div className="h-2.5 bg-muted rounded-full overflow-hidden">
-              <div className={cn("h-full rounded-full transition-all duration-500", calc.atingiuPE ? "bg-gradient-to-r from-destructive via-warning to-success" : "bg-destructive")} style={{ width: `${Math.min(calc.progressPE, 100)}%` }} />
-            </div>
-            <div className="text-xs space-y-1 text-muted-foreground">
-              <div className="flex justify-between"><span>Despesas fixas</span><span className="font-medium text-foreground">{fmt(calc.despFixasTotal)}</span></div>
-              <div className="flex justify-between"><span>Margem contrib. %</span><span className="font-medium text-foreground">{calc.margemContribuicaoPct.toFixed(1)}%</span></div>
-            </div>
-            <p className={cn("text-xs text-center font-bold uppercase", calc.atingiuPE ? "text-success" : "text-destructive")}>
-              {calc.atingiuPE ? "Tudo acima disso é lucro puro!" : calc.pontoEquilibrio > 0 ? `Faltam ${fmt(calc.faltaPE)} para atingir` : "Cadastre receitas e despesas"}
+            <p className={cn("text-2xl font-bold", calc.cmvPct > 40 ? "text-destructive" : calc.cmvPct > 32 ? "text-warning" : "text-success")}>
+              {calc.cmvPct.toFixed(1)}%
             </p>
           </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        <div className="card-premium p-6">
-          <div className="pb-4"><h3 className="text-sm font-bold font-heading uppercase">Sobra das vendas</h3><p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">O que sobra depois dos custos diretos</p></div>
-          <div className="space-y-4">
-            <p className="text-2xl font-bold text-success font-heading">{fmt(calc.margemContribuicao)}</p>
-            <div className="text-[11px] space-y-1 border-t pt-2 text-muted-foreground">
-              <div className="flex justify-between"><span>Faturamento Bruto</span><span className="font-medium text-foreground">{fmt(calc.totalEntrou)}</span></div>
-              <div className="flex justify-between text-destructive"><span>(-) Desp. s/ vendas</span><span>-{fmt(calc.despesasSobreVendas)}</span></div>
-              <div className="flex justify-between text-destructive"><span>(-) CMV</span><span>-{fmt(calc.cmv)}</span></div>
-              <div className="flex justify-between font-bold border-t pt-1"><span className="text-foreground">(=) Sobra</span><span className="text-success">{fmt(calc.margemContribuicao)}</span></div>
-            </div>
+          <div className="h-2 bg-muted rounded-full overflow-hidden">
+            <div
+              className={cn("h-full rounded-full transition-all duration-500", calc.cmvPct > 40 ? "bg-destructive" : calc.cmvPct > 32 ? "bg-warning" : "bg-success")}
+              style={{ width: `${Math.min(calc.cmvPct * 2.5, 100)}%` }}
+            />
+          </div>
+          <div className="flex justify-between text-xs text-muted-foreground mt-2">
+            <span>Meta: 32%</span>
+            <span className={cn("font-semibold", cmvFolga >= 0 ? "text-success" : "text-destructive")}>
+              {cmvFolga >= 0 ? `Folga: ${cmvFolga.toFixed(1)}%` : `${Math.abs(cmvFolga).toFixed(1)}% acima`}
+            </span>
           </div>
         </div>
 
-        <div className="card-premium p-6">
-          <div className="pb-4"><h3 className="text-sm font-bold font-heading uppercase">Para cada R$100 vendidos</h3><p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Quanto sobra de lucro</p></div>
-          <div className="space-y-4">
-            <p className={cn("text-2xl font-bold font-heading", lucroLiquidoPer100 >= 0 ? "text-success" : "text-destructive")}>R$ {Math.abs(lucroLiquidoPer100).toFixed(2).replace(".", ",")}</p>
-            <div className="space-y-2 border-t pt-2">
-              {per100Items.map((item) => {
-                const maxVal = Math.max(...per100Items.map(i => Math.abs(i.value)), 1);
-                const barW = (Math.abs(item.value) / maxVal) * 100;
-                return (
-                  <div key={item.label} className="space-y-1">
-                    <div className="flex items-center justify-between text-[10px]"><div className="flex items-center gap-1.5"><span className={cn("h-2 w-2 rounded-full shrink-0", item.color)} /><span className="text-muted-foreground">{item.label}</span></div><span className="font-bold text-foreground">R$ {Math.abs(item.value).toFixed(2).replace(".", ",")}</span></div>
-                    <div className="h-1.5 bg-muted rounded-full overflow-hidden"><div className={cn("h-full rounded-full transition-all duration-500", item.color)} style={{ width: `${barW}%` }} /></div>
-                  </div>
-                );
-              })}
+        {/* Meta do Mês */}
+        <div className="card-premium">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-sm font-semibold text-foreground">Meta do Mês</h3>
+              <p className="text-xs text-muted-foreground">Quanto você quer faturar</p>
             </div>
           </div>
-        </div>
-
-        <div className="card-premium p-6">
-          <div className="pb-4"><h3 className="text-sm font-bold font-heading uppercase">Custo dos Ingredientes</h3><p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">% do faturamento gasto com insumos</p></div>
-          <div className="space-y-4">
-            <p className={cn("text-3xl font-bold text-center font-heading", calc.cmvPct > 40 ? "text-destructive" : calc.cmvPct > 32 ? "text-warning" : "text-success")}>{calc.cmvPct.toFixed(1)}%</p>
-            <div className="h-2.5 bg-muted rounded-full overflow-hidden"><div className={cn("h-full rounded-full transition-all duration-500", calc.cmvPct > 40 ? "bg-destructive" : calc.cmvPct > 32 ? "bg-warning" : "bg-success")} style={{ width: `${Math.min(calc.cmvPct * 2.5, 100)}%` }} /></div>
-            <div className="text-[11px] space-y-1 text-muted-foreground">
-              <div className="flex justify-between"><span>Meta máxima</span><span className="font-bold text-foreground">32%</span></div>
-              <div className="flex justify-between"><span>Folga</span><span className={cn("font-bold", cmvFolga >= 0 ? "text-success" : "text-destructive")}>{cmvFolga >= 0 ? `${cmvFolga.toFixed(1)}%` : `${Math.abs(cmvFolga).toFixed(1)}% acima`}</span></div>
-            </div>
-          </div>
-        </div>
-
-        <div className="card-premium p-6">
-          <div className="pb-4"><h3 className="text-sm font-bold font-heading uppercase flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-warning" />Alertas</h3><p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Situações Críticas</p></div>
-          <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
-            {alertas.length === 0 && contasAtrasadas.length === 0 ? (
-              <div className="text-center py-4"><p className="text-xs text-success font-bold uppercase tracking-tight">Tudo em dia!</p></div>
-            ) : (
-              <div className="space-y-2">
-                {alertas.map((a, i) => (<div key={i} className="flex items-start gap-2 text-[11px] bg-warning/10 border border-warning/20 rounded-md p-2"><AlertTriangle className="h-3.5 w-3.5 text-warning shrink-0 mt-0.5" /><span className="text-foreground font-medium">{a}</span></div>))}
-                {contasAtrasadas.map((c) => (<div key={c.id} className="flex items-start gap-2 text-[11px] bg-destructive/10 border border-destructive/20 rounded-md p-2"><div className="h-2.5 w-2.5 rounded-full bg-destructive shrink-0 mt-1" /><div><p className="font-bold text-foreground">{c.descricao}</p><p className="text-muted-foreground">{fmt(c.valor)} — {new Date(c.data_lancamento + "T12:00:00").toLocaleDateString("pt-BR")}</p></div></div>))}
+          <MoneyInput value={metaFaturamento} onChange={(v) => upsertMetaMutation.mutate(v)} />
+          {metaFaturamento > 0 && (
+            <div className="mt-3 space-y-2">
+              <div className="h-2 bg-muted rounded-full overflow-hidden">
+                <div className={cn("h-full rounded-full transition-all duration-500", metaAtingida ? "bg-success" : "bg-primary")} style={{ width: `${metaProgress}%` }} />
               </div>
-            )}
-          </div>
+              <p className={cn("text-xs text-center font-semibold", metaAtingida ? "text-success" : "text-muted-foreground")}>
+                {metaAtingida ? `Meta batida! +${metaPctAcima.toFixed(0)}% acima` : `Faltam ${fmt(metaFaturamento - calc.totalEntrou)}`}
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
+      {/* Alertas (only if there are any) */}
+      {(alertas.length > 0 || contasAtrasadas.length > 0) && (
+        <div className="card-premium border-warning/30">
+          <div className="flex items-center gap-2 mb-3">
+            <AlertTriangle className="h-4 w-4 text-warning" />
+            <h3 className="text-sm font-semibold text-foreground">Alertas</h3>
+          </div>
+          <div className="space-y-2">
+            {alertas.map((a, i) => (
+              <div key={i} className="flex items-start gap-2 text-sm bg-warning/5 border border-warning/15 rounded-lg p-3">
+                <AlertTriangle className="h-3.5 w-3.5 text-warning shrink-0 mt-0.5" />
+                <span className="text-foreground">{a}</span>
+              </div>
+            ))}
+            {contasAtrasadas.map((c) => (
+              <div key={c.id} className="flex items-start gap-2 text-sm bg-destructive/5 border border-destructive/15 rounded-lg p-3">
+                <div className="h-2 w-2 rounded-full bg-destructive shrink-0 mt-1.5" />
+                <div>
+                  <p className="font-medium text-foreground">{c.descricao}</p>
+                  <p className="text-xs text-muted-foreground">{fmt(c.valor)} — {new Date(c.data_lancamento + "T12:00:00").toLocaleDateString("pt-BR")}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Para onde foi o dinheiro */}
       {calc.categoriasOrdenadas.length > 0 && (
-        <div className="card-premium p-6">
-          <div className="pb-4"><h3 className="text-base font-bold font-heading uppercase">Para onde foi o dinheiro?</h3></div>
+        <div className="card-premium">
+          <h3 className="text-sm font-semibold text-foreground mb-4">Para onde foi o dinheiro?</h3>
           <div className="space-y-3">
             {calc.categoriasOrdenadas.map((c) => {
               const barColor = CAT_COLORS[c.cat] || "bg-primary/70";
               return (
                 <div key={c.cat} className="space-y-1">
-                  <div className="flex items-center justify-between text-sm"><span className="text-foreground/80">{c.label}</span><div className="flex items-center gap-3"><span className="font-semibold">{fmt(c.valor)}</span><span className="text-muted-foreground text-xs w-10 text-right">{c.pct.toFixed(0)}%</span></div></div>
-                  <div className="h-2.5 bg-muted rounded-full overflow-hidden"><div className={`h-full rounded-full ${barColor} transition-all duration-500`} style={{ width: `${c.pctDespesas}%` }} /></div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">{c.label}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="font-semibold text-foreground">{fmt(c.valor)}</span>
+                      <span className="text-xs text-muted-foreground w-10 text-right">{c.pct.toFixed(0)}%</span>
+                    </div>
+                  </div>
+                  <div className="h-2 bg-muted rounded-full overflow-hidden">
+                    <div className={`h-full rounded-full ${barColor} transition-all duration-500`} style={{ width: `${c.pctDespesas}%` }} />
+                  </div>
                 </div>
               );
             })}
@@ -480,6 +471,7 @@ export default function FinanceiroDRE() {
         </div>
       )}
 
+      {/* Dialog (kept for future use if needed) */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader><DialogTitle>{dialogTipo === "receita" ? "Nova Receita" : "Nova Despesa"}</DialogTitle></DialogHeader>
