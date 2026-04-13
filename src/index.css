@@ -179,16 +179,17 @@
   }
 
   .pricing-input {
-    @apply font-semibold text-center rounded-lg border transition-all;
-    background: hsl(var(--background));
-    border-color: hsl(var(--border));
-    padding: 6px 10px;
+    @apply font-bold text-center rounded-lg transition-all;
+    background: #FFFFFF;
+    border: 1.5px solid #D1D5DB;
+    padding: 8px 12px;
     font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
   }
   .pricing-input:focus {
-    @apply outline-none ring-2;
-    border-color: hsl(var(--primary));
-    --tw-ring-color: rgba(255,107,43,0.20);
+    @apply outline-none;
+    border-color: #10B981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15), 0 0 8px rgba(16, 185, 129, 0.10);
   }
 
   .health-pulse {
@@ -394,7 +395,53 @@
   }
 }
 
-/* Dark Graphite Table Headers */
+/* ══════════════════════════════════════════════════
+   GLOBAL INPUT STYLING — White bg, visible border, emerald glow
+   ══════════════════════════════════════════════════ */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="url"],
+input[type="search"],
+textarea {
+  background: #FFFFFF !important;
+  border: 1.5px solid #D1D5DB !important;
+  border-radius: 8px !important;
+  font-size: 16px !important;
+  color: #1F2937 !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+input[type="search"]:focus,
+textarea:focus {
+  border-color: #10B981 !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18), 0 0 10px rgba(16, 185, 129, 0.12) !important;
+  outline: none !important;
+}
+
+/* Table inputs — Financial values 18px bold */
+table input[type="text"],
+table .pricing-input,
+td input {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+  height: 46px !important;
+  min-width: 100px !important;
+}
+
+/* ══════════════════════════════════════════════════
+   DARK GRAPHITE TABLE HEADERS
+   ══════════════════════════════════════════════════ */
 thead tr,
 [role="row"]:has(th) {
   background: #1F2937 !important;
@@ -406,20 +453,43 @@ thead th,
   font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 14px 18px;
+  padding: 16px 18px;
 }
 
-/* Global table body text */
+/* ══════════════════════════════════════════════════
+   TABLE BODY — Taller rows, read-only cell distinction
+   ══════════════════════════════════════════════════ */
 tbody td {
   font-size: 15px;
+  font-weight: 600;
   color: #1F2937;
-  padding: 14px 18px;
+  padding: 16px 18px;
+  vertical-align: middle;
+}
+/* Read-only cells — subtle gray background */
+tbody td:not(:has(input)):not(:has(button)):not(:has(select)) {
+  background: #F9FAFB;
+}
+/* Editable cells — pure white */
+tbody td:has(input),
+tbody td:has(select) {
+  background: #FFFFFF;
+}
+/* Taller minimum row height for touch targets */
+tbody tr {
+  min-height: 56px;
+}
+/* Alternate row stripe on read-only cells */
+tbody tr:nth-child(even) td:not(:has(input)):not(:has(button)):not(:has(select)) {
+  background: #F3F4F6;
 }
 
-/* Labels and form text */
+/* ══════════════════════════════════════════════════
+   LABELS AND FORM TEXT
+   ══════════════════════════════════════════════════ */
 label, .label {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   color: #1F2937;
 }
 
@@ -429,28 +499,33 @@ label, .label {
   font-size: 16px;
 }
 
-/* Status tags with colored backgrounds */
+/* ══════════════════════════════════════════════════
+   STATUS TAGS — Strong colors
+   ══════════════════════════════════════════════════ */
 .status-profit {
-  background: rgba(16, 185, 129, 0.12);
-  color: #10B981;
-  border: 1px solid rgba(16, 185, 129, 0.25);
+  background: rgba(16, 185, 129, 0.15);
+  color: #059669;
+  border: 1.5px solid rgba(16, 185, 129, 0.30);
   font-size: 14px;
   font-weight: 700;
-  padding: 4px 12px;
+  padding: 5px 14px;
+  border-radius: 8px;
 }
 .status-loss {
-  background: rgba(239, 68, 68, 0.12);
-  color: #EF4444;
-  border: 1px solid rgba(239, 68, 68, 0.25);
+  background: rgba(239, 68, 68, 0.15);
+  color: #DC2626;
+  border: 1.5px solid rgba(239, 68, 68, 0.30);
   font-size: 14px;
   font-weight: 700;
-  padding: 4px 12px;
+  padding: 5px 14px;
+  border-radius: 8px;
 }
 .status-warning {
-  background: rgba(245, 158, 11, 0.12);
-  color: #F59E0B;
-  border: 1px solid rgba(245, 158, 11, 0.25);
+  background: rgba(245, 158, 11, 0.15);
+  color: #D97706;
+  border: 1.5px solid rgba(245, 158, 11, 0.30);
   font-size: 14px;
   font-weight: 700;
-  padding: 4px 12px;
+  padding: 5px 14px;
+  border-radius: 8px;
 }
