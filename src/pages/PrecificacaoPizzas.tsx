@@ -403,17 +403,17 @@ export default function PrecificacaoPizzas() {
             <div className="overflow-x-auto">
               <Table className="w-full">
                 <TableHeader>
-                  <TableRow className="border-b border-[#E2E8F0]" style={{ background: '#F1F5F9' }}>
-                    <TableHead rowSpan={2} className="align-bottom font-bold text-[11px] uppercase tracking-[0.08em] w-[180px] py-3 px-5" style={{ color: '#475569', background: '#F1F5F9' }}>Pizza</TableHead>
-                    <TableHead rowSpan={2} className="align-bottom font-bold text-[11px] uppercase tracking-[0.08em] w-[80px] py-3" style={{ color: '#475569', background: '#F1F5F9' }}>Tipo</TableHead>
-                    <TableHead colSpan={3} className="text-center border-l border-[#E2E8F0] font-bold text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F1F5F9' }}>Custo (R$)</TableHead>
-                    <TableHead colSpan={3} className="text-center border-l border-[#E2E8F0] font-bold text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F1F5F9' }}>Sugerido (R$)</TableHead>
-                    <TableHead colSpan={3} className="text-center border-l border-[#E2E8F0] font-extrabold text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#10B981', background: '#F1F5F9' }}>
+                  <TableRow className="border-b border-[#CBD5E1]" style={{ background: '#E2E8F0' }}>
+                    <TableHead rowSpan={2} className="align-bottom font-bold text-[11px] uppercase tracking-[0.12em] w-[180px] py-3.5 px-5" style={{ color: '#334155', background: '#E2E8F0' }}>Pizza</TableHead>
+                    <TableHead rowSpan={2} className="align-bottom font-bold text-[11px] uppercase tracking-[0.12em] w-[80px] py-3.5" style={{ color: '#334155', background: '#E2E8F0' }}>Tipo</TableHead>
+                    <TableHead colSpan={3} className="text-center border-l border-[#CBD5E1] font-bold text-[11px] uppercase tracking-[0.12em] py-3" style={{ color: '#334155', background: '#E2E8F0' }}>Custo (R$)</TableHead>
+                    <TableHead colSpan={3} className="text-center border-l border-[#CBD5E1] font-bold text-[11px] uppercase tracking-[0.12em] py-3" style={{ color: '#334155', background: '#E2E8F0' }}>Sugerido (R$)</TableHead>
+                    <TableHead colSpan={3} className="text-center border-l border-[#CBD5E1] font-extrabold text-[11px] uppercase tracking-[0.12em] py-3" style={{ color: '#10B981', background: '#E2E8F0' }}>
                       Preencha seu preço
                     </TableHead>
-                    <TableHead colSpan={3} className="text-center border-l border-[#E2E8F0] font-bold text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F1F5F9' }}>CMV %</TableHead>
+                    <TableHead colSpan={3} className="text-center border-l border-[#CBD5E1] font-bold text-[11px] uppercase tracking-[0.12em] py-3" style={{ color: '#334155', background: '#E2E8F0' }}>CMV %</TableHead>
                     {activeApps.map((app) => (
-                      <TableHead key={`app-${app.key}`} colSpan={3} className="text-center border-l border-[#E2E8F0] font-bold text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F1F5F9' }}>
+                      <TableHead key={`app-${app.key}`} colSpan={3} className="text-center border-l border-[#CBD5E1] font-bold text-[11px] uppercase tracking-[0.12em] py-3" style={{ color: '#334155', background: '#E2E8F0' }}>
                         <Tooltip>
                           <TooltipTrigger asChild><span className="cursor-help">{app.label}</span></TooltipTrigger>
                           <TooltipContent><p className="max-w-[200px] text-xs">{APP_TOOLTIP}</p></TooltipContent>
@@ -421,32 +421,32 @@ export default function PrecificacaoPizzas() {
                       </TableHead>
                     ))}
                     {activeApps.map((app) => (
-                      <TableHead key={`cmv-${app.key}`} colSpan={3} className="text-center border-l border-[#E2E8F0] font-bold text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F1F5F9' }}>
+                      <TableHead key={`cmv-${app.key}`} colSpan={3} className="text-center border-l border-[#CBD5E1] font-bold text-[11px] uppercase tracking-[0.12em] py-3" style={{ color: '#334155', background: '#E2E8F0' }}>
                         CMV {app.label}
                       </TableHead>
                     ))}
                   </TableRow>
-                  <TableRow style={{ background: '#F1F5F9' }}>
+                  <TableRow style={{ background: '#E2E8F0' }}>
                     {sizes.map((s, i) => (
-                      <TableHead key={`c-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ color: '#94A3B8', background: '#F1F5F9' }}>{sizeLabels[s]}</TableHead>
+                      <TableHead key={`c-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#CBD5E1]")} style={{ color: '#64748B', background: '#E2E8F0' }}>{sizeLabels[s]}</TableHead>
                     ))}
                     {sizes.map((s, i) => (
-                      <TableHead key={`sug-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ color: '#94A3B8', background: '#F1F5F9' }}>{sizeLabels[s]}</TableHead>
+                      <TableHead key={`sug-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#CBD5E1]")} style={{ color: '#64748B', background: '#E2E8F0' }}>{sizeLabels[s]}</TableHead>
                     ))}
                     {sizes.map((s, i) => (
-                      <TableHead key={`pr-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ color: '#10B981', background: '#F1F5F9' }}>{sizeLabels[s]}</TableHead>
+                      <TableHead key={`pr-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#CBD5E1]")} style={{ color: '#10B981', background: '#E2E8F0' }}>{sizeLabels[s]}</TableHead>
                     ))}
                     {sizes.map((s, i) => (
-                      <TableHead key={`cmvb-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ color: '#94A3B8', background: '#F1F5F9' }}>{sizeLabels[s]}</TableHead>
+                      <TableHead key={`cmvb-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#CBD5E1]")} style={{ color: '#64748B', background: '#E2E8F0' }}>{sizeLabels[s]}</TableHead>
                     ))}
                     {activeApps.map((app) =>
                       sizes.map((s, i) => (
-                        <TableHead key={`ap-${app.key}-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ color: '#94A3B8', background: '#F1F5F9' }}>{sizeLabels[s]}</TableHead>
+                        <TableHead key={`ap-${app.key}-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#CBD5E1]")} style={{ color: '#64748B', background: '#E2E8F0' }}>{sizeLabels[s]}</TableHead>
                       ))
                     )}
                     {activeApps.map((app) =>
                       sizes.map((s, i) => (
-                        <TableHead key={`ca-${app.key}-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#E2E8F0]")} style={{ color: '#94A3B8', background: '#F1F5F9' }}>{sizeLabels[s]}</TableHead>
+                        <TableHead key={`ca-${app.key}-${s}`} className={cn("text-center text-[10px] font-bold py-1.5", i === 0 && "border-l border-[#CBD5E1]")} style={{ color: '#64748B', background: '#E2E8F0' }}>{sizeLabels[s]}</TableHead>
                       ))
                     )}
                   </TableRow>
@@ -470,19 +470,19 @@ export default function PrecificacaoPizzas() {
                         </TableCell>
                         <TableCell className="text-[12px] text-slate-500 font-medium py-6 px-3">{tipoLabel(ficha.tipo)}</TableCell>
 
-                        {/* Custo — read-only, numbers in dark */}
+                        {/* Custo — Slate 50 bg, Slate 700 text */}
                         {sizes.map((s, i) => (
-                          <TableCell key={`c-${s}`} className={cn("text-center py-6 px-2", i === 0 && "border-l border-[#E2E8F0]")} style={{ background: '#FAFBFC' }}>
-                            <span className="text-[10px] text-slate-400">R$ </span>
-                            <span className="text-[13px] font-bold font-mono text-[#111827]" style={{ fontFeatureSettings: "'tnum'" }}>{custos[s].toFixed(2)}</span>
+                          <TableCell key={`c-${s}`} className={cn("text-center py-6 px-2", i === 0 && "border-l border-[#E2E8F0]")} style={{ background: '#F8FAFC' }}>
+                            <span className="text-[10px] text-slate-400 mr-0.5">R$</span>
+                            <span className="text-[14px] font-semibold font-mono text-[#334155]" style={{ fontFeatureSettings: "'tnum'" }}>{custos[s].toFixed(2)}</span>
                           </TableCell>
                         ))}
 
-                        {/* Sugerido — read-only */}
+                        {/* Sugerido — Slate 50 bg, Slate 700 text */}
                         {sizes.map((s, i) => (
-                          <TableCell key={`sug-${s}`} className={cn("text-center py-6 px-2", i === 0 && "border-l border-[#E2E8F0]")} style={{ background: '#FAFBFC' }}>
-                            <span className="text-[10px] text-slate-400">R$ </span>
-                            <span className="text-[13px] font-semibold font-mono text-slate-500" style={{ fontFeatureSettings: "'tnum'" }}>{sugeridos[s].toFixed(2)}</span>
+                          <TableCell key={`sug-${s}`} className={cn("text-center py-6 px-2", i === 0 && "border-l border-[#E2E8F0]")} style={{ background: '#F8FAFC' }}>
+                            <span className="text-[10px] text-slate-400 mr-0.5">R$</span>
+                            <span className="text-[14px] font-semibold font-mono text-[#334155]" style={{ fontFeatureSettings: "'tnum'" }}>{sugeridos[s].toFixed(2)}</span>
                           </TableCell>
                         ))}
 
@@ -503,12 +503,12 @@ export default function PrecificacaoPizzas() {
                                   step={localPrices[ficha.id]?.[s] !== undefined ? "0.01" : undefined}
                                   className="w-full text-center font-bold rounded-md transition-all duration-150 outline-none font-mono"
                                   style={{
-                                    height: '42px',
+                                    height: '44px',
                                     fontSize: '18px',
                                     fontFeatureSettings: "'tnum'",
-                                    color: '#047857',
+                                    color: '#000000',
                                     background: '#FFFFFF',
-                                    border: `2px solid ${borderColor}`,
+                                    border: `1.5px solid ${borderColor}`,
                                   }}
                                   onFocus={(e) => {
                                     e.currentTarget.style.boxShadow = `0 0 0 3px ${borderColor}33, 0 0 8px ${borderColor}1a`;
@@ -553,7 +553,7 @@ export default function PrecificacaoPizzas() {
                           return (
                             <TableCell key={`cmvb-${s}`} className={cn("text-center py-6 px-1.5", i === 0 && "border-l border-[#E2E8F0]")}>
                               {precos[s] > 0 ? (
-                                <span className="inline-block text-[12px] font-bold px-2.5 py-1 rounded-full" style={{ ...pillStyle, fontFeatureSettings: "'tnum'" }}>
+                                <span className="inline-block text-[12px] font-bold px-3 py-1.5 rounded-full min-w-[52px]" style={{ ...pillStyle, fontFeatureSettings: "'tnum'" }}>
                                   {fmtPct(cmv)}
                                 </span>
                               ) : (
