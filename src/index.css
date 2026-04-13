@@ -342,17 +342,17 @@
     border-radius: 12px;
   }
   .table-premium thead tr {
-    background: hsl(var(--secondary));
-    border-bottom: 2px solid hsl(var(--border));
+    background: #F8FAFC;
+    border-bottom: 1px solid #E2E8F0;
   }
   .table-premium thead th {
-    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
-    font-size: 14px;
+    font-family: 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-size: 11px;
     font-weight: 700;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #FFFFFF;
-    padding: 14px 18px;
+    color: #475569;
+    padding: 12px 16px;
   }
   .table-premium tbody tr {
     transition: all 0.15s ease;
