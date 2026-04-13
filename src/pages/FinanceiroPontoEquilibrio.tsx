@@ -91,7 +91,7 @@ export default function FinanceiroPontoEquilibrio() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Ponto de Equilíbrio</h1>
+        <h1 className="text-2xl font-bold text-foreground">Meta Mínima de Vendas</h1>
         <div className="flex gap-2">
           <Select value={String(mes)} onValueChange={(v) => setMes(Number(v))}>
             <SelectTrigger className="w-[140px]">

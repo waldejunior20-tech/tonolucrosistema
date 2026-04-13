@@ -335,7 +335,7 @@ export default function FinanceiroDRE() {
           <button onClick={() => openDialog("despesa")} className="bg-destructive hover:bg-destructive/90 text-white font-bold h-10 px-6 rounded-lg flex items-center gap-2 transition-colors">
             <Plus className="h-4 w-4" /> <span>Despesa</span>
           </button>
-          <div className="flex items-center gap-2 bg-surface p-1 rounded-lg border">
+          <div className="flex items-center gap-2 bg-muted p-1 rounded-lg border">
             <Select value={String(mes)} onValueChange={(v) => setMes(Number(v))}>
               <SelectTrigger className="w-[120px] h-8 border-none bg-transparent shadow-none"><SelectValue /></SelectTrigger>
               <SelectContent>

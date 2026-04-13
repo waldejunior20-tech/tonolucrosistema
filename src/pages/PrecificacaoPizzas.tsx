@@ -391,44 +391,27 @@ export default function PrecificacaoPizzas() {
         )}
 
         {/* ═══ KPI Cards ═══ */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 stagger-fade-in">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 stagger-fade-in">
           <div className="kpi-industrial group">
             <div className="flex items-center gap-2 mb-4">
               <Activity className="h-4 w-4 text-muted-foreground" />
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground font-display">CMV Médio Atual</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground font-display">Custo Médio das Pizzas</p>
             </div>
             <p className={cn("text-[48px] font-extrabold leading-none tracking-tight font-terminal", cmvColor(indicators.avgCmv))}>
               {fmtPct(indicators.avgCmv)}
             </p>
-            <p className="text-[12px] text-muted-foreground font-medium mt-3">Média entre todos os tamanhos</p>
-          </div>
-
-          <div className="kpi-industrial group">
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground font-display">Semáforo de Saúde</p>
-            </div>
-            <div className="flex items-center gap-3 mt-1">
-              <div
-                className="h-6 w-6 rounded-full"
-                style={{
-                  background: indicators.avgCmv > 40 ? 'hsl(var(--destructive))' : indicators.avgCmv > 35 ? 'hsl(var(--warning))' : 'hsl(var(--success))',
-                  boxShadow: `0 0 16px ${indicators.avgCmv > 40 ? 'hsl(var(--destructive) / 0.4)' : indicators.avgCmv > 35 ? 'hsl(var(--warning) / 0.4)' : 'hsl(var(--success) / 0.4)'}`,
-                }}
-              />
-              <span className={cn("text-xl font-extrabold uppercase font-display tracking-wide", cmvColor(indicators.avgCmv))}>
-                {cmvMessage(indicators.avgCmv)}
-              </span>
-            </div>
+            <p className="text-[12px] text-muted-foreground font-medium mt-3">
+              {indicators.avgCmv > 40 ? "⚠️ Custo alto — revise os preços" : indicators.avgCmv > 35 ? "Atenção — custo no limite" : "✅ Custo saudável"}
+            </p>
           </div>
 
           <div className="kpi-industrial group">
             <div className="flex items-center gap-2 mb-4">
               <TrendingDown className="h-4 w-4 text-destructive" />
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-destructive font-display">Fora da Meta</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-destructive font-display">Precisam de Atenção</p>
             </div>
             <p className="text-[48px] font-extrabold leading-none text-destructive font-terminal">{indicators.foraMetaCount}</p>
-            <p className="text-[12px] text-muted-foreground font-medium mt-3">Tamanhos com CMV &gt; 40%</p>
+            <p className="text-[12px] text-muted-foreground font-medium mt-3">Tamanhos com custo &gt; 40%</p>
           </div>
         </div>
 
