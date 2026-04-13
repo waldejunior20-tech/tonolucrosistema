@@ -139,13 +139,13 @@ export default function FinanceiroPontoEquilibrio() {
         <Card>
           <CardContent className="pt-7 pb-6">
             <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Despesas Fixas do Mês</p>
-            <p className="text-2xl font-extrabold text-text-heading">{fmt(calc.despesasFixas)}</p>
+            <p className="text-2xl font-extrabold text-foreground">{fmt(calc.despesasFixas)}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-7 pb-6">
             <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Margem de Contribuição</p>
-            <p className="text-2xl font-extrabold text-text-heading">{fmtPct(calc.margemContribuicaoPct)}</p>
+            <p className="text-2xl font-extrabold text-foreground">{fmtPct(calc.margemContribuicaoPct)}</p>
           </CardContent>
         </Card>
         <Card className="border-primary/30">
