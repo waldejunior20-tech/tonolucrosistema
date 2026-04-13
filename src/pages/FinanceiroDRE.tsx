@@ -372,7 +372,7 @@ export default function FinanceiroDRE() {
       {/* Custo dos Ingredientes + Meta do Mês */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Custo dos Ingredientes */}
-        <div className="card-premium">
+        <div className="rounded-2xl border p-5" style={{ backgroundColor: "#DCDCDA20" }}>
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-sm font-semibold text-foreground">Custo dos Ingredientes</h3>
@@ -397,7 +397,7 @@ export default function FinanceiroDRE() {
         </div>
 
         {/* Meta do Mês */}
-        <div className="card-premium">
+        <div className="rounded-2xl border p-5" style={{ backgroundColor: "#DCDCDA20" }}>
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-sm font-semibold text-foreground">Meta do Mês</h3>
@@ -420,7 +420,7 @@ export default function FinanceiroDRE() {
 
       {/* Alertas (only if there are any) */}
       {(alertas.length > 0 || contasAtrasadas.length > 0) && (
-        <div className="card-premium border-warning/30">
+        <div className="rounded-2xl border border-warning/30 p-5" style={{ backgroundColor: "#DCDCDA20" }}>
           <div className="flex items-center gap-2 mb-3">
             <AlertTriangle className="h-4 w-4 text-warning" />
             <h3 className="text-sm font-semibold text-foreground">Alertas</h3>
