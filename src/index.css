@@ -181,7 +181,8 @@
 
   /* ═══ Card — single clean variant ═══ */
   .card-premium {
-    @apply bg-card border border-border;
+    @apply border border-border;
+    background-color: #DCDCDA;
     border-radius: 12px;
     padding: 24px;
   }
