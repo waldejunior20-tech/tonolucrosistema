@@ -325,14 +325,14 @@ export default function FinanceiroDRE() {
     <div className="space-y-5">
       <div className="flex items-center justify-between flex-wrap gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-syne uppercase">DRE Financeiro</h1>
-          <p className="text-text2 font-medium">Demonstrativo de Resultados do Exercício</p>
+          <h1 className="text-2xl font-extrabold tracking-tight text-[#1F2937]">DRE Financeiro</h1>
+          <p className="text-sm text-muted-foreground font-medium">Demonstrativo de Resultados do Exercício</p>
         </div>
         <div className="flex gap-3 items-center flex-wrap">
-          <button onClick={() => openDialog("receita")} className="btn-3d-green h-10 px-6 flex items-center gap-2">
+          <button onClick={() => openDialog("receita")} className="bg-[#10B981] hover:bg-[#059669] text-white font-bold h-10 px-6 rounded-lg flex items-center gap-2 transition-colors">
             <Plus className="h-4 w-4" /> <span>Receita</span>
           </button>
-          <button onClick={() => openDialog("despesa")} className="btn-3d-red h-10 px-6 flex items-center gap-2">
+          <button onClick={() => openDialog("despesa")} className="bg-destructive hover:bg-destructive/90 text-white font-bold h-10 px-6 rounded-lg flex items-center gap-2 transition-colors">
             <Plus className="h-4 w-4" /> <span>Despesa</span>
           </button>
           <div className="flex items-center gap-2 bg-surface p-1 rounded-lg border">
@@ -356,18 +356,18 @@ export default function FinanceiroDRE() {
       <HealthStatus status={calc.status === "verde" ? "healthy" : calc.status === "amarelo" ? "warning" : "danger"} />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="card-premium p-6">
+        <div className="card-premium p-7">
           <p className="label-upper mb-4">Faturamento Total</p>
-          <p className="kpi-number text-[#27AE60]">{fmt(calc.totalEntrou)}</p>
+          <p className="kpi-number text-[#10B981]">{fmt(calc.totalEntrou)}</p>
         </div>
-        <div className="card-premium p-6">
+        <div className="card-premium p-7">
           <p className="label-upper mb-4">Saída Total</p>
-          <p className="kpi-number text-[#C0392B]">{fmt(calc.totalSaiu)}</p>
+          <p className="kpi-number text-destructive">{fmt(calc.totalSaiu)}</p>
         </div>
-        <div className={cn("card-premium p-6", calc.sobrou >= 0 ? "border-[#27AE60]/30 shadow-sm shadow-[#27AE60]/5" : "border-[#C0392B]/30 shadow-sm shadow-[#C0392B]/5")}>
+        <div className={cn("card-premium p-7", calc.sobrou >= 0 ? "border-[#10B981]/30 shadow-sm shadow-[#10B981]/5" : "border-destructive/30 shadow-sm shadow-destructive/5")}>
           <p className="label-upper mb-4">{calc.sobrou >= 0 ? "Lucro Líquido" : "Prejuízo"}</p>
-          <p className={cn("kpi-number", calc.sobrou >= 0 ? "text-[#27AE60]" : "text-[#C0392B]")}>{fmt(Math.abs(calc.sobrou))}</p>
-          <p className={cn("text-[11px] mt-1 font-bold", calc.sobrou >= 0 ? "text-[#27AE60]" : "text-[#C0392B]")}>{calc.sobrouPct.toFixed(1)}% de margem</p>
+          <p className={cn("kpi-number", calc.sobrou >= 0 ? "text-[#10B981]" : "text-destructive")}>{fmt(Math.abs(calc.sobrou))}</p>
+          <p className={cn("text-sm mt-1 font-bold", calc.sobrou >= 0 ? "text-[#10B981]" : "text-destructive")}>{calc.sobrouPct.toFixed(1)}% de margem</p>
         </div>
       </div>
 

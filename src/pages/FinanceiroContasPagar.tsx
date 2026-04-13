@@ -235,32 +235,32 @@ export default function FinanceiroContasPagar() {
       </div>
 
       {/* Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
         <Card>
-          <CardContent className="pt-6">
-            <p className="text-xs text-muted-foreground">Total a Pagar</p>
-            <p className="text-2xl font-bold text-destructive">{fmt(cards.totalAPagar)}</p>
+          <CardContent className="pt-7 pb-6">
+            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Total a Pagar</p>
+            <p className="text-2xl font-extrabold text-destructive">{fmt(cards.totalAPagar)}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="pt-6">
-            <p className="text-xs text-muted-foreground">Total Pago no Mês</p>
-            <p className="text-2xl font-bold text-success">{fmt(cards.totalPago)}</p>
+          <CardContent className="pt-7 pb-6">
+            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Total Pago no Mês</p>
+            <p className="text-2xl font-extrabold text-[#10B981]">{fmt(cards.totalPago)}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="pt-6">
-            <p className="text-xs text-muted-foreground">Atrasadas</p>
-            <p className="text-2xl font-bold text-foreground flex items-center gap-2">
+          <CardContent className="pt-7 pb-6">
+            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Atrasadas</p>
+            <p className="text-2xl font-extrabold text-foreground flex items-center gap-2">
               {cards.atrasadas}
               {cards.atrasadas > 0 && <AlertTriangle className="h-5 w-5 text-destructive" />}
             </p>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="pt-6">
-            <p className="text-xs text-muted-foreground">Vencem em 7 dias</p>
-            <p className="text-2xl font-bold text-foreground flex items-center gap-2">
+          <CardContent className="pt-7 pb-6">
+            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Vencem em 7 dias</p>
+            <p className="text-2xl font-extrabold text-foreground flex items-center gap-2">
               {cards.vence7d}
               {cards.vence7d > 0 && <Clock className="h-5 w-5 text-yellow-500" />}
             </p>
