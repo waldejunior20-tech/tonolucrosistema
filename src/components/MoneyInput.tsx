@@ -112,19 +112,22 @@ export function MoneyInput({
       : "";
 
   return (
-    <Input
-      id={id}
-      type="text"
-      inputMode="numeric"
-      className={cn("pricing-input", className)}
-      value={shownValue}
-      onChange={handleChange}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
-      placeholder={placeholder}
-      disabled={disabled}
-      required={required}
-    />
+    <div className="relative">
+      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] font-medium text-sm pointer-events-none select-none">R$</span>
+      <Input
+        id={id}
+        type="text"
+        inputMode="numeric"
+        className={cn("pricing-input pl-9 text-[#1F2937]", className)}
+        value={shownValue.replace(/R\$\s?/, "")}
+        onChange={handleChange}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        placeholder={placeholder.replace(/R\$\s?/, "0,00")}
+        disabled={disabled}
+        required={required}
+      />
+    </div>
   );
 }
 
