@@ -465,8 +465,9 @@ tbody td {
   font-size: 15px;
   font-weight: 600;
   color: #1F2937;
-  padding: 16px 18px;
+  padding: 18px 18px;
   vertical-align: middle;
+  height: 60px;
 }
 /* Read-only cells — subtle gray background */
 tbody td:not(:has(input)):not(:has(button)):not(:has(select)) {
@@ -477,9 +478,9 @@ tbody td:has(input),
 tbody td:has(select) {
   background: #FFFFFF;
 }
-/* Taller minimum row height for touch targets */
+/* Row height for touch targets */
 tbody tr {
-  min-height: 56px;
+  height: 60px;
 }
 /* Alternate row stripe on read-only cells */
 tbody tr:nth-child(even) td:not(:has(input)):not(:has(button)):not(:has(select)) {
