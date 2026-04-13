@@ -131,7 +131,7 @@ export default function CaixaDiario() {
           <Wallet size={22} className="text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-extrabold text-text-heading">Caixa Diário</h1>
+          <h1 className="text-2xl font-extrabold text-text-heading">Caixa</h1>
           <p className="text-sm text-muted-foreground mt-1 font-medium">Registre as vendas do dia por forma de pagamento</p>
         </div>
       </div>
