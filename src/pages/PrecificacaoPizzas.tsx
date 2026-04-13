@@ -310,7 +310,7 @@ export default function PrecificacaoPizzas() {
 
   return (
     <TooltipProvider>
-      <div className="space-y-6 max-w-[1400px] mx-auto page-enter">
+      <div className="space-y-6 page-enter">
         {/* Header */}
         <PageHeader title="Precificação de Pizzas" description="Gestão de margem por tamanho">
           <button
@@ -370,7 +370,7 @@ export default function PrecificacaoPizzas() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-fade-in">
           <div className="card-premium p-6">
             <p className="label-upper mb-4">CMV Médio Atual</p>
-            <p className={cn("kpi-number", indicators.avgCmv > 40 ? "text-destructive" : indicators.avgCmv > 32 ? "text-warning" : "text-success")}>
+            <p className={cn("kpi-number", cmvColor(indicators.avgCmv))}>
               {fmtPct(indicators.avgCmv)}
             </p>
             <p className="text-[11px] text-muted-foreground font-medium mt-1">Média entre todos os tamanhos</p>
@@ -380,9 +380,9 @@ export default function PrecificacaoPizzas() {
             <div className="flex items-center gap-3">
               <div className={cn(
                 "h-4 w-4 rounded-full",
-                indicators.avgCmv > 40 ? "bg-destructive" : indicators.avgCmv > 32 ? "bg-warning" : "bg-success"
+                indicators.avgCmv > 40 ? "bg-destructive" : indicators.avgCmv > 35 ? "bg-warning" : "bg-success"
               )} />
-              <span className={cn("text-lg font-bold uppercase", indicators.avgCmv > 40 ? "text-destructive" : indicators.avgCmv > 32 ? "text-warning" : "text-success")}>
+              <span className={cn("text-lg font-bold uppercase", cmvColor(indicators.avgCmv))}>
                 {cmvMessage(indicators.avgCmv)}
               </span>
             </div>
@@ -392,191 +392,187 @@ export default function PrecificacaoPizzas() {
               <AlertTriangle className="h-5 w-5 text-destructive" />
               <p className="text-xs font-semibold uppercase tracking-wider text-destructive">Pizzas Fora da Meta</p>
             </div>
-            <div className="flex items-center gap-3">
-              <p className="kpi-number text-destructive">{indicators.foraMetaCount}</p>
-            </div>
+            <p className="kpi-number text-destructive">{indicators.foraMetaCount}</p>
             <p className="text-[11px] text-destructive/70 font-medium mt-1">Tamanhos com CMV acima de 40%</p>
           </div>
         </div>
 
-        {/* Pizza pricing table */}
+        {/* Pizza pricing table — compact, no horizontal scroll */}
         <Card>
           <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader style={{ background: 'linear-gradient(135deg, #1E293B, #334155)' }}>
-                  <TableRow className="border-b-2 border-white/10">
-                    <TableHead rowSpan={2} className="align-bottom min-w-[180px] text-white font-bold">Pizza</TableHead>
-                    <TableHead rowSpan={2} className="align-bottom text-white font-bold">Tipo</TableHead>
-                    <TableHead colSpan={3} className="text-center border-l border-white/10 text-white font-bold">Custo</TableHead>
-                    <TableHead colSpan={3} className="text-center border-l border-white/10 text-white font-bold">Sugerido</TableHead>
-                    <TableHead colSpan={3} className="text-center border-l border-white/10 bg-white/10 text-white font-bold">Seu Preço</TableHead>
-                    <TableHead colSpan={3} className="text-center border-l border-white/10 bg-white/10 text-white font-bold">CMV Balcão</TableHead>
-                    {activeApps.map((app) => (
-                      <TableHead key={`app-${app.key}`} colSpan={3} className="text-center border-l border-white/10 text-white font-bold">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="cursor-help">{app.label}</span>
-                          </TooltipTrigger>
-                          <TooltipContent><p className="max-w-[200px] text-xs">{APP_TOOLTIP}</p></TooltipContent>
-                        </Tooltip>
-                      </TableHead>
-                    ))}
-                    {activeApps.map((app) => (
-                      <TableHead key={`cmv-${app.key}`} colSpan={3} className="text-center border-l border-white/10 text-white font-bold">
-                        CMV {app.label}
-                      </TableHead>
-                    ))}
-                  </TableRow>
-                  <TableRow style={{ background: 'linear-gradient(135deg, #1E293B, #334155)' }}>
-                    {/* Custo P/M/G */}
-                    {sizes.map((s, i) => (
-                      <TableHead key={`c-${s}`} className={cn("text-center text-xs text-white/80 font-bold", i === 0 && "border-l border-white/10")}>{sizeLabels[s]}</TableHead>
-                    ))}
-                    {/* Sugerido P/M/G */}
-                    {sizes.map((s, i) => (
-                      <TableHead key={`sug-${s}`} className={cn("text-center text-xs text-white/80 font-bold", i === 0 && "border-l border-white/10")}>{sizeLabels[s]}</TableHead>
-                    ))}
-                    {/* Seu Preço P/M/G */}
-                    {sizes.map((s, i) => (
-                      <TableHead key={`pr-${s}`} className={cn("text-center text-xs bg-white/10 text-white/80 font-bold", i === 0 && "border-l border-white/10")}>{sizeLabels[s]}</TableHead>
-                    ))}
-                    {/* CMV Balcão P/M/G */}
-                    {sizes.map((s, i) => (
-                      <TableHead key={`cmvb-${s}`} className={cn("text-center text-xs bg-white/10 text-white/80 font-bold", i === 0 && "border-l border-white/10")}>{sizeLabels[s]}</TableHead>
-                    ))}
-                    {/* App prices P/M/G */}
-                    {activeApps.map((app) =>
-                      sizes.map((s, i) => (
-                        <TableHead key={`ap-${app.key}-${s}`} className={cn("text-center text-xs text-white/80 font-bold", i === 0 && "border-l border-white/10")}>{sizeLabels[s]}</TableHead>
-                      ))
-                    )}
-                    {/* CMV App P/M/G */}
-                    {activeApps.map((app) =>
-                      sizes.map((s, i) => (
-                        <TableHead key={`ca-${app.key}-${s}`} className={cn("text-center text-xs text-white/80 font-bold", i === 0 && "border-l border-white/10")}>{sizeLabels[s]}</TableHead>
-                      ))
-                    )}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {fichas.map((ficha) => {
-                    const custos = pizzaCustos[ficha.id] ?? { p: 0, m: 0, g: 0 };
-                    const precos = { p: getPreco(ficha.id, "p", ficha), m: getPreco(ficha.id, "m", ficha), g: getPreco(ficha.id, "g", ficha) };
-                    const cmvs = { p: calcCmv(custos.p, precos.p), m: calcCmv(custos.m, precos.m), g: calcCmv(custos.g, precos.g) };
-                    const sugeridos = { p: cmvMeta > 0 ? custos.p / (cmvMeta / 100) : 0, m: cmvMeta > 0 ? custos.m / (cmvMeta / 100) : 0, g: cmvMeta > 0 ? custos.g / (cmvMeta / 100) : 0 };
-                    const hasAlert = cmvs.p > 40 || cmvs.m > 40 || cmvs.g > 40;
+            <Table className="w-full table-fixed">
+              <TableHeader style={{ background: 'linear-gradient(135deg, #1E293B, #334155)' }}>
+                <TableRow className="border-b border-white/10">
+                  <TableHead rowSpan={2} className="align-bottom text-white font-bold text-xs w-[130px]">Pizza</TableHead>
+                  <TableHead rowSpan={2} className="align-bottom text-white font-bold text-xs w-[70px]">Tipo</TableHead>
+                  <TableHead colSpan={3} className="text-center border-l border-white/10 text-white font-bold text-xs">Custo</TableHead>
+                  <TableHead colSpan={3} className="text-center border-l border-white/10 text-white font-bold text-xs">Sugerido</TableHead>
+                  <TableHead colSpan={3} className="text-center border-l border-white/10 bg-white/10 text-white font-bold text-xs">Seu Preço</TableHead>
+                  <TableHead colSpan={3} className="text-center border-l border-white/10 bg-white/10 text-white font-bold text-xs">CMV Balcão</TableHead>
+                  {activeApps.map((app) => (
+                    <TableHead key={`app-${app.key}`} colSpan={3} className="text-center border-l border-white/10 text-white font-bold text-xs">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="cursor-help">{app.label}</span>
+                        </TooltipTrigger>
+                        <TooltipContent><p className="max-w-[200px] text-xs">{APP_TOOLTIP}</p></TooltipContent>
+                      </Tooltip>
+                    </TableHead>
+                  ))}
+                  {activeApps.map((app) => (
+                    <TableHead key={`cmv-${app.key}`} colSpan={3} className="text-center border-l border-white/10 text-white font-bold text-xs">
+                      CMV {app.label}
+                    </TableHead>
+                  ))}
+                </TableRow>
+                <TableRow style={{ background: 'linear-gradient(135deg, #1E293B, #334155)' }}>
+                  {/* Custo P/M/G */}
+                  {sizes.map((s, i) => (
+                    <TableHead key={`c-${s}`} className={cn("text-center text-[10px] text-white/80 font-bold py-1", i === 0 && "border-l border-white/10")}>{sizeLabels[s]}</TableHead>
+                  ))}
+                  {/* Sugerido P/M/G */}
+                  {sizes.map((s, i) => (
+                    <TableHead key={`sug-${s}`} className={cn("text-center text-[10px] text-white/80 font-bold py-1", i === 0 && "border-l border-white/10")}>{sizeLabels[s]}</TableHead>
+                  ))}
+                  {/* Seu Preço P/M/G */}
+                  {sizes.map((s, i) => (
+                    <TableHead key={`pr-${s}`} className={cn("text-center text-[10px] bg-white/10 text-white/80 font-bold py-1", i === 0 && "border-l border-white/10")}>{sizeLabels[s]}</TableHead>
+                  ))}
+                  {/* CMV Balcão P/M/G */}
+                  {sizes.map((s, i) => (
+                    <TableHead key={`cmvb-${s}`} className={cn("text-center text-[10px] bg-white/10 text-white/80 font-bold py-1", i === 0 && "border-l border-white/10")}>{sizeLabels[s]}</TableHead>
+                  ))}
+                  {/* App prices P/M/G */}
+                  {activeApps.map((app) =>
+                    sizes.map((s, i) => (
+                      <TableHead key={`ap-${app.key}-${s}`} className={cn("text-center text-[10px] text-white/80 font-bold py-1", i === 0 && "border-l border-white/10")}>{sizeLabels[s]}</TableHead>
+                    ))
+                  )}
+                  {/* CMV App P/M/G */}
+                  {activeApps.map((app) =>
+                    sizes.map((s, i) => (
+                      <TableHead key={`ca-${app.key}-${s}`} className={cn("text-center text-[10px] text-white/80 font-bold py-1", i === 0 && "border-l border-white/10")}>{sizeLabels[s]}</TableHead>
+                    ))
+                  )}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {fichas.map((ficha) => {
+                  const custos = pizzaCustos[ficha.id] ?? { p: 0, m: 0, g: 0 };
+                  const precos = { p: getPreco(ficha.id, "p", ficha), m: getPreco(ficha.id, "m", ficha), g: getPreco(ficha.id, "g", ficha) };
+                  const cmvs = { p: calcCmv(custos.p, precos.p), m: calcCmv(custos.m, precos.m), g: calcCmv(custos.g, precos.g) };
+                  const sugeridos = { p: cmvMeta > 0 ? custos.p / (cmvMeta / 100) : 0, m: cmvMeta > 0 ? custos.m / (cmvMeta / 100) : 0, g: cmvMeta > 0 ? custos.g / (cmvMeta / 100) : 0 };
+                  const hasAlert = cmvs.p > 40 || cmvs.m > 40 || cmvs.g > 40;
 
-                    return (
-                      <TableRow key={ficha.id} className={hasAlert ? "bg-destructive/5" : ""}>
-                        <TableCell className="font-medium">
-                          <div className="flex items-center gap-1">
-                            {hasAlert && <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0" />}
-                            {ficha.nome}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-xs text-muted-foreground">{tipoLabel(ficha.tipo)}</TableCell>
-
-                        {/* Custo */}
-                        {sizes.map((s, i) => (
-                          <TableCell key={`c-${s}`} className={cn("text-center text-xs", i === 0 && "border-l border-border")}>{fmt(custos[s])}</TableCell>
-                        ))}
-
-                        {/* Sugerido */}
-                        {sizes.map((s, i) => (
-                          <TableCell key={`sug-${s}`} className={cn("text-center text-xs text-muted-foreground", i === 0 && "border-l border-border")}>{fmt(sugeridos[s])}</TableCell>
-                        ))}
-
-                        {/* Seu Preço (editable) */}
-                        {sizes.map((s, i) => {
-                          const fieldKey = `${ficha.id}-${s}`;
-                          return (
-                            <TableCell key={`pr-${s}`} className={cn("bg-primary/5", i === 0 && "border-l border-border")}>
-                              <div className="relative flex items-center">
-                                <Input
-                                  type={localPrices[ficha.id]?.[s] !== undefined ? "number" : "text"}
-                                  step={localPrices[ficha.id]?.[s] !== undefined ? "0.01" : undefined}
-                                  className="h-8 w-24 text-xs text-center pr-6 border-b-2 border-b-primary border-t-0 border-l-0 border-r-0 rounded-none bg-transparent focus-visible:ring-primary/30"
-                                  value={
-                                    localPrices[ficha.id]?.[s] !== undefined
-                                      ? localPrices[ficha.id][s]
-                                      : (ficha[`preco_venda_${s}` as keyof FichaPizza]
-                                        ? formatMoney(Number(ficha[`preco_venda_${s}` as keyof FichaPizza]))
-                                        : "")
-                                  }
-                                  onChange={(e) => handlePriceChange(ficha.id, s, e.target.value)}
-                                  onFocus={() => {
-                                    if (localPrices[ficha.id]?.[s] === undefined) {
-                                      handlePriceChange(ficha.id, s, String(ficha[`preco_venda_${s}` as keyof FichaPizza] ?? ""));
-                                    }
-                                  }}
-                                  onBlur={() => handlePriceBlur(ficha.id, s, ficha)}
-                                  placeholder="R$ 0,00"
-                                />
-                                {savedFields[fieldKey] && (
-                                  <Check className="absolute right-1 h-3.5 w-3.5 text-success animate-in fade-in duration-200" />
-                                )}
-                              </div>
-                            </TableCell>
-                          );
-                        })}
-
-                        {/* CMV Balcão */}
-                        {sizes.map((s, i) => (
-                          <TableCell key={`cmvb-${s}`} className={cn("text-center", i === 0 && "border-l border-border")}>
-                            <span className={cn("text-xs font-semibold px-1.5 py-0.5 rounded", cmvBg(cmvs[s]))}>
-                              {precos[s] > 0 ? fmtPct(cmvs[s]) : "—"}
-                            </span>
-                          </TableCell>
-                        ))}
-
-                        {/* App prices */}
-                        {activeApps.map((app) =>
-                          sizes.map((s, i) => {
-                            const appPrice = precos[s] > 0 ? calcAppPrice(precos[s], app.taxa) : 0;
-                            return (
-                              <TableCell key={`ap-${app.key}-${s}`} className={cn("text-center text-xs text-muted-foreground", i === 0 && "border-l border-border")}>
-                                {precos[s] > 0 ? fmt(appPrice) : "—"}
-                              </TableCell>
-                            );
-                          })
-                        )}
-
-                        {/* CMV App */}
-                        {activeApps.map((app) =>
-                          sizes.map((s, i) => {
-                            const appPrice = precos[s] > 0 ? calcAppPrice(precos[s], app.taxa) : 0;
-                            const appCmv = calcCmv(custos[s], appPrice);
-                            return (
-                              <TableCell key={`ca-${app.key}-${s}`} className={cn("text-center", i === 0 && "border-l border-border")}>
-                                <span className={cn("text-xs font-semibold px-1.5 py-0.5 rounded", cmvBg(appCmv))}>
-                                  {appPrice > 0 ? fmtPct(appCmv) : "—"}
-                                </span>
-                              </TableCell>
-                            );
-                          })
-                        )}
-                      </TableRow>
-                    );
-                  })}
-                  {fichas.length === 0 && (
-                    <TableRow>
-                      <TableCell colSpan={8 + 6 * appCount} className="text-center py-12">
-                        <div className="flex flex-col items-center gap-3">
-                          <p className="text-muted-foreground">Nenhuma pizza cadastrada ainda.</p>
-                          <Button
-                            onClick={() => window.location.href = '/fichas/pizzas?tipo=tradicional'}
-                            className="bg-primary hover:bg-primary/90 text-primary-foreground gap-1"
-                          >
-                            <span className="text-lg leading-none">+</span> Cadastrar Primeira Pizza
-                          </Button>
+                  return (
+                    <TableRow key={ficha.id} className={hasAlert ? "bg-destructive/5" : ""}>
+                      <TableCell className="font-medium text-xs py-2 px-2 truncate">
+                        <div className="flex items-center gap-1">
+                          {hasAlert && <AlertTriangle className="h-3 w-3 text-destructive flex-shrink-0" />}
+                          <span className="truncate">{ficha.nome}</span>
                         </div>
                       </TableCell>
+                      <TableCell className="text-[10px] text-muted-foreground py-2 px-1">{tipoLabel(ficha.tipo)}</TableCell>
+
+                      {/* Custo */}
+                      {sizes.map((s, i) => (
+                        <TableCell key={`c-${s}`} className={cn("text-center text-[10px] py-2 px-1", i === 0 && "border-l border-border")}>{fmt(custos[s])}</TableCell>
+                      ))}
+
+                      {/* Sugerido */}
+                      {sizes.map((s, i) => (
+                        <TableCell key={`sug-${s}`} className={cn("text-center text-[10px] text-muted-foreground py-2 px-1", i === 0 && "border-l border-border")}>{fmt(sugeridos[s])}</TableCell>
+                      ))}
+
+                      {/* Seu Preço (editable) */}
+                      {sizes.map((s, i) => {
+                        const fieldKey = `${ficha.id}-${s}`;
+                        return (
+                          <TableCell key={`pr-${s}`} className={cn("bg-primary/5 py-1 px-0.5", i === 0 && "border-l border-border")}>
+                            <div className="relative flex items-center justify-center">
+                              <Input
+                                type={localPrices[ficha.id]?.[s] !== undefined ? "number" : "text"}
+                                step={localPrices[ficha.id]?.[s] !== undefined ? "0.01" : undefined}
+                                className="h-7 w-full text-[10px] text-center pr-4 border-b-2 border-b-primary border-t-0 border-l-0 border-r-0 rounded-none bg-transparent focus-visible:ring-primary/30"
+                                value={
+                                  localPrices[ficha.id]?.[s] !== undefined
+                                    ? localPrices[ficha.id][s]
+                                    : (ficha[`preco_venda_${s}` as keyof FichaPizza]
+                                      ? formatMoney(Number(ficha[`preco_venda_${s}` as keyof FichaPizza]))
+                                      : "")
+                                }
+                                onChange={(e) => handlePriceChange(ficha.id, s, e.target.value)}
+                                onFocus={() => {
+                                  if (localPrices[ficha.id]?.[s] === undefined) {
+                                    handlePriceChange(ficha.id, s, String(ficha[`preco_venda_${s}` as keyof FichaPizza] ?? ""));
+                                  }
+                                }}
+                                onBlur={() => handlePriceBlur(ficha.id, s, ficha)}
+                                placeholder="0,00"
+                              />
+                              {savedFields[fieldKey] && (
+                                <Check className="absolute right-0.5 h-3 w-3 text-success animate-in fade-in duration-200" />
+                              )}
+                            </div>
+                          </TableCell>
+                        );
+                      })}
+
+                      {/* CMV Balcão */}
+                      {sizes.map((s, i) => (
+                        <TableCell key={`cmvb-${s}`} className={cn("text-center py-2 px-1", i === 0 && "border-l border-border")}>
+                          <span className={cn("text-[10px] font-semibold px-1 py-0.5 rounded", cmvBg(cmvs[s]))}>
+                            {precos[s] > 0 ? fmtPct(cmvs[s]) : "—"}
+                          </span>
+                        </TableCell>
+                      ))}
+
+                      {/* App prices */}
+                      {activeApps.map((app) =>
+                        sizes.map((s, i) => {
+                          const appPrice = precos[s] > 0 ? calcAppPrice(precos[s], app.taxa) : 0;
+                          return (
+                            <TableCell key={`ap-${app.key}-${s}`} className={cn("text-center text-[10px] text-muted-foreground py-2 px-1", i === 0 && "border-l border-border")}>
+                              {precos[s] > 0 ? fmt(appPrice) : "—"}
+                            </TableCell>
+                          );
+                        })
+                      )}
+
+                      {/* CMV App */}
+                      {activeApps.map((app) =>
+                        sizes.map((s, i) => {
+                          const appPrice = precos[s] > 0 ? calcAppPrice(precos[s], app.taxa) : 0;
+                          const appCmv = calcCmv(custos[s], appPrice);
+                          return (
+                            <TableCell key={`ca-${app.key}-${s}`} className={cn("text-center py-2 px-1", i === 0 && "border-l border-border")}>
+                              <span className={cn("text-[10px] font-semibold px-1 py-0.5 rounded", cmvBg(appCmv))}>
+                                {appPrice > 0 ? fmtPct(appCmv) : "—"}
+                              </span>
+                            </TableCell>
+                          );
+                        })
+                      )}
                     </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
+                  );
+                })}
+                {fichas.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={8 + 6 * appCount} className="text-center py-12">
+                      <div className="flex flex-col items-center gap-3">
+                        <p className="text-muted-foreground">Nenhuma pizza cadastrada ainda.</p>
+                        <Button
+                          onClick={() => window.location.href = '/fichas/pizzas?tipo=tradicional'}
+                          className="bg-primary hover:bg-primary/90 text-primary-foreground gap-1"
+                        >
+                          <span className="text-lg leading-none">+</span> Cadastrar Primeira Pizza
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       </div>
