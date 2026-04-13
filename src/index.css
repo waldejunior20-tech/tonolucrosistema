@@ -186,6 +186,10 @@
     padding: 24px;
   }
 
+  .dre-card {
+    background-color: #BDBEBD;
+  }
+
   /* ═══ Pricing Inputs ═══ */
   .pricing-input {
     @apply font-semibold text-center rounded;
