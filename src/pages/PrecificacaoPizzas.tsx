@@ -590,7 +590,7 @@ export default function PrecificacaoPizzas() {
                             return (
                               <TableCell key={`ca-${app.key}-${s}`} className={cn("text-center py-6 px-1.5", i === 0 && "border-l border-[#E2E8F0]")}>
                                 {appPrice > 0 ? (
-                                  <span className="inline-block text-[12px] font-bold px-2.5 py-1 rounded-full" style={{ ...pillStyle, fontFeatureSettings: "'tnum'" }}>
+                                  <span className="inline-block text-[12px] font-bold px-3 py-1.5 rounded-full min-w-[52px]" style={{ ...pillStyle, fontFeatureSettings: "'tnum'" }}>
                                     {fmtPct(appCmv)}
                                   </span>
                                 ) : <span className="text-slate-300">—</span>}
