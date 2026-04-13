@@ -1,13 +1,14 @@
 
 
-## Plan: Remove gray backgrounds from pizza pricing expanded cards
+## Plan: Fix card-within-card double gray issue in Pizza Pricing
 
-The user wants to remove the gray (`rgba(200, 200, 200, ...)`) backgrounds from the "Tamanho P" badge and the "Custo / Sugerido" info block inside the expanded pizza cards, reverting them to transparent/no background.
+The problem: The outer pizza card (from the `Card` component) already has `background: rgba(211, 211, 211, 0.2)`. Inside it, each size card (P, M, G) at line 570 also has `background: 'rgba(211, 211, 211, 0.2)'`. These two translucent grays stack on top of each other, making the inner cards appear darker than intended.
 
-### Changes in `src/pages/PrecificacaoPizzas.tsx`:
+### Fix
 
-1. **Line 574** — Remove `style={{ background: 'rgba(200, 200, 200, 0.35)' }}` from the "Tamanho" badge, making it transparent
-2. **Line 588** — Remove `style={{ background: 'rgba(200, 200, 200, 0.3)' }}` from the Custo/Sugerido info block, making it transparent
+**File: `src/pages/PrecificacaoPizzas.tsx` (line 570)**
 
-Both elements will keep their padding, rounded corners, and text styling -- just no gray background fill.
+Change the inner size cards' background from `rgba(211, 211, 211, 0.2)` to `rgba(211, 211, 211, 0.13)` — a lighter opacity that, when layered on top of the outer card, produces a subtle separation without becoming noticeably darker. Keep the blur and border as-is.
+
+This is a single-line style change. No other files affected.
 
