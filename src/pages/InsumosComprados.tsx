@@ -232,16 +232,16 @@ export default function InsumosComprados() {
       ) : (
         <div className="table-premium fade-up fade-up-d1">
           <Table>
-            <TableHeader style={{ background: 'linear-gradient(135deg, hsl(var(--surface-table-header)), hsl(var(--surface-table-header-end)))' }}>
+            <TableHeader>
               <TableRow>
-                <TableHead className="text-white font-bold">Nome</TableHead>
-                <TableHead className="text-white font-bold">Categoria</TableHead>
-                <TableHead className="text-right text-white font-bold">Preço (R$)</TableHead>
-                <TableHead className="text-right text-white font-bold">Qtd</TableHead>
-                <TableHead className="text-white font-bold">Unidade</TableHead>
-                <TableHead className="text-white font-bold">Fornecedor</TableHead>
-                <TableHead className="text-white font-bold">Data Compra</TableHead>
-                <TableHead className="w-[100px] text-white font-bold">Ações</TableHead>
+                <TableHead className="">Nome</TableHead>
+                <TableHead className="">Categoria</TableHead>
+                <TableHead className="text-right">Preço (R$)</TableHead>
+                <TableHead className="text-right">Qtd</TableHead>
+                <TableHead className="">Unidade</TableHead>
+                <TableHead className="">Fornecedor</TableHead>
+                <TableHead className="">Data Compra</TableHead>
+                <TableHead className="w-[100px]">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

@@ -241,21 +241,21 @@ export default function PrecificacaoBebidas() {
   // ─── Shared render for a single-item table (industrialized or prepared) ───
   const renderIndTable = () => (
     <Table>
-      <TableHeader style={{ background: 'linear-gradient(135deg, hsl(var(--surface-table-header)), hsl(var(--surface-table-header-end)))' }}>
+      <TableHeader>
         <TableRow>
-          <TableHead className="min-w-[200px] text-white font-bold">Bebida</TableHead>
-          <TableHead className="text-center text-white font-bold">Custo</TableHead>
-          <TableHead className="text-center text-white font-bold">Sugerido</TableHead>
+          <TableHead className="min-w-[200px]">Bebida</TableHead>
+          <TableHead className="text-center">Custo</TableHead>
+          <TableHead className="text-center">Sugerido</TableHead>
           <TableHead className="text-center bg-white/10 text-white font-bold">Seu Preço</TableHead>
           <TableHead className="text-center bg-white/10 text-white font-bold">CMV Balcão</TableHead>
           {activeApps.map((app) => (
-            <TableHead key={`app-${app.key}`} className="text-center text-white font-bold">
+            <TableHead key={`app-${app.key}`} className="text-center">
               <Tooltip><TooltipTrigger asChild><span className="cursor-help">{app.label}</span></TooltipTrigger>
                 <TooltipContent><p className="max-w-[200px] text-xs">{APP_TOOLTIP}</p></TooltipContent></Tooltip>
             </TableHead>
           ))}
           {activeApps.map((app) => (
-            <TableHead key={`cmv-${app.key}`} className="text-center text-white font-bold">CMV {app.label}</TableHead>
+            <TableHead key={`cmv-${app.key}`} className="text-center">CMV {app.label}</TableHead>
           ))}
         </TableRow>
       </TableHeader>
@@ -343,21 +343,21 @@ export default function PrecificacaoBebidas() {
 
   const renderPrepTable = () => (
     <Table>
-      <TableHeader style={{ background: 'linear-gradient(135deg, hsl(var(--surface-table-header)), hsl(var(--surface-table-header-end)))' }}>
+      <TableHeader>
         <TableRow>
-          <TableHead className="min-w-[200px] text-white font-bold">Bebida</TableHead>
-          <TableHead className="text-center text-white font-bold">Custo</TableHead>
-          <TableHead className="text-center text-white font-bold">Sugerido</TableHead>
+          <TableHead className="min-w-[200px]">Bebida</TableHead>
+          <TableHead className="text-center">Custo</TableHead>
+          <TableHead className="text-center">Sugerido</TableHead>
           <TableHead className="text-center bg-white/10 text-white font-bold">Seu Preço</TableHead>
           <TableHead className="text-center bg-white/10 text-white font-bold">CMV Balcão</TableHead>
           {activeApps.map((app) => (
-            <TableHead key={`app-${app.key}`} className="text-center text-white font-bold">
+            <TableHead key={`app-${app.key}`} className="text-center">
               <Tooltip><TooltipTrigger asChild><span className="cursor-help">{app.label}</span></TooltipTrigger>
                 <TooltipContent><p className="max-w-[200px] text-xs">{APP_TOOLTIP}</p></TooltipContent></Tooltip>
             </TableHead>
           ))}
           {activeApps.map((app) => (
-            <TableHead key={`cmv-${app.key}`} className="text-center text-white font-bold">CMV {app.label}</TableHead>
+            <TableHead key={`cmv-${app.key}`} className="text-center">CMV {app.label}</TableHead>
           ))}
         </TableRow>
       </TableHeader>

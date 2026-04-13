@@ -235,15 +235,15 @@ export default function PrecificacaoProdutos() {
   const renderTable = (items: FichaProduto[]) => (
     <div className="table-premium overflow-x-auto">
       <Table>
-        <TableHeader style={{ background: 'linear-gradient(135deg, hsl(var(--surface-table-header)), hsl(var(--surface-table-header-end)))' }}>
+        <TableHeader>
           <TableRow>
-            <TableHead className="min-w-[200px] text-white font-bold">Produto</TableHead>
-            <TableHead className="text-center text-white font-bold">Custo</TableHead>
-            <TableHead className="text-center text-white font-bold">Sugerido</TableHead>
+            <TableHead className="min-w-[200px]">Produto</TableHead>
+            <TableHead className="text-center">Custo</TableHead>
+            <TableHead className="text-center">Sugerido</TableHead>
             <TableHead className="text-center bg-white/10 text-white font-bold">Seu Preço</TableHead>
             <TableHead className="text-center bg-white/10 text-white font-bold">CMV Balcão</TableHead>
             {activeApps.map((app) => (
-              <TableHead key={`app-${app.key}`} className="text-center text-white font-bold">
+              <TableHead key={`app-${app.key}`} className="text-center">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <span className="cursor-help">{app.label}</span>
@@ -253,7 +253,7 @@ export default function PrecificacaoProdutos() {
               </TableHead>
             ))}
             {activeApps.map((app) => (
-              <TableHead key={`cmv-${app.key}`} className="text-center text-white font-bold">CMV {app.label}</TableHead>
+              <TableHead key={`cmv-${app.key}`} className="text-center">CMV {app.label}</TableHead>
             ))}
           </TableRow>
         </TableHeader>

@@ -744,17 +744,17 @@ export default function PromocoesAtivas() {
                 <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Cálculo Automático</h3>
                 <div className="overflow-x-auto rounded-md border border-border">
                   <Table>
-                    <TableHeader style={{ background: 'linear-gradient(135deg, hsl(var(--surface-table-header)), hsl(var(--surface-table-header-end)))' }}>
+                    <TableHeader>
                       <TableRow>
-                        <TableHead className="text-white font-bold">Produto</TableHead>
-                        <TableHead className="text-white font-bold">Tam.</TableHead>
-                        <TableHead className="text-right text-white font-bold">Custo</TableHead>
-                        <TableHead className="text-right text-white font-bold">Original</TableHead>
-                        <TableHead className="text-right text-white font-bold">Desconto</TableHead>
-                        <TableHead className="text-right text-white font-bold">Final</TableHead>
-                        <TableHead className="text-right text-white font-bold">Lucro R$</TableHead>
-                        <TableHead className="text-right text-white font-bold">Lucro %</TableHead>
-                        <TableHead className="text-center text-white font-bold">Status</TableHead>
+                        <TableHead className="">Produto</TableHead>
+                        <TableHead className="">Tam.</TableHead>
+                        <TableHead className="text-right">Custo</TableHead>
+                        <TableHead className="text-right">Original</TableHead>
+                        <TableHead className="text-right">Desconto</TableHead>
+                        <TableHead className="text-right">Final</TableHead>
+                        <TableHead className="text-right">Lucro R$</TableHead>
+                        <TableHead className="text-right">Lucro %</TableHead>
+                        <TableHead className="text-center">Status</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
