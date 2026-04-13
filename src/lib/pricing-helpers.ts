@@ -13,10 +13,10 @@ export const converterQuantidade = (qtd: number, unidade: string) =>
 
 // ─── CMV faixas padrão Abrasel (Pizzas / Produtos) ──────────────────
 export const cmvBg = (pct: number): string => {
-  if (pct < 25) return "bg-blue-900/40 text-blue-400";
-  if (pct <= 35) return "bg-emerald-900/40 text-emerald-400";
-  if (pct <= 40) return "bg-yellow-900/40 text-yellow-400";
-  return "bg-red-900/40 text-red-400";
+  if (pct < 25) return "bg-blue-50 text-blue-700 border border-blue-200";
+  if (pct <= 35) return "bg-emerald-50 text-emerald-700 border border-emerald-200";
+  if (pct <= 40) return "bg-amber-50 text-amber-700 border border-amber-200";
+  return "bg-red-50 text-red-700 border border-red-200";
 };
 
 export const cmvColor = (pct: number): string => {
@@ -42,10 +42,10 @@ export const cmvMessage = (pct: number): string => {
 
 // ─── CMV faixas para bebidas industrializadas ────────────────────────
 export const indCmvBg = (pct: number): string => {
-  if (pct < 75) return "bg-blue-900/40 text-blue-400";
-  if (pct <= 85) return "bg-emerald-900/40 text-emerald-400";
-  if (pct <= 92) return "bg-yellow-900/40 text-yellow-400";
-  return "bg-red-900/40 text-red-400";
+  if (pct < 75) return "bg-blue-50 text-blue-700 border border-blue-200";
+  if (pct <= 85) return "bg-emerald-50 text-emerald-700 border border-emerald-200";
+  if (pct <= 92) return "bg-amber-50 text-amber-700 border border-amber-200";
+  return "bg-red-50 text-red-700 border border-red-200";
 };
 
 export const indCmvColor = (pct: number): string => {
