@@ -182,15 +182,15 @@
 
   /* ═══ Card — glass effect ═══ */
   .card-premium {
-    background: rgba(128, 128, 128, 0.2);
+    background: rgba(255, 255, 255, 0.45);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 15px;
     padding: 24px;
   }
 
   .dre-card {
-    background: rgba(128, 128, 128, 0.25);
+    background: rgba(128, 128, 128, 0.15);
   }
 
   /* ═══ Money values — bold #595959 ═══ */
