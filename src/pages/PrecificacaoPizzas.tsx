@@ -483,11 +483,17 @@ export default function PrecificacaoPizzas() {
                 >
                   <div
                     className={cn(
-                      "row-reveal rounded-xl border bg-card overflow-hidden transition-all duration-300",
-                      hasAlert ? "border-destructive/30 shadow-[0_0_0_1px_hsl(var(--destructive)/0.08)]" : "border-border/60",
+                      "row-reveal rounded-xl overflow-hidden transition-all duration-300",
+                      hasAlert ? "shadow-[0_0_0_1px_hsl(var(--destructive)/0.08)]" : "",
                       isOpen ? "shadow-lg" : "shadow-sm hover:shadow-md"
                     )}
-                    style={{ animationDelay: `${rowIndex * 60}ms` }}
+                    style={{
+                      animationDelay: `${rowIndex * 60}ms`,
+                      background: 'rgba(128, 128, 128, 0.15)',
+                      backdropFilter: 'blur(10px)',
+                      border: hasAlert ? '1px solid hsl(var(--destructive) / 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
+                      borderRadius: '15px',
+                    }}
                   >
                     {/* ── Collapsed Summary (always visible) ── */}
                     <CollapsibleTrigger asChild>
