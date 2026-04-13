@@ -51,19 +51,18 @@ const sidebarItems: SidebarItem[] = [
     ],
   },
   {
-    key: "financeiro", label: "Financeiro", icon: TrendingUp,
-    subItems: [
-      { label: "Caixa", path: "/financeiro/caixa-diario" },
-      { label: "Resumo do Mês", path: "/financeiro/dre" },
-      { label: "Contas a Pagar", path: "/financeiro/contas-a-pagar" },
-      { label: "Meta Mínima de Vendas", path: "/financeiro/ponto-de-equilibrio" },
-    ],
-  },
-  {
     key: "promocoes", label: "Promoções", icon: Tag,
     subItems: [
       { label: "Promoções Ativas", path: "/promocoes/ativas" },
       { label: "Combos Fixos", path: "/promocoes/combos" },
+    ],
+  },
+  {
+    key: "financeiro", label: "Financeiro", icon: TrendingUp,
+    subItems: [
+      { label: "Caixa", path: "/financeiro/caixa-diario" },
+      { label: "Contas a Pagar", path: "/financeiro/contas-a-pagar" },
+      { label: "Resumo do Mês", path: "/financeiro/dre" },
     ],
   },
   { key: "configuracoes", label: "Configurações", icon: Settings2, path: "/configuracoes" },
