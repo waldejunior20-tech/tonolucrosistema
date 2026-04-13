@@ -486,9 +486,15 @@ export default function PrecificacaoPizzas() {
                           </TableCell>
                         ))}
 
-                        {/* Seu Preço — editable, emerald green focus */}
+                        {/* Seu Preço — editable with dynamic border color */}
                         {sizes.map((s, i) => {
                           const fieldKey = `${ficha.id}-${s}`;
+                          const cmv = cmvs[s];
+                          const preco = precos[s];
+                          const sug = sugeridos[s];
+                          // Dynamic border: green if CMV<30, orange 30-35, red >35
+                          const borderColor = preco <= 0 ? '#CBD5E1' : cmv > 35 ? '#EF4444' : cmv > 30 ? '#F59E0B' : '#10B981';
+                          const belowSuggested = preco > 0 && sug > 0 && preco < sug;
                           return (
                             <TableCell key={`pr-${s}`} className={cn("py-3 px-1", i === 0 && "border-l border-[#E2E8F0]")} style={{ background: '#FFFFFF' }}>
                               <div className="relative flex items-center justify-center">
@@ -502,18 +508,16 @@ export default function PrecificacaoPizzas() {
                                     fontFeatureSettings: "'tnum'",
                                     color: '#047857',
                                     background: '#FFFFFF',
-                                    border: '2px solid #CBD5E1',
+                                    border: `2px solid ${borderColor}`,
                                   }}
                                   onFocus={(e) => {
-                                    e.currentTarget.style.borderColor = '#10B981';
-                                    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(16,185,129,0.18), 0 0 8px rgba(16,185,129,0.1)';
+                                    e.currentTarget.style.boxShadow = `0 0 0 3px ${borderColor}33, 0 0 8px ${borderColor}1a`;
                                     e.currentTarget.select();
                                     if (localPrices[ficha.id]?.[s] === undefined) {
                                       handlePriceChange(ficha.id, s, String(ficha[`preco_venda_${s}` as keyof FichaPizza] ?? ""));
                                     }
                                   }}
                                   onBlur={(e) => {
-                                    e.currentTarget.style.borderColor = '#CBD5E1';
                                     e.currentTarget.style.boxShadow = 'none';
                                     handlePriceBlur(ficha.id, s, ficha);
                                   }}
@@ -530,23 +534,26 @@ export default function PrecificacaoPizzas() {
                                 {savedFields[fieldKey] && (
                                   <Check className="absolute right-1 h-4 w-4 text-emerald-500 animate-in fade-in duration-200" />
                                 )}
+                                {belowSuggested && !savedFields[fieldKey] && (
+                                  <span className="absolute -right-0.5 -top-1 text-[11px]" title="Preço abaixo do sugerido">⚠️</span>
+                                )}
                               </div>
                             </TableCell>
                           );
                         })}
 
-                        {/* CMV Balcão — saturated pills */}
+                        {/* CMV Balcão — high-contrast pills */}
                         {sizes.map((s, i) => {
                           const cmv = cmvs[s];
-                          const pillColor = cmv > 40
-                            ? "bg-[#FEE2E2] text-[#DC2626] border-[#FECACA]"
-                            : cmv > 35
-                              ? "bg-[#FEF3C7] text-[#D97706] border-[#FDE68A]"
-                              : "bg-[#D1FAE5] text-[#059669] border-[#A7F3D0]";
+                          const pillStyle = cmv > 35
+                            ? { background: '#EF4444', color: '#FFFFFF' }
+                            : cmv > 30
+                              ? { background: '#F59E0B', color: '#FFFFFF' }
+                              : { background: '#10B981', color: '#FFFFFF' };
                           return (
                             <TableCell key={`cmvb-${s}`} className={cn("text-center py-6 px-1.5", i === 0 && "border-l border-[#E2E8F0]")}>
                               {precos[s] > 0 ? (
-                                <span className={cn("inline-block text-[12px] font-bold px-2.5 py-1 rounded-full border", pillColor)} style={{ fontFeatureSettings: "'tnum'" }}>
+                                <span className="inline-block text-[12px] font-bold px-2.5 py-1 rounded-full" style={{ ...pillStyle, fontFeatureSettings: "'tnum'" }}>
                                   {fmtPct(cmv)}
                                 </span>
                               ) : (
