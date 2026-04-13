@@ -409,7 +409,7 @@ export default function PrecificacaoPizzas() {
                     <TableHead colSpan={3} className="text-center border-l border-[#E2E8F0] font-bold text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F1F5F9' }}>Custo (R$)</TableHead>
                     <TableHead colSpan={3} className="text-center border-l border-[#E2E8F0] font-bold text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F1F5F9' }}>Sugerido (R$)</TableHead>
                     <TableHead colSpan={3} className="text-center border-l border-[#E2E8F0] font-extrabold text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#10B981', background: '#F1F5F9' }}>
-                      <span className="flex items-center justify-center gap-1.5">✏️ Preencha seu preço</span>
+                      Preencha seu preço
                     </TableHead>
                     <TableHead colSpan={3} className="text-center border-l border-[#E2E8F0] font-bold text-[11px] uppercase tracking-[0.08em] py-2.5" style={{ color: '#475569', background: '#F1F5F9' }}>CMV %</TableHead>
                     {activeApps.map((app) => (
