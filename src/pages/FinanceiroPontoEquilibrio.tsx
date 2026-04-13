@@ -122,12 +122,12 @@ export default function FinanceiroPontoEquilibrio() {
           <div className="flex items-start gap-3">
             <Info className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-sm font-medium text-foreground">O que é o Ponto de Equilíbrio?</p>
+              <p className="text-sm font-medium text-foreground">O que é a Meta Mínima de Vendas?</p>
               <p className="text-sm text-muted-foreground mt-1">
-                Faturamento mínimo para cobrir todas as despesas fixas. Tudo acima disso é lucro!
+                É o mínimo que você precisa vender no mês para pagar todas as contas. Tudo acima disso é lucro!
               </p>
               <p className="text-xs text-muted-foreground mt-2 font-mono">
-                Ponto de Equilíbrio = Despesas Fixas Totais ÷ Margem de Contribuição %
+                Meta Mínima = Despesas Fixas ÷ Margem de Contribuição %
               </p>
             </div>
           </div>
@@ -144,7 +144,7 @@ export default function FinanceiroPontoEquilibrio() {
         </Card>
         <Card>
           <CardContent className="pt-7 pb-6">
-            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Margem de Contribuição</p>
+            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Sobra de cada venda</p>
             <p className="text-2xl font-extrabold text-foreground">{fmtPct(calc.margemContribuicaoPct)}</p>
           </CardContent>
         </Card>
@@ -152,7 +152,7 @@ export default function FinanceiroPontoEquilibrio() {
           <CardContent className="pt-7 pb-6">
             <div className="flex items-center gap-2 mb-2">
               <Target className="h-5 w-5 text-primary" />
-              <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Ponto de Equilíbrio</p>
+              <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Meta Mínima de Vendas</p>
             </div>
             <p className="text-2xl font-extrabold text-primary">{fmt(calc.pontoEquilibrio)}</p>
           </CardContent>

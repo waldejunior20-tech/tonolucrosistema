@@ -325,8 +325,8 @@ export default function FinanceiroDRE() {
     <div className="space-y-5">
       <div className="flex items-center justify-between flex-wrap gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-text-heading">DRE Financeiro</h1>
-          <p className="text-sm text-muted-foreground font-medium">Demonstrativo de Resultados do Exercício</p>
+          <h1 className="text-2xl font-extrabold tracking-tight text-foreground">Resumo do Mês</h1>
+          <p className="text-sm text-muted-foreground font-medium">Veja quanto entrou, quanto saiu e quanto sobrou.</p>
         </div>
         <div className="flex gap-3 items-center flex-wrap">
           <button onClick={() => openDialog("receita")} className="bg-success hover:bg-success text-white font-bold h-10 px-6 rounded-lg flex items-center gap-2 transition-colors">
@@ -357,15 +357,15 @@ export default function FinanceiroDRE() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="card-premium p-7">
-          <p className="label-upper mb-4">Faturamento Total</p>
+          <p className="label-upper mb-4">Total que Entrou</p>
           <p className="kpi-number text-success">{fmt(calc.totalEntrou)}</p>
         </div>
         <div className="card-premium p-7">
-          <p className="label-upper mb-4">Saída Total</p>
+          <p className="label-upper mb-4">Total que Saiu</p>
           <p className="kpi-number text-destructive">{fmt(calc.totalSaiu)}</p>
         </div>
         <div className={cn("card-premium p-7", calc.sobrou >= 0 ? "border-success/30 shadow-sm shadow-success/5" : "border-destructive/30 shadow-sm shadow-destructive/5")}>
-          <p className="label-upper mb-4">{calc.sobrou >= 0 ? "Lucro Líquido" : "Prejuízo"}</p>
+          <p className="label-upper mb-4">{calc.sobrou >= 0 ? "Sobrou no Final" : "Faltou no Final"}</p>
           <p className={cn("kpi-number", calc.sobrou >= 0 ? "text-success" : "text-destructive")}>{fmt(Math.abs(calc.sobrou))}</p>
           <p className={cn("text-sm mt-1 font-bold", calc.sobrou >= 0 ? "text-success" : "text-destructive")}>{calc.sobrouPct.toFixed(1)}% de margem</p>
         </div>
@@ -375,7 +375,7 @@ export default function FinanceiroDRE() {
         <div className="card-premium p-6">
           <div className="pb-4">
             <h3 className="text-base font-bold flex items-center gap-2 font-heading uppercase">Meta do mês</h3>
-            <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider">Objetivo de Faturamento</p>
+            <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider">Quanto você quer faturar</p>
           </div>
           <div className="space-y-4">
             <div>
@@ -397,8 +397,8 @@ export default function FinanceiroDRE() {
 
         <div className="card-premium p-6">
           <div className="pb-4">
-            <h3 className="text-base font-bold flex items-center gap-2 font-heading uppercase"><Target className="h-5 w-5 text-orange" /> Ponto de Equilíbrio</h3>
-            <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider">Zero a Zero</p>
+            <h3 className="text-base font-bold flex items-center gap-2 font-heading uppercase"><Target className="h-5 w-5 text-orange" /> Meta Mínima de Vendas</h3>
+            <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wider">Venda mínima para não ter prejuízo</p>
           </div>
           <div className="space-y-4">
             <p className="text-center text-3xl font-bold text-orange font-heading">{fmt(calc.pontoEquilibrio)}</p>
@@ -418,7 +418,7 @@ export default function FinanceiroDRE() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         <div className="card-premium p-6">
-          <div className="pb-4"><h3 className="text-sm font-bold font-heading uppercase">Sobra das vendas</h3><p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Margem de contribuição</p></div>
+          <div className="pb-4"><h3 className="text-sm font-bold font-heading uppercase">Sobra das vendas</h3><p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">O que sobra depois dos custos diretos</p></div>
           <div className="space-y-4">
             <p className="text-2xl font-bold text-success font-heading">{fmt(calc.margemContribuicao)}</p>
             <div className="text-[11px] space-y-1 border-t pt-2 text-muted-foreground">
@@ -431,7 +431,7 @@ export default function FinanceiroDRE() {
         </div>
 
         <div className="card-premium p-6">
-          <div className="pb-4"><h3 className="text-sm font-bold font-heading uppercase">Para cada R$100 vendidos</h3><p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Raio-X de Lucratividade</p></div>
+          <div className="pb-4"><h3 className="text-sm font-bold font-heading uppercase">Para cada R$100 vendidos</h3><p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Quanto sobra de lucro</p></div>
           <div className="space-y-4">
             <p className={cn("text-2xl font-bold font-heading", lucroLiquidoPer100 >= 0 ? "text-success" : "text-destructive")}>R$ {Math.abs(lucroLiquidoPer100).toFixed(2).replace(".", ",")}</p>
             <div className="space-y-2 border-t pt-2">
@@ -450,7 +450,7 @@ export default function FinanceiroDRE() {
         </div>
 
         <div className="card-premium p-6">
-          <div className="pb-4"><h3 className="text-sm font-bold font-heading uppercase">CMV</h3><p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Custo dos ingredientes</p></div>
+          <div className="pb-4"><h3 className="text-sm font-bold font-heading uppercase">Custo dos Ingredientes</h3><p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">% do faturamento gasto com insumos</p></div>
           <div className="space-y-4">
             <p className={cn("text-3xl font-bold text-center font-heading", calc.cmvPct > 40 ? "text-destructive" : calc.cmvPct > 32 ? "text-warning" : "text-success")}>{calc.cmvPct.toFixed(1)}%</p>
             <div className="h-2.5 bg-muted rounded-full overflow-hidden"><div className={cn("h-full rounded-full transition-all duration-500", calc.cmvPct > 40 ? "bg-destructive" : calc.cmvPct > 32 ? "bg-warning" : "bg-success")} style={{ width: `${Math.min(calc.cmvPct * 2.5, 100)}%` }} /></div>
@@ -478,7 +478,7 @@ export default function FinanceiroDRE() {
 
       {calc.categoriasOrdenadas.length > 0 && (
         <div className="card-premium p-6">
-          <div className="pb-4"><h3 className="text-base font-bold font-heading uppercase">Onde foi o dinheiro?</h3></div>
+          <div className="pb-4"><h3 className="text-base font-bold font-heading uppercase">Para onde foi o dinheiro?</h3></div>
           <div className="space-y-3">
             {calc.categoriasOrdenadas.map((c) => {
               const barColor = CAT_COLORS[c.cat] || "bg-primary/70";
