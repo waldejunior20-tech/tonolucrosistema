@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import {
-  TrendingUp, TrendingDown, Download, Share2, Bell, Clock,
+  TrendingUp, TrendingDown, Bell, Clock,
   Wallet, Receipt, PiggyBank, AlertTriangle,
 } from "lucide-react";
 import CaixaRapido from "@/components/CaixaRapido";
@@ -82,7 +82,7 @@ function MiniKPI({ label, value, numericValue, formatter, icon: Icon, trendLabel
         <Icon size={20} className={iconColor} />
       </div>
       <div className="flex items-baseline gap-2">
-        {renderValue("text-text-heading")}
+        {renderValue("text-foreground")}
         {trendLabel && trendLabel !== "—" && (
           <span className={`text-[12px] font-bold px-2 py-1 rounded-md ${
             kpiType === "cmv_bad"
@@ -107,13 +107,13 @@ function AlertItem({ severity, title, detail, value }: {
       className={`flex items-start gap-3 p-3.5 rounded-xl border transition-all duration-200 ${
         isCritical
           ? "bg-destructive/5 border-destructive/15"
-          : "bg-surface-table-header/5 border-text-secondary/15"
+          : "bg-muted border-muted-foreground/15"
       }`}
     >
       <div className={`mt-1 w-2 h-2 rounded-full flex-shrink-0 ${isCritical ? "bg-destructive" : "bg-warning"}`} />
       <div className="flex-1 min-w-0">
         <p className={`text-[13px] font-bold flex items-center gap-1.5 ${
-          isCritical ? "text-destructive" : "text-text-secondary"
+          isCritical ? "text-destructive" : "text-muted-foreground"
         }`}>
           {isCritical && <AlertTriangle size={14} />}
           {title}
@@ -122,7 +122,7 @@ function AlertItem({ severity, title, detail, value }: {
       </div>
       {value && (
         <span className={`text-[13px] font-bold whitespace-nowrap font-mono ${
-          isCritical ? "text-destructive" : "text-text-secondary"
+          isCritical ? "text-destructive" : "text-muted-foreground"
         }`}>{value}</span>
       )}
     </div>
@@ -186,7 +186,7 @@ export default function Dashboard() {
   const hasChartData = graficoMensal.some((m) => m.receita > 0 || m.despesa > 0);
 
   const tooltipStyle = {
-    backgroundColor: "hsl(var(--surface-card))",
+    backgroundColor: "hsl(var(--card))",
     border: "1px solid hsl(var(--border))",
     borderRadius: "10px",
     color: "hsl(var(--foreground))",
@@ -200,7 +200,7 @@ export default function Dashboard() {
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 fade-up">
         <div>
          <p className="text-[13px] text-muted-foreground/60 mb-0.5 uppercase tracking-wider font-bold">Dashboard</p>
-          <h1 className="text-[24px] sm:text-[28px] font-extrabold text-text-heading tracking-tight leading-tight">
+          <h1 className="text-[24px] sm:text-[28px] font-extrabold text-foreground tracking-tight leading-tight">
             {getGreeting()}{businessName ? `, ${businessName}` : ""}
           </h1>
         </div>
@@ -222,31 +222,13 @@ export default function Dashboard() {
             ))}
           </div>
 
-          <div className="hidden sm:flex items-center gap-1">
-            <button className="w-7 h-7 rounded-full border border-border/40 bg-card flex items-center justify-center text-muted-foreground/50 hover:text-foreground transition-colors">
-              <Download size={13} />
-            </button>
-            <button className="w-7 h-7 rounded-full border border-border/40 bg-card flex items-center justify-center text-muted-foreground/50 hover:text-foreground transition-colors">
-              <Share2 size={13} />
-            </button>
-            <div className="relative">
-              <button className="w-7 h-7 rounded-full border border-border/40 bg-card flex items-center justify-center text-muted-foreground/50 hover:text-foreground transition-colors">
-                <Bell size={13} />
-              </button>
-              {contasVencendo.length > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-destructive text-destructive-foreground text-[8px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center">
-                  {contasVencendo.length}
-                </span>
-              )}
-            </div>
-          </div>
         </div>
       </div>
 
       {/* ─── MINI KPI CARDS ─── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 stagger-fade-in">
-        <MiniKPI label="Faturamento" value={formatBRL(faturamentoMes)} numericValue={faturamentoMes} formatter={formatBRL} icon={Wallet} trendLabel={faturamentoMes > 0 ? "+32.5%" : undefined} kpiType="faturamento" />
-        <MiniKPI label="Gastos" value={formatBRL(despesasMes)} numericValue={despesasMes} formatter={formatBRL} icon={Receipt} trendLabel={despesasMes > 0 ? "-8.2%" : undefined} kpiType="gastos" />
+        <MiniKPI label="Faturamento" value={formatBRL(faturamentoMes)} numericValue={faturamentoMes} formatter={formatBRL} icon={Wallet} kpiType="faturamento" />
+        <MiniKPI label="Gastos" value={formatBRL(despesasMes)} numericValue={despesasMes} formatter={formatBRL} icon={Receipt} kpiType="gastos" />
         <MiniKPI label="Lucro" value={formatBRL(lucroMes)} numericValue={lucroMes} formatter={formatBRL} icon={PiggyBank} trendLabel={lucroMes !== 0 ? (lucroMes > 0 ? "↑ Positivo" : "↓ Negativo") : undefined} kpiType={lucroMes >= 0 ? "lucro_pos" : "lucro_neg"} />
         <MiniKPI label="CMV" value={faturamentoMes > 0 ? `${cmvPct.toFixed(1)}%` : "—"} numericValue={faturamentoMes > 0 ? cmvPct : undefined} formatter={(v) => `${v.toFixed(1)}%`} icon={TrendingDown} trendLabel={faturamentoMes > 0 ? `Meta ${cmvMeta}%` : undefined} kpiType={cmvPct <= cmvMeta ? "cmv_ok" : "cmv_bad"} />
       </div>
@@ -258,28 +240,21 @@ export default function Dashboard() {
 
       {/* ─── CHART: Revenue ─── */}
       <div className="fade-up fade-up-d2">
-        <div className="bg-card border border-text-secondary/40 rounded-2xl p-7 transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)]">
+        <div className="bg-card border border-border rounded-2xl p-7 transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)]">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-[16px] font-bold text-foreground">Faturamento vs. Despesas</h3>
               <p className="text-[12px] text-muted-foreground/50 mt-0.5">Evolução mensal do seu negócio</p>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="hidden sm:flex items-center gap-3">
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-[3px] rounded-full bg-success" />
-                  <span className="text-[10px] text-muted-foreground">Receita</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-[3px] rounded-full bg-warning" />
-                  <span className="text-[10px] text-muted-foreground">Despesa</span>
-                </div>
+            <div className="hidden sm:flex items-center gap-3">
+              <div className="flex items-center gap-1.5">
+                <div className="w-3 h-[3px] rounded-full bg-success" />
+                <span className="text-[10px] text-muted-foreground">Receita</span>
               </div>
-              <select className="text-[10px] text-muted-foreground bg-muted/40 border border-border/30 rounded-full px-2.5 py-1 outline-none focus:border-primary/30">
-                <option>6 Meses</option>
-                <option>3 Meses</option>
-                <option>1 Ano</option>
-              </select>
+              <div className="flex items-center gap-1.5">
+                <div className="w-3 h-[3px] rounded-full bg-warning" />
+                <span className="text-[10px] text-muted-foreground">Despesa</span>
+              </div>
             </div>
           </div>
 
@@ -335,7 +310,7 @@ export default function Dashboard() {
 
       {/* ─── ALERTAS COMPACTO ─── */}
       <div className="fade-up fade-up-d3">
-        <div className="bg-surface-table-header border border-text-secondary/60 rounded-2xl px-5 py-4">
+        <div className="bg-sidebar border border-border rounded-2xl px-5 py-4">
           <h3 className="text-[13px] font-semibold text-white mb-2.5 flex items-center gap-2">
             <Bell size={14} className="text-white/50" />
             Alertas
