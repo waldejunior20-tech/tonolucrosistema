@@ -571,7 +571,7 @@ export default function PrecificacaoPizzas() {
                             >
                               {/* Size badge */}
                               <div className="flex items-center justify-between">
-                                <span className="text-xs font-extrabold uppercase tracking-[0.15em] text-muted-foreground bg-secondary/60 px-3 py-1.5 rounded-lg">
+                                <span className="text-xs font-extrabold uppercase tracking-[0.15em] text-muted-foreground px-3 py-1.5 rounded-lg" style={{ background: 'rgba(200, 200, 200, 0.35)' }}>
                                   Tamanho {sizeLabels[s]}
                                 </span>
                                 {preco > 0 && (
