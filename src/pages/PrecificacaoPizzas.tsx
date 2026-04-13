@@ -310,7 +310,7 @@ export default function PrecificacaoPizzas() {
 
   return (
     <TooltipProvider>
-      <div className="space-y-6 max-w-[1400px] mx-auto page-enter">
+      <div className="space-y-6 page-enter">
         {/* Header */}
         <PageHeader title="Precificação de Pizzas" description="Gestão de margem por tamanho">
           <button
