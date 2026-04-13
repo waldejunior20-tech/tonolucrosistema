@@ -17,7 +17,7 @@ export function KpiCard({
   label, value, formatter, icon: Icon, trend, trendPositive = true, subtitle, className,
 }: KpiCardProps) {
   return (
-    <div className={cn("card-interactive group cursor-default", className)}>
+    <div className={cn("card-premium group cursor-default", className)}>
       {/* Icon badge */}
       <div className="w-10 h-10 rounded-sm bg-primary/10 border border-primary/20 flex items-center justify-center mb-4 group-hover:bg-primary/15 transition-colors">
         <Icon size={20} className="text-primary" />
