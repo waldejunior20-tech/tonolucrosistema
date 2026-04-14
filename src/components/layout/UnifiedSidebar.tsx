@@ -3,10 +3,17 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, Package, BookOpen, DollarSign, 
   TrendingUp, Tag, ChevronDown, 
-  PanelLeftClose, PanelLeft, Pizza, Cog
+  PanelLeftClose, PanelLeft, Pizza, Cog, LogOut, ChevronUp
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
+import { supabase } from "@/integrations/supabase/client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 export type ModuleKey = "dashboard" | "insumos" | "fichas" | "precificacao" | "financeiro" | "promocoes" | "configuracoes";
 
 interface SubItem {
