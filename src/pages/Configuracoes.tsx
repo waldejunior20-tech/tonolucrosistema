@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { PercentInput, SmartMoneyInput, IntegerInput } from "@/components/SmartInputs";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -351,7 +352,7 @@ export default function Configuracoes() {
             {rappiAtivo && (
               <div>
                 <Label className="text-xs text-muted-foreground">Taxa (%)</Label>
-                <Input type="number" step="0.01" value={taxaRappi} onChange={e => setTaxaRappi(parseFloat(e.target.value) || 0)} className="h-9 mt-1 w-32" />
+                <PercentInput value={taxaRappi} onChange={setTaxaRappi} className="h-9 mt-1 w-32" />
               </div>
             )}
           </div>
@@ -365,7 +366,7 @@ export default function Configuracoes() {
             {aiqfomeAtivo && (
               <div>
                 <Label className="text-xs text-muted-foreground">Taxa (%)</Label>
-                <Input type="number" step="0.01" value={taxaAiqfome} onChange={e => setTaxaAiqfome(parseFloat(e.target.value) || 0)} className="h-9 mt-1 w-32" />
+                <PercentInput value={taxaAiqfome} onChange={setTaxaAiqfome} className="h-9 mt-1 w-32" />
               </div>
             )}
           </div>
@@ -384,7 +385,7 @@ export default function Configuracoes() {
                 </div>
                 <div>
                   <Label className="text-xs text-muted-foreground">Taxa (%)</Label>
-                  <Input type="number" step="0.01" value={taxaOutro} onChange={e => setTaxaOutro(parseFloat(e.target.value) || 0)} className="h-9 mt-1" />
+                  <PercentInput value={taxaOutro} onChange={setTaxaOutro} className="h-9 mt-1" />
                 </div>
               </div>
             )}
@@ -404,19 +405,19 @@ export default function Configuracoes() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
               <Label className="text-xs text-muted-foreground">Débito (%)</Label>
-              <Input type="number" step="0.01" value={taxaDebito} onChange={e => setTaxaDebito(parseFloat(e.target.value) || 0)} className="h-9 mt-1" />
+              <PercentInput value={taxaDebito} onChange={setTaxaDebito} className="h-9 mt-1" />
             </div>
             <div>
               <Label className="text-xs text-muted-foreground">Crédito (%)</Label>
-              <Input type="number" step="0.01" value={taxaCredito} onChange={e => setTaxaCredito(parseFloat(e.target.value) || 0)} className="h-9 mt-1" />
+              <PercentInput value={taxaCredito} onChange={setTaxaCredito} className="h-9 mt-1" />
             </div>
             <div>
               <Label className="text-xs text-muted-foreground">PIX (%)</Label>
-              <Input type="number" value={0} disabled className="h-9 mt-1 opacity-50" />
+              <PercentInput value={0} onChange={() => {}} disabled className="h-9 mt-1 opacity-50" />
             </div>
             <div>
               <Label className="text-xs text-muted-foreground">Dinheiro (%)</Label>
-              <Input type="number" value={0} disabled className="h-9 mt-1 opacity-50" />
+              <PercentInput value={0} onChange={() => {}} disabled className="h-9 mt-1 opacity-50" />
             </div>
           </div>
         </CardContent>
@@ -434,15 +435,15 @@ export default function Configuracoes() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <Label className="text-xs text-muted-foreground">Meta de Custo (%)</Label>
-              <Input type="number" step="0.1" value={cmvMeta} onChange={e => setCmvMeta(parseFloat(e.target.value) || 0)} className="h-9 mt-1" />
+              <PercentInput value={cmvMeta} onChange={setCmvMeta} className="h-9 mt-1" />
             </div>
             <div>
               <Label className="text-xs text-muted-foreground">Lucro Desejado (%)</Label>
-              <Input type="number" step="0.1" value={lucroDesejado} onChange={e => setLucroDesejado(parseFloat(e.target.value) || 0)} className="h-9 mt-1" />
+              <PercentInput value={lucroDesejado} onChange={setLucroDesejado} className="h-9 mt-1" />
             </div>
             <div>
               <Label className="text-xs text-muted-foreground">Faturamento Meta Mensal (R$)</Label>
-              <Input type="number" step="100" value={faturamentoMeta} onChange={e => setFaturamentoMeta(parseFloat(e.target.value) || 0)} className="h-9 mt-1" />
+              <SmartMoneyInput value={faturamentoMeta} onChange={setFaturamentoMeta} className="h-9 mt-1" />
             </div>
           </div>
         </CardContent>
@@ -472,13 +473,10 @@ export default function Configuracoes() {
                 placeholder="Descrição"
                 className="h-9"
               />
-              <Input
-                type="number"
-                step="0.01"
-                value={item.valor || ""}
-                onChange={e => updateCustoFixo(idx, "valor", parseFloat(e.target.value) || 0)}
-                placeholder="0,00"
-                className="h-9 text-right font-mono"
+              <SmartMoneyInput
+                value={Number(item.valor) || 0}
+                onChange={(v) => updateCustoFixo(idx, "valor", v)}
+                className="h-9"
               />
               <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => removeCustoFixo(idx)}>
                 <Trash2 className="h-4 w-4" />
