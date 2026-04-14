@@ -85,7 +85,7 @@ export function Header({ onMenuClick, showMenuButton }: HeaderProps) {
           onClick={handleLogout}
           className="h-8 text-muted-foreground hover:text-destructive text-xs gap-1.5"
         >
-          <LogOut className="h-3.5 w-3.5" />
+          <LogOut className="h-5 w-5" />
           <span className="hidden sm:block">Sair</span>
         </Button>
       </div>
