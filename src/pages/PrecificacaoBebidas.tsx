@@ -22,6 +22,7 @@ import {
   type ConfigPrecificacao,
 } from "@/lib/pricing-helpers";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { getOrCreateConfiguracoesPrecificacao } from "@/lib/config-helpers";
 
 // ─── Types ───────────────────────────────────────────────────────────
 interface InsumoComprado { id: string; nome: string; preco_pago: number; quantidade: number; unidade: string; categoria: string; }
@@ -40,11 +41,8 @@ export default function PrecificacaoBebidas() {
 
   const { data: config } = useQuery({
     queryKey: ["configuracoes_precificacao"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("configuracoes_precificacao").select("*").limit(1).single();
-      if (error) throw error;
-      return data as ConfigPrecificacao;
-    },
+    queryFn: getOrCreateConfiguracoesPrecificacao,
+    retry: false,
   });
 
   const { data: insumosComprados = [] } = useQuery({

@@ -10,6 +10,7 @@ import { Save } from "lucide-react";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { useState, useEffect } from "react";
 import { type ConfigPrecificacao } from "@/lib/pricing-helpers";
+import { getOrCreateConfiguracoesPrecificacao } from "@/lib/config-helpers";
 
 export default function PrecificacaoConfiguracoes() {
   const queryClient = useQueryClient();
@@ -17,15 +18,8 @@ export default function PrecificacaoConfiguracoes() {
 
   const { data: config, isLoading } = useQuery({
     queryKey: ["configuracoes_precificacao"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("configuracoes_precificacao")
-        .select("*")
-        .limit(1)
-        .single();
-      if (error) throw error;
-      return data as ConfigPrecificacao;
-    },
+    queryFn: getOrCreateConfiguracoesPrecificacao,
+    retry: false,
   });
 
   useEffect(() => {
@@ -34,6 +28,7 @@ export default function PrecificacaoConfiguracoes() {
 
   const mutation = useMutation({
     mutationFn: async (c: ConfigPrecificacao) => {
+      const configRow = c.id ? c : await getOrCreateConfiguracoesPrecificacao();
       const { error } = await supabase
         .from("configuracoes_precificacao")
         .update({
@@ -49,14 +44,14 @@ export default function PrecificacaoConfiguracoes() {
           taxa_rappi_pct: c.taxa_rappi_pct,
           taxa_aiqfome_pct: c.taxa_aiqfome_pct,
         })
-        .eq("id", c.id);
+        .eq("id", configRow.id);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["configuracoes_precificacao"] });
       toast.success("Configurações salvas com sucesso!");
     },
-    onError: () => toast.error("Erro ao salvar configurações."),
+    onError: (error: Error) => toast.error(error.message || "Erro ao salvar configurações."),
   });
 
   if (isLoading) {
