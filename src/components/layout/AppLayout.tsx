@@ -44,6 +44,7 @@ export function AppLayout() {
         <Header
           showMenuButton={isMobile}
           onMenuClick={() => setMobileOpen(true)}
+          sidebarWidth={!isMobile ? (sidebarCollapsed ? "4rem" : "260px") : "0px"}
         />
         <main className="flex-1 p-4 lg:p-8 overflow-auto relative mt-16">
           <div className="max-w-[1280px] mx-auto relative z-10 w-full">
