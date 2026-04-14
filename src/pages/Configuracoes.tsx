@@ -1,13 +1,14 @@
 import { useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { PercentInput, SmartMoneyInput } from "@/components/SmartInputs";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Cog, Save, Plus, Trash2, Building2, Pizza, Radio, CreditCard, Target, ClipboardList } from "lucide-react";
 import { fmt } from "@/lib/pricing-helpers";
@@ -34,6 +35,15 @@ const IFOOD_PLANOS: Record<string, { label: string; taxa: number }> = {
   entrega_parceira: { label: "Entrega Parceira", taxa: 27.69 },
   basico_propria: { label: "Básico Própria", taxa: 16.69 },
 };
+
+const TAB_ITEMS = [
+  { value: "negocio", label: "Meu Negócio", icon: Building2 },
+  { value: "pizza", label: "Tamanhos de Pizza", icon: Pizza },
+  { value: "canais", label: "Canais de Venda", icon: Radio },
+  { value: "pagamento", label: "Formas de Pagamento", icon: CreditCard },
+  { value: "metas", label: "Metas", icon: Target },
+  { value: "custos", label: "Custos Fixos Mensais", icon: ClipboardList },
+];
 
 // ─── Component ───────────────────────────────────────────────────────
 export default function Configuracoes() {
@@ -88,7 +98,6 @@ export default function Configuracoes() {
       const cf = (negocio as any).custos_fixos_detalhados;
       if (Array.isArray(cf) && cf.length > 0) setCustosFixos(cf);
       else {
-        // Migrate from old individual fields
         setCustosFixos([
           { descricao: "Aluguel", valor: Number(negocio.aluguel) || 0 },
           { descricao: "Energia", valor: Number(negocio.energia) || 0 },
@@ -216,6 +225,16 @@ export default function Configuracoes() {
     setCustosFixos(copy);
   };
 
+  // ─── Save Button Component ────────────────────────────────────────
+  const SaveButton = () => (
+    <div className="flex justify-center pt-6">
+      <Button onClick={() => saveMutation.mutate()} disabled={saveMutation.isPending} className="gap-2 px-8">
+        <Save className="h-4 w-4" />
+        Salvar Configurações
+      </Button>
+    </div>
+  );
+
   if (negocioLoading || precificacaoLoading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -225,7 +244,7 @@ export default function Configuracoes() {
   }
 
   return (
-    <div className="space-y-6 max-w-3xl mx-auto pb-24">
+    <div className="space-y-6 max-w-4xl mx-auto pb-12">
       {/* Header */}
       <div className="flex items-center gap-3">
         <Cog className="h-6 w-6 text-primary" />
@@ -235,275 +254,264 @@ export default function Configuracoes() {
         </div>
       </div>
 
-      {/* SEÇÃO 1 — Meu Negócio */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Building2 className="h-5 w-5 text-primary" />
-            Meu Negócio
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label className="text-xs text-muted-foreground">Nome do Estabelecimento</Label>
-            <Input value={nomeEstabelecimento} onChange={e => setNomeEstabelecimento(e.target.value)} className="h-10 mt-1" />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label className="text-xs text-muted-foreground">Cidade</Label>
-              <Input value={cidade} onChange={e => setCidade(e.target.value)} className="h-10 mt-1" />
-            </div>
-            <div>
-              <Label className="text-xs text-muted-foreground">Estado</Label>
-              <Input value={estado} onChange={e => setEstado(e.target.value)} placeholder="SP" maxLength={2} className="h-10 mt-1 uppercase" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <Tabs defaultValue="negocio" className="w-full">
+        <TabsList className="w-full flex flex-wrap h-auto gap-1 bg-muted/50 p-1.5 rounded-lg">
+          {TAB_ITEMS.map(({ value, label, icon: Icon }) => (
+            <TabsTrigger
+              key={value}
+              value={value}
+              className="flex items-center gap-1.5 text-xs sm:text-sm px-3 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md"
+            >
+              <Icon className="h-4 w-4 shrink-0" />
+              <span className="hidden sm:inline">{label}</span>
+            </TabsTrigger>
+          ))}
+        </TabsList>
 
-      {/* SEÇÃO 2 — Tamanhos de Pizza */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Pizza className="h-5 w-5 text-primary" />
-            Tamanhos de Pizza
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {tamanhosPizza.map((tam, idx) => (
-            <div key={idx} className="flex items-center gap-3">
-              <span className="text-xs text-muted-foreground w-6">{idx + 1}.</span>
-              <Input
-                value={tam}
-                onChange={e => updateTamanho(idx, e.target.value)}
-                placeholder="Ex: GG"
-                className="h-9 flex-1"
-              />
-              {tamanhosPizza.length > 1 && (
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => removeTamanho(idx)}>
-                  <Trash2 className="h-4 w-4" />
+        {/* ─── Meu Negócio ─────────────────────────────────────────── */}
+        <TabsContent value="negocio">
+          <Card>
+            <CardContent className="pt-6 space-y-4">
+              <div>
+                <Label className="text-xs text-muted-foreground">Nome do Estabelecimento</Label>
+                <Input value={nomeEstabelecimento} onChange={e => setNomeEstabelecimento(e.target.value)} className="h-10 mt-1" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-xs text-muted-foreground">Cidade</Label>
+                  <Input value={cidade} onChange={e => setCidade(e.target.value)} className="h-10 mt-1" />
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Estado</Label>
+                  <Input value={estado} onChange={e => setEstado(e.target.value)} placeholder="SP" maxLength={2} className="h-10 mt-1 uppercase" />
+                </div>
+              </div>
+              <SaveButton />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* ─── Tamanhos de Pizza ────────────────────────────────────── */}
+        <TabsContent value="pizza">
+          <Card>
+            <CardContent className="pt-6 space-y-3">
+              {tamanhosPizza.map((tam, idx) => (
+                <div key={idx} className="flex items-center gap-3">
+                  <span className="text-xs text-muted-foreground w-6">{idx + 1}.</span>
+                  <Input
+                    value={tam}
+                    onChange={e => updateTamanho(idx, e.target.value)}
+                    placeholder="Ex: GG"
+                    className="h-9 flex-1"
+                  />
+                  {tamanhosPizza.length > 1 && (
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => removeTamanho(idx)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+              {tamanhosPizza.length < 6 && (
+                <Button size="sm" onClick={addTamanho} className="btn-action-add gap-1">
+                  <Plus className="h-3.5 w-3.5" /> Adicionar tamanho
                 </Button>
               )}
-            </div>
-          ))}
-          {tamanhosPizza.length < 6 && (
-            <Button size="sm" onClick={addTamanho} className="btn-action-add gap-1">
-              <Plus className="h-3.5 w-3.5" /> Adicionar tamanho
-            </Button>
-          )}
-          <p className="text-xs text-muted-foreground">Mínimo 1, máximo 6 tamanhos.</p>
-        </CardContent>
-      </Card>
+              <p className="text-xs text-muted-foreground">Mínimo 1, máximo 6 tamanhos.</p>
+              <SaveButton />
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-      {/* SEÇÃO 3 — Canais de Venda */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Radio className="h-5 w-5 text-primary" />
-            Canais de Venda
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Balcão — always active */}
-          <div className="flex items-center justify-between rounded-lg border border-border p-4 bg-secondary/30">
-            <div>
-              <p className="text-sm font-medium">Balcão / Instagram / WhatsApp</p>
-              <p className="text-xs text-muted-foreground">Sempre ativo — Taxa 0%</p>
-            </div>
-            <span className="text-xs font-semibold text-success">Ativo</span>
-          </div>
-
-          {/* iFood */}
-          <div className="rounded-lg border border-border p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-medium">iFood</p>
-              <Switch checked={ifoodAtivo} onCheckedChange={setIfoodAtivo} />
-            </div>
-            {ifoodAtivo && (
-              <div>
-                <Label className="text-xs text-muted-foreground">Plano iFood</Label>
-                <Select value={ifoodPlano} onValueChange={setIfoodPlano}>
-                  <SelectTrigger className="h-9 mt-1">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(IFOOD_PLANOS).map(([key, { label, taxa }]) => (
-                      <SelectItem key={key} value={key}>
-                        {label} — {taxa}%
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-          </div>
-
-          {/* Rappi */}
-          <div className="rounded-lg border border-border p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-medium">Rappi</p>
-              <Switch checked={rappiAtivo} onCheckedChange={setRappiAtivo} />
-            </div>
-            {rappiAtivo && (
-              <div>
-                <Label className="text-xs text-muted-foreground">Taxa (%)</Label>
-                <PercentInput value={taxaRappi} onChange={setTaxaRappi} className="h-9 mt-1 w-32" />
-              </div>
-            )}
-          </div>
-
-          {/* Aiqfome */}
-          <div className="rounded-lg border border-border p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-medium">Aiqfome</p>
-              <Switch checked={aiqfomeAtivo} onCheckedChange={setAiqfomeAtivo} />
-            </div>
-            {aiqfomeAtivo && (
-              <div>
-                <Label className="text-xs text-muted-foreground">Taxa (%)</Label>
-                <PercentInput value={taxaAiqfome} onChange={setTaxaAiqfome} className="h-9 mt-1 w-32" />
-              </div>
-            )}
-          </div>
-
-          {/* Outro app */}
-          <div className="rounded-lg border border-border p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-medium">Outro App</p>
-              <Switch checked={outroAtivo} onCheckedChange={setOutroAtivo} />
-            </div>
-            {outroAtivo && (
-              <div className="grid grid-cols-2 gap-3">
+        {/* ─── Canais de Venda ──────────────────────────────────────── */}
+        <TabsContent value="canais">
+          <Card>
+            <CardContent className="pt-6 space-y-4">
+              {/* Balcão — always active */}
+              <div className="flex items-center justify-between rounded-lg border border-border p-4 bg-secondary/30">
                 <div>
-                  <Label className="text-xs text-muted-foreground">Nome do App</Label>
-                  <Input value={outroNome} onChange={e => setOutroNome(e.target.value)} placeholder="Ex: 99Food" className="h-9 mt-1" />
+                  <p className="text-sm font-medium">Balcão / Instagram / WhatsApp</p>
+                  <p className="text-xs text-muted-foreground">Sempre ativo — Taxa 0%</p>
+                </div>
+                <span className="text-xs font-semibold text-success">Ativo</span>
+              </div>
+
+              {/* iFood */}
+              <div className="rounded-lg border border-border p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-medium">iFood</p>
+                  <Switch checked={ifoodAtivo} onCheckedChange={setIfoodAtivo} />
+                </div>
+                {ifoodAtivo && (
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Plano iFood</Label>
+                    <Select value={ifoodPlano} onValueChange={setIfoodPlano}>
+                      <SelectTrigger className="h-9 mt-1">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(IFOOD_PLANOS).map(([key, { label, taxa }]) => (
+                          <SelectItem key={key} value={key}>
+                            {label} — {taxa}%
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </div>
+
+              {/* Rappi */}
+              <div className="rounded-lg border border-border p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-medium">Rappi</p>
+                  <Switch checked={rappiAtivo} onCheckedChange={setRappiAtivo} />
+                </div>
+                {rappiAtivo && (
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Taxa (%)</Label>
+                    <PercentInput value={taxaRappi} onChange={setTaxaRappi} className="h-9 mt-1 w-32" />
+                  </div>
+                )}
+              </div>
+
+              {/* Aiqfome */}
+              <div className="rounded-lg border border-border p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-medium">Aiqfome</p>
+                  <Switch checked={aiqfomeAtivo} onCheckedChange={setAiqfomeAtivo} />
+                </div>
+                {aiqfomeAtivo && (
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Taxa (%)</Label>
+                    <PercentInput value={taxaAiqfome} onChange={setTaxaAiqfome} className="h-9 mt-1 w-32" />
+                  </div>
+                )}
+              </div>
+
+              {/* Outro app */}
+              <div className="rounded-lg border border-border p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-medium">Outro App</p>
+                  <Switch checked={outroAtivo} onCheckedChange={setOutroAtivo} />
+                </div>
+                {outroAtivo && (
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Nome do App</Label>
+                      <Input value={outroNome} onChange={e => setOutroNome(e.target.value)} placeholder="Ex: 99Food" className="h-9 mt-1" />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Taxa (%)</Label>
+                      <PercentInput value={taxaOutro} onChange={setTaxaOutro} className="h-9 mt-1" />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <SaveButton />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* ─── Formas de Pagamento ──────────────────────────────────── */}
+        <TabsContent value="pagamento">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                  <Label className="text-xs text-muted-foreground">Débito (%)</Label>
+                  <PercentInput value={taxaDebito} onChange={setTaxaDebito} className="h-9 mt-1" />
                 </div>
                 <div>
-                  <Label className="text-xs text-muted-foreground">Taxa (%)</Label>
-                  <PercentInput value={taxaOutro} onChange={setTaxaOutro} className="h-9 mt-1" />
+                  <Label className="text-xs text-muted-foreground">Crédito (%)</Label>
+                  <PercentInput value={taxaCredito} onChange={setTaxaCredito} className="h-9 mt-1" />
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">PIX (%)</Label>
+                  <PercentInput value={0} onChange={() => {}} disabled className="h-9 mt-1 opacity-50" />
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Dinheiro (%)</Label>
+                  <PercentInput value={0} onChange={() => {}} disabled className="h-9 mt-1 opacity-50" />
                 </div>
               </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+              <SaveButton />
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-      {/* SEÇÃO 4 — Formas de Pagamento */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <CreditCard className="h-5 w-5 text-primary" />
-            Formas de Pagamento
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div>
-              <Label className="text-xs text-muted-foreground">Débito (%)</Label>
-              <PercentInput value={taxaDebito} onChange={setTaxaDebito} className="h-9 mt-1" />
-            </div>
-            <div>
-              <Label className="text-xs text-muted-foreground">Crédito (%)</Label>
-              <PercentInput value={taxaCredito} onChange={setTaxaCredito} className="h-9 mt-1" />
-            </div>
-            <div>
-              <Label className="text-xs text-muted-foreground">PIX (%)</Label>
-              <PercentInput value={0} onChange={() => {}} disabled className="h-9 mt-1 opacity-50" />
-            </div>
-            <div>
-              <Label className="text-xs text-muted-foreground">Dinheiro (%)</Label>
-              <PercentInput value={0} onChange={() => {}} disabled className="h-9 mt-1 opacity-50" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        {/* ─── Metas ────────────────────────────────────────────────── */}
+        <TabsContent value="metas">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <Label className="text-xs text-muted-foreground">Meta de Custo (%)</Label>
+                  <PercentInput value={cmvMeta} onChange={setCmvMeta} className="h-9 mt-1" />
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Lucro Desejado (%)</Label>
+                  <PercentInput value={lucroDesejado} onChange={setLucroDesejado} className="h-9 mt-1" />
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Faturamento Meta Mensal (R$)</Label>
+                  <SmartMoneyInput value={faturamentoMeta} onChange={setFaturamentoMeta} className="h-9 mt-1" />
+                </div>
+              </div>
+              <SaveButton />
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-      {/* SEÇÃO 5 — Metas */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Target className="h-5 w-5 text-primary" />
-            Metas
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label className="text-xs text-muted-foreground">Meta de Custo (%)</Label>
-              <PercentInput value={cmvMeta} onChange={setCmvMeta} className="h-9 mt-1" />
-            </div>
-            <div>
-              <Label className="text-xs text-muted-foreground">Lucro Desejado (%)</Label>
-              <PercentInput value={lucroDesejado} onChange={setLucroDesejado} className="h-9 mt-1" />
-            </div>
-            <div>
-              <Label className="text-xs text-muted-foreground">Faturamento Meta Mensal (R$)</Label>
-              <SmartMoneyInput value={faturamentoMeta} onChange={setFaturamentoMeta} className="h-9 mt-1" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        {/* ─── Custos Fixos Mensais ─────────────────────────────────── */}
+        <TabsContent value="custos">
+          <Card>
+            <CardContent className="pt-6 space-y-3">
+              <div className="grid grid-cols-[1fr_140px_40px] gap-2 text-xs text-muted-foreground font-semibold uppercase tracking-wider px-1">
+                <span>Descrição</span>
+                <span className="text-right">Valor (R$)</span>
+                <span />
+              </div>
 
-      {/* SEÇÃO 6 — Custos Fixos Mensais */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <ClipboardList className="h-5 w-5 text-primary" />
-            Custos Fixos Mensais
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {/* Header */}
-          <div className="grid grid-cols-[1fr_140px_40px] gap-2 text-xs text-muted-foreground font-semibold uppercase tracking-wider px-1">
-            <span>Descrição</span>
-            <span className="text-right">Valor (R$)</span>
-            <span />
-          </div>
+              {custosFixos.map((item, idx) => (
+                <div key={idx} className="grid grid-cols-[1fr_140px_40px] gap-2 items-center">
+                  <Input
+                    value={item.descricao}
+                    onChange={e => updateCustoFixo(idx, "descricao", e.target.value)}
+                    placeholder="Descrição"
+                    className="h-9"
+                  />
+                  <SmartMoneyInput
+                    value={Number(item.valor) || 0}
+                    onChange={(v) => updateCustoFixo(idx, "valor", v)}
+                    className="h-9"
+                  />
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => removeCustoFixo(idx)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
 
-          {custosFixos.map((item, idx) => (
-            <div key={idx} className="grid grid-cols-[1fr_140px_40px] gap-2 items-center">
-              <Input
-                value={item.descricao}
-                onChange={e => updateCustoFixo(idx, "descricao", e.target.value)}
-                placeholder="Descrição"
-                className="h-9"
-              />
-              <SmartMoneyInput
-                value={Number(item.valor) || 0}
-                onChange={(v) => updateCustoFixo(idx, "valor", v)}
-                className="h-9"
-              />
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => removeCustoFixo(idx)}>
-                <Trash2 className="h-4 w-4" />
+              <Button size="sm" onClick={addCustoFixo} className="btn-action-add gap-1">
+                <Plus className="h-3.5 w-3.5" /> Adicionar linha
               </Button>
-            </div>
-          ))}
 
-          <Button size="sm" onClick={addCustoFixo} className="btn-action-add gap-1">
-            <Plus className="h-3.5 w-3.5" /> Adicionar linha
-          </Button>
+              <div className="border-t border-border pt-4 mt-4 space-y-2">
+                <div className="flex justify-between text-sm font-semibold">
+                  <span>Total Custos Fixos</span>
+                  <span className="font-mono">{fmt(totalCustosFixos)}</span>
+                </div>
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>% do Faturamento Meta</span>
+                  <span className="font-mono">{pctFaturamento.toFixed(1)}%</span>
+                </div>
+              </div>
 
-          {/* Totais */}
-          <div className="border-t border-border pt-4 mt-4 space-y-2">
-            <div className="flex justify-between text-sm font-semibold">
-              <span>Total Custos Fixos</span>
-              <span className="font-mono">{fmt(totalCustosFixos)}</span>
-            </div>
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>% do Faturamento Meta</span>
-              <span className="font-mono">{pctFaturamento.toFixed(1)}%</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Save Button — inline, centered */}
-      <div className="flex justify-center pb-8">
-        <Button onClick={() => saveMutation.mutate()} disabled={saveMutation.isPending} className="gap-2 px-8">
-          <Save className="h-4 w-4" />
-          Salvar Configurações
-        </Button>
-      </div>
+              <SaveButton />
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
