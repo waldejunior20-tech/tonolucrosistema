@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { PercentInput, SmartMoneyInput, IntegerInput } from "@/components/SmartInputs";
+import { PercentInput, SmartMoneyInput } from "@/components/SmartInputs";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { Cog, Save, Plus, Trash2, Building2, Pizza, Radio, CreditCard, Target, ClipboardList } from "lucide-react";
 import { fmt } from "@/lib/pricing-helpers";
+import { getOrCreateConfiguracoesNegocio, getOrCreateConfiguracoesPrecificacao } from "@/lib/config-helpers";
 
 // ─── Types ───────────────────────────────────────────────────────────
 interface CustoFixoItem {
@@ -64,30 +65,16 @@ export default function Configuracoes() {
   const [taxaCredito, setTaxaCredito] = useState(3.15);
 
   // ─── Queries ───────────────────────────────────────────────────────
-  const { data: negocio } = useQuery({
+  const { data: negocio, isLoading: negocioLoading } = useQuery({
     queryKey: ["configuracoes_negocio"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("configuracoes_negocio")
-        .select("*")
-        .limit(1)
-        .single();
-      if (error) throw error;
-      return data;
-    },
+    queryFn: getOrCreateConfiguracoesNegocio,
+    retry: false,
   });
 
-  const { data: precificacao } = useQuery({
+  const { data: precificacao, isLoading: precificacaoLoading } = useQuery({
     queryKey: ["configuracoes_precificacao"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("configuracoes_precificacao")
-        .select("*")
-        .limit(1)
-        .single();
-      if (error) throw error;
-      return data;
-    },
+    queryFn: getOrCreateConfiguracoesPrecificacao,
+    retry: false,
   });
 
   // ─── Populate form ─────────────────────────────────────────────────
@@ -148,11 +135,13 @@ export default function Configuracoes() {
   // ─── Save ──────────────────────────────────────────────────────────
   const saveMutation = useMutation({
     mutationFn: async () => {
-      if (!negocio || !precificacao) throw new Error("Configurações não carregadas");
+      const [negocioRow, precificacaoRow] = await Promise.all([
+        negocio ? Promise.resolve(negocio) : getOrCreateConfiguracoesNegocio(),
+        precificacao ? Promise.resolve(precificacao) : getOrCreateConfiguracoesPrecificacao(),
+      ]);
 
       const taxaIfood = IFOOD_PLANOS[ifoodPlano]?.taxa ?? 27.69;
 
-      // Save negocio
       const { error: e1 } = await supabase
         .from("configuracoes_negocio")
         .update({
@@ -169,12 +158,11 @@ export default function Configuracoes() {
           internet: custosFixos.find(c => c.descricao === "Internet")?.valor ?? 0,
           salarios: custosFixos.find(c => c.descricao === "Salários")?.valor ?? 0,
           contador: custosFixos.find(c => c.descricao === "Contador")?.valor ?? 0,
-          outros_fixos: custosFixos.filter(c => !["Aluguel","Energia","Água","Internet","Salários","Contador"].includes(c.descricao)).reduce((s,c) => s + (Number(c.valor)||0), 0),
+          outros_fixos: custosFixos.filter(c => !["Aluguel", "Energia", "Água", "Internet", "Salários", "Contador"].includes(c.descricao)).reduce((s, c) => s + (Number(c.valor) || 0), 0),
         } as any)
-        .eq("id", negocio.id);
+        .eq("id", negocioRow.id);
       if (e1) throw e1;
 
-      // Save precificacao
       const { error: e2 } = await supabase
         .from("configuracoes_precificacao")
         .update({
@@ -193,7 +181,7 @@ export default function Configuracoes() {
           taxa_debito_pct: taxaDebito,
           taxa_credito_pct: taxaCredito,
         } as any)
-        .eq("id", precificacao.id);
+        .eq("id", precificacaoRow.id);
       if (e2) throw e2;
     },
     onSuccess: () => {
@@ -201,7 +189,7 @@ export default function Configuracoes() {
       queryClient.invalidateQueries({ queryKey: ["configuracoes_precificacao"] });
       toast.success("Configurações salvas com sucesso!");
     },
-    onError: () => toast.error("Erro ao salvar configurações."),
+    onError: (error: Error) => toast.error(error.message || "Erro ao salvar configurações."),
   });
 
   // ─── Tamanhos helpers ──────────────────────────────────────────────
@@ -228,7 +216,14 @@ export default function Configuracoes() {
     setCustosFixos(copy);
   };
 
-  // ─── Render ────────────────────────────────────────────────────────
+  if (negocioLoading || precificacaoLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 max-w-3xl mx-auto pb-24">
       {/* Header */}

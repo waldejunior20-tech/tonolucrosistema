@@ -1,32 +1,10 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
 import type { ConfigPrecificacao } from "@/lib/pricing-helpers";
 
-type ConfigNegocioRow = {
-  id: string;
-  nome_estabelecimento: string;
-  faturamento_medio: number;
-  num_funcionarios: number;
-  aluguel: number;
-  energia: number;
-  salarios: number;
-  internet: number;
-  contador: number;
-  outros_fixos: number;
-  pct_dinheiro_pix: number;
-  pct_debito: number;
-  pct_credito: number;
-  pct_ifood: number;
-  onboarding_completo: boolean;
-  cidade: string;
-  estado: string;
-  tamanhos_pizza: string[];
-  custos_fixos_detalhados: Array<{ descricao: string; valor: number }>;
-  lucro_desejado_pct: number;
-  agua: number;
-  user_id?: string | null;
-};
+type ConfigNegocioRow = Tables<"configuracoes_negocio">;
 
-export const DEFAULT_CONFIG_NEGOCIO: Omit<ConfigNegocioRow, "id"> = {
+export const DEFAULT_CONFIG_NEGOCIO: Omit<ConfigNegocioRow, "id" | "created_at" | "updated_at" | "user_id"> = {
   nome_estabelecimento: "",
   faturamento_medio: 0,
   num_funcionarios: 0,
@@ -75,7 +53,7 @@ export async function getOrCreateConfiguracoesNegocio() {
     .maybeSingle();
 
   if (error) throw error;
-  if (existing) return existing as ConfigNegocioRow;
+  if (existing) return existing;
 
   const { data, error: insertError } = await supabase
     .from("configuracoes_negocio")
@@ -84,7 +62,7 @@ export async function getOrCreateConfiguracoesNegocio() {
     .single();
 
   if (insertError) throw insertError;
-  return data as ConfigNegocioRow;
+  return data;
 }
 
 export async function getOrCreateConfiguracoesPrecificacao() {
