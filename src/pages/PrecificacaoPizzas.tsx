@@ -402,15 +402,14 @@ export default function PrecificacaoPizzas() {
                 ] as [keyof ConfigPrecificacao, string][]).map(([key, label]) => (
                   <div key={key}>
                     <Label className="text-xs font-bold uppercase tracking-wider">{label}</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
+                    <PercentInput
                       value={configForm[key] as number}
-                      onChange={(e) =>
-                        setConfigForm({ ...configForm, [key]: parseFloat(e.target.value) || 0 })
+                      onChange={(v) =>
+                        setConfigForm({ ...configForm, [key]: v })
                       }
                       disabled={key === "taxa_pix_pct"}
-                      className="h-9 font-terminal"
+                      className="h-9"
+                    />
                     />
                   </div>
                 ))}
