@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
+import { PercentInput } from "@/components/SmartInputs";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -402,15 +403,13 @@ export default function PrecificacaoPizzas() {
                 ] as [keyof ConfigPrecificacao, string][]).map(([key, label]) => (
                   <div key={key}>
                     <Label className="text-xs font-bold uppercase tracking-wider">{label}</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
+                    <PercentInput
                       value={configForm[key] as number}
-                      onChange={(e) =>
-                        setConfigForm({ ...configForm, [key]: parseFloat(e.target.value) || 0 })
+                      onChange={(v) =>
+                        setConfigForm({ ...configForm, [key]: v })
                       }
                       disabled={key === "taxa_pix_pct"}
-                      className="h-9 font-terminal"
+                      className="h-9"
                     />
                   </div>
                 ))}

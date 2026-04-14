@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Input } from "@/components/ui/input";
+import { PercentInput } from "@/components/SmartInputs";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -99,11 +99,9 @@ export default function PrecificacaoConfiguracoes() {
             {percentFields.map(([key, label, desc]) => (
               <div key={key} className="space-y-1.5">
                 <Label className="text-sm font-medium">{label}</Label>
-                <Input
-                  type="number"
-                  step="0.01"
+                <PercentInput
                   value={form[key] as number}
-                  onChange={(e) => setForm({ ...form, [key]: parseFloat(e.target.value) || 0 })}
+                  onChange={(v) => setForm({ ...form, [key]: v })}
                   disabled={key === "taxa_pix_pct"}
                   className="h-10"
                 />
@@ -134,11 +132,9 @@ export default function PrecificacaoConfiguracoes() {
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs text-muted-foreground">Taxa (%)</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
+                  <PercentInput
                     value={form[taxaKey] as number}
-                    onChange={(e) => setForm({ ...form, [taxaKey]: parseFloat(e.target.value) || 0 })}
+                    onChange={(v) => setForm({ ...form, [taxaKey]: v })}
                     disabled={!(form[activeKey] as boolean)}
                     className="h-9"
                   />
