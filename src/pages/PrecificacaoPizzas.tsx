@@ -411,7 +411,6 @@ export default function PrecificacaoPizzas() {
                       disabled={key === "taxa_pix_pct"}
                       className="h-9"
                     />
-                    />
                   </div>
                 ))}
               </div>
