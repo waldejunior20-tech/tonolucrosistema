@@ -131,7 +131,6 @@ export default function Onboarding() {
                   min={0}
                   placeholder="0"
                 />
-                />
               </div>
             </div>
           )}
