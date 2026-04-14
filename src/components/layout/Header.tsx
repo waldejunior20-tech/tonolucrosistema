@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LogOut, User, Menu, Settings2 } from "lucide-react";
+import { LogOut, User, Menu, Cog } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface HeaderProps {
