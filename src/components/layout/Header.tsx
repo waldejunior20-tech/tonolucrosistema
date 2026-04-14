@@ -44,7 +44,7 @@ export function Header({ onMenuClick, showMenuButton }: HeaderProps) {
   })();
 
   return (
-    <header className="h-14 border-b border-border bg-background/80 backdrop-blur-sm flex items-center justify-between px-4 lg:px-6 sticky top-0 z-10">
+    <header className="h-16 border-b border-border bg-background/80 backdrop-blur-sm flex items-center justify-between px-4 lg:px-6 sticky top-0 z-10">
       <div className="flex items-center gap-3">
         {showMenuButton && (
           <button
@@ -67,8 +67,7 @@ export function Header({ onMenuClick, showMenuButton }: HeaderProps) {
           className="p-2 rounded-sm text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
           title="Configurações"
         >
-          <Cog className="h-4 w-4" />
-        </button>
+          <Cog className="h-6 w-6" />
 
         <div className="h-5 w-px bg-border" />
 
