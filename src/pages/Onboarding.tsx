@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { PercentInput, SmartMoneyInput, IntegerInput } from "@/components/SmartInputs";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { MoneyInput } from "@/components/MoneyInput";
+
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { Store, DollarSign, CreditCard, ArrowRight, ArrowLeft, Check } from "lucide-react";
@@ -182,16 +182,13 @@ export default function Onboarding() {
               ].map((item) => (
                 <div key={item.label} className="flex items-center gap-3">
                   <Label className="w-36 text-sm shrink-0">{item.label}</Label>
-                  <div className="flex items-center gap-1 flex-1">
-                    <PercentInput
-                      value={item.value}
-                      onChange={item.set}
-                      decimals={0}
-                      placeholder="0"
-                      className="flex-1"
-                    />
-                    <span className="text-sm text-muted-foreground">%</span>
-                  </div>
+                  <PercentInput
+                    value={item.value}
+                    onChange={item.set}
+                    decimals={0}
+                    placeholder="0"
+                    className="flex-1"
+                  />
                 </div>
               ))}
               <div className="flex items-center gap-3 pt-3 border-t border-border">
