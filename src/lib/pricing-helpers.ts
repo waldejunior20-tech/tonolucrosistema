@@ -34,10 +34,10 @@ export const cmvEmoji = (pct: number): string => {
 };
 
 export const cmvMessage = (pct: number): string => {
-  if (pct < 25) return "Preço alto — verifique se está correto";
-  if (pct <= 35) return "Ideal";
-  if (pct <= 40) return "Atenção — margem apertada";
-  return "Rever preços — prejuízo";
+  if (pct < 25) return "Preço alto — margem acima do necessário";
+  if (pct <= 35) return "Ideal — CMV dentro da faixa saudável";
+  if (pct <= 40) return "Atenção — preço baixo, margem apertada";
+  return "Preço muito baixo — rever urgente";
 };
 
 // ─── CMV faixas para bebidas industrializadas ────────────────────────
