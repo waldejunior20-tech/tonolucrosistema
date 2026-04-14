@@ -68,6 +68,7 @@ export function Header({ onMenuClick, showMenuButton }: HeaderProps) {
           title="Configurações"
         >
           <Cog className="h-6 w-6" />
+        </button>
 
         <div className="h-5 w-px bg-border" />
 
