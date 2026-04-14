@@ -355,7 +355,7 @@ export default function PrecificacaoProdutos() {
               {fmtPct(indicators.avgCmv)}
             </p>
             <p className="text-sm text-muted-foreground font-medium mt-2">
-              {indicators.avgCmv > 40 ? "⚠️ Custo alto — revise os preços" : indicators.avgCmv > 35 ? "Atenção — custo no limite" : "✅ Custo saudável"}
+              {indicators.avgCmv > 40 ? "Custo alto — revise os preços" : indicators.avgCmv > 35 ? "Atenção — custo no limite" : "Custo saudável"}
             </p>
           </div>
           <div className="card-premium border-destructive/20">

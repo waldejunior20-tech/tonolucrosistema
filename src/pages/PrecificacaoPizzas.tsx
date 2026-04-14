@@ -436,7 +436,7 @@ export default function PrecificacaoPizzas() {
               {fmtPct(indicators.avgCmv)}
             </p>
             <p className="text-[12px] text-muted-foreground font-medium mt-3">
-              {indicators.avgCmv > 40 ? "⚠️ Custo alto — revise os preços" : indicators.avgCmv > 35 ? "Atenção — custo no limite" : "✅ Custo saudável"}
+              {indicators.avgCmv > 40 ? "Custo alto — revise os preços" : indicators.avgCmv > 35 ? "Atenção — custo no limite" : "Custo saudável"}
             </p>
           </div>
 
@@ -648,7 +648,7 @@ export default function PrecificacaoPizzas() {
                                     <Check className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary animate-in fade-in duration-200" />
                                   )}
                                   {belowSuggested && !savedFields[fieldKey] && (
-                                    <span className="absolute -right-1 -top-2 text-[13px]" title="Preço abaixo do sugerido">⚠️</span>
+                                    <span className="absolute -right-1 -top-2 text-warning" title="Preço abaixo do sugerido"><AlertTriangle className="h-3.5 w-3.5" /></span>
                                   )}
                                 </div>
                               </div>

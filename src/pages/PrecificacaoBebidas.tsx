@@ -455,7 +455,7 @@ export default function PrecificacaoBebidas() {
               {fmtPct(indIndicators.avgCmv)}
             </p>
             <p className="text-[11px] text-muted-foreground font-medium mt-1">
-              {indIndicators.avgCmv > 92 ? "⚠️ Custo muito alto — revise os preços" : indIndicators.avgCmv > 85 ? "Atenção — custo no limite" : "✅ Custo saudável"}
+              {indIndicators.avgCmv > 92 ? "Custo muito alto — revise os preços" : indIndicators.avgCmv > 85 ? "Atenção — custo no limite" : "Custo saudável"}
             </p>
           </div>
           <div className="card-premium border-destructive/20">

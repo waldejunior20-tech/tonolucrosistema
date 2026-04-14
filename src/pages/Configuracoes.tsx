@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Settings2, Save, Plus, Trash2, Building2 } from "lucide-react";
+import { Settings2, Save, Plus, Trash2, Building2, Pizza, Radio, CreditCard, Target, ClipboardList } from "lucide-react";
 import { fmt } from "@/lib/pricing-helpers";
 
 // ─── Types ───────────────────────────────────────────────────────────
@@ -268,7 +268,10 @@ export default function Configuracoes() {
       {/* SEÇÃO 2 — Tamanhos de Pizza */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">🍕 Tamanhos de Pizza</CardTitle>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Pizza className="h-5 w-5 text-primary" />
+            Tamanhos de Pizza
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {tamanhosPizza.map((tam, idx) => (
@@ -299,7 +302,10 @@ export default function Configuracoes() {
       {/* SEÇÃO 3 — Canais de Venda */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">📡 Canais de Venda</CardTitle>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Radio className="h-5 w-5 text-primary" />
+            Canais de Venda
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Balcão — always active */}
@@ -389,7 +395,10 @@ export default function Configuracoes() {
       {/* SEÇÃO 4 — Formas de Pagamento */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">💳 Formas de Pagamento</CardTitle>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <CreditCard className="h-5 w-5 text-primary" />
+            Formas de Pagamento
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -416,7 +425,10 @@ export default function Configuracoes() {
       {/* SEÇÃO 5 — Metas */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">🎯 Metas</CardTitle>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Target className="h-5 w-5 text-primary" />
+            Metas
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -439,7 +451,10 @@ export default function Configuracoes() {
       {/* SEÇÃO 6 — Custos Fixos Mensais */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">📋 Custos Fixos Mensais</CardTitle>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <ClipboardList className="h-5 w-5 text-primary" />
+            Custos Fixos Mensais
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {/* Header */}
