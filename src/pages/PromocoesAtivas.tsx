@@ -184,9 +184,10 @@ export default function PromocoesAtivas() {
   const { data: configNegocio } = useQuery({
     queryKey: ["configuracoes_negocio"],
     queryFn: async () => {
-      const { data } = await supabase.from("configuracoes_negocio").select("*").limit(1).single();
+      const { data } = await supabase.from("configuracoes_negocio").select("*").limit(1).maybeSingle();
       return data;
     },
+    retry: false,
   });
 
   // ─── Filtered list ──────────────────────────────────────────────

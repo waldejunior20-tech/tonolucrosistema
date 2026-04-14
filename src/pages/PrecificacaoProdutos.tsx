@@ -19,6 +19,7 @@ import {
   calcAppPrice, getActiveApps, APP_TOOLTIP,
   type ConfigPrecificacao,
 } from "@/lib/pricing-helpers";
+import { getOrCreateConfiguracoesPrecificacao } from "@/lib/config-helpers";
 
 // ─── Types ───────────────────────────────────────────────────────────
 interface FichaProduto {
@@ -57,11 +58,8 @@ export default function PrecificacaoProdutos() {
 
   const { data: config } = useQuery({
     queryKey: ["configuracoes_precificacao"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("configuracoes_precificacao").select("*").limit(1).single();
-      if (error) throw error;
-      return data as ConfigPrecificacao;
-    },
+    queryFn: getOrCreateConfiguracoesPrecificacao,
+    retry: false,
   });
 
   const { data: fichas = [] } = useQuery({
