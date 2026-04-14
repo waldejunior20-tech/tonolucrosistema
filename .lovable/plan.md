@@ -1,14 +1,17 @@
 
 
-## Plan: Fix card-within-card double gray issue in Pizza Pricing
+## Plano: Atualizar mensagens das faixas de CMV
 
-The problem: The outer pizza card (from the `Card` component) already has `background: rgba(211, 211, 211, 0.2)`. Inside it, each size card (P, M, G) at line 570 also has `background: 'rgba(211, 211, 211, 0.2)'`. These two translucent grays stack on top of each other, making the inner cards appear darker than intended.
+### Alteração única em `src/lib/pricing-helpers.ts`
 
-### Fix
+Função `cmvMessage` — atualizar as 4 mensagens:
 
-**File: `src/pages/PrecificacaoPizzas.tsx` (line 570)**
+| Faixa | Mensagem atual | Nova mensagem |
+|-------|---------------|---------------|
+| < 25% | "Preço alto — verifique se está correto" | "Preço alto — margem acima do necessário" |
+| 25–35% | "Ideal" | "Ideal — CMV dentro da faixa saudável" |
+| 35–40% | "Atenção — margem apertada" | "Atenção — preço baixo, margem apertada" |
+| > 40% | "Rever preços — prejuízo" | "Preço muito baixo — rever urgente" |
 
-Change the inner size cards' background from `rgba(211, 211, 211, 0.2)` to `rgba(211, 211, 211, 0.13)` — a lighter opacity that, when layered on top of the outer card, produces a subtle separation without becoming noticeably darker. Keep the blur and border as-is.
-
-This is a single-line style change. No other files affected.
+Cores e faixas numéricas permanecem iguais. Nenhum outro arquivo alterado.
 
