@@ -3,10 +3,17 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, Package, BookOpen, DollarSign, 
   TrendingUp, Tag, ChevronDown, 
-  PanelLeftClose, PanelLeft, Pizza, Cog
+  PanelLeftClose, PanelLeft, Pizza, Cog, LogOut, ChevronUp
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
+import { supabase } from "@/integrations/supabase/client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 export type ModuleKey = "dashboard" | "insumos" | "fichas" | "precificacao" | "financeiro" | "promocoes" | "configuracoes";
 
 interface SubItem {
@@ -79,6 +86,24 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
   const location = useLocation();
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
   const [expandedSubItems, setExpandedSubItems] = useState<Record<string, boolean>>({});
+  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
+
+  useEffect(() => {
+    async function loadUser() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUser(user);
+        const { data } = await supabase
+          .from("profiles")
+          .select("display_name, business_name, avatar_url")
+          .eq("id", user.id)
+          .single();
+        if (data) setProfile(data);
+      }
+    }
+    loadUser();
+  }, []);
 
   useEffect(() => {
     sidebarItems.forEach(item => {
@@ -119,6 +144,21 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
       toggleExpand(item.key);
     }
   };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/login");
+  };
+
+  const initials = (() => {
+    const name = profile?.display_name || profile?.business_name || user?.email || "";
+    const parts = name.split(/[\s@]+/).filter(Boolean);
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return name.slice(0, 2).toUpperCase();
+  })();
+
+  const displayName = profile?.display_name || profile?.business_name || "Usuário";
+  const displayEmail = user?.email || "";
 
   return (
     <aside 
@@ -177,7 +217,6 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
                       : "text-sidebar-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground"
                   )}
                 >
-                  {/* Left Active Bar */}
                   {isActive && !collapsed && (
                     <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full bg-sidebar-primary" />
                   )}
@@ -212,7 +251,6 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
                   </div>
                 </button>
 
-                {/* Sub-items */}
                 {!collapsed && hasSubItems && isExpanded && (
                   <div className="flex flex-col gap-0.5 mt-1 ml-5 pl-3 border-l-2 border-sidebar-border/30">
                     {item.subItems?.map((sub, idx) => {
@@ -272,6 +310,57 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
           })}
         </div>
       </nav>
+
+      {/* User Menu */}
+      <div className="shrink-0 border-t border-sidebar-border/40 p-3">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              className={cn(
+                "w-full flex items-center gap-3 rounded-xl p-2 hover:bg-sidebar-accent transition-colors duration-200",
+                collapsed ? "justify-center" : ""
+              )}
+            >
+              <div className="w-9 h-9 rounded-full bg-sidebar-primary/15 border border-sidebar-primary/30 flex items-center justify-center shrink-0">
+                <span className="text-xs font-bold text-sidebar-primary">{initials}</span>
+              </div>
+              {!collapsed && (
+                <>
+                  <div className="flex-1 min-w-0 text-left">
+                    <p className="text-sm font-semibold text-sidebar-accent-foreground truncate leading-tight">
+                      {displayName}
+                    </p>
+                    <p className="text-[11px] text-sidebar-foreground/50 truncate leading-tight">
+                      {displayEmail}
+                    </p>
+                  </div>
+                  <ChevronUp size={16} className="text-sidebar-foreground/40 shrink-0" />
+                </>
+              )}
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            side={collapsed ? "right" : "top"}
+            align="start"
+            className="w-56 mb-1"
+          >
+            <div className="px-3 py-2">
+              <p className="text-sm font-semibold text-foreground truncate">{displayName}</p>
+              <p className="text-xs text-muted-foreground truncate">{displayEmail}</p>
+            </div>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => { navigate("/configuracoes"); onNavigate?.(); }} className="cursor-pointer gap-2">
+              <Cog size={16} />
+              Configurações
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer gap-2 text-destructive focus:text-destructive">
+              <LogOut size={16} />
+              Sair
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </aside>
   );
 }
