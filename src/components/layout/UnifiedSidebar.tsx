@@ -123,7 +123,7 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
   return (
     <aside 
       className={cn(
-        "h-screen bg-sidebar transition-all duration-300 flex flex-col border-r border-sidebar-border relative z-50",
+        "h-full bg-sidebar flex flex-col border-r border-sidebar-border relative z-50",
         collapsed ? "w-16" : "w-[260px]"
       )}
     >
