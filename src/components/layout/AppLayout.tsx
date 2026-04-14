@@ -5,6 +5,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { UnifiedSidebar } from "./UnifiedSidebar";
 import { MobileSidebar } from "./MobileSidebar";
 import { Header } from "./Header";
+import { cn } from "@/lib/utils";
 
 export function AppLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -13,12 +14,19 @@ export function AppLayout() {
 
   return (
     <div className="flex min-h-screen w-full bg-background">
-      {/* Desktop Sidebar */}
+      {/* Desktop Sidebar — fixed */}
       {!isMobile && (
-        <UnifiedSidebar 
-          collapsed={sidebarCollapsed}
-          onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-        />
+        <aside
+          className={cn(
+            "fixed top-0 left-0 h-screen z-40 transition-all duration-300",
+            sidebarCollapsed ? "w-16" : "w-[260px]"
+          )}
+        >
+          <UnifiedSidebar
+            collapsed={sidebarCollapsed}
+            onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+          />
+        </aside>
       )}
 
       {/* Mobile Sidebar (Sheet/Drawer) */}
@@ -26,9 +34,14 @@ export function AppLayout() {
         <MobileSidebar open={mobileOpen} onOpenChange={setMobileOpen} />
       )}
 
-      {/* Main */}
-      <div className="flex-1 flex flex-col min-h-screen min-w-0">
-        <Header 
+      {/* Main — offset by sidebar width on desktop */}
+      <div
+        className={cn(
+          "flex-1 flex flex-col min-h-screen min-w-0 transition-all duration-300",
+          !isMobile && (sidebarCollapsed ? "ml-16" : "ml-[260px]")
+        )}
+      >
+        <Header
           showMenuButton={isMobile}
           onMenuClick={() => setMobileOpen(true)}
         />
