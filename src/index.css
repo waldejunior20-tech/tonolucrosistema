@@ -34,6 +34,33 @@
     --ring: 168 76% 36%;
     --radius: 0.5rem;
 
+    /* ═══ Border Radius Tokens ═══
+     * Sistema centralizado de border-radius.
+     * Todos os componentes DEVEM usar estas variáveis.
+     *
+     * --radius-xs   (2px)  → badges pequenos, trend pills
+     * --radius-sm   (4px)  → botões, inputs, trend badges
+     * --radius-md   (6px)  → cards, modais, status pills
+     * --radius-lg   (8px)  → containers, tabelas
+     * --radius-xl   (12px) → cards premium, elementos destaque
+     * --radius-pill          → tags, avatares (totalmente arredondado)
+     *
+     * Regras de uso:
+     *   Cards        → var(--radius-md)  = 0.375rem = 6px
+     *   Botões       → var(--radius-sm)  = 0.125rem = 2px  (equivalente a rounded-sm padrão)
+     *   Inputs       → var(--radius-sm)
+     *   Status pills → var(--radius-md)
+     *   Trend badges → var(--radius-xs)
+     *   Tabelas      → var(--radius-lg)
+     *   Avatares     → var(--radius-pill)
+     * ═══════════════════════════════════════════ */
+    --radius-xs: 0.125rem;   /* 2px  */
+    --radius-sm: 0.25rem;    /* 4px  */
+    --radius-md: 0.375rem;   /* 6px  */
+    --radius-lg: 0.5rem;     /* 8px  */
+    --radius-xl: 0.75rem;    /* 12px */
+    --radius-pill: 9999px;
+
     /* ═══ Semantic Surface Tokens ═══ */
     --surface-page: 220 14% 96%;
     --surface-card: 0 0% 100%;
@@ -137,7 +164,7 @@
     color: hsl(var(--primary-foreground));
     font-weight: 600;
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     transition: all 0.15s ease;
   }
   .btn-action-add:hover {
@@ -185,7 +212,7 @@
     background: rgba(211, 211, 211, 0.2);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     padding: 24px;
   }
 
@@ -229,7 +256,7 @@
   .status-profit {
     background: hsl(var(--success) / 0.1);
     color: hsl(var(--success));
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     padding: 4px 12px;
     font-size: 13px;
     font-weight: 600;
@@ -237,7 +264,7 @@
   .status-loss {
     background: hsl(var(--destructive) / 0.1);
     color: hsl(var(--destructive));
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     padding: 4px 12px;
     font-size: 13px;
     font-weight: 600;
@@ -245,7 +272,7 @@
   .status-warning {
     background: hsl(var(--warning) / 0.1);
     color: hsl(var(--warning));
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     padding: 4px 12px;
     font-size: 13px;
     font-weight: 600;
@@ -255,7 +282,7 @@
   .trend-positive {
     color: hsl(var(--success));
     background: hsl(var(--success) / 0.08);
-    border-radius: 4px;
+    border-radius: var(--radius-xs);
     padding: 2px 8px;
     font-size: 12px;
     font-weight: 600;
@@ -263,7 +290,7 @@
   .trend-negative {
     color: hsl(var(--destructive));
     background: hsl(var(--destructive) / 0.08);
-    border-radius: 4px;
+    border-radius: var(--radius-xs);
     padding: 2px 8px;
     font-size: 12px;
     font-weight: 600;
