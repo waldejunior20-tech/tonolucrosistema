@@ -13,7 +13,7 @@ import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
-import { Settings2, Save, AlertTriangle, Check, TrendingUp, TrendingDown, Activity, ChevronDown } from "lucide-react";
+import { Cog, Save, AlertTriangle, Check, TrendingUp, TrendingDown, Activity, ChevronDown } from "lucide-react";
 import { formatMoney } from "@/components/MoneyInput";
 import {
   fmt, fmtPct, calcCmv, converterQuantidade, cmvBg, cmvColor, cmvEmoji, cmvMessage,
@@ -379,7 +379,7 @@ export default function PrecificacaoPizzas() {
             }}
             className="btn-micro flex items-center gap-2 px-5 h-10 rounded-lg border border-border text-sm font-semibold text-muted-foreground hover:text-foreground hover:border-foreground/30 bg-card transition-all"
           >
-            <Settings2 className="h-4 w-4" />
+            <Cog className="h-4 w-4" />
             <span>Configurações</span>
           </button>
         </div>

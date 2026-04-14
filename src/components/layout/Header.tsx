@@ -44,7 +44,7 @@ export function Header({ onMenuClick, showMenuButton }: HeaderProps) {
   })();
 
   return (
-    <header className="h-14 border-b border-border bg-background/80 backdrop-blur-sm flex items-center justify-between px-4 lg:px-6 sticky top-0 z-10">
+    <header className="h-16 border-b border-border bg-background/80 backdrop-blur-sm flex items-center justify-between px-4 lg:px-6 sticky top-0 z-10">
       <div className="flex items-center gap-3">
         {showMenuButton && (
           <button
@@ -67,7 +67,7 @@ export function Header({ onMenuClick, showMenuButton }: HeaderProps) {
           className="p-2 rounded-sm text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
           title="Configurações"
         >
-          <Cog className="h-4 w-4" />
+          <Cog className="h-6 w-6" />
         </button>
 
         <div className="h-5 w-px bg-border" />
@@ -85,7 +85,7 @@ export function Header({ onMenuClick, showMenuButton }: HeaderProps) {
           onClick={handleLogout}
           className="h-8 text-muted-foreground hover:text-destructive text-xs gap-1.5"
         >
-          <LogOut className="h-3.5 w-3.5" />
+          <LogOut className="h-5 w-5" />
           <span className="hidden sm:block">Sair</span>
         </Button>
       </div>
