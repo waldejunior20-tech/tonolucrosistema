@@ -83,12 +83,13 @@ export default {
         },
       },
       borderRadius: {
-        xs: "6px",
-        sm: "10px",
-        md: "16px",
-        lg: "20px",
-        xl: "28px",
-        pill: "9999px",
+        /* Alinhado com --radius-* tokens do index.css */
+        xs: "var(--radius-xs)",     /* 2px  — badges, trend pills */
+        sm: "var(--radius-sm)",     /* 4px  — botões, inputs */
+        md: "var(--radius-md)",     /* 6px  — cards, modais, status pills */
+        lg: "var(--radius-lg)",     /* 8px  — containers, tabelas */
+        xl: "var(--radius-xl)",     /* 12px — cards premium, destaque */
+        pill: "var(--radius-pill)", /* 9999px — avatares, tags */
       },
       boxShadow: {
         card: "0 4px 20px rgba(0,0,0,0.05)",
