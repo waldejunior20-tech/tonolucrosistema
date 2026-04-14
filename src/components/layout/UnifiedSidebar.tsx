@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, Package, BookOpen, DollarSign, 
   TrendingUp, Tag, ChevronDown, 
-  PanelLeftClose, PanelLeft, Pizza, Settings2
+  PanelLeftClose, PanelLeft, Pizza, Cog
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -65,7 +65,7 @@ const sidebarItems: SidebarItem[] = [
       { label: "Resumo do Mês", path: "/financeiro/dre" },
     ],
   },
-  { key: "configuracoes", label: "Configurações", icon: Settings2, path: "/configuracoes" },
+  { key: "configuracoes", label: "Configurações", icon: Cog, path: "/configuracoes" },
 ];
 
 interface UnifiedSidebarProps {

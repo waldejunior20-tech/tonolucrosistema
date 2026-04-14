@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LogOut, User, Menu, Settings2 } from "lucide-react";
+import { LogOut, User, Menu, Cog } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface HeaderProps {
@@ -67,7 +67,7 @@ export function Header({ onMenuClick, showMenuButton }: HeaderProps) {
           className="p-2 rounded-sm text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
           title="Configurações"
         >
-          <Settings2 className="h-4 w-4" />
+          <Cog className="h-4 w-4" />
         </button>
 
         <div className="h-5 w-px bg-border" />
