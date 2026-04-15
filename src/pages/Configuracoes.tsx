@@ -265,34 +265,32 @@ export default function Configuracoes() {
 
         {/* ─── Meu Negócio ─────────────────────────────────────────── */}
         <TabsContent value="negocio">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
             <Card>
               <CardContent className="pt-6 space-y-4">
                 <div>
                   <Label className="text-xs text-muted-foreground">Nome do Estabelecimento</Label>
                   <Input value={nomeEstabelecimento} onChange={e => setNomeEstabelecimento(e.target.value)} className="h-10 mt-1" />
                 </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6 space-y-4">
-                <div>
-                  <Label className="text-xs text-muted-foreground">Cidade</Label>
-                  <Input value={cidade} onChange={e => setCidade(e.target.value)} className="h-10 mt-1" />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Cidade</Label>
+                    <Input value={cidade} onChange={e => setCidade(e.target.value)} className="h-10 mt-1" />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Estado</Label>
+                    <Input value={estado} onChange={e => setEstado(e.target.value)} placeholder="SP" maxLength={2} className="h-10 mt-1 uppercase" />
+                  </div>
                 </div>
-                <div>
-                  <Label className="text-xs text-muted-foreground">Estado</Label>
-                  <Input value={estado} onChange={e => setEstado(e.target.value)} placeholder="SP" maxLength={2} className="h-10 mt-1 uppercase" />
-                </div>
+                <SaveButton />
               </CardContent>
             </Card>
           </div>
-          <SaveButton />
         </TabsContent>
 
         {/* ─── Tamanhos de Pizza ────────────────────────────────────── */}
         <TabsContent value="pizza">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
             <Card>
               <CardContent className="pt-6 space-y-3">
                 {tamanhosPizza.map((tam, idx) => (
@@ -317,15 +315,15 @@ export default function Configuracoes() {
                   </Button>
                 )}
                 <p className="text-xs text-muted-foreground">Mínimo 1, máximo 6 tamanhos.</p>
+                <SaveButton />
               </CardContent>
             </Card>
           </div>
-          <SaveButton />
         </TabsContent>
 
         {/* ─── Canais de Venda ──────────────────────────────────────── */}
         <TabsContent value="canais">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
             <Card>
               <CardContent className="pt-6 space-y-4">
                 {/* Balcão — always active */}
@@ -361,11 +359,7 @@ export default function Configuracoes() {
                     </div>
                   )}
                 </div>
-              </CardContent>
-            </Card>
 
-            <Card>
-              <CardContent className="pt-6 space-y-4">
                 {/* Rappi */}
                 <div className="rounded-lg border border-border p-4 space-y-3">
                   <div className="flex items-center justify-between">
@@ -413,15 +407,16 @@ export default function Configuracoes() {
                     </div>
                   )}
                 </div>
+
+                <SaveButton />
               </CardContent>
             </Card>
           </div>
-          <SaveButton />
         </TabsContent>
 
         {/* ─── Formas de Pagamento ──────────────────────────────────── */}
         <TabsContent value="pagamento">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
             <Card>
               <CardContent className="pt-6 space-y-4">
                 <div>
@@ -432,10 +427,6 @@ export default function Configuracoes() {
                   <Label className="text-xs text-muted-foreground">Crédito (%)</Label>
                   <PercentInput value={taxaCredito} onChange={setTaxaCredito} className="h-9 mt-1" />
                 </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6 space-y-4">
                 <div>
                   <Label className="text-xs text-muted-foreground">PIX (%)</Label>
                   <PercentInput value={0} onChange={() => {}} disabled className="h-9 mt-1 opacity-50" />
@@ -444,15 +435,15 @@ export default function Configuracoes() {
                   <Label className="text-xs text-muted-foreground">Dinheiro (%)</Label>
                   <PercentInput value={0} onChange={() => {}} disabled className="h-9 mt-1 opacity-50" />
                 </div>
+                <SaveButton />
               </CardContent>
             </Card>
           </div>
-          <SaveButton />
         </TabsContent>
 
         {/* ─── Metas ────────────────────────────────────────────────── */}
         <TabsContent value="metas">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
             <Card>
               <CardContent className="pt-6 space-y-4">
                 <div>
@@ -463,23 +454,19 @@ export default function Configuracoes() {
                   <Label className="text-xs text-muted-foreground">Lucro Desejado (%)</Label>
                   <PercentInput value={lucroDesejado} onChange={setLucroDesejado} className="h-9 mt-1" />
                 </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6 space-y-4">
                 <div>
                   <Label className="text-xs text-muted-foreground">Faturamento Meta Mensal (R$)</Label>
                   <SmartMoneyInput value={faturamentoMeta} onChange={setFaturamentoMeta} className="h-9 mt-1" />
                 </div>
+                <SaveButton />
               </CardContent>
             </Card>
           </div>
-          <SaveButton />
         </TabsContent>
 
         {/* ─── Custos Fixos Mensais ─────────────────────────────────── */}
         <TabsContent value="custos">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
             <Card>
               <CardContent className="pt-6 space-y-3">
                 <div className="grid grid-cols-[1fr_140px_40px] gap-2 text-xs text-muted-foreground font-semibold uppercase tracking-wider px-1">
@@ -510,12 +497,8 @@ export default function Configuracoes() {
                 <Button size="sm" onClick={addCustoFixo} className="btn-action-add gap-1">
                   <Plus className="h-3.5 w-3.5" /> Adicionar linha
                 </Button>
-              </CardContent>
-            </Card>
 
-            <Card>
-              <CardContent className="pt-6 space-y-4">
-                <div className="space-y-2">
+                <div className="border-t border-border pt-4 mt-4 space-y-2">
                   <div className="flex justify-between text-sm font-semibold">
                     <span>Total Custos Fixos</span>
                     <span className="font-mono">{fmt(totalCustosFixos)}</span>
@@ -525,10 +508,11 @@ export default function Configuracoes() {
                     <span className="font-mono">{pctFaturamento.toFixed(1)}%</span>
                   </div>
                 </div>
+
+                <SaveButton />
               </CardContent>
             </Card>
           </div>
-          <SaveButton />
         </TabsContent>
       </Tabs>
     </div>
