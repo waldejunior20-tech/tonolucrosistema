@@ -292,33 +292,35 @@ export default function Configuracoes() {
 
         {/* ─── Tamanhos de Pizza ────────────────────────────────────── */}
         <TabsContent value="pizza">
-          <Card>
-            <CardContent className="pt-6 space-y-3">
-              {tamanhosPizza.map((tam, idx) => (
-                <div key={idx} className="flex items-center gap-3">
-                  <span className="text-xs text-muted-foreground w-6">{idx + 1}.</span>
-                  <Input
-                    value={tam}
-                    onChange={e => updateTamanho(idx, e.target.value)}
-                    placeholder="Ex: GG"
-                    className="h-9 flex-1"
-                  />
-                  {tamanhosPizza.length > 1 && (
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => removeTamanho(idx)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              ))}
-              {tamanhosPizza.length < 6 && (
-                <Button size="sm" onClick={addTamanho} className="btn-action-add gap-1">
-                  <Plus className="h-3.5 w-3.5" /> Adicionar tamanho
-                </Button>
-              )}
-              <p className="text-xs text-muted-foreground">Mínimo 1, máximo 6 tamanhos.</p>
-              <SaveButton />
-            </CardContent>
-          </Card>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardContent className="pt-6 space-y-3">
+                {tamanhosPizza.map((tam, idx) => (
+                  <div key={idx} className="flex items-center gap-3">
+                    <span className="text-xs text-muted-foreground w-6">{idx + 1}.</span>
+                    <Input
+                      value={tam}
+                      onChange={e => updateTamanho(idx, e.target.value)}
+                      placeholder="Ex: GG"
+                      className="h-9 flex-1"
+                    />
+                    {tamanhosPizza.length > 1 && (
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => removeTamanho(idx)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                ))}
+                {tamanhosPizza.length < 6 && (
+                  <Button size="sm" onClick={addTamanho} className="btn-action-add gap-1">
+                    <Plus className="h-3.5 w-3.5" /> Adicionar tamanho
+                  </Button>
+                )}
+                <p className="text-xs text-muted-foreground">Mínimo 1, máximo 6 tamanhos.</p>
+              </CardContent>
+            </Card>
+          </div>
+          <SaveButton />
         </TabsContent>
 
         {/* ─── Canais de Venda ──────────────────────────────────────── */}
