@@ -353,28 +353,31 @@ export default function InsumosProduzidos() {
                   <Input
                     id="nome"
                     placeholder="Ex: Massa de Pizza, Frango Desfiado"
+                    className={fieldErrorClass(showErr("nome"))}
                     value={form.nome}
                     onChange={(e) => setForm({ ...form, nome: e.target.value })}
-                    required
                   />
+                  <FieldError show={showErr("nome")} />
                 </div>
                 <div>
                   <Label htmlFor="rendimento">Rendimento *</Label>
                   <QuantityInput
                     id="rendimento"
+                    className={fieldErrorClass(showErr("rendimento"))}
                     value={form.rendimento}
                     onChange={(v) => setForm({ ...form, rendimento: v })}
-                    required
                   />
+                  <FieldError show={showErr("rendimento")} />
                 </div>
                 <div>
                   <Label>Unidade *</Label>
                   <Select value={form.unidade_rendimento} onValueChange={(v) => setForm({ ...form, unidade_rendimento: v })}>
-                    <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                    <SelectTrigger className={fieldErrorClass(showErr("unidade_rendimento"))}><SelectValue placeholder="Selecione" /></SelectTrigger>
                     <SelectContent>
                       {UNIDADES_RENDIMENTO.map((u) => <SelectItem key={u} value={u}>{u}</SelectItem>)}
                     </SelectContent>
                   </Select>
+                  <FieldError show={showErr("unidade_rendimento")} />
                 </div>
                 <div className="flex flex-col justify-end">
                   <p className="text-sm text-muted-foreground">Custo/{form.unidade_rendimento || "un"}:</p>
