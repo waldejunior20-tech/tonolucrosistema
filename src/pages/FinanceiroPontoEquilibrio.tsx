@@ -113,7 +113,7 @@ export default function FinanceiroPontoEquilibrio() {
             </SelectContent>
           </Select>
         </div>
-      </div>
+      </PageHeader>
 
       {/* Explanation */}
       <Card className="border-info/30 bg-info/5">
