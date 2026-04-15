@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
@@ -50,6 +51,7 @@ const TAB_ITEMS = [
 // ─── Component ───────────────────────────────────────────────────────
 export default function Configuracoes() {
   const queryClient = useQueryClient();
+  const isMobile = useIsMobile();
 
   // ─── State ─────────────────────────────────────────────────────────
   const [nomeEstabelecimento, setNomeEstabelecimento] = useState("");
@@ -246,22 +248,41 @@ export default function Configuracoes() {
   }
 
   return (
-    <div className="space-y-6 page-enter pb-12">
+    <div className="space-y-6 page-enter pb-28 lg:pb-12">
       <PageHeader title="Configurações" description="Gerencie os dados do seu negócio, canais de venda e metas." />
 
       <Tabs defaultValue="negocio" className="w-full">
-        <TabsList className="w-full flex flex-wrap h-auto gap-1 bg-muted/50 p-1.5 rounded-lg">
-          {TAB_ITEMS.map(({ value, label, icon: Icon }) => (
-            <TabsTrigger
-              key={value}
-              value={value}
-              className="flex items-center gap-1.5 text-xs sm:text-sm px-3 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md"
-            >
-              <Icon className="h-4 w-4 shrink-0" />
-              <span className="hidden sm:inline">{label}</span>
-            </TabsTrigger>
-          ))}
-        </TabsList>
+        {/* Desktop: tabs no topo */}
+        {!isMobile && (
+          <TabsList className="w-full flex flex-wrap h-auto gap-1 bg-muted/50 p-1.5 rounded-lg">
+            {TAB_ITEMS.map(({ value, label, icon: Icon }) => (
+              <TabsTrigger
+                key={value}
+                value={value}
+                className="flex items-center gap-1.5 text-xs sm:text-sm px-3 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md"
+              >
+                <Icon className="h-4 w-4 shrink-0" />
+                <span>{label}</span>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        )}
+
+        {/* Mobile: barra fixa no rodapé */}
+        {isMobile && (
+          <TabsList className="fixed bottom-0 left-0 right-0 z-50 flex h-16 w-full items-end justify-around bg-background border-t border-border px-1 pb-1 rounded-none shadow-[0_-2px_10px_rgba(0,0,0,0.08)]">
+            {TAB_ITEMS.map(({ value, label, icon: Icon }) => (
+              <TabsTrigger
+                key={value}
+                value={value}
+                className="flex flex-col items-center gap-0.5 px-1 py-1.5 rounded-md text-muted-foreground data-[state=active]:text-primary data-[state=active]:bg-primary/10"
+              >
+                <Icon className="h-5 w-5" />
+                <span className="text-[10px] leading-tight font-medium truncate max-w-[56px]">{label}</span>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        )}
 
         {/* ─── Meu Negócio ─────────────────────────────────────────── */}
         <TabsContent value="negocio">
