@@ -244,15 +244,8 @@ export default function Configuracoes() {
   }
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto pb-12">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <Cog className="h-6 w-6 text-primary" />
-        <div>
-          <h1 className="text-2xl font-extrabold text-text-heading">Configurações</h1>
-          <p className="text-sm text-muted-foreground font-medium">Gerencie os dados do seu negócio, canais de venda e metas.</p>
-        </div>
-      </div>
+    <div className="space-y-6 page-enter max-w-4xl mx-auto pb-12">
+      <PageHeader title="Configurações" description="Gerencie os dados do seu negócio, canais de venda e metas." />
 
       <Tabs defaultValue="negocio" className="w-full">
         <TabsList className="w-full flex flex-wrap h-auto gap-1 bg-muted/50 p-1.5 rounded-lg">
