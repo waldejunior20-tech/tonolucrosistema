@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { appError } from "@/lib/error-codes";
 import { Plus, Trash2, Calculator, CheckCircle2, AlertTriangle, Edit2, Trash, Sparkles } from "lucide-react";
 import { formatMoney, parseFormattedNumber } from "@/components/MoneyInput";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";

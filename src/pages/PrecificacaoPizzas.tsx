@@ -14,6 +14,7 @@ import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
+import { appError } from "@/lib/error-codes";
 import { Cog, Save, AlertTriangle, Check, TrendingUp, TrendingDown, Activity, ChevronDown } from "lucide-react";
 import { formatMoney } from "@/components/MoneyInput";
 import {

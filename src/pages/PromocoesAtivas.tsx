@@ -23,6 +23,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { appError } from "@/lib/error-codes";
 import {
   Plus, Pencil, Copy, Trash2, Pause, Play, AlertTriangle, Search, X,
 } from "lucide-react";

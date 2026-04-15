@@ -14,6 +14,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { appError } from "@/lib/error-codes";
 import { Pencil, Trash2, Plus, Search, X, Beaker } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 import { QuantityInput, formatMoney } from "@/components/MoneyInput";

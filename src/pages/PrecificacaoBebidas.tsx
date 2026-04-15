@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { cn } from "@/lib/utils";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +12,7 @@ import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
+import { appError } from "@/lib/error-codes";
 import { AlertTriangle, Beer, GlassWater, Check } from "lucide-react";
 import { formatMoney } from "@/components/MoneyInput";
 import {

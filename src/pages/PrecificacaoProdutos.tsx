@@ -12,6 +12,7 @@ import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
+import { appError } from "@/lib/error-codes";
 import { AlertTriangle, Check } from "lucide-react";
 import { formatMoney } from "@/components/MoneyInput";
 import {
