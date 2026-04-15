@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
+import { appError } from "@/lib/error-codes";
 import { Loader2, Pizza } from "lucide-react";
 
 function GoogleIcon() {
@@ -33,7 +33,7 @@ export default function Login() {
       if (error) throw error;
       navigate("/");
     } catch (error: any) {
-      toast.error(error.message || "Erro ao fazer login");
+      appError("ERR-AUTH-001", error);
     } finally {
       setLoading(false);
     }
@@ -48,7 +48,7 @@ export default function Login() {
       });
       if (error) throw error;
     } catch (error: any) {
-      toast.error(error.message || "Erro ao fazer login com Google");
+      appError("ERR-AUTH-002", error);
       setGoogleLoading(false);
     }
   };

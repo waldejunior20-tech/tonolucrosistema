@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { appError } from "@/lib/error-codes";
 import { Loader2, ArrowLeft } from "lucide-react";
 
 export default function PasswordRecovery() {
@@ -23,7 +24,7 @@ export default function PasswordRecovery() {
       setSent(true);
       toast.success("Email de recuperação enviado!");
     } catch (error: any) {
-      toast.error(error.message || "Erro ao enviar email de recuperação");
+      appError("ERR-AUTH-005", error);
     } finally {
       setLoading(false);
     }

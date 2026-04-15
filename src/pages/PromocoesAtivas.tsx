@@ -23,6 +23,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { appError } from "@/lib/error-codes";
 import {
   Plus, Pencil, Copy, Trash2, Pause, Play, AlertTriangle, Search, X,
 } from "lucide-react";
@@ -307,7 +308,7 @@ export default function PromocoesAtivas() {
       toast.success(editingId ? "Promoção atualizada!" : "Promoção criada!");
       closeForm();
     },
-    onError: (err: any) => toast.error(err.message),
+    onError: (err: any) => appError("ERR-PRO-001", err),
   });
 
   const deleteMutation = useMutation({
@@ -378,10 +379,10 @@ export default function PromocoesAtivas() {
   };
 
   const handleSave = () => {
-    if (!form.nome.trim()) { toast.error("Nome é obrigatório"); return; }
-    if (!form.data_inicio) { toast.error("Data de início é obrigatória"); return; }
+    if (!form.nome.trim()) { appError("ERR-PRO-002"); return; }
+    if (!form.data_inicio) { appError("ERR-PRO-003"); return; }
     if (form.tipo !== "por_categoria" && form.produto_ids.length === 0) {
-      toast.error("Selecione ao menos um produto"); return;
+      appError("ERR-PRO-004"); return;
     }
     if (hasLoss) {
       setShowPrejuizoConfirm(true);

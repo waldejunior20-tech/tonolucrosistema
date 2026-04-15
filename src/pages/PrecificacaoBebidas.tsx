@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { cn } from "@/lib/utils";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +12,7 @@ import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
+import { appError } from "@/lib/error-codes";
 import { AlertTriangle, Beer, GlassWater, Check } from "lucide-react";
 import { formatMoney } from "@/components/MoneyInput";
 import {
@@ -209,29 +210,32 @@ export default function PrecificacaoBebidas() {
         showSavedCheck(`ind-${insumoId}`);
         setLocalPricesInd((prev) => { const copy = { ...prev }; delete copy[insumoId]; return copy; });
       } catch {
-        toast.error("Erro ao salvar preço.");
+        appError("ERR-PRC-020");
       }
     },
-    [localPricesInd, precificacaoMap, queryClient, showSavedCheck]
+    [localPricesInd, queryClient, showSavedCheck]
   );
 
-  const autoSavePrep = useCallback(
-    async (fichaId: string) => {
-      const local = localPricesPrep[fichaId];
-      if (local === undefined) return;
-      const numVal = parseFloat(local) || 0;
-      try {
-        const { error } = await supabase.from("fichas_tecnicas_produtos").update({ preco_venda: numVal || null }).eq("id", fichaId);
+  const savePrepMutation = useMutation({
+    mutationFn: async ({ fichaId, preco }: { fichaId: string; preco: number }) => {
+      const { data: existing } = await supabase
+        .from("precificacao_produtos")
+        .select("id")
+        .eq("ficha_id", fichaId)
+        .maybeSingle();
+      if (existing) {
+        const { error } = await supabase.from("precificacao_produtos").update({ preco_venda: preco }).eq("ficha_id", fichaId);
         if (error) throw error;
-        queryClient.invalidateQueries({ queryKey: ["fichas_tecnicas_produtos"] });
-        showSavedCheck(`prep-${fichaId}`);
-        setLocalPricesPrep((prev) => { const copy = { ...prev }; delete copy[fichaId]; return copy; });
-      } catch {
-        toast.error("Erro ao salvar preço.");
+      } else {
+        const { error } = await supabase.from("precificacao_produtos").insert({ ficha_id: fichaId, preco_venda: preco });
+        if (error) throw error;
       }
+      toast.success("Preço salvo!");
+      setLocalPricesPrep((prev) => { const copy = { ...prev }; delete copy[fichaId]; return copy; });
     },
-    [localPricesPrep, queryClient, showSavedCheck]
-  );
+    onError: () => appError("ERR-PRC-021"),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["precificacao_bebidas"] }),
+  });
 
   const cmvMeta = config?.cmv_meta_pct ?? 32;
   const activeApps = getActiveApps(config);
@@ -394,7 +398,12 @@ export default function PrecificacaoBebidas() {
                         setLocalPricesPrep((prev) => ({ ...prev, [ficha.id]: String(ficha.preco_venda ?? "") }));
                       }
                     }}
-                    onBlur={() => autoSavePrep(ficha.id)}
+                    onBlur={() => {
+                      const local = localPricesPrep[ficha.id];
+                      if (local !== undefined) {
+                        savePrepMutation.mutate({ fichaId: ficha.id, preco: parseFloat(local) || 0 });
+                      }
+                    }}
                     placeholder="R$ 0,00"
                   />
                   {savedFields[`prep-${ficha.id}`] && (

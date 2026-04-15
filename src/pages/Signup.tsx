@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { appError } from "@/lib/error-codes";
 import { Loader2, Pizza } from "lucide-react";
 
 function GoogleIcon() {
@@ -30,7 +31,7 @@ export default function Signup() {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      toast.error("As senhas não coincidem");
+      appError("ERR-AUTH-003");
       return;
     }
     setLoading(true);
@@ -48,7 +49,7 @@ export default function Signup() {
       toast.success("Conta criada com sucesso!");
       navigate("/onboarding");
     } catch (error: any) {
-      toast.error(error.message || "Erro ao criar conta");
+      appError("ERR-AUTH-004", error);
     } finally {
       setLoading(false);
     }
@@ -63,7 +64,7 @@ export default function Signup() {
       });
       if (error) throw error;
     } catch (error: any) {
-      toast.error(error.message || "Erro ao criar conta com Google");
+      appError("ERR-AUTH-004", error);
       setGoogleLoading(false);
     }
   };

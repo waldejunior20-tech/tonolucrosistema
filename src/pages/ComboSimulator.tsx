@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { appError } from "@/lib/error-codes";
 import { Plus, Trash2, Calculator, CheckCircle2, AlertTriangle, Edit2, Trash, Sparkles } from "lucide-react";
 import { formatMoney, parseFormattedNumber } from "@/components/MoneyInput";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
@@ -427,7 +428,7 @@ export default function ComboSimulator() {
       toast.success(editingId ? "Combo atualizado!" : "Combo salvo!");
       resetForm();
     },
-    onError: (e: any) => toast.error(e.message || "Erro ao salvar"),
+    onError: (e: any) => appError("ERR-PRO-010", e),
   });
 
   const deleteMutation = useMutation({
@@ -439,7 +440,7 @@ export default function ComboSimulator() {
       queryClient.invalidateQueries({ queryKey: ["combos_fixos"] });
       toast.success("Combo excluído!");
     },
-    onError: () => toast.error("Erro ao excluir"),
+    onError: (e) => appError("ERR-PRO-011", e),
   });
 
   const resetForm = () => {

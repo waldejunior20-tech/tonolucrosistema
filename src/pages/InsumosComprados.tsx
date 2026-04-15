@@ -14,6 +14,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { appError } from "@/lib/error-codes";
 import { Pencil, Trash2, Plus, Filter, Package } from "lucide-react";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 import { MoneyInput, QuantityInput, formatMoney, formatQty } from "@/components/MoneyInput";
@@ -71,7 +72,7 @@ export default function InsumosComprados() {
       toast.success("Insumo cadastrado com sucesso!");
       resetForm();
     },
-    onError: () => toast.error("Erro ao cadastrar insumo."),
+    onError: (e) => appError("ERR-INS-001", e),
   });
 
   // Update
@@ -85,7 +86,7 @@ export default function InsumosComprados() {
       toast.success("Insumo atualizado!");
       resetForm();
     },
-    onError: () => toast.error("Erro ao atualizar insumo."),
+    onError: (e) => appError("ERR-INS-002", e),
   });
 
   // Delete
@@ -98,7 +99,7 @@ export default function InsumosComprados() {
       queryClient.invalidateQueries({ queryKey: ["insumos_comprados"] });
       toast.success("Insumo excluído!");
     },
-    onError: () => toast.error("Erro ao excluir insumo."),
+    onError: (e) => appError("ERR-INS-003", e),
   });
 
   const resetForm = () => {
@@ -110,7 +111,7 @@ export default function InsumosComprados() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.nome || !form.categoria || !form.unidade || !form.preco_pago || !form.quantidade) {
-      toast.error("Preencha todos os campos obrigatórios.");
+      appError("ERR-INS-004");
       return;
     }
     if (editingId) {

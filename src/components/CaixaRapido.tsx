@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { format, eachDayOfInterval, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
+import { appError } from "@/lib/error-codes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -144,7 +145,7 @@ export default function CaixaRapido() {
       queryClient.invalidateQueries({ queryKey: ["lancamentos-caixa-dia"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
-    onError: (e: any) => toast.error(e.message || "Erro ao salvar"),
+    onError: (e: any) => appError("ERR-FIN-002", e),
   });
 
   const deleteMutation = useMutation({

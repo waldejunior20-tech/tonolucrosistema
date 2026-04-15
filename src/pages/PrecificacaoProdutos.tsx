@@ -12,6 +12,7 @@ import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
+import { appError } from "@/lib/error-codes";
 import { AlertTriangle, Check } from "lucide-react";
 import { formatMoney } from "@/components/MoneyInput";
 import {
@@ -212,7 +213,7 @@ export default function PrecificacaoProdutos() {
         showSavedCheck(fichaId);
         setLocalPrices((prev) => { const copy = { ...prev }; delete copy[fichaId]; return copy; });
       } catch {
-        toast.error("Erro ao salvar preço.");
+        appError("ERR-PRC-010");
       }
     },
     [localPrices, precificacaoMap, queryClient, showSavedCheck]

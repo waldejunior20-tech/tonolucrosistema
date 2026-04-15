@@ -14,6 +14,7 @@ import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
+import { appError } from "@/lib/error-codes";
 import { Cog, Save, AlertTriangle, Check, TrendingUp, TrendingDown, Activity, ChevronDown } from "lucide-react";
 import { formatMoney } from "@/components/MoneyInput";
 import {
@@ -259,7 +260,7 @@ export default function PrecificacaoPizzas() {
       toast.success("Configurações salvas!");
       setConfigOpen(false);
     },
-    onError: () => toast.error("Erro ao salvar configurações."),
+    onError: (e) => appError("ERR-PRC-001", e),
   });
 
   // ─── Auto-save single price on blur ──────────────────────────────
@@ -273,7 +274,7 @@ export default function PrecificacaoPizzas() {
         .update(updateData as any)
         .eq("id", fichaId);
       if (error) {
-        toast.error("Erro ao salvar preço.");
+        appError("ERR-PRC-002");
         return;
       }
       queryClient.invalidateQueries({ queryKey: ["fichas_tecnicas_pizza"] });

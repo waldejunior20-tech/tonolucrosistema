@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { MoneyInput } from "@/components/MoneyInput";
 import { toast } from "sonner";
+import { appError } from "@/lib/error-codes";
 import { Plus, Target, AlertTriangle, TrendingUp, TrendingDown } from "lucide-react";
 import { HealthStatus } from "@/components/HealthStatus";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -195,7 +196,7 @@ export default function FinanceiroDRE() {
       toast.success("Lançamento salvo!");
       setDialogOpen(false);
     },
-    onError: () => toast.error("Erro ao salvar"),
+    onError: (e) => appError("ERR-FIN-010", e),
   });
 
   const handleSubmit = () => {
@@ -218,7 +219,7 @@ export default function FinanceiroDRE() {
         });
       }
       supabase.from("lancamentos_financeiros").insert(entries).then(({ error }) => {
-        if (error) { toast.error("Erro ao salvar"); return; }
+        if (error) { appError("ERR-FIN-011", error); return; }
         queryClient.invalidateQueries({ queryKey: ["lancamentos_dre"] });
         queryClient.invalidateQueries({ queryKey: ["lancamentos_financeiros"] });
         toast.success("Lançamentos salvos!");

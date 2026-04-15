@@ -14,6 +14,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { appError } from "@/lib/error-codes";
 import { Pencil, Trash2, Plus, Search, X, Beaker } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 import { QuantityInput, formatMoney } from "@/components/MoneyInput";
@@ -158,7 +159,7 @@ export default function InsumosProduzidos() {
       toast.success("Insumo produzido cadastrado!");
       resetForm();
     },
-    onError: () => toast.error("Erro ao cadastrar insumo produzido."),
+    onError: (e) => appError("ERR-INS-010", e),
   });
 
   // Update
@@ -201,7 +202,7 @@ export default function InsumosProduzidos() {
       toast.success("Insumo produzido atualizado!");
       resetForm();
     },
-    onError: () => toast.error("Erro ao atualizar insumo produzido."),
+    onError: (e) => appError("ERR-INS-011", e),
   });
 
   // Delete
@@ -224,7 +225,7 @@ export default function InsumosProduzidos() {
       queryClient.invalidateQueries({ queryKey: ["insumos_proprios_ingredientes"] });
       toast.success("Insumo produzido excluído!");
     },
-    onError: () => toast.error("Erro ao excluir insumo produzido."),
+    onError: (e) => appError("ERR-INS-012", e),
   });
 
   const resetForm = () => {
@@ -238,7 +239,7 @@ export default function InsumosProduzidos() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.nome || !form.rendimento || !form.unidade_rendimento) {
-      toast.error("Preencha todos os campos obrigatórios.");
+      appError("ERR-INS-013");
       return;
     }
     if (editingId) {

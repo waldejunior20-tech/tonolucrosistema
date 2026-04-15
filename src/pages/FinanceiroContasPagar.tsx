@@ -18,6 +18,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { appError } from "@/lib/error-codes";
 import { Plus, Pencil, Trash2, Check, AlertTriangle, Clock, CircleDollarSign } from "lucide-react";
 import { MoneyInput } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -171,7 +172,7 @@ export default function FinanceiroContasPagar() {
       setEditingId(null);
       setForm(emptyForm);
     },
-    onError: () => toast.error("Erro ao salvar."),
+    onError: (e) => appError("ERR-FIN-020", e),
   });
 
   const togglePagoMutation = useMutation({
