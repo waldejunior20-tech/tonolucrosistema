@@ -245,7 +245,7 @@ export default function Configuracoes() {
   }
 
   return (
-    <div className="space-y-6 page-enter max-w-4xl mx-auto pb-12">
+    <div className="space-y-6 page-enter pb-12">
       <PageHeader title="Configurações" description="Gerencie os dados do seu negócio, canais de venda e metas." />
 
       <Tabs defaultValue="negocio" className="w-full">
