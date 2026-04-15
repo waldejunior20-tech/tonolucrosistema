@@ -7,6 +7,7 @@ export const ERROR_CODES = {
   "ERR-AUTH-003": "As senhas não coincidem",
   "ERR-AUTH-004": "Erro ao criar conta",
   "ERR-AUTH-005": "Erro ao enviar email de recuperação",
+  "ERR-AUTH-006": "Erro ao redefinir senha",
 
   // CFG
   "ERR-CFG-001": "Erro ao salvar configurações",

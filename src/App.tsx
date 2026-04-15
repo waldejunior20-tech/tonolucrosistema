@@ -26,6 +26,7 @@ import Onboarding from "@/pages/Onboarding";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import PasswordRecovery from "@/pages/PasswordRecovery";
+import ResetPassword from "@/pages/ResetPassword";
 import ComboSimulator from "@/pages/ComboSimulator";
 import PromocoesAtivas from "@/pages/PromocoesAtivas";
 import Configuracoes from "@/pages/Configuracoes";
@@ -66,6 +67,7 @@ function AppRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/recovery" element={<PasswordRecovery />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     );
@@ -85,6 +87,7 @@ function AppRoutes() {
       <Route path="/login" element={<Navigate to="/" replace />} />
       <Route path="/signup" element={<Navigate to="/" replace />} />
       <Route path="/onboarding" element={<Navigate to="/" replace />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route element={<AppLayout />}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/insumos/comprados" element={<InsumosComprados />} />
