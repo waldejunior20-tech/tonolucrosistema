@@ -325,7 +325,6 @@ export default function Configuracoes() {
 
         {/* ─── Canais de Venda ──────────────────────────────────────── */}
         <TabsContent value="canais">
-        <TabsContent value="canais">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardContent className="pt-6 space-y-4">
