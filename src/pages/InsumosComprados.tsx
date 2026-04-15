@@ -272,13 +272,13 @@ export default function InsumosComprados() {
               {filtered.map((insumo) => (
                 <TableRow key={insumo.id}>
                   <TableCell className="font-bold text-[#1A1A1A]">{insumo.nome}</TableCell>
-                  <TableCell>{insumo.categoria}</TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="font-bold text-[#1A1A1A]">{insumo.categoria}</TableCell>
+                  <TableCell className="text-right font-bold text-[#1A1A1A] tabular-nums">
                     {formatMoney(Number(insumo.preco_pago))}
                   </TableCell>
-                  <TableCell className="text-right">{formatQty(Number(insumo.quantidade))}</TableCell>
-                  <TableCell>{insumo.unidade}</TableCell>
-                  <TableCell>{insumo.fornecedor ?? "—"}</TableCell>
+                  <TableCell className="text-right font-bold text-[#1A1A1A] tabular-nums">{formatQty(Number(insumo.quantidade))}</TableCell>
+                  <TableCell className="font-bold text-[#1A1A1A]">{insumo.unidade}</TableCell>
+                  <TableCell className="font-bold text-[#1A1A1A]">{insumo.fornecedor ?? "—"}</TableCell>
                   <TableCell>
                     {insumo.data_compra
                       ? new Date(insumo.data_compra + "T00:00:00").toLocaleDateString("pt-BR")
