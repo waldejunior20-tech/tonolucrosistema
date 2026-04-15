@@ -20,6 +20,7 @@ import {
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Check, AlertTriangle, Clock, CircleDollarSign } from "lucide-react";
 import { MoneyInput } from "@/components/MoneyInput";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
