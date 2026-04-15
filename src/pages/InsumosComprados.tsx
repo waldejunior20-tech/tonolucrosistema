@@ -29,20 +29,6 @@ const CATEGORIAS = [
 
 const UNIDADES = ["kg", "g", "L", "ml", "unidade", "caixa", "pacote"];
 
-const CATEGORIA_COLORS: Record<string, string> = {
-  "Proteínas": "bg-[#FFEBEE] text-[#C62828]",
-  "Laticínios": "bg-[#E3F2FD] text-[#1565C0]",
-  "Hortifruti": "bg-[#E8F5E9] text-[#2E7D32]",
-  "Secos": "bg-[#FFFDE7] text-[#F9A825]",
-  "Bebidas": "bg-[#F3E5F5] text-[#7B1FA2]",
-  "Molhos e Condimentos": "bg-[#FFF3E0] text-[#E65100]",
-  "Embalagens": "bg-[#F5F5F5] text-[#616161]",
-  "Congelados": "bg-[#E0F2F1] text-[#00695C]",
-  "Confeitaria": "bg-[#FCE4EC] text-[#AD1457]",
-};
-
-const categoriaBadge = (cat: string) => CATEGORIA_COLORS[cat] ?? "bg-[#F5F5F5] text-[#616161]";
-
 type Insumo = Tables<"insumos_comprados">;
 
 const emptyForm: Omit<TablesInsert<"insumos_comprados">, "id" | "created_at" | "updated_at"> = {
