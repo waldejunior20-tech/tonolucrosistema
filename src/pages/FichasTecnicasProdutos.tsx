@@ -307,14 +307,13 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
     setDialogOpen(false);
     setBuscaIngrediente("");
     setBuscaAberta(null);
+    setSubmitted(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.nome) {
-      appError("ERR-FTP-013");
-      return;
-    }
+    setSubmitted(true);
+    if (!formIsValid) return;
     if (editingId) {
       updateMutation.mutate({ ...form, id: editingId });
     } else {
@@ -444,8 +443,9 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
                     value={form.nome}
                     onChange={(e) => setForm({ ...form, nome: e.target.value })}
                     placeholder="Ex: Pastel de Queijo"
-                    required
+                    className={fieldErrorClass(showErr("nome"))}
                   />
+                  <FieldError show={showErr("nome")} />
                 </div>
                 <div>
                   <Label>Nº Ficha</Label>
