@@ -265,13 +265,17 @@ export default function Configuracoes() {
 
         {/* ─── Meu Negócio ─────────────────────────────────────────── */}
         <TabsContent value="negocio">
-          <Card>
-            <CardContent className="pt-6 space-y-4">
-              <div>
-                <Label className="text-xs text-muted-foreground">Nome do Estabelecimento</Label>
-                <Input value={nomeEstabelecimento} onChange={e => setNomeEstabelecimento(e.target.value)} className="h-10 mt-1" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardContent className="pt-6 space-y-4">
+                <div>
+                  <Label className="text-xs text-muted-foreground">Nome do Estabelecimento</Label>
+                  <Input value={nomeEstabelecimento} onChange={e => setNomeEstabelecimento(e.target.value)} className="h-10 mt-1" />
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-6 space-y-4">
                 <div>
                   <Label className="text-xs text-muted-foreground">Cidade</Label>
                   <Input value={cidade} onChange={e => setCidade(e.target.value)} className="h-10 mt-1" />
@@ -280,10 +284,10 @@ export default function Configuracoes() {
                   <Label className="text-xs text-muted-foreground">Estado</Label>
                   <Input value={estado} onChange={e => setEstado(e.target.value)} placeholder="SP" maxLength={2} className="h-10 mt-1 uppercase" />
                 </div>
-              </div>
-              <SaveButton />
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
+          <SaveButton />
         </TabsContent>
 
         {/* ─── Tamanhos de Pizza ────────────────────────────────────── */}
