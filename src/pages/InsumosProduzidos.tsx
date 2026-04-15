@@ -20,6 +20,7 @@ import type { Tables } from "@/integrations/supabase/types";
 import { QuantityInput, formatMoney } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { EmptyState } from "@/components/EmptyState";
+import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
 
 const UNIDADES_RENDIMENTO = ["kg", "g", "L", "ml", "unidade"];
 const UNIDADES_INGREDIENTE = ["kg", "g", "L", "ml", "unidade", "caixa", "pacote"];
@@ -56,6 +57,16 @@ export default function InsumosProduzidos() {
   const [form, setForm] = useState<FormState>(emptyForm);
   const [buscaIngrediente, setBuscaIngrediente] = useState("");
   const [buscaAberta, setBuscaAberta] = useState<number | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+
+  // Validation
+  const errors = {
+    nome: !form.nome.trim(),
+    rendimento: !form.rendimento,
+    unidade_rendimento: !form.unidade_rendimento,
+  };
+  const formIsValid = !Object.values(errors).some(Boolean);
+  const showErr = (field: keyof typeof errors) => submitted && errors[field];
 
   // Fetch insumos próprios
   const { data: insumosProprios = [], isLoading } = useQuery({
@@ -234,14 +245,13 @@ export default function InsumosProduzidos() {
     setDialogOpen(false);
     setBuscaIngrediente("");
     setBuscaAberta(null);
+    setSubmitted(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.nome || !form.rendimento || !form.unidade_rendimento) {
-      appError("ERR-INS-013");
-      return;
-    }
+    setSubmitted(true);
+    if (!formIsValid) return;
     if (editingId) {
       updateMutation.mutate({ ...form, id: editingId });
     } else {
