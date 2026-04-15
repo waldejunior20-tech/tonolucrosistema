@@ -10,6 +10,7 @@ import { MoneyInput } from "@/components/MoneyInput";
 import { toast } from "sonner";
 import { Plus, Target, AlertTriangle, TrendingUp, TrendingDown } from "lucide-react";
 import { HealthStatus } from "@/components/HealthStatus";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
