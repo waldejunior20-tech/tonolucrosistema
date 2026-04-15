@@ -405,12 +405,10 @@ export default function PromocoesAtivas() {
 
   // ─── Render ─────────────────────────────────────────────────────
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Promoções Ativas</h1>
+    <div className="space-y-6 page-enter">
+      <PageHeader title="Promoções Ativas" description="Gerencie suas promoções e descontos.">
         <Button onClick={openNew}><Plus className="mr-2 h-4 w-4" />Nova Promoção</Button>
-      </div>
+      </PageHeader>
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3">

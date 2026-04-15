@@ -89,9 +89,8 @@ export default function FinanceiroPontoEquilibrio() {
   const anos = Array.from({ length: 5 }, (_, i) => now.getFullYear() - 2 + i);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Meta Mínima de Vendas</h1>
+    <div className="space-y-6 page-enter">
+      <PageHeader title="Meta Mínima de Vendas" description="Ponto de equilíbrio e meta de vendas por mês.">
         <div className="flex gap-2">
           <Select value={String(mes)} onValueChange={(v) => setMes(Number(v))}>
             <SelectTrigger className="w-[140px]">
