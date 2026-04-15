@@ -212,8 +212,8 @@ export default function PrecificacaoBebidas() {
         appError("ERR-PRC-020");
       }
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ["precificacao_bebidas"] }),
-  });
+    [localPricesInd, queryClient, showSavedCheck]
+  );
 
   const savePrepMutation = useMutation({
     mutationFn: async ({ fichaId, preco }: { fichaId: string; preco: number }) => {
