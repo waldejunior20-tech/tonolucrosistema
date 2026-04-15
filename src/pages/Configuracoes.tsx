@@ -51,6 +51,7 @@ const TAB_ITEMS = [
 // ─── Component ───────────────────────────────────────────────────────
 export default function Configuracoes() {
   const queryClient = useQueryClient();
+  const isMobile = useIsMobile();
 
   // ─── State ─────────────────────────────────────────────────────────
   const [nomeEstabelecimento, setNomeEstabelecimento] = useState("");
