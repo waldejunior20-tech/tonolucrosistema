@@ -572,10 +572,9 @@ export default function FichasTecnicasPizza() {
                     value={form.nome}
                     onChange={(e) => setForm({ ...form, nome: e.target.value })}
                     onBlur={() => setTouched(t => ({ ...t, nome: true }))}
-                    className={nomeInvalid ? "border-destructive ring-2 ring-destructive/20 focus-visible:border-destructive focus-visible:ring-2 focus-visible:ring-destructive/20" : ""}
-                    required
+                    className={fieldErrorClass(nomeInvalid)}
                   />
-                  {nomeInvalid && <p className="text-[11px] text-destructive mt-1 font-medium">Este campo é obrigatório</p>}
+                  <FieldError show={nomeInvalid} />
                 </div>
                 <div>
                   <Label htmlFor="numero_ficha">Nº da Ficha</Label>
