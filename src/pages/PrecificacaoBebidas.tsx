@@ -398,7 +398,12 @@ export default function PrecificacaoBebidas() {
                         setLocalPricesPrep((prev) => ({ ...prev, [ficha.id]: String(ficha.preco_venda ?? "") }));
                       }
                     }}
-                    onBlur={() => autoSavePrep(ficha.id)}
+                    onBlur={() => {
+                      const local = localPricesPrep[ficha.id];
+                      if (local !== undefined) {
+                        savePrepMutation.mutate({ fichaId: ficha.id, preco: parseFloat(local) || 0 });
+                      }
+                    }}
                     placeholder="R$ 0,00"
                   />
                   {savedFields[`prep-${ficha.id}`] && (
