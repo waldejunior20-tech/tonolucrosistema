@@ -21,6 +21,7 @@ import type { Tables } from "@/integrations/supabase/types";
 import { formatMoney, formatQty } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { EmptyState } from "@/components/EmptyState";
+import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
 
 const UNIDADES = ["kg", "g", "L", "ml", "unidade"];
 
@@ -86,6 +87,12 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
   const [buscaIngrediente, setBuscaIngrediente] = useState("");
   const [buscaAberta, setBuscaAberta] = useState<number | null>(null);
   const [savedFields, setSavedFields] = useState<Record<string, boolean>>({});
+  const [submitted, setSubmitted] = useState(false);
+
+  // Validation
+  const errors = { nome: !form.nome.trim() };
+  const formIsValid = !Object.values(errors).some(Boolean);
+  const showErr = (field: keyof typeof errors) => submitted && errors[field];
 
   const label = CATEGORIA_LABELS[categoria] || categoria;
 
