@@ -287,7 +287,7 @@ export default function InsumosComprados() {
                   <TableCell>
                     <div className="flex gap-1">
                       <Button variant="ghost" size="icon" onClick={() => handleEdit(insumo)}>
-                        <Pencil className="h-4 w-4" />
+                        <Pencil className="h-4 w-4 text-[#16A273]" />
                       </Button>
                       <Button variant="ghost" size="icon" onClick={() => deleteMutation.mutate(insumo.id)}>
                         <Trash2 className="h-4 w-4 text-destructive" />
