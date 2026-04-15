@@ -231,12 +231,10 @@ export default function PrecificacaoBebidas() {
       }
       toast.success("Preço salvo!");
       setLocalPricesPrep((prev) => { const copy = { ...prev }; delete copy[fichaId]; return copy; });
-    } catch {
-        appError("ERR-PRC-021");
-      }
     },
-    [localPricesPrep, queryClient, showSavedCheck]
-  );
+    onError: () => appError("ERR-PRC-021"),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["precificacao_bebidas"] }),
+  });
 
   const cmvMeta = config?.cmv_meta_pct ?? 32;
   const activeApps = getActiveApps(config);
