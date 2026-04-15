@@ -297,9 +297,6 @@ export default function InsumosComprados() {
                 </TableRow>
               ))}
             </TableBody>
-          </Table>
-        </div>
-          </div>
         </div>
       )}
     </div>
