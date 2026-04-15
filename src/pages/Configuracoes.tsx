@@ -325,100 +325,106 @@ export default function Configuracoes() {
 
         {/* ─── Canais de Venda ──────────────────────────────────────── */}
         <TabsContent value="canais">
-          <Card>
-            <CardContent className="pt-6 space-y-4">
-              {/* Balcão — always active */}
-              <div className="flex items-center justify-between rounded-lg border border-border p-4 bg-secondary/30">
-                <div>
-                  <p className="text-sm font-medium">Balcão / Instagram / WhatsApp</p>
-                  <p className="text-xs text-muted-foreground">Sempre ativo — Taxa 0%</p>
-                </div>
-                <span className="text-xs font-semibold text-success">Ativo</span>
-              </div>
-
-              {/* iFood */}
-              <div className="rounded-lg border border-border p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium">iFood</p>
-                  <Switch checked={ifoodAtivo} onCheckedChange={setIfoodAtivo} />
-                </div>
-                {ifoodAtivo && (
+        <TabsContent value="canais">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardContent className="pt-6 space-y-4">
+                {/* Balcão — always active */}
+                <div className="flex items-center justify-between rounded-lg border border-border p-4 bg-secondary/30">
                   <div>
-                    <Label className="text-xs text-muted-foreground">Plano iFood</Label>
-                    <Select value={ifoodPlano} onValueChange={setIfoodPlano}>
-                      <SelectTrigger className="h-9 mt-1">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Object.entries(IFOOD_PLANOS).map(([key, { label, taxa }]) => (
-                          <SelectItem key={key} value={key}>
-                            {label} — {taxa}%
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <p className="text-sm font-medium">Balcão / Instagram / WhatsApp</p>
+                    <p className="text-xs text-muted-foreground">Sempre ativo — Taxa 0%</p>
                   </div>
-                )}
-              </div>
-
-              {/* Rappi */}
-              <div className="rounded-lg border border-border p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium">Rappi</p>
-                  <Switch checked={rappiAtivo} onCheckedChange={setRappiAtivo} />
+                  <span className="text-xs font-semibold text-success">Ativo</span>
                 </div>
-                {rappiAtivo && (
-                  <div>
-                    <Label className="text-xs text-muted-foreground">Taxa (%)</Label>
-                    <PercentInput value={taxaRappi} onChange={setTaxaRappi} className="h-9 mt-1 w-32" />
+
+                {/* iFood */}
+                <div className="rounded-lg border border-border p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium">iFood</p>
+                    <Switch checked={ifoodAtivo} onCheckedChange={setIfoodAtivo} />
                   </div>
-                )}
-              </div>
-
-              {/* Aiqfome */}
-              <div className="rounded-lg border border-border p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium">Aiqfome</p>
-                  <Switch checked={aiqfomeAtivo} onCheckedChange={setAiqfomeAtivo} />
-                </div>
-                {aiqfomeAtivo && (
-                  <div>
-                    <Label className="text-xs text-muted-foreground">Taxa (%)</Label>
-                    <PercentInput value={taxaAiqfome} onChange={setTaxaAiqfome} className="h-9 mt-1 w-32" />
-                  </div>
-                )}
-              </div>
-
-              {/* Outro app */}
-              <div className="rounded-lg border border-border p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium">Outro App</p>
-                  <Switch checked={outroAtivo} onCheckedChange={setOutroAtivo} />
-                </div>
-                {outroAtivo && (
-                  <div className="grid grid-cols-2 gap-3">
+                  {ifoodAtivo && (
                     <div>
-                      <Label className="text-xs text-muted-foreground">Nome do App</Label>
-                      <Input value={outroNome} onChange={e => setOutroNome(e.target.value)} placeholder="Ex: 99Food" className="h-9 mt-1" />
+                      <Label className="text-xs text-muted-foreground">Plano iFood</Label>
+                      <Select value={ifoodPlano} onValueChange={setIfoodPlano}>
+                        <SelectTrigger className="h-9 mt-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Object.entries(IFOOD_PLANOS).map(([key, { label, taxa }]) => (
+                            <SelectItem key={key} value={key}>
+                              {label} — {taxa}%
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="pt-6 space-y-4">
+                {/* Rappi */}
+                <div className="rounded-lg border border-border p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium">Rappi</p>
+                    <Switch checked={rappiAtivo} onCheckedChange={setRappiAtivo} />
+                  </div>
+                  {rappiAtivo && (
                     <div>
                       <Label className="text-xs text-muted-foreground">Taxa (%)</Label>
-                      <PercentInput value={taxaOutro} onChange={setTaxaOutro} className="h-9 mt-1" />
+                      <PercentInput value={taxaRappi} onChange={setTaxaRappi} className="h-9 mt-1 w-32" />
                     </div>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
 
-              <SaveButton />
-            </CardContent>
-          </Card>
+                {/* Aiqfome */}
+                <div className="rounded-lg border border-border p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium">Aiqfome</p>
+                    <Switch checked={aiqfomeAtivo} onCheckedChange={setAiqfomeAtivo} />
+                  </div>
+                  {aiqfomeAtivo && (
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Taxa (%)</Label>
+                      <PercentInput value={taxaAiqfome} onChange={setTaxaAiqfome} className="h-9 mt-1 w-32" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Outro app */}
+                <div className="rounded-lg border border-border p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium">Outro App</p>
+                    <Switch checked={outroAtivo} onCheckedChange={setOutroAtivo} />
+                  </div>
+                  {outroAtivo && (
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Nome do App</Label>
+                        <Input value={outroNome} onChange={e => setOutroNome(e.target.value)} placeholder="Ex: 99Food" className="h-9 mt-1" />
+                      </div>
+                      <div>
+                        <Label className="text-xs text-muted-foreground">Taxa (%)</Label>
+                        <PercentInput value={taxaOutro} onChange={setTaxaOutro} className="h-9 mt-1" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          <SaveButton />
         </TabsContent>
 
         {/* ─── Formas de Pagamento ──────────────────────────────────── */}
         <TabsContent value="pagamento">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardContent className="pt-6 space-y-4">
                 <div>
                   <Label className="text-xs text-muted-foreground">Débito (%)</Label>
                   <PercentInput value={taxaDebito} onChange={setTaxaDebito} className="h-9 mt-1" />
@@ -427,6 +433,10 @@ export default function Configuracoes() {
                   <Label className="text-xs text-muted-foreground">Crédito (%)</Label>
                   <PercentInput value={taxaCredito} onChange={setTaxaCredito} className="h-9 mt-1" />
                 </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-6 space-y-4">
                 <div>
                   <Label className="text-xs text-muted-foreground">PIX (%)</Label>
                   <PercentInput value={0} onChange={() => {}} disabled className="h-9 mt-1 opacity-50" />
@@ -435,17 +445,17 @@ export default function Configuracoes() {
                   <Label className="text-xs text-muted-foreground">Dinheiro (%)</Label>
                   <PercentInput value={0} onChange={() => {}} disabled className="h-9 mt-1 opacity-50" />
                 </div>
-              </div>
-              <SaveButton />
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
+          <SaveButton />
         </TabsContent>
 
         {/* ─── Metas ────────────────────────────────────────────────── */}
         <TabsContent value="metas">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardContent className="pt-6 space-y-4">
                 <div>
                   <Label className="text-xs text-muted-foreground">Meta de Custo (%)</Label>
                   <PercentInput value={cmvMeta} onChange={setCmvMeta} className="h-9 mt-1" />
@@ -454,63 +464,72 @@ export default function Configuracoes() {
                   <Label className="text-xs text-muted-foreground">Lucro Desejado (%)</Label>
                   <PercentInput value={lucroDesejado} onChange={setLucroDesejado} className="h-9 mt-1" />
                 </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-6 space-y-4">
                 <div>
                   <Label className="text-xs text-muted-foreground">Faturamento Meta Mensal (R$)</Label>
                   <SmartMoneyInput value={faturamentoMeta} onChange={setFaturamentoMeta} className="h-9 mt-1" />
                 </div>
-              </div>
-              <SaveButton />
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
+          <SaveButton />
         </TabsContent>
 
         {/* ─── Custos Fixos Mensais ─────────────────────────────────── */}
         <TabsContent value="custos">
-          <Card>
-            <CardContent className="pt-6 space-y-3">
-              <div className="grid grid-cols-[1fr_140px_40px] gap-2 text-xs text-muted-foreground font-semibold uppercase tracking-wider px-1">
-                <span>Descrição</span>
-                <span className="text-right">Valor (R$)</span>
-                <span />
-              </div>
-
-              {custosFixos.map((item, idx) => (
-                <div key={idx} className="grid grid-cols-[1fr_140px_40px] gap-2 items-center">
-                  <Input
-                    value={item.descricao}
-                    onChange={e => updateCustoFixo(idx, "descricao", e.target.value)}
-                    placeholder="Descrição"
-                    className="h-9"
-                  />
-                  <SmartMoneyInput
-                    value={Number(item.valor) || 0}
-                    onChange={(v) => updateCustoFixo(idx, "valor", v)}
-                    className="h-9"
-                  />
-                  <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => removeCustoFixo(idx)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardContent className="pt-6 space-y-3">
+                <div className="grid grid-cols-[1fr_140px_40px] gap-2 text-xs text-muted-foreground font-semibold uppercase tracking-wider px-1">
+                  <span>Descrição</span>
+                  <span className="text-right">Valor (R$)</span>
+                  <span />
                 </div>
-              ))}
 
-              <Button size="sm" onClick={addCustoFixo} className="btn-action-add gap-1">
-                <Plus className="h-3.5 w-3.5" /> Adicionar linha
-              </Button>
+                {custosFixos.map((item, idx) => (
+                  <div key={idx} className="grid grid-cols-[1fr_140px_40px] gap-2 items-center">
+                    <Input
+                      value={item.descricao}
+                      onChange={e => updateCustoFixo(idx, "descricao", e.target.value)}
+                      placeholder="Descrição"
+                      className="h-9"
+                    />
+                    <SmartMoneyInput
+                      value={Number(item.valor) || 0}
+                      onChange={(v) => updateCustoFixo(idx, "valor", v)}
+                      className="h-9"
+                    />
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => removeCustoFixo(idx)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
 
-              <div className="border-t border-border pt-4 mt-4 space-y-2">
-                <div className="flex justify-between text-sm font-semibold">
-                  <span>Total Custos Fixos</span>
-                  <span className="font-mono">{fmt(totalCustosFixos)}</span>
+                <Button size="sm" onClick={addCustoFixo} className="btn-action-add gap-1">
+                  <Plus className="h-3.5 w-3.5" /> Adicionar linha
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="pt-6 space-y-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm font-semibold">
+                    <span>Total Custos Fixos</span>
+                    <span className="font-mono">{fmt(totalCustosFixos)}</span>
+                  </div>
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>% do Faturamento Meta</span>
+                    <span className="font-mono">{pctFaturamento.toFixed(1)}%</span>
+                  </div>
                 </div>
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>% do Faturamento Meta</span>
-                  <span className="font-mono">{pctFaturamento.toFixed(1)}%</span>
-                </div>
-              </div>
-
-              <SaveButton />
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
+          <SaveButton />
         </TabsContent>
       </Tabs>
     </div>
