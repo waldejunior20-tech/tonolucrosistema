@@ -212,7 +212,7 @@ export default function PrecificacaoProdutos() {
         showSavedCheck(fichaId);
         setLocalPrices((prev) => { const copy = { ...prev }; delete copy[fichaId]; return copy; });
       } catch {
-        toast.error("Erro ao salvar preço.");
+        appError("ERR-PRC-010");
       }
     },
     [localPrices, precificacaoMap, queryClient, showSavedCheck]

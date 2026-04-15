@@ -237,7 +237,7 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
       toast.success("Ficha técnica cadastrada!");
       resetForm();
     },
-    onError: () => toast.error("Erro ao cadastrar ficha técnica."),
+    onError: (e) => appError("ERR-FTP-010", e),
   });
 
   const updateMutation = useMutation({
@@ -277,7 +277,7 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
       toast.success("Ficha técnica atualizada!");
       resetForm();
     },
-    onError: () => toast.error("Erro ao atualizar ficha técnica."),
+    onError: (e) => appError("ERR-FTP-011", e),
   });
 
   const deleteMutation = useMutation({
@@ -290,7 +290,7 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
       invalidateAll();
       toast.success("Ficha técnica excluída!");
     },
-    onError: () => toast.error("Erro ao excluir ficha técnica."),
+    onError: (e) => appError("ERR-FTP-012", e),
   });
 
   const resetForm = () => {
@@ -304,7 +304,7 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.nome) {
-      toast.error("Preencha o nome do produto.");
+      appError("ERR-FTP-013");
       return;
     }
     if (editingId) {

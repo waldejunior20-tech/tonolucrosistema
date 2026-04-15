@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import { appError } from "@/lib/error-codes";
 import { Cog, Save, Plus, Trash2, Building2, Pizza, Radio, CreditCard, Target, ClipboardList } from "lucide-react";
 import { fmt } from "@/lib/pricing-helpers";
 import { getOrCreateConfiguracoesNegocio, getOrCreateConfiguracoesPrecificacao } from "@/lib/config-helpers";
@@ -199,7 +200,7 @@ export default function Configuracoes() {
       queryClient.invalidateQueries({ queryKey: ["configuracoes_precificacao"] });
       toast.success("Configurações salvas com sucesso!");
     },
-    onError: (error: Error) => toast.error(error.message || "Erro ao salvar configurações."),
+    onError: (error: Error) => appError("ERR-CFG-001", error),
   });
 
   // ─── Tamanhos helpers ──────────────────────────────────────────────

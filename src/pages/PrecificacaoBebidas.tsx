@@ -209,25 +209,30 @@ export default function PrecificacaoBebidas() {
         showSavedCheck(`ind-${insumoId}`);
         setLocalPricesInd((prev) => { const copy = { ...prev }; delete copy[insumoId]; return copy; });
       } catch {
-        toast.error("Erro ao salvar preço.");
+        appError("ERR-PRC-020");
       }
     },
-    [localPricesInd, precificacaoMap, queryClient, showSavedCheck]
-  );
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["precificacao_bebidas"] }),
+  });
 
-  const autoSavePrep = useCallback(
-    async (fichaId: string) => {
-      const local = localPricesPrep[fichaId];
-      if (local === undefined) return;
-      const numVal = parseFloat(local) || 0;
-      try {
-        const { error } = await supabase.from("fichas_tecnicas_produtos").update({ preco_venda: numVal || null }).eq("id", fichaId);
+  const savePrepMutation = useMutation({
+    mutationFn: async ({ fichaId, preco }: { fichaId: string; preco: number }) => {
+      const { data: existing } = await supabase
+        .from("precificacao_produtos")
+        .select("id")
+        .eq("ficha_id", fichaId)
+        .maybeSingle();
+      if (existing) {
+        const { error } = await supabase.from("precificacao_produtos").update({ preco_venda: preco }).eq("ficha_id", fichaId);
         if (error) throw error;
-        queryClient.invalidateQueries({ queryKey: ["fichas_tecnicas_produtos"] });
-        showSavedCheck(`prep-${fichaId}`);
-        setLocalPricesPrep((prev) => { const copy = { ...prev }; delete copy[fichaId]; return copy; });
-      } catch {
-        toast.error("Erro ao salvar preço.");
+      } else {
+        const { error } = await supabase.from("precificacao_produtos").insert({ ficha_id: fichaId, preco_venda: preco });
+        if (error) throw error;
+      }
+      toast.success("Preço salvo!");
+      setLocalPricesPrep((prev) => { const copy = { ...prev }; delete copy[fichaId]; return copy; });
+    } catch {
+        appError("ERR-PRC-021");
       }
     },
     [localPricesPrep, queryClient, showSavedCheck]

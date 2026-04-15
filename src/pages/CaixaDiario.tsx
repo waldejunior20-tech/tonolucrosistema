@@ -110,7 +110,7 @@ export default function CaixaDiario() {
       queryClient.invalidateQueries({ queryKey: ["lancamentos-caixa-dia"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
-    onError: (e: any) => toast.error(e.message || "Erro ao salvar"),
+    onError: (e: any) => appError("ERR-FIN-001", e),
   });
 
   const deleteMutation = useMutation({

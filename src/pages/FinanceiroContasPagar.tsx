@@ -171,7 +171,7 @@ export default function FinanceiroContasPagar() {
       setEditingId(null);
       setForm(emptyForm);
     },
-    onError: () => toast.error("Erro ao salvar."),
+    onError: (e) => appError("ERR-FIN-020", e),
   });
 
   const togglePagoMutation = useMutation({

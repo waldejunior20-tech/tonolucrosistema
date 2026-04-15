@@ -195,7 +195,7 @@ export default function FinanceiroDRE() {
       toast.success("Lançamento salvo!");
       setDialogOpen(false);
     },
-    onError: () => toast.error("Erro ao salvar"),
+    onError: (e) => appError("ERR-FIN-010", e),
   });
 
   const handleSubmit = () => {
@@ -218,7 +218,7 @@ export default function FinanceiroDRE() {
         });
       }
       supabase.from("lancamentos_financeiros").insert(entries).then(({ error }) => {
-        if (error) { toast.error("Erro ao salvar"); return; }
+        if (error) { appError("ERR-FIN-011", error); return; }
         queryClient.invalidateQueries({ queryKey: ["lancamentos_dre"] });
         queryClient.invalidateQueries({ queryKey: ["lancamentos_financeiros"] });
         toast.success("Lançamentos salvos!");

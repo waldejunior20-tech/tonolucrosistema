@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { toast } from "sonner";
+import { appError } from "@/lib/error-codes";
 import { Save } from "lucide-react";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { useState, useEffect } from "react";
@@ -51,7 +52,7 @@ export default function PrecificacaoConfiguracoes() {
       queryClient.invalidateQueries({ queryKey: ["configuracoes_precificacao"] });
       toast.success("Configurações salvas com sucesso!");
     },
-    onError: (error: Error) => toast.error(error.message || "Erro ao salvar configurações."),
+    onError: (error: Error) => appError("ERR-CFG-002", error),
   });
 
   if (isLoading) {

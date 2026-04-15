@@ -427,7 +427,7 @@ export default function ComboSimulator() {
       toast.success(editingId ? "Combo atualizado!" : "Combo salvo!");
       resetForm();
     },
-    onError: (e: any) => toast.error(e.message || "Erro ao salvar"),
+    onError: (e: any) => appError("ERR-PRO-010", e),
   });
 
   const deleteMutation = useMutation({
@@ -439,7 +439,7 @@ export default function ComboSimulator() {
       queryClient.invalidateQueries({ queryKey: ["combos_fixos"] });
       toast.success("Combo excluído!");
     },
-    onError: () => toast.error("Erro ao excluir"),
+    onError: (e) => appError("ERR-PRO-011", e),
   });
 
   const resetForm = () => {

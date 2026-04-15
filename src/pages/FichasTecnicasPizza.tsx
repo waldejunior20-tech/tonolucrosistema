@@ -300,7 +300,7 @@ export default function FichasTecnicasPizza() {
       toast.success("Ficha técnica cadastrada!");
       resetForm();
     },
-    onError: () => toast.error("Erro ao cadastrar ficha técnica."),
+    onError: (e) => appError("ERR-FTP-001", e),
   });
 
   // Update
@@ -335,7 +335,7 @@ export default function FichasTecnicasPizza() {
       toast.success("Ficha técnica atualizada!");
       resetForm();
     },
-    onError: () => toast.error("Erro ao atualizar ficha técnica."),
+    onError: (e) => appError("ERR-FTP-002", e),
   });
 
   // Delete
@@ -349,7 +349,7 @@ export default function FichasTecnicasPizza() {
       invalidateAll();
       toast.success("Ficha técnica excluída!");
     },
-    onError: () => toast.error("Erro ao excluir ficha técnica."),
+    onError: (e) => appError("ERR-FTP-003", e),
   });
 
   const resetForm = () => {
@@ -374,7 +374,7 @@ export default function FichasTecnicasPizza() {
     e.preventDefault();
     setTouched({ nome: true, ingredientes: true });
     if (!formIsValid) {
-      toast.error("Preencha os campos obrigatórios.");
+      appError("ERR-FTP-004");
       return;
     }
     if (editingId) {
