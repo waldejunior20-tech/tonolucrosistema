@@ -343,15 +343,8 @@ export default function PrecificacaoPizzas() {
 
   return (
     <TooltipProvider>
-      <div className="space-y-8 page-enter ">
-        {/* ═══ Header ═══ */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-[32px] font-extrabold tracking-tight text-foreground leading-none">
-              Precificação de Pizzas
-            </h1>
-            <p className="text-muted-foreground text-sm mt-1.5 font-medium">Gestão de margem por tamanho · Terminal de precisão</p>
-          </div>
+      <div className="space-y-6 page-enter">
+        <PageHeader title="Precificação de Pizzas" description="Gestão de margem por tamanho · Terminal de precisão.">
           <button
             onClick={() => {
               const defaultConfig: ConfigPrecificacao = {
@@ -383,7 +376,7 @@ export default function PrecificacaoPizzas() {
             <Cog className="h-4 w-4" />
             <span>Configurações</span>
           </button>
-        </div>
+        </PageHeader>
 
         {/* Config panel */}
         {configOpen && configForm && (

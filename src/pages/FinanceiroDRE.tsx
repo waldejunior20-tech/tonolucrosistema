@@ -10,6 +10,7 @@ import { MoneyInput } from "@/components/MoneyInput";
 import { toast } from "sonner";
 import { Plus, Target, AlertTriangle, TrendingUp, TrendingDown } from "lucide-react";
 import { HealthStatus } from "@/components/HealthStatus";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -323,12 +324,7 @@ export default function FinanceiroDRE() {
 
   return (
     <div className="space-y-6 page-enter">
-      {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Resumo do Mês</h1>
-          <p className="text-sm text-muted-foreground">Veja quanto entrou, quanto saiu e quanto sobrou.</p>
-        </div>
+      <PageHeader title="Resumo do Mês" description="Veja quanto entrou, quanto saiu e quanto sobrou.">
         <div className="flex items-center gap-2 bg-muted p-1 rounded-lg border">
           <Select value={String(mes)} onValueChange={(v) => setMes(Number(v))}>
             <SelectTrigger className="w-[120px] h-8 border-none bg-transparent shadow-none"><SelectValue /></SelectTrigger>
@@ -344,7 +340,7 @@ export default function FinanceiroDRE() {
             </SelectContent>
           </Select>
         </div>
-      </div>
+      </PageHeader>
 
       {/* Top 3 KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

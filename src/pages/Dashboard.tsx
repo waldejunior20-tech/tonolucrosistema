@@ -195,14 +195,14 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="space-y-10 page-enter">
+    <div className="space-y-6 page-enter">
       {/* ─── HEADER ─── */}
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 fade-up">
         <div>
-         <p className="text-[13px] text-muted-foreground/60 mb-0.5 uppercase tracking-wider font-bold">Dashboard</p>
-          <h1 className="text-[24px] sm:text-[28px] font-extrabold text-foreground tracking-tight leading-tight">
+          <h1 className="text-2xl font-extrabold text-text-heading tracking-tight leading-tight">
             {getGreeting()}{businessName ? `, ${businessName}` : ""}
           </h1>
+          <p className="text-sm text-muted-foreground mt-1 font-medium">Visão geral do seu negócio</p>
         </div>
 
         <div className="flex items-center gap-3">

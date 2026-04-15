@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 // ─── Types ───────────────────────────────────────────────────────────
 interface ComboItem {
@@ -465,15 +466,8 @@ export default function ComboSimulator() {
   };
 
   return (
-    <div className="space-y-6 max-w-[1400px] mx-auto">
-      {/* Header */}
-      <div className="mb-2">
-        <h1 className="text-2xl font-extrabold tracking-tight flex items-center gap-2">
-          <Calculator className="w-6 h-6 text-primary" />
-          Simulador de Combos
-        </h1>
-        <p className="text-muted-foreground text-sm">Monte a promoção e descubra se ela dá lucro de verdade.</p>
-      </div>
+    <div className="space-y-6 page-enter">
+      <PageHeader title="Simulador de Combos" description="Monte a promoção e descubra se ela dá lucro de verdade." />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* LEFT: BUILD */}

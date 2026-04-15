@@ -20,6 +20,7 @@ import {
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Check, AlertTriangle, Clock, CircleDollarSign } from "lucide-react";
 import { MoneyInput } from "@/components/MoneyInput";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -225,14 +226,13 @@ export default function FinanceiroContasPagar() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Contas a Pagar</h1>
+    <div className="space-y-6 page-enter">
+      <PageHeader title="Contas a Pagar" description="Controle de contas e pagamentos pendentes.">
         <Button onClick={openNew} size="sm">
           <Plus className="h-4 w-4 mr-2" />
           Nova Conta
         </Button>
-      </div>
+      </PageHeader>
 
       {/* Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-5">

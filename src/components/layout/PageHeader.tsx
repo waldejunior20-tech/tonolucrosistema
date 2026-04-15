@@ -21,9 +21,11 @@ const ROUTE_LABELS: Record<string, string> = {
   "/precificacao/pizzas": "Precificação Pizzas",
   "/precificacao/produtos": "Precificação Produtos",
   "/precificacao/bebidas": "Precificação Bebidas",
-  "/financeiro/dre": "DRE Financeiro",
+  "/precificacao/configuracoes": "Config. Precificação",
+  "/financeiro/dre": "Resumo do Mês",
   "/financeiro/contas-a-pagar": "Contas a Pagar",
   "/financeiro/ponto-de-equilibrio": "Ponto de Equilíbrio",
+  "/financeiro/caixa-diario": "Caixa Diário",
   "/promocoes/ativas": "Promoções Ativas",
   "/promocoes/combos": "Combos Fixos",
   "/configuracoes": "Configurações",
@@ -67,7 +69,7 @@ export function PageHeader({ title, description, children, className }: PageHead
       {/* Title row */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-extrabold text-[#1F2937]">{title}</h1>
+          <h1 className="text-2xl font-extrabold text-text-heading">{title}</h1>
           {description && (
             <p className="text-sm text-muted-foreground mt-1 font-medium">{description}</p>
           )}

@@ -14,6 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CalendarIcon, Wallet, CreditCard, Smartphone, ShoppingBag, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 interface VendaForm {
   data: Date;
@@ -124,17 +125,8 @@ export default function CaixaDiario() {
   });
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="p-2.5 rounded-xl bg-gradient-to-br from-orange to-orange/80 shadow-md">
-          <Wallet size={22} className="text-white" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-extrabold text-text-heading">Caixa</h1>
-          <p className="text-sm text-muted-foreground mt-1 font-medium">Registre as vendas do dia por forma de pagamento</p>
-        </div>
-      </div>
+    <div className="space-y-6 page-enter">
+      <PageHeader title="Caixa Diário" description="Registre as vendas do dia por forma de pagamento." />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Form */}

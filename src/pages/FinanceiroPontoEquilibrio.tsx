@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { Target, TrendingUp, AlertTriangle, Info } from "lucide-react";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -89,9 +90,8 @@ export default function FinanceiroPontoEquilibrio() {
   const anos = Array.from({ length: 5 }, (_, i) => now.getFullYear() - 2 + i);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Meta Mínima de Vendas</h1>
+    <div className="space-y-6 page-enter">
+      <PageHeader title="Meta Mínima de Vendas" description="Ponto de equilíbrio e meta de vendas por mês.">
         <div className="flex gap-2">
           <Select value={String(mes)} onValueChange={(v) => setMes(Number(v))}>
             <SelectTrigger className="w-[140px]">
@@ -114,7 +114,7 @@ export default function FinanceiroPontoEquilibrio() {
             </SelectContent>
           </Select>
         </div>
-      </div>
+      </PageHeader>
 
       {/* Explanation */}
       <Card className="border-info/30 bg-info/5">
