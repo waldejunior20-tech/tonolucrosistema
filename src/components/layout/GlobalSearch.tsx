@@ -118,16 +118,17 @@ export function GlobalSearch() {
 
   return (
     <>
-      <button
+      <div
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 h-9 px-3 rounded-lg border border-border bg-muted/50 text-muted-foreground text-sm hover:bg-muted transition-colors w-64 max-w-[280px]"
+        className="flex items-center gap-2 h-10 px-4 rounded-lg border border-border bg-muted/50 text-muted-foreground text-sm hover:bg-muted transition-colors cursor-text"
+        style={{ width: "clamp(280px, 40vw, 560px)" }}
       >
         <Search className="h-4 w-4 shrink-0" />
-        <span className="flex-1 text-left truncate">Pesquisar...</span>
+        <span className="flex-1 text-left truncate">Pesquisar menus, produtos, insumos...</span>
         <kbd className="hidden sm:inline-flex h-5 items-center gap-1 rounded border border-border bg-background px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
           ⌘K
         </kbd>
-      </button>
+      </div>
 
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput placeholder="Pesquisar menus, produtos, insumos..." />
