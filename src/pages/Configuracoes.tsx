@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { Cog, Save, Plus, Trash2, Building2, Pizza, Radio, CreditCard, Target, ClipboardList } from "lucide-react";
 import { fmt } from "@/lib/pricing-helpers";
 import { getOrCreateConfiguracoesNegocio, getOrCreateConfiguracoesPrecificacao } from "@/lib/config-helpers";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 // ─── Types ───────────────────────────────────────────────────────────
 interface CustoFixoItem {
