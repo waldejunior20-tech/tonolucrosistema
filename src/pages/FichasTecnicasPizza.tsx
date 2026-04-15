@@ -20,6 +20,7 @@ import { appError } from "@/lib/error-codes";
 import { Pencil, Trash2, Plus, Filter, Search, X, Check, Pizza } from "lucide-react";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { EmptyState } from "@/components/EmptyState";
+import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
 import type { Tables } from "@/integrations/supabase/types";
 import { formatQty } from "@/components/MoneyInput";
 

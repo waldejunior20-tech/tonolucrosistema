@@ -609,7 +609,7 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
 
               <div className="flex justify-end gap-2">
                 <Button type="button" variant="outline" onClick={resetForm}>Cancelar</Button>
-                <Button type="submit">{editingId ? "Salvar" : "Cadastrar"}</Button>
+                <Button type="submit" disabled={submitted && !formIsValid}>{editingId ? "Salvar" : "Cadastrar"}</Button>
               </div>
             </form>
           </DialogContent>
