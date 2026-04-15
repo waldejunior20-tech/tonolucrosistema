@@ -258,22 +258,26 @@ export default function InsumosComprados() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="">Nome</TableHead>
-                <TableHead className="">Categoria</TableHead>
+                <TableHead>Nome</TableHead>
+                <TableHead>Categoria</TableHead>
                 <TableHead className="text-right">Preço (R$)</TableHead>
                 <TableHead className="text-right">Qtd</TableHead>
-                <TableHead className="">Unidade</TableHead>
-                <TableHead className="">Fornecedor</TableHead>
-                <TableHead className="">Data Compra</TableHead>
+                <TableHead>Unidade</TableHead>
+                <TableHead>Fornecedor</TableHead>
+                <TableHead>Data Compra</TableHead>
                 <TableHead className="w-[100px]">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.map((insumo) => (
                 <TableRow key={insumo.id}>
-                  <TableCell className="font-bold text-[#1A1A1A]">{insumo.nome}</TableCell>
-                  <TableCell>{insumo.categoria}</TableCell>
-                  <TableCell className="text-right tabular-nums">
+                  <TableCell className="font-bold text-[#1A1A1A] text-base">{insumo.nome}</TableCell>
+                  <TableCell>
+                    <span className={`inline-block px-2 py-1 rounded text-xs font-semibold ${categoriaBadge(insumo.categoria)}`}>
+                      {insumo.categoria}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums font-bold text-[#2E7D32]">
                     {formatMoney(Number(insumo.preco_pago))}
                   </TableCell>
                   <TableCell className="text-right tabular-nums">{formatQty(Number(insumo.quantidade))}</TableCell>
@@ -286,11 +290,11 @@ export default function InsumosComprados() {
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-1">
-                      <Button variant="ghost" size="icon" onClick={() => handleEdit(insumo)}>
-                        <Pencil className="h-4 w-4 text-[#16A273]" />
+                      <Button variant="ghost" size="icon" className="text-[#9E9E9E] hover:text-[#1976D2] hover:bg-[#E3F2FD]" onClick={() => handleEdit(insumo)}>
+                        <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => deleteMutation.mutate(insumo.id)}>
-                        <Trash2 className="h-4 w-4 text-destructive" />
+                      <Button variant="ghost" size="icon" className="text-[#9E9E9E] hover:text-[#D32F2F] hover:bg-[#FFEBEE]" onClick={() => deleteMutation.mutate(insumo.id)}>
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </TableCell>
@@ -298,6 +302,9 @@ export default function InsumosComprados() {
               ))}
             </TableBody>
           </Table>
+          <div className="px-4 py-3 text-sm text-[#999]">
+            Mostrando {filtered.length} de {insumos.length} insumos
+          </div>
         </div>
       )}
     </div>
