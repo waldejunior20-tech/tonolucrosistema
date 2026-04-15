@@ -20,6 +20,7 @@ import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 import { MoneyInput, QuantityInput, formatMoney, formatQty } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { EmptyState } from "@/components/EmptyState";
+import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
 
 const CATEGORIAS = [
   "Proteínas", "Laticínios", "Hortifruti", "Secos", "Bebidas",
@@ -47,6 +48,19 @@ export default function InsumosComprados() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [filtroCategoria, setFiltroCategoria] = useState<string>("todas");
+  const [submitted, setSubmitted] = useState(false);
+
+  // Validation
+  const errors = {
+    nome: !form.nome.trim(),
+    categoria: !form.categoria,
+    preco_pago: !form.preco_pago,
+    quantidade: !form.quantidade,
+    unidade: !form.unidade,
+    fornecedor: !(form.fornecedor ?? "").trim(),
+    data_compra: !(form.data_compra ?? "").trim(),
+  };
+  const formIsValid = !Object.values(errors).some(Boolean);
 
   // Fetch
   const { data: insumos = [], isLoading } = useQuery({
@@ -106,14 +120,13 @@ export default function InsumosComprados() {
     setForm(emptyForm);
     setEditingId(null);
     setDialogOpen(false);
+    setSubmitted(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.nome || !form.categoria || !form.unidade || !form.preco_pago || !form.quantidade) {
-      appError("ERR-INS-004");
-      return;
-    }
+    setSubmitted(true);
+    if (!formIsValid) return;
     if (editingId) {
       updateMutation.mutate({ ...form, id: editingId });
     } else {
@@ -133,12 +146,15 @@ export default function InsumosComprados() {
       codigo: insumo.codigo ?? "",
     });
     setEditingId(insumo.id);
+    setSubmitted(false);
     setDialogOpen(true);
   };
 
   const filtered = filtroCategoria === "todas"
     ? insumos
     : insumos.filter((i) => i.categoria === filtroCategoria);
+
+  const showErr = (field: keyof typeof errors) => submitted && errors[field];
 
   return (
     <div className="space-y-6 page-enter">
@@ -157,46 +173,53 @@ export default function InsumosComprados() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
                   <Label htmlFor="nome">Nome *</Label>
-                  <Input id="nome" value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} required />
+                  <Input id="nome" className={fieldErrorClass(showErr("nome"))} value={form.nome} onChange={(e) => setForm({ ...form, nome: e.target.value })} />
+                  <FieldError show={showErr("nome")} />
                 </div>
                 <div>
                   <Label>Categoria *</Label>
                   <Select value={form.categoria} onValueChange={(v) => setForm({ ...form, categoria: v })}>
-                    <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                    <SelectTrigger className={fieldErrorClass(showErr("categoria"))}><SelectValue placeholder="Selecione" /></SelectTrigger>
                     <SelectContent>
                       {CATEGORIAS.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                     </SelectContent>
                   </Select>
+                  <FieldError show={showErr("categoria")} />
                 </div>
                 <div>
                   <Label>Unidade *</Label>
                   <Select value={form.unidade} onValueChange={(v) => setForm({ ...form, unidade: v })}>
-                    <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                    <SelectTrigger className={fieldErrorClass(showErr("unidade"))}><SelectValue placeholder="Selecione" /></SelectTrigger>
                     <SelectContent>
                       {UNIDADES.map((u) => <SelectItem key={u} value={u}>{u}</SelectItem>)}
                     </SelectContent>
                   </Select>
+                  <FieldError show={showErr("unidade")} />
                 </div>
                 <div>
                   <Label htmlFor="preco">Preço Pago (R$) *</Label>
-                  <MoneyInput id="preco" value={form.preco_pago} onChange={(v) => setForm({ ...form, preco_pago: v })} required />
+                  <MoneyInput id="preco" className={fieldErrorClass(showErr("preco_pago"))} value={form.preco_pago} onChange={(v) => setForm({ ...form, preco_pago: v })} />
+                  <FieldError show={showErr("preco_pago")} />
                 </div>
                 <div>
                   <Label htmlFor="qtd">Quantidade *</Label>
-                  <QuantityInput id="qtd" value={form.quantidade} onChange={(v) => setForm({ ...form, quantidade: v })} required />
+                  <QuantityInput id="qtd" className={fieldErrorClass(showErr("quantidade"))} value={form.quantidade} onChange={(v) => setForm({ ...form, quantidade: v })} />
+                  <FieldError show={showErr("quantidade")} />
                 </div>
                 <div>
-                  <Label htmlFor="fornecedor">Fornecedor</Label>
-                  <Input id="fornecedor" value={form.fornecedor ?? ""} onChange={(e) => setForm({ ...form, fornecedor: e.target.value })} />
+                  <Label htmlFor="fornecedor">Fornecedor *</Label>
+                  <Input id="fornecedor" className={fieldErrorClass(showErr("fornecedor"))} value={form.fornecedor ?? ""} onChange={(e) => setForm({ ...form, fornecedor: e.target.value })} />
+                  <FieldError show={showErr("fornecedor")} />
                 </div>
                 <div>
-                  <Label htmlFor="data">Data da Compra</Label>
-                  <Input id="data" type="date" value={form.data_compra ?? ""} onChange={(e) => setForm({ ...form, data_compra: e.target.value })} />
+                  <Label htmlFor="data">Data da Compra *</Label>
+                  <Input id="data" type="date" className={fieldErrorClass(showErr("data_compra"))} value={form.data_compra ?? ""} onChange={(e) => setForm({ ...form, data_compra: e.target.value })} />
+                  <FieldError show={showErr("data_compra")} />
                 </div>
               </div>
               <div className="flex justify-end gap-2 pt-2">
                 <Button type="button" variant="outline" onClick={resetForm}>Cancelar</Button>
-                <Button type="submit" disabled={insertMutation.isPending || updateMutation.isPending}>
+                <Button type="submit" disabled={insertMutation.isPending || updateMutation.isPending || (submitted && !formIsValid)}>
                   {editingId ? "Salvar" : "Cadastrar"}
                 </Button>
               </div>

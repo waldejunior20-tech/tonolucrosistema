@@ -20,6 +20,7 @@ import type { Tables } from "@/integrations/supabase/types";
 import { QuantityInput, formatMoney } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { EmptyState } from "@/components/EmptyState";
+import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
 
 const UNIDADES_RENDIMENTO = ["kg", "g", "L", "ml", "unidade"];
 const UNIDADES_INGREDIENTE = ["kg", "g", "L", "ml", "unidade", "caixa", "pacote"];
@@ -56,6 +57,16 @@ export default function InsumosProduzidos() {
   const [form, setForm] = useState<FormState>(emptyForm);
   const [buscaIngrediente, setBuscaIngrediente] = useState("");
   const [buscaAberta, setBuscaAberta] = useState<number | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+
+  // Validation
+  const errors = {
+    nome: !form.nome.trim(),
+    rendimento: !form.rendimento,
+    unidade_rendimento: !form.unidade_rendimento,
+  };
+  const formIsValid = !Object.values(errors).some(Boolean);
+  const showErr = (field: keyof typeof errors) => submitted && errors[field];
 
   // Fetch insumos próprios
   const { data: insumosProprios = [], isLoading } = useQuery({
@@ -234,14 +245,13 @@ export default function InsumosProduzidos() {
     setDialogOpen(false);
     setBuscaIngrediente("");
     setBuscaAberta(null);
+    setSubmitted(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.nome || !form.rendimento || !form.unidade_rendimento) {
-      appError("ERR-INS-013");
-      return;
-    }
+    setSubmitted(true);
+    if (!formIsValid) return;
     if (editingId) {
       updateMutation.mutate({ ...form, id: editingId });
     } else {
@@ -343,28 +353,31 @@ export default function InsumosProduzidos() {
                   <Input
                     id="nome"
                     placeholder="Ex: Massa de Pizza, Frango Desfiado"
+                    className={fieldErrorClass(showErr("nome"))}
                     value={form.nome}
                     onChange={(e) => setForm({ ...form, nome: e.target.value })}
-                    required
                   />
+                  <FieldError show={showErr("nome")} />
                 </div>
                 <div>
                   <Label htmlFor="rendimento">Rendimento *</Label>
                   <QuantityInput
                     id="rendimento"
+                    className={fieldErrorClass(showErr("rendimento"))}
                     value={form.rendimento}
                     onChange={(v) => setForm({ ...form, rendimento: v })}
-                    required
                   />
+                  <FieldError show={showErr("rendimento")} />
                 </div>
                 <div>
                   <Label>Unidade *</Label>
                   <Select value={form.unidade_rendimento} onValueChange={(v) => setForm({ ...form, unidade_rendimento: v })}>
-                    <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                    <SelectTrigger className={fieldErrorClass(showErr("unidade_rendimento"))}><SelectValue placeholder="Selecione" /></SelectTrigger>
                     <SelectContent>
                       {UNIDADES_RENDIMENTO.map((u) => <SelectItem key={u} value={u}>{u}</SelectItem>)}
                     </SelectContent>
                   </Select>
+                  <FieldError show={showErr("unidade_rendimento")} />
                 </div>
                 <div className="flex flex-col justify-end">
                   <p className="text-sm text-muted-foreground">Custo/{form.unidade_rendimento || "un"}:</p>
@@ -479,7 +492,7 @@ export default function InsumosProduzidos() {
 
               <div className="flex justify-end gap-2 pt-2">
                 <Button type="button" variant="outline" onClick={resetForm}>Cancelar</Button>
-                <Button type="submit" disabled={insertMutation.isPending || updateMutation.isPending}>
+                <Button type="submit" disabled={insertMutation.isPending || updateMutation.isPending || (submitted && !formIsValid)}>
                   {editingId ? "Salvar" : "Cadastrar"}
                 </Button>
               </div>

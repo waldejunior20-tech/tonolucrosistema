@@ -21,6 +21,7 @@ import type { Tables } from "@/integrations/supabase/types";
 import { formatMoney, formatQty } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { EmptyState } from "@/components/EmptyState";
+import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
 
 const UNIDADES = ["kg", "g", "L", "ml", "unidade"];
 
@@ -86,6 +87,12 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
   const [buscaIngrediente, setBuscaIngrediente] = useState("");
   const [buscaAberta, setBuscaAberta] = useState<number | null>(null);
   const [savedFields, setSavedFields] = useState<Record<string, boolean>>({});
+  const [submitted, setSubmitted] = useState(false);
+
+  // Validation
+  const errors = { nome: !form.nome.trim() };
+  const formIsValid = !Object.values(errors).some(Boolean);
+  const showErr = (field: keyof typeof errors) => submitted && errors[field];
 
   const label = CATEGORIA_LABELS[categoria] || categoria;
 
@@ -300,14 +307,13 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
     setDialogOpen(false);
     setBuscaIngrediente("");
     setBuscaAberta(null);
+    setSubmitted(false);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.nome) {
-      appError("ERR-FTP-013");
-      return;
-    }
+    setSubmitted(true);
+    if (!formIsValid) return;
     if (editingId) {
       updateMutation.mutate({ ...form, id: editingId });
     } else {
@@ -437,8 +443,9 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
                     value={form.nome}
                     onChange={(e) => setForm({ ...form, nome: e.target.value })}
                     placeholder="Ex: Pastel de Queijo"
-                    required
+                    className={fieldErrorClass(showErr("nome"))}
                   />
+                  <FieldError show={showErr("nome")} />
                 </div>
                 <div>
                   <Label>Nº Ficha</Label>
@@ -602,7 +609,7 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
 
               <div className="flex justify-end gap-2">
                 <Button type="button" variant="outline" onClick={resetForm}>Cancelar</Button>
-                <Button type="submit">{editingId ? "Salvar" : "Cadastrar"}</Button>
+                <Button type="submit" disabled={submitted && !formIsValid}>{editingId ? "Salvar" : "Cadastrar"}</Button>
               </div>
             </form>
           </DialogContent>
