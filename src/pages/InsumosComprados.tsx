@@ -271,7 +271,7 @@ export default function InsumosComprados() {
             <TableBody>
               {filtered.map((insumo) => (
                 <TableRow key={insumo.id}>
-                  <TableCell className="font-medium">{insumo.nome}</TableCell>
+                  <TableCell className="font-bold text-[#1A1A1A]">{insumo.nome}</TableCell>
                   <TableCell>{insumo.categoria}</TableCell>
                   <TableCell className="text-right">
                     {formatMoney(Number(insumo.preco_pago))}
