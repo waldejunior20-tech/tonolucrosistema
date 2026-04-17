@@ -464,10 +464,15 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* ─── RANKING DE PRODUTOS ─── */}
+      <div className="fade-up fade-up-d2">
+        <RankingProdutos />
+      </div>
+
       {/* ─── ALERTAS ACIONÁVEIS ─── */}
       <DashboardAlerts
         contasVencendo={contasVencendo}
-        cmvPct={cmvPct}
+        cmvPct={cmvDisplayPct}
         cmvMeta={cmvMeta}
         faturamentoMes={faturamentoMes}
         onNavigate={navigate}
