@@ -13,6 +13,7 @@ import {
 import CaixaRapido from "@/components/CaixaRapido";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { OnboardingChecklist } from "@/components/dashboard/OnboardingChecklist";
+import { usePriceAlerts } from "@/hooks/usePriceAlerts";
 
 function formatBRL(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -374,32 +375,15 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ─── ALERTAS COMPACTO ─── */}
-      <div className="fade-up fade-up-d3">
-        <div className="bg-sidebar border border-border rounded-2xl px-5 py-4">
-          <h3 className="text-[13px] font-semibold text-white mb-2.5 flex items-center gap-2">
-            <Bell size={14} className="text-white/50" />
-            Alertas
-          </h3>
-          {contasVencendo.length > 0 || (cmvPct > cmvMeta && faturamentoMes > 0) ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-              {contasVencendo.map((c, i) => (
-                <AlertItem key={i} severity="warning" title={c.descricao} detail={`Vence ${format(new Date(c.data_lancamento + "T00:00:00"), "dd/MM")}`} value={formatBRL(Number(c.valor))} />
-              ))}
-              {cmvPct > cmvMeta && faturamentoMes > 0 && (
-                <AlertItem severity="critical" title="CMV acima da meta" detail={`${cmvPct.toFixed(1)}% vs meta de ${cmvMeta}%`} />
-              )}
-            </div>
-          ) : (
-            <div className="flex items-center gap-2 py-1">
-              <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">
-                <Clock size={12} className="text-white/60" />
-              </div>
-              <p className="text-[11px] text-white/50">Nenhum alerta no momento.</p>
-            </div>
-          )}
-        </div>
-      </div>
+      {/* ─── ALERTAS ACIONÁVEIS ─── */}
+      <DashboardAlerts
+        contasVencendo={contasVencendo}
+        cmvPct={cmvPct}
+        cmvMeta={cmvMeta}
+        faturamentoMes={faturamentoMes}
+        onNavigate={navigate}
+      />
+
 
       {/* ─── FOOTER ─── */}
       <div className="border-t border-border/40 pt-4 pb-2 text-center fade-up">
