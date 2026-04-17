@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import {
   TrendingUp, TrendingDown, Bell, Clock,
-  Wallet, Receipt, PiggyBank, AlertTriangle,
+  Wallet, Receipt, PiggyBank, AlertTriangle, ArrowUp, ArrowDown, Minus,
 } from "lucide-react";
 import CaixaRapido from "@/components/CaixaRapido";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
@@ -28,11 +28,55 @@ function getGreeting() {
 // ─── Minimal KPI Card ────────────────────────────────────────────────
 type KpiVariant = "faturamento" | "gastos" | "lucro_pos" | "lucro_neg" | "cmv_ok" | "cmv_bad";
 
-function MiniKPI({ label, value, numericValue, formatter, icon: Icon, trendLabel, kpiType }: {
+function MoMBadge({ variacao, higherIsBetter, dark }: {
+  variacao: number | null;
+  higherIsBetter: boolean;
+  dark: boolean;
+}) {
+  if (variacao === null) {
+    return (
+      <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-md inline-flex items-center gap-1 ${
+        dark ? "bg-white/15 text-white/80" : "bg-muted text-muted-foreground"
+      }`}>
+        <Minus size={10} /> sem base
+      </span>
+    );
+  }
+
+  const isFlat = Math.abs(variacao) < 0.5;
+  const isUp = variacao > 0;
+  const isGood = isFlat ? true : isUp === higherIsBetter;
+  const Icon = isFlat ? Minus : isUp ? ArrowUp : ArrowDown;
+  const arrow = isFlat ? "" : isUp ? "+" : "";
+
+  if (dark) {
+    return (
+      <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md inline-flex items-center gap-1 backdrop-blur ${
+        isGood ? "bg-white/25 text-white" : "bg-black/30 text-white"
+      }`}>
+        <Icon size={10} strokeWidth={3} />
+        {arrow}{Math.abs(variacao).toFixed(1)}%
+      </span>
+    );
+  }
+
+  return (
+    <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md inline-flex items-center gap-1 ${
+      isGood ? "text-success bg-success/10" : "text-destructive bg-destructive/10"
+    }`}>
+      <Icon size={10} strokeWidth={3} />
+      {arrow}{Math.abs(variacao).toFixed(1)}%
+    </span>
+  );
+}
+
+function MiniKPI({ label, value, numericValue, formatter, icon: Icon, trendLabel, kpiType, momVariation, higherIsBetter }: {
   label: string; value: string; icon: any;
   numericValue?: number; formatter?: (v: number) => string;
   trendLabel?: string;
   kpiType: KpiVariant;
+  momVariation?: number | null;
+  higherIsBetter?: boolean;
 }) {
   const gradients: Partial<Record<KpiVariant, { bg: string; shadow: string }>> = {
     faturamento: { bg: "linear-gradient(135deg, hsl(var(--grad-faturamento-from)), hsl(var(--grad-faturamento-to)))", shadow: "0 8px 24px hsl(var(--grad-faturamento-from) / 0.2)" },
@@ -44,6 +88,7 @@ function MiniKPI({ label, value, numericValue, formatter, icon: Icon, trendLabel
   };
 
   const grad = gradients[kpiType];
+  const showMoM = momVariation !== undefined && higherIsBetter !== undefined;
 
   const renderValue = (textClass: string) => (
     numericValue !== undefined && formatter ? (
@@ -64,12 +109,18 @@ function MiniKPI({ label, value, numericValue, formatter, icon: Icon, trendLabel
           <span className="text-[13px] font-bold text-white/80 uppercase tracking-wider">{label}</span>
           <Icon size={20} className="text-white/70" />
         </div>
-        <div className="flex items-baseline gap-2">
+        <div className="flex items-baseline gap-2 flex-wrap">
           {renderValue("text-white drop-shadow-sm")}
            {trendLabel && trendLabel !== "—" && (
              <span className="text-[12px] font-bold px-2 py-1 rounded-md bg-white/20 text-white">{trendLabel}</span>
            )}
         </div>
+        {showMoM && (
+          <div className="mt-2 flex items-center gap-1.5">
+            <MoMBadge variacao={momVariation} higherIsBetter={higherIsBetter} dark />
+            <span className="text-[10px] text-white/60 font-medium">vs mês anterior</span>
+          </div>
+        )}
       </div>
     );
   }
@@ -82,7 +133,7 @@ function MiniKPI({ label, value, numericValue, formatter, icon: Icon, trendLabel
         <span className="text-[13px] font-bold text-muted-foreground/70 uppercase tracking-wider">{label}</span>
         <Icon size={20} className={iconColor} />
       </div>
-      <div className="flex items-baseline gap-2">
+      <div className="flex items-baseline gap-2 flex-wrap">
         {renderValue("text-foreground")}
         {trendLabel && trendLabel !== "—" && (
           <span className={`text-[12px] font-bold px-2 py-1 rounded-md ${
@@ -94,6 +145,12 @@ function MiniKPI({ label, value, numericValue, formatter, icon: Icon, trendLabel
           </span>
         )}
       </div>
+      {showMoM && (
+        <div className="mt-2 flex items-center gap-1.5">
+          <MoMBadge variacao={momVariation} higherIsBetter={higherIsBetter} dark={false} />
+          <span className="text-[10px] text-muted-foreground font-medium">vs mês anterior</span>
+        </div>
+      )}
     </div>
   );
 }
