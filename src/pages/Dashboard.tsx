@@ -229,6 +229,7 @@ export default function Dashboard() {
   const {
     totalFichas, totalInsumos, promocoesAtivas, faturamentoMes,
     despesasMes, cmvPct, cmvMeta, graficoMensal, contasVencendo,
+    comparativos,
   } = useDashboardData();
 
   useEffect(() => {
@@ -288,9 +289,9 @@ export default function Dashboard() {
 
       {/* ─── MINI KPI CARDS ─── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 stagger-fade-in">
-        <MiniKPI label="Faturamento" value={formatBRL(faturamentoMes)} numericValue={faturamentoMes} formatter={formatBRL} icon={Wallet} kpiType="faturamento" />
-        <MiniKPI label="Gastos" value={formatBRL(despesasMes)} numericValue={despesasMes} formatter={formatBRL} icon={Receipt} kpiType="gastos" />
-        <MiniKPI label="Lucro" value={formatBRL(lucroMes)} numericValue={lucroMes} formatter={formatBRL} icon={PiggyBank} trendLabel={lucroMes !== 0 ? (lucroMes > 0 ? "↑ Positivo" : "↓ Negativo") : undefined} kpiType={lucroMes >= 0 ? "lucro_pos" : "lucro_neg"} />
+        <MiniKPI label="Faturamento" value={formatBRL(faturamentoMes)} numericValue={faturamentoMes} formatter={formatBRL} icon={Wallet} kpiType="faturamento" momVariation={comparativos.faturamento} higherIsBetter={true} />
+        <MiniKPI label="Gastos" value={formatBRL(despesasMes)} numericValue={despesasMes} formatter={formatBRL} icon={Receipt} kpiType="gastos" momVariation={comparativos.despesas} higherIsBetter={false} />
+        <MiniKPI label="Lucro" value={formatBRL(lucroMes)} numericValue={lucroMes} formatter={formatBRL} icon={PiggyBank} trendLabel={lucroMes !== 0 ? (lucroMes > 0 ? "↑ Positivo" : "↓ Negativo") : undefined} kpiType={lucroMes >= 0 ? "lucro_pos" : "lucro_neg"} momVariation={comparativos.lucro} higherIsBetter={true} />
         <MiniKPI label="Custo" value={faturamentoMes > 0 ? `${cmvPct.toFixed(1)}%` : "—"} numericValue={faturamentoMes > 0 ? cmvPct : undefined} formatter={(v) => `${v.toFixed(1)}%`} icon={TrendingDown} trendLabel={faturamentoMes > 0 ? `Meta ${cmvMeta}%` : undefined} kpiType={cmvPct <= cmvMeta ? "cmv_ok" : "cmv_bad"} />
       </div>
 
