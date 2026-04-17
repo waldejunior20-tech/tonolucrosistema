@@ -156,17 +156,21 @@ function MiniKPI({ label, value, numericValue, formatter, icon: Icon, trendLabel
 }
 
 // ─── Alert Item ──────────────────────────────────────────────────────
-function AlertItem({ severity, title, detail, value }: {
+function AlertItem({ severity, title, detail, value, onClick }: {
   severity: "warning" | "critical"; title: string; detail: string; value?: string;
+  onClick?: () => void;
 }) {
   const isCritical = severity === "critical";
+  const isClickable = !!onClick;
+  const Wrapper: any = isClickable ? "button" : "div";
   return (
-    <div
-      className={`flex items-start gap-3 p-3.5 rounded-xl border transition-all duration-200 ${
+    <Wrapper
+      onClick={onClick}
+      className={`w-full text-left flex items-start gap-3 p-3.5 rounded-xl border transition-all duration-200 ${
         isCritical
           ? "bg-destructive/5 border-destructive/15"
           : "bg-muted border-muted-foreground/15"
-      }`}
+      } ${isClickable ? "hover:scale-[1.01] hover:shadow-md cursor-pointer" : ""}`}
     >
       <div className={`mt-1 w-2 h-2 rounded-full flex-shrink-0 ${isCritical ? "bg-destructive" : "bg-warning"}`} />
       <div className="flex-1 min-w-0">
@@ -183,7 +187,7 @@ function AlertItem({ severity, title, detail, value }: {
           isCritical ? "text-destructive" : "text-muted-foreground"
         }`}>{value}</span>
       )}
-    </div>
+    </Wrapper>
   );
 }
 
