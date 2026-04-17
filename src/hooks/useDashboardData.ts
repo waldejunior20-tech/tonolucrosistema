@@ -132,6 +132,49 @@ export function useDashboardData() {
   const cmvPct = faturamentoMes > 0 ? (cmvMes / faturamentoMes) * 100 : 0;
   const cmvMeta = configPrec?.cmv_meta_pct ?? 32;
 
+  // ─── Comparativos com o mês anterior ───
+  const mesAnteriorInicio = format(startOfMonth(subMonths(now, 1)), "yyyy-MM-dd");
+  const mesAnteriorFim = format(endOfMonth(subMonths(now, 1)), "yyyy-MM-dd");
+
+  const lancamentosMesAnterior = useMemo(
+    () =>
+      lancamentos6Meses.filter(
+        (l) => l.data_lancamento >= mesAnteriorInicio && l.data_lancamento <= mesAnteriorFim,
+      ),
+    [lancamentos6Meses, mesAnteriorInicio, mesAnteriorFim],
+  );
+
+  const faturamentoMesAnterior = useMemo(
+    () =>
+      lancamentosMesAnterior
+        .filter((l) => l.tipo === "receita")
+        .reduce((s, l) => s + Number(l.valor), 0),
+    [lancamentosMesAnterior],
+  );
+
+  const despesasMesAnterior = useMemo(
+    () =>
+      lancamentosMesAnterior
+        .filter((l) => l.tipo === "despesa")
+        .reduce((s, l) => s + Number(l.valor), 0),
+    [lancamentosMesAnterior],
+  );
+
+  const lucroMes = faturamentoMes - despesasMes;
+  const lucroMesAnterior = faturamentoMesAnterior - despesasMesAnterior;
+
+  // Variação percentual (null = sem base de comparação)
+  function variacao(atual: number, anterior: number): number | null {
+    if (anterior === 0) return atual === 0 ? 0 : null;
+    return ((atual - anterior) / Math.abs(anterior)) * 100;
+  }
+
+  const comparativos = {
+    faturamento: variacao(faturamentoMes, faturamentoMesAnterior),
+    despesas: variacao(despesasMes, despesasMesAnterior),
+    lucro: variacao(lucroMes, lucroMesAnterior),
+  };
+
   // Gráfico de faturamento por mês (últimos 6 meses)
   const graficoMensal = useMemo(() => {
     const meses: { mes: string; receita: number; despesa: number }[] = [];
@@ -161,9 +204,14 @@ export function useDashboardData() {
     promocoesAtivas,
     faturamentoMes,
     despesasMes,
+    faturamentoMesAnterior,
+    despesasMesAnterior,
+    lucroMesAnterior,
+    comparativos,
     cmvPct,
     cmvMeta,
     graficoMensal,
     contasVencendo,
   };
 }
+
