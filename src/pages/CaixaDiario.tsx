@@ -382,6 +382,13 @@ export default function CaixaDiario() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Nova venda com produtos (baixa estoque) */}
+      <NovaVendaProdutoModal
+        open={novaVendaOpen}
+        onOpenChange={setNovaVendaOpen}
+        dataStr={dataStr}
+      />
     </div>
   );
 }
