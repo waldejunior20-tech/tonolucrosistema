@@ -1,6 +1,7 @@
 import { Menu } from "lucide-react";
 import { GlobalSearch } from "./GlobalSearch";
 import { BrasiliaClock } from "./BrasiliaClock";
+import { UnidadeSelector } from "./UnidadeSelector";
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -11,7 +12,7 @@ interface HeaderProps {
 export function Header({ onMenuClick, showMenuButton, sidebarWidth = "0px" }: HeaderProps) {
   return (
     <header style={{ left: sidebarWidth }} className="h-16 border-b border-border bg-background/80 backdrop-blur-sm flex items-center justify-between px-4 lg:px-6 fixed top-0 right-0 z-30 transition-all duration-300">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 min-w-0 flex-1">
         {showMenuButton && (
           <button
             onClick={onMenuClick}
@@ -23,8 +24,11 @@ export function Header({ onMenuClick, showMenuButton, sidebarWidth = "0px" }: He
         <GlobalSearch />
       </div>
 
-      <div className="hidden sm:block">
-        <BrasiliaClock />
+      <div className="flex items-center gap-3 shrink-0">
+        <UnidadeSelector />
+        <div className="hidden sm:block">
+          <BrasiliaClock />
+        </div>
       </div>
     </header>
   );

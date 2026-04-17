@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
+import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,6 +38,7 @@ export function VendaRapidaButton({
   const mutation = useMutation({
     mutationFn: async () => {
       if (valor <= 0) throw new Error("Informe o valor da venda");
+      const unidade_id = requireActiveUnidadeId();
       const { error } = await supabase.from("lancamentos_financeiros").insert({
         tipo: "receita",
         categoria: `Vendas - ${forma}`,
@@ -44,6 +46,7 @@ export function VendaRapidaButton({
         valor,
         data_lancamento: dataStr,
         pago: true,
+        unidade_id,
       });
       if (error) throw error;
     },
