@@ -89,7 +89,7 @@ export default function Estoque() {
       queryClient.invalidateQueries({ queryKey: ["estoque-movimentos"] });
       queryClient.invalidateQueries({ queryKey: ["estoque-alertas"] });
     },
-    onError: (e: any) => appError("ERR-EST-001", e),
+    onError: (e: any) => appError("ERR-FIN-001", e),
   });
 
   const openAjuste = (item: EstoqueItem, tipo: AjusteTipo) => {
