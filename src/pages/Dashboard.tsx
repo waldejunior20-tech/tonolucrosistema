@@ -13,6 +13,7 @@ import {
 import CaixaRapido from "@/components/CaixaRapido";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { OnboardingChecklist } from "@/components/dashboard/OnboardingChecklist";
+import { usePriceAlerts } from "@/hooks/usePriceAlerts";
 
 function formatBRL(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -156,17 +157,21 @@ function MiniKPI({ label, value, numericValue, formatter, icon: Icon, trendLabel
 }
 
 // ─── Alert Item ──────────────────────────────────────────────────────
-function AlertItem({ severity, title, detail, value }: {
+function AlertItem({ severity, title, detail, value, onClick }: {
   severity: "warning" | "critical"; title: string; detail: string; value?: string;
+  onClick?: () => void;
 }) {
   const isCritical = severity === "critical";
+  const isClickable = !!onClick;
+  const Wrapper: any = isClickable ? "button" : "div";
   return (
-    <div
-      className={`flex items-start gap-3 p-3.5 rounded-xl border transition-all duration-200 ${
+    <Wrapper
+      onClick={onClick}
+      className={`w-full text-left flex items-start gap-3 p-3.5 rounded-xl border transition-all duration-200 ${
         isCritical
           ? "bg-destructive/5 border-destructive/15"
           : "bg-muted border-muted-foreground/15"
-      }`}
+      } ${isClickable ? "hover:scale-[1.01] hover:shadow-md cursor-pointer" : ""}`}
     >
       <div className={`mt-1 w-2 h-2 rounded-full flex-shrink-0 ${isCritical ? "bg-destructive" : "bg-warning"}`} />
       <div className="flex-1 min-w-0">
@@ -183,7 +188,7 @@ function AlertItem({ severity, title, detail, value }: {
           isCritical ? "text-destructive" : "text-muted-foreground"
         }`}>{value}</span>
       )}
-    </div>
+    </Wrapper>
   );
 }
 
@@ -220,7 +225,76 @@ function DonutCenterLabel({ viewBox, value }: any) {
   );
 }
 
-// ─── MAIN ────────────────────────────────────────────────────────────
+// ─── Dashboard Alerts (com alertas de preço acionáveis) ─────────────
+function DashboardAlerts({ contasVencendo, cmvPct, cmvMeta, faturamentoMes, onNavigate }: {
+  contasVencendo: any[];
+  cmvPct: number;
+  cmvMeta: number;
+  faturamentoMes: number;
+  onNavigate: (path: string) => void;
+}) {
+  const { data: priceAlerts = [] } = usePriceAlerts();
+
+  const hasAny =
+    contasVencendo.length > 0 ||
+    (cmvPct > cmvMeta && faturamentoMes > 0) ||
+    priceAlerts.length > 0;
+
+  return (
+    <div className="fade-up fade-up-d3">
+      <div className="bg-sidebar border border-border rounded-2xl px-5 py-4">
+        <h3 className="text-[13px] font-semibold text-white mb-2.5 flex items-center gap-2">
+          <Bell size={14} className="text-white/50" />
+          Alertas
+          {hasAny && (
+            <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-white/15 text-white/90 font-bold">
+              {contasVencendo.length + priceAlerts.length + (cmvPct > cmvMeta && faturamentoMes > 0 ? 1 : 0)}
+            </span>
+          )}
+        </h3>
+        {hasAny ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            {priceAlerts.map((a, i) => (
+              <AlertItem
+                key={`price-${i}`}
+                severity="critical"
+                title={`${a.nome} +${a.variacaoPct.toFixed(1)}%`}
+                detail={`R$ ${a.precoAnterior.toFixed(2)} → R$ ${a.precoAtual.toFixed(2)} / ${a.unidade} — clique para revisar`}
+                onClick={() => onNavigate("/precificacao/pizzas")}
+              />
+            ))}
+            {contasVencendo.map((c, i) => (
+              <AlertItem
+                key={`conta-${i}`}
+                severity="warning"
+                title={c.descricao}
+                detail={`Vence ${format(new Date(c.data_lancamento + "T00:00:00"), "dd/MM")} — clique para ver`}
+                value={formatBRL(Number(c.valor))}
+                onClick={() => onNavigate("/financeiro/contas-a-pagar")}
+              />
+            ))}
+            {cmvPct > cmvMeta && faturamentoMes > 0 && (
+              <AlertItem
+                severity="critical"
+                title="CMV acima da meta"
+                detail={`${cmvPct.toFixed(1)}% vs meta de ${cmvMeta}% — clique para ajustar`}
+                onClick={() => onNavigate("/financeiro/dre")}
+              />
+            )}
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 py-1">
+            <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">
+              <Clock size={12} className="text-white/60" />
+            </div>
+            <p className="text-[11px] text-white/50">Nenhum alerta no momento.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const [businessName, setBusinessName] = useState("");
@@ -370,32 +444,15 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ─── ALERTAS COMPACTO ─── */}
-      <div className="fade-up fade-up-d3">
-        <div className="bg-sidebar border border-border rounded-2xl px-5 py-4">
-          <h3 className="text-[13px] font-semibold text-white mb-2.5 flex items-center gap-2">
-            <Bell size={14} className="text-white/50" />
-            Alertas
-          </h3>
-          {contasVencendo.length > 0 || (cmvPct > cmvMeta && faturamentoMes > 0) ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-              {contasVencendo.map((c, i) => (
-                <AlertItem key={i} severity="warning" title={c.descricao} detail={`Vence ${format(new Date(c.data_lancamento + "T00:00:00"), "dd/MM")}`} value={formatBRL(Number(c.valor))} />
-              ))}
-              {cmvPct > cmvMeta && faturamentoMes > 0 && (
-                <AlertItem severity="critical" title="CMV acima da meta" detail={`${cmvPct.toFixed(1)}% vs meta de ${cmvMeta}%`} />
-              )}
-            </div>
-          ) : (
-            <div className="flex items-center gap-2 py-1">
-              <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">
-                <Clock size={12} className="text-white/60" />
-              </div>
-              <p className="text-[11px] text-white/50">Nenhum alerta no momento.</p>
-            </div>
-          )}
-        </div>
-      </div>
+      {/* ─── ALERTAS ACIONÁVEIS ─── */}
+      <DashboardAlerts
+        contasVencendo={contasVencendo}
+        cmvPct={cmvPct}
+        cmvMeta={cmvMeta}
+        faturamentoMes={faturamentoMes}
+        onNavigate={navigate}
+      />
+
 
       {/* ─── FOOTER ─── */}
       <div className="border-t border-border/40 pt-4 pb-2 text-center fade-up">
