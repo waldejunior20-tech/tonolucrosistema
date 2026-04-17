@@ -5,6 +5,7 @@ import { format, eachDayOfInterval, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
+import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -115,6 +116,7 @@ export default function CaixaRapido() {
   const saveMutation = useMutation({
     mutationFn: async () => {
       if (!dateRange?.from) throw new Error("Selecione uma data");
+      const unidade_id = requireActiveUnidadeId();
 
       const days = dateRange.to
         ? eachDayOfInterval({ start: dateRange.from, end: dateRange.to })
@@ -126,11 +128,11 @@ export default function CaixaRapido() {
         const ds = format(day, "yyyy-MM-dd");
         const dailyDivisor = days.length;
 
-        if (form.dinheiro_pix > 0) entries.push({ tipo: "receita", categoria: "Vendas - Dinheiro/PIX", descricao: form.observacao || "Venda Dinheiro/PIX", valor: +(form.dinheiro_pix / dailyDivisor).toFixed(2), data_lancamento: ds, pago: true });
-        if (form.debito > 0) entries.push({ tipo: "receita", categoria: "Vendas - Débito", descricao: form.observacao || "Venda Débito", valor: +(form.debito / dailyDivisor).toFixed(2), data_lancamento: ds, pago: true });
-        if (form.credito > 0) entries.push({ tipo: "receita", categoria: "Vendas - Crédito", descricao: form.observacao || "Venda Crédito", valor: +(form.credito / dailyDivisor).toFixed(2), data_lancamento: ds, pago: true });
-        if (form.ifood > 0) entries.push({ tipo: "receita", categoria: "Vendas - iFood", descricao: form.observacao || "Venda iFood", valor: +(form.ifood / dailyDivisor).toFixed(2), data_lancamento: ds, pago: true });
-        if (form.outros_apps > 0) entries.push({ tipo: "receita", categoria: "Vendas - Outros Apps", descricao: form.observacao || "Venda Outros Apps", valor: +(form.outros_apps / dailyDivisor).toFixed(2), data_lancamento: ds, pago: true });
+        if (form.dinheiro_pix > 0) entries.push({ tipo: "receita", categoria: "Vendas - Dinheiro/PIX", descricao: form.observacao || "Venda Dinheiro/PIX", valor: +(form.dinheiro_pix / dailyDivisor).toFixed(2), data_lancamento: ds, pago: true, unidade_id });
+        if (form.debito > 0) entries.push({ tipo: "receita", categoria: "Vendas - Débito", descricao: form.observacao || "Venda Débito", valor: +(form.debito / dailyDivisor).toFixed(2), data_lancamento: ds, pago: true, unidade_id });
+        if (form.credito > 0) entries.push({ tipo: "receita", categoria: "Vendas - Crédito", descricao: form.observacao || "Venda Crédito", valor: +(form.credito / dailyDivisor).toFixed(2), data_lancamento: ds, pago: true, unidade_id });
+        if (form.ifood > 0) entries.push({ tipo: "receita", categoria: "Vendas - iFood", descricao: form.observacao || "Venda iFood", valor: +(form.ifood / dailyDivisor).toFixed(2), data_lancamento: ds, pago: true, unidade_id });
+        if (form.outros_apps > 0) entries.push({ tipo: "receita", categoria: "Vendas - Outros Apps", descricao: form.observacao || "Venda Outros Apps", valor: +(form.outros_apps / dailyDivisor).toFixed(2), data_lancamento: ds, pago: true, unidade_id });
       }
 
       if (entries.length === 0) throw new Error("Preencha pelo menos um valor");

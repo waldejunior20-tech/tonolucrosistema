@@ -1,10 +1,11 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 import type { ConfigPrecificacao } from "@/lib/pricing-helpers";
+import { getActiveUnidadeId } from "@/hooks/useActiveUnidade";
 
 type ConfigNegocioRow = Tables<"configuracoes_negocio">;
 
-export const DEFAULT_CONFIG_NEGOCIO: Omit<ConfigNegocioRow, "id" | "created_at" | "updated_at" | "user_id"> = {
+export const DEFAULT_CONFIG_NEGOCIO: Omit<ConfigNegocioRow, "id" | "created_at" | "updated_at" | "user_id" | "unidade_id"> = {
   nome_estabelecimento: "",
   faturamento_medio: 0,
   num_funcionarios: 0,
@@ -55,9 +56,10 @@ export async function getOrCreateConfiguracoesNegocio() {
   if (error) throw error;
   if (existing) return existing;
 
+  const unidade_id = getActiveUnidadeId();
   const { data, error: insertError } = await supabase
     .from("configuracoes_negocio")
-    .insert(DEFAULT_CONFIG_NEGOCIO as never)
+    .insert({ ...DEFAULT_CONFIG_NEGOCIO, unidade_id } as never)
     .select("*")
     .single();
 
@@ -75,9 +77,10 @@ export async function getOrCreateConfiguracoesPrecificacao() {
   if (error) throw error;
   if (existing) return existing as ConfigPrecificacao;
 
+  const unidade_id = getActiveUnidadeId();
   const { data, error: insertError } = await supabase
     .from("configuracoes_precificacao")
-    .insert(DEFAULT_CONFIG_PRECIFICACAO as never)
+    .insert({ ...DEFAULT_CONFIG_PRECIFICACAO, unidade_id } as never)
     .select("*")
     .single();
 

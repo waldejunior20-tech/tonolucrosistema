@@ -14,6 +14,7 @@ import {
 import { formatMoney } from "@/components/MoneyInput";
 import { Pizza, Package, Coffee, Plus, Minus, Trash2, Search, ShoppingCart, Wallet, CreditCard, Smartphone, ShoppingBag } from "lucide-react";
 import { useCardapio, type CardapioItem } from "@/hooks/useCardapio";
+import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -97,6 +98,7 @@ export function NovaVendaProdutoModal({ open, onOpenChange, dataStr, defaultForm
   const saveMutation = useMutation({
     mutationFn: async () => {
       if (carrinho.length === 0) throw new Error("Adicione pelo menos um produto");
+      const unidade_id = requireActiveUnidadeId();
 
       // 1) cria lançamento financeiro (mantém receita visível no Caixa Diário tradicional)
       const { data: lanc, error: lancErr } = await supabase
@@ -108,6 +110,7 @@ export function NovaVendaProdutoModal({ open, onOpenChange, dataStr, defaultForm
           valor: total,
           data_lancamento: dataStr,
           pago: true,
+          unidade_id,
         })
         .select("id")
         .single();
@@ -122,6 +125,7 @@ export function NovaVendaProdutoModal({ open, onOpenChange, dataStr, defaultForm
           valor_total: total,
           observacao: observacao || null,
           lancamento_id: lanc.id,
+          unidade_id,
         })
         .select("id")
         .single();
@@ -139,6 +143,7 @@ export function NovaVendaProdutoModal({ open, onOpenChange, dataStr, defaultForm
         quantidade: c.quantidade,
         preco_unitario: c.preco_unitario,
         subtotal: c.preco_unitario * c.quantidade,
+        unidade_id,
       }));
 
       const { error: itensErr } = await (supabase as any).from("vendas_itens").insert(itens);

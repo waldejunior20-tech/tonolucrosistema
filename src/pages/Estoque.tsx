@@ -71,12 +71,15 @@ export default function Estoque() {
         return;
       }
 
+      const { requireActiveUnidadeId } = await import("@/hooks/useActiveUnidade");
+      const unidade_id = requireActiveUnidadeId();
       const { error } = await (supabase as any).from("estoque_movimentos").insert({
         insumo_id: selected.id,
         tipo: ajusteTipo,
         quantidade,
         unidade: selected.unidade,
         motivo: motivo || (ajusteTipo === "entrada" ? "Entrada manual" : ajusteTipo === "saida" ? "Saída manual" : "Ajuste de inventário"),
+        unidade_id,
       });
       if (error) throw error;
     },
