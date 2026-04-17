@@ -225,7 +225,76 @@ function DonutCenterLabel({ viewBox, value }: any) {
   );
 }
 
-// ─── MAIN ────────────────────────────────────────────────────────────
+// ─── Dashboard Alerts (com alertas de preço acionáveis) ─────────────
+function DashboardAlerts({ contasVencendo, cmvPct, cmvMeta, faturamentoMes, onNavigate }: {
+  contasVencendo: any[];
+  cmvPct: number;
+  cmvMeta: number;
+  faturamentoMes: number;
+  onNavigate: (path: string) => void;
+}) {
+  const { data: priceAlerts = [] } = usePriceAlerts();
+
+  const hasAny =
+    contasVencendo.length > 0 ||
+    (cmvPct > cmvMeta && faturamentoMes > 0) ||
+    priceAlerts.length > 0;
+
+  return (
+    <div className="fade-up fade-up-d3">
+      <div className="bg-sidebar border border-border rounded-2xl px-5 py-4">
+        <h3 className="text-[13px] font-semibold text-white mb-2.5 flex items-center gap-2">
+          <Bell size={14} className="text-white/50" />
+          Alertas
+          {hasAny && (
+            <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-white/15 text-white/90 font-bold">
+              {contasVencendo.length + priceAlerts.length + (cmvPct > cmvMeta && faturamentoMes > 0 ? 1 : 0)}
+            </span>
+          )}
+        </h3>
+        {hasAny ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            {priceAlerts.map((a, i) => (
+              <AlertItem
+                key={`price-${i}`}
+                severity="critical"
+                title={`${a.nome} +${a.variacaoPct.toFixed(1)}%`}
+                detail={`R$ ${a.precoAnterior.toFixed(2)} → R$ ${a.precoAtual.toFixed(2)} / ${a.unidade} — clique para revisar`}
+                onClick={() => onNavigate("/precificacao/pizzas")}
+              />
+            ))}
+            {contasVencendo.map((c, i) => (
+              <AlertItem
+                key={`conta-${i}`}
+                severity="warning"
+                title={c.descricao}
+                detail={`Vence ${format(new Date(c.data_lancamento + "T00:00:00"), "dd/MM")} — clique para ver`}
+                value={formatBRL(Number(c.valor))}
+                onClick={() => onNavigate("/financeiro/contas-a-pagar")}
+              />
+            ))}
+            {cmvPct > cmvMeta && faturamentoMes > 0 && (
+              <AlertItem
+                severity="critical"
+                title="CMV acima da meta"
+                detail={`${cmvPct.toFixed(1)}% vs meta de ${cmvMeta}% — clique para ajustar`}
+                onClick={() => onNavigate("/financeiro/dre")}
+              />
+            )}
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 py-1">
+            <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">
+              <Clock size={12} className="text-white/60" />
+            </div>
+            <p className="text-[11px] text-white/50">Nenhum alerta no momento.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const [businessName, setBusinessName] = useState("");
