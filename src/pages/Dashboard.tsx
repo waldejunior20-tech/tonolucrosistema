@@ -13,8 +13,10 @@ import {
 import CaixaRapido from "@/components/CaixaRapido";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { OnboardingChecklist } from "@/components/dashboard/OnboardingChecklist";
+import { RankingProdutos } from "@/components/dashboard/RankingProdutos";
 import { usePriceAlerts } from "@/hooks/usePriceAlerts";
 import { useEstoqueAlertas } from "@/hooks/useEstoque";
+import { useRankingProdutos } from "@/hooks/useRankingProdutos";
 
 function formatBRL(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
