@@ -155,6 +155,7 @@ export function NovaVendaProdutoModal({ open, onOpenChange, dataStr, defaultForm
       queryClient.invalidateQueries({ queryKey: ["estoque"] });
       queryClient.invalidateQueries({ queryKey: ["estoque-alertas"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["ranking-vendas-itens"] });
     },
     onError: (e: any) => appError("ERR-FIN-001", e),
   });

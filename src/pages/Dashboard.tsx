@@ -13,8 +13,10 @@ import {
 import CaixaRapido from "@/components/CaixaRapido";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { OnboardingChecklist } from "@/components/dashboard/OnboardingChecklist";
+import { RankingProdutos } from "@/components/dashboard/RankingProdutos";
 import { usePriceAlerts } from "@/hooks/usePriceAlerts";
 import { useEstoqueAlertas } from "@/hooks/useEstoque";
+import { useRankingProdutos } from "@/hooks/useRankingProdutos";
 
 function formatBRL(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -318,6 +320,12 @@ export default function Dashboard() {
     comparativos,
   } = useDashboardData();
 
+  const ranking = useRankingProdutos();
+  // Usa CMV real (custo das fichas das vendas reais) quando houver vendas no mês,
+  // senão cai no CMV estimado por categoria de despesa.
+  const cmvDisplayPct = ranking.totalReceita > 0 ? ranking.cmvRealPct : cmvPct;
+  const cmvIsReal = ranking.totalReceita > 0;
+
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
@@ -378,7 +386,7 @@ export default function Dashboard() {
         <MiniKPI label="Faturamento" value={formatBRL(faturamentoMes)} numericValue={faturamentoMes} formatter={formatBRL} icon={Wallet} kpiType="faturamento" momVariation={comparativos.faturamento} higherIsBetter={true} />
         <MiniKPI label="Gastos" value={formatBRL(despesasMes)} numericValue={despesasMes} formatter={formatBRL} icon={Receipt} kpiType="gastos" momVariation={comparativos.despesas} higherIsBetter={false} />
         <MiniKPI label="Lucro" value={formatBRL(lucroMes)} numericValue={lucroMes} formatter={formatBRL} icon={PiggyBank} trendLabel={lucroMes !== 0 ? (lucroMes > 0 ? "↑ Positivo" : "↓ Negativo") : undefined} kpiType={lucroMes >= 0 ? "lucro_pos" : "lucro_neg"} momVariation={comparativos.lucro} higherIsBetter={true} />
-        <MiniKPI label="Custo" value={faturamentoMes > 0 ? `${cmvPct.toFixed(1)}%` : "—"} numericValue={faturamentoMes > 0 ? cmvPct : undefined} formatter={(v) => `${v.toFixed(1)}%`} icon={TrendingDown} trendLabel={faturamentoMes > 0 ? `Meta ${cmvMeta}%` : undefined} kpiType={cmvPct <= cmvMeta ? "cmv_ok" : "cmv_bad"} />
+        <MiniKPI label={cmvIsReal ? "Custo (Real)" : "Custo"} value={faturamentoMes > 0 || cmvIsReal ? `${cmvDisplayPct.toFixed(1)}%` : "—"} numericValue={(faturamentoMes > 0 || cmvIsReal) ? cmvDisplayPct : undefined} formatter={(v) => `${v.toFixed(1)}%`} icon={TrendingDown} trendLabel={(faturamentoMes > 0 || cmvIsReal) ? `Meta ${cmvMeta}%` : undefined} kpiType={cmvDisplayPct <= cmvMeta ? "cmv_ok" : "cmv_bad"} />
       </div>
 
       {/* ─── CAIXA RÁPIDO ─── */}
@@ -456,10 +464,15 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* ─── RANKING DE PRODUTOS ─── */}
+      <div className="fade-up fade-up-d2">
+        <RankingProdutos />
+      </div>
+
       {/* ─── ALERTAS ACIONÁVEIS ─── */}
       <DashboardAlerts
         contasVencendo={contasVencendo}
-        cmvPct={cmvPct}
+        cmvPct={cmvDisplayPct}
         cmvMeta={cmvMeta}
         faturamentoMes={faturamentoMes}
         onNavigate={navigate}
