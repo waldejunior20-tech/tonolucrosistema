@@ -97,7 +97,7 @@ export function VendaRapidaButton({
           <div className="space-y-4 py-2">
             <div className="space-y-2">
               <Label className="text-sm">Valor da venda</Label>
-              <MoneyInput value={valor} onChange={setValor} autoFocus />
+              <MoneyInput value={valor} onChange={setValor} />
               {valor > 0 && taxaPct > 0 && (
                 <p className="text-xs text-muted-foreground">
                   Taxa {taxaPct}% → Líquido: <span className="font-semibold text-success">{formatMoney(liquido)}</span>
