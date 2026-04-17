@@ -15,11 +15,12 @@ import {
 } from "@/components/ui/alert-dialog";
 import { formatMoney } from "@/components/MoneyInput";
 import {
-  CalendarIcon, Wallet, CreditCard, Smartphone, ShoppingBag, Trash2, Lock, Unlock, CheckCircle2, ChevronRight,
+  CalendarIcon, Wallet, CreditCard, Smartphone, ShoppingBag, Trash2, Lock, Unlock, CheckCircle2, ChevronRight, ShoppingCart,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { VendaRapidaButton } from "@/components/caixa/VendaRapidaButton";
+import { NovaVendaProdutoModal } from "@/components/caixa/NovaVendaProdutoModal";
 import { useCaixaDiario, CATEGORIA_FECHAMENTO } from "@/hooks/useCaixaDiario";
 import { useHistoricoCaixa } from "@/hooks/useHistoricoCaixa";
 import { EmptyState } from "@/components/EmptyState";
@@ -37,6 +38,7 @@ export default function CaixaDiario() {
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [confirmFechar, setConfirmFechar] = useState(false);
   const [confirmReabrir, setConfirmReabrir] = useState(false);
+  const [novaVendaOpen, setNovaVendaOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const {
