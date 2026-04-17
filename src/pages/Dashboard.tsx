@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import CaixaRapido from "@/components/CaixaRapido";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
+import { OnboardingChecklist } from "@/components/dashboard/OnboardingChecklist";
 
 function formatBRL(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -224,6 +225,9 @@ export default function Dashboard() {
 
         </div>
       </div>
+
+      {/* ─── ONBOARDING CHECKLIST ─── */}
+      <OnboardingChecklist />
 
       {/* ─── MINI KPI CARDS ─── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 stagger-fade-in">
