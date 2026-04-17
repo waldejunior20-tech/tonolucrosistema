@@ -320,6 +320,12 @@ export default function Dashboard() {
     comparativos,
   } = useDashboardData();
 
+  const ranking = useRankingProdutos();
+  // Usa CMV real (custo das fichas das vendas reais) quando houver vendas no mês,
+  // senão cai no CMV estimado por categoria de despesa.
+  const cmvDisplayPct = ranking.totalReceita > 0 ? ranking.cmvRealPct : cmvPct;
+  const cmvIsReal = ranking.totalReceita > 0;
+
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
