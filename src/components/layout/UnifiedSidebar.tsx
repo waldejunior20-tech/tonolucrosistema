@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, Package, BookOpen, DollarSign, 
-  TrendingUp, Tag, ChevronDown, 
+  TrendingUp, Tag, ChevronDown, Warehouse,
   PanelLeftClose, PanelLeft, Pizza, Cog, LogOut, ChevronUp
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -37,6 +37,7 @@ const sidebarItems: SidebarItem[] = [
     subItems: [
       { label: "Comprados", path: "/insumos/comprados" },
       { label: "Produzidos", path: "/insumos/produzidos" },
+      { label: "Estoque", path: "/estoque" },
     ],
   },
   {

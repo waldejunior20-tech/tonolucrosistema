@@ -19,6 +19,7 @@ import PrecificacaoBebidas from "@/pages/PrecificacaoBebidas";
 import PrecificacaoProdutos from "@/pages/PrecificacaoProdutos";
 import PrecificacaoConfiguracoes from "@/pages/PrecificacaoConfiguracoes";
 import CaixaDiario from "@/pages/CaixaDiario";
+import Estoque from "@/pages/Estoque";
 import FinanceiroDRE from "@/pages/FinanceiroDRE";
 import FinanceiroContasPagar from "@/pages/FinanceiroContasPagar";
 import FinanceiroPontoEquilibrio from "@/pages/FinanceiroPontoEquilibrio";
@@ -92,6 +93,7 @@ function AppRoutes() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/insumos/comprados" element={<InsumosComprados />} />
         <Route path="/insumos/produzidos" element={<InsumosProduzidos />} />
+        <Route path="/estoque" element={<Estoque />} />
         <Route path="/fichas/pizzas" element={<FichasTecnicasPizza />} />
         <Route path="/fichas/sanduiches" element={<FichasTecnicasProdutos categoria="sanduiche" />} />
         <Route path="/fichas/pratos" element={<FichasTecnicasProdutos categoria="prato" />} />
