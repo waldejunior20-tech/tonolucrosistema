@@ -136,13 +136,18 @@ export default function CaixaDiario() {
         </div>
 
         <div className="flex gap-2">
+          {!isClosed && (
+            <Button onClick={() => setNovaVendaOpen(true)} className="gap-2">
+              <ShoppingCart size={14} /> Nova venda (com produtos)
+            </Button>
+          )}
           {isClosed ? (
             <Button variant="outline" size="sm" onClick={() => setConfirmReabrir(true)} className="gap-2">
               <Unlock size={14} /> Reabrir caixa
             </Button>
           ) : (
             totalVendas > 0 && (
-              <Button onClick={() => setConfirmFechar(true)} className="gap-2 bg-success hover:bg-success/90 text-foreground">
+              <Button onClick={() => setConfirmFechar(true)} variant="outline" className="gap-2 border-success/40 text-success hover:bg-success/10">
                 <CheckCircle2 size={14} /> Fechar caixa do dia
               </Button>
             )
@@ -154,9 +159,11 @@ export default function CaixaDiario() {
         {/* LEFT: Quick entry */}
         <Card className="xl:col-span-2 rounded-2xl border-border/60 shadow-sm">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base font-semibold">Lançamento rápido</CardTitle>
+            <CardTitle className="text-base font-semibold">Lançamento rápido (só valor)</CardTitle>
             <p className="text-xs text-muted-foreground">
-              {isClosed ? "Reabra o caixa para registrar novas vendas" : "Clique na forma de pagamento para registrar uma venda"}
+              {isClosed
+                ? "Reabra o caixa para registrar novas vendas"
+                : "Para baixar estoque automaticamente, use 'Nova venda (com produtos)' acima."}
             </p>
           </CardHeader>
           <CardContent>
