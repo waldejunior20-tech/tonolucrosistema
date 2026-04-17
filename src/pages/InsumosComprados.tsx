@@ -21,6 +21,7 @@ import { MoneyInput, QuantityInput, formatMoney, formatQty } from "@/components/
 import { PageHeader } from "@/components/layout/PageHeader";
 import { EmptyState } from "@/components/EmptyState";
 import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
+import { CategoryBadge } from "@/components/CategoryBadge";
 
 const CATEGORIAS = [
   "Proteínas", "Laticínios", "Hortifruti", "Secos", "Bebidas",
@@ -254,43 +255,64 @@ export default function InsumosComprados() {
           onAction={() => setDialogOpen(true)}
         />
       ) : (
-        <div className="table-premium fade-up fade-up-d1">
+        <div className="rounded-2xl border border-border/60 bg-card overflow-hidden shadow-sm fade-up fade-up-d1">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Nome</TableHead>
-                <TableHead>Categoria</TableHead>
-                <TableHead className="text-right">Preço (R$)</TableHead>
-                <TableHead className="text-right">Qtd</TableHead>
-                <TableHead>Unidade</TableHead>
-                <TableHead>Fornecedor</TableHead>
-                <TableHead>Data Compra</TableHead>
-                <TableHead className="w-[100px]">Ações</TableHead>
+              <TableRow className="bg-muted/40 hover:bg-muted/40 border-b border-border/60">
+                <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Nome</TableHead>
+                <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Categoria</TableHead>
+                <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider text-right">Preço (R$)</TableHead>
+                <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider text-right">Qtd</TableHead>
+                <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Unidade</TableHead>
+                <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Fornecedor</TableHead>
+                <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Data Compra</TableHead>
+                <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider w-[100px]">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map((insumo) => (
-                <TableRow key={insumo.id}>
-                  <TableCell className="font-bold text-[#1A1A1A]">{insumo.nome}</TableCell>
-                  <TableCell>{insumo.categoria}</TableCell>
-                  <TableCell className="text-right tabular-nums">
+              {filtered.map((insumo, idx) => (
+                <TableRow
+                  key={insumo.id}
+                  className={`border-b border-border/40 transition-colors hover:bg-primary/5 ${
+                    idx % 2 === 0 ? "bg-card" : "bg-muted/20"
+                  }`}
+                >
+                  <TableCell className="font-bold text-foreground">{insumo.nome}</TableCell>
+                  <TableCell>
+                    <CategoryBadge categoria={insumo.categoria} />
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums font-bold text-foreground">
                     {formatMoney(Number(insumo.preco_pago))}
                   </TableCell>
-                  <TableCell className="text-right tabular-nums">{formatQty(Number(insumo.quantidade))}</TableCell>
-                  <TableCell>{insumo.unidade}</TableCell>
-                  <TableCell>{insumo.fornecedor ?? "—"}</TableCell>
-                  <TableCell>
+                  <TableCell className="text-right tabular-nums text-foreground">
+                    {formatQty(Number(insumo.quantidade))}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">{insumo.unidade}</TableCell>
+                  <TableCell className="text-muted-foreground">{insumo.fornecedor ?? "—"}</TableCell>
+                  <TableCell className="text-muted-foreground tabular-nums">
                     {insumo.data_compra
                       ? new Date(insumo.data_compra + "T00:00:00").toLocaleDateString("pt-BR")
                       : "—"}
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-1">
-                      <Button variant="ghost" size="icon" onClick={() => handleEdit(insumo)}>
-                        <Pencil className="h-4 w-4 text-[#16A273]" />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
+                        onClick={() => handleEdit(insumo)}
+                        aria-label="Editar"
+                      >
+                        <Pencil className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" onClick={() => deleteMutation.mutate(insumo.id)}>
-                        <Trash2 className="h-4 w-4 text-destructive" />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive"
+                        onClick={() => deleteMutation.mutate(insumo.id)}
+                        aria-label="Excluir"
+                      >
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </TableCell>
@@ -299,6 +321,7 @@ export default function InsumosComprados() {
             </TableBody>
           </Table>
         </div>
+
       )}
     </div>
   );
