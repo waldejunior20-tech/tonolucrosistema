@@ -65,6 +65,7 @@ export type Database = {
           nome: string
           preco_separado: number
           preco_venda: number
+          unidade_id: string | null
           updated_at: string | null
           user_id: string | null
         }
@@ -77,6 +78,7 @@ export type Database = {
           nome: string
           preco_separado?: number
           preco_venda?: number
+          unidade_id?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
@@ -89,10 +91,19 @@ export type Database = {
           nome?: string
           preco_separado?: number
           preco_venda?: number
+          unidade_id?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "combos_fixos_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       configuracoes_negocio: {
         Row: {
@@ -118,6 +129,7 @@ export type Database = {
           pct_ifood: number
           salarios: number
           tamanhos_pizza: Json
+          unidade_id: string | null
           updated_at: string
           user_id: string | null
         }
@@ -144,6 +156,7 @@ export type Database = {
           pct_ifood?: number
           salarios?: number
           tamanhos_pizza?: Json
+          unidade_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -170,10 +183,19 @@ export type Database = {
           pct_ifood?: number
           salarios?: number
           tamanhos_pizza?: Json
+          unidade_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "configuracoes_negocio_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       configuracoes_precificacao: {
         Row: {
@@ -194,6 +216,7 @@ export type Database = {
           taxa_outro_pct: number
           taxa_pix_pct: number
           taxa_rappi_pct: number
+          unidade_id: string | null
           updated_at: string
           user_id: string | null
         }
@@ -215,6 +238,7 @@ export type Database = {
           taxa_outro_pct?: number
           taxa_pix_pct?: number
           taxa_rappi_pct?: number
+          unidade_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -236,10 +260,19 @@ export type Database = {
           taxa_outro_pct?: number
           taxa_pix_pct?: number
           taxa_rappi_pct?: number
+          unidade_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "configuracoes_precificacao_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       estoque_movimentos: {
         Row: {
@@ -251,6 +284,7 @@ export type Database = {
           quantidade: number
           tipo: string
           unidade: string
+          unidade_id: string | null
           user_id: string | null
           venda_item_id: string | null
         }
@@ -263,6 +297,7 @@ export type Database = {
           quantidade: number
           tipo: string
           unidade: string
+          unidade_id?: string | null
           user_id?: string | null
           venda_item_id?: string | null
         }
@@ -275,6 +310,7 @@ export type Database = {
           quantidade?: number
           tipo?: string
           unidade?: string
+          unidade_id?: string | null
           user_id?: string | null
           venda_item_id?: string | null
         }
@@ -284,6 +320,13 @@ export type Database = {
             columns: ["insumo_id"]
             isOneToOne: false
             referencedRelation: "insumos_comprados"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "estoque_movimentos_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
             referencedColumns: ["id"]
           },
         ]
@@ -299,6 +342,7 @@ export type Database = {
           preco_venda_m: number | null
           preco_venda_p: number | null
           tipo: string | null
+          unidade_id: string | null
           updated_at: string | null
           user_id: string | null
         }
@@ -312,6 +356,7 @@ export type Database = {
           preco_venda_m?: number | null
           preco_venda_p?: number | null
           tipo?: string | null
+          unidade_id?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
@@ -325,10 +370,19 @@ export type Database = {
           preco_venda_m?: number | null
           preco_venda_p?: number | null
           tipo?: string | null
+          unidade_id?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fichas_tecnicas_pizza_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       fichas_tecnicas_pizza_ingredientes: {
         Row: {
@@ -341,6 +395,7 @@ export type Database = {
           qtd_p: number | null
           tipo_insumo: string
           unidade: string
+          unidade_id: string | null
           user_id: string | null
         }
         Insert: {
@@ -353,6 +408,7 @@ export type Database = {
           qtd_p?: number | null
           tipo_insumo: string
           unidade: string
+          unidade_id?: string | null
           user_id?: string | null
         }
         Update: {
@@ -365,6 +421,7 @@ export type Database = {
           qtd_p?: number | null
           tipo_insumo?: string
           unidade?: string
+          unidade_id?: string | null
           user_id?: string | null
         }
         Relationships: [
@@ -389,6 +446,13 @@ export type Database = {
             referencedRelation: "insumos_proprios"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "fichas_tecnicas_pizza_ingredientes_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
         ]
       }
       fichas_tecnicas_produtos: {
@@ -400,6 +464,7 @@ export type Database = {
           nome: string
           numero_ficha: string | null
           preco_venda: number | null
+          unidade_id: string | null
           updated_at: string
           user_id: string | null
         }
@@ -411,6 +476,7 @@ export type Database = {
           nome: string
           numero_ficha?: string | null
           preco_venda?: number | null
+          unidade_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -422,10 +488,19 @@ export type Database = {
           nome?: string
           numero_ficha?: string | null
           preco_venda?: number | null
+          unidade_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fichas_tecnicas_produtos_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       fichas_tecnicas_produtos_ingredientes: {
         Row: {
@@ -437,6 +512,7 @@ export type Database = {
           quantidade: number
           tipo_insumo: string
           unidade: string
+          unidade_id: string | null
           updated_at: string
           user_id: string | null
         }
@@ -449,6 +525,7 @@ export type Database = {
           quantidade: number
           tipo_insumo: string
           unidade: string
+          unidade_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -461,6 +538,7 @@ export type Database = {
           quantidade?: number
           tipo_insumo?: string
           unidade?: string
+          unidade_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -486,6 +564,13 @@ export type Database = {
             referencedRelation: "insumos_proprios"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "fichas_tecnicas_produtos_ingredientes_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
         ]
       }
       insumos_comprados: {
@@ -502,6 +587,7 @@ export type Database = {
           preco_pago: number
           quantidade: number
           unidade: string
+          unidade_id: string | null
           updated_at: string | null
           user_id: string | null
         }
@@ -518,6 +604,7 @@ export type Database = {
           preco_pago: number
           quantidade: number
           unidade: string
+          unidade_id?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
@@ -534,10 +621,19 @@ export type Database = {
           preco_pago?: number
           quantidade?: number
           unidade?: string
+          unidade_id?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "insumos_comprados_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       insumos_proprios: {
         Row: {
@@ -545,6 +641,7 @@ export type Database = {
           id: string
           nome: string
           rendimento: number
+          unidade_id: string | null
           unidade_rendimento: string
           updated_at: string | null
           user_id: string | null
@@ -554,6 +651,7 @@ export type Database = {
           id?: string
           nome: string
           rendimento: number
+          unidade_id?: string | null
           unidade_rendimento: string
           updated_at?: string | null
           user_id?: string | null
@@ -563,11 +661,20 @@ export type Database = {
           id?: string
           nome?: string
           rendimento?: number
+          unidade_id?: string | null
           unidade_rendimento?: string
           updated_at?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "insumos_proprios_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       insumos_proprios_ingredientes: {
         Row: {
@@ -576,6 +683,7 @@ export type Database = {
           insumo_proprio_id: string | null
           quantidade: number
           unidade: string
+          unidade_id: string | null
           user_id: string | null
         }
         Insert: {
@@ -584,6 +692,7 @@ export type Database = {
           insumo_proprio_id?: string | null
           quantidade: number
           unidade: string
+          unidade_id?: string | null
           user_id?: string | null
         }
         Update: {
@@ -592,6 +701,7 @@ export type Database = {
           insumo_proprio_id?: string | null
           quantidade?: number
           unidade?: string
+          unidade_id?: string | null
           user_id?: string | null
         }
         Relationships: [
@@ -609,6 +719,13 @@ export type Database = {
             referencedRelation: "insumos_proprios"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "insumos_proprios_ingredientes_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
         ]
       }
       lancamentos_financeiros: {
@@ -620,6 +737,7 @@ export type Database = {
           id: string
           pago: boolean
           tipo: string
+          unidade_id: string | null
           updated_at: string
           user_id: string | null
           valor: number
@@ -632,6 +750,7 @@ export type Database = {
           id?: string
           pago?: boolean
           tipo: string
+          unidade_id?: string | null
           updated_at?: string
           user_id?: string | null
           valor?: number
@@ -644,11 +763,20 @@ export type Database = {
           id?: string
           pago?: boolean
           tipo?: string
+          unidade_id?: string | null
           updated_at?: string
           user_id?: string | null
           valor?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "lancamentos_financeiros_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       metas_financeiras: {
         Row: {
@@ -658,6 +786,7 @@ export type Database = {
           mes: number
           meta_cmv_pct: number
           meta_faturamento: number
+          unidade_id: string | null
           user_id: string | null
         }
         Insert: {
@@ -667,6 +796,7 @@ export type Database = {
           mes: number
           meta_cmv_pct?: number
           meta_faturamento?: number
+          unidade_id?: string | null
           user_id?: string | null
         }
         Update: {
@@ -676,9 +806,18 @@ export type Database = {
           mes?: number
           meta_cmv_pct?: number
           meta_faturamento?: number
+          unidade_id?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "metas_financeiras_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       precificacao_bebidas: {
         Row: {
@@ -686,6 +825,7 @@ export type Database = {
           id: string
           insumo_comprado_id: string
           preco_venda: number
+          unidade_id: string | null
           updated_at: string
           user_id: string | null
         }
@@ -694,6 +834,7 @@ export type Database = {
           id?: string
           insumo_comprado_id: string
           preco_venda?: number
+          unidade_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -702,6 +843,7 @@ export type Database = {
           id?: string
           insumo_comprado_id?: string
           preco_venda?: number
+          unidade_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -713,6 +855,13 @@ export type Database = {
             referencedRelation: "insumos_comprados"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "precificacao_bebidas_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
         ]
       }
       precificacao_produtos: {
@@ -721,6 +870,7 @@ export type Database = {
           ficha_id: string
           id: string
           preco_venda: number
+          unidade_id: string | null
           updated_at: string
           user_id: string | null
         }
@@ -729,6 +879,7 @@ export type Database = {
           ficha_id: string
           id?: string
           preco_venda?: number
+          unidade_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -737,6 +888,7 @@ export type Database = {
           ficha_id?: string
           id?: string
           preco_venda?: number
+          unidade_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -746,6 +898,13 @@ export type Database = {
             columns: ["ficha_id"]
             isOneToOne: true
             referencedRelation: "fichas_tecnicas_produtos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "precificacao_produtos_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
             referencedColumns: ["id"]
           },
         ]
@@ -797,6 +956,7 @@ export type Database = {
           regra_descricao: string | null
           status: string | null
           tipo: string
+          unidade_id: string | null
           updated_at: string | null
           user_id: string | null
           valor_original: number | null
@@ -820,6 +980,7 @@ export type Database = {
           regra_descricao?: string | null
           status?: string | null
           tipo: string
+          unidade_id?: string | null
           updated_at?: string | null
           user_id?: string | null
           valor_original?: number | null
@@ -843,11 +1004,20 @@ export type Database = {
           regra_descricao?: string | null
           status?: string | null
           tipo?: string
+          unidade_id?: string | null
           updated_at?: string | null
           user_id?: string | null
           valor_original?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "promocoes_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       unidade_membros: {
         Row: {
@@ -954,6 +1124,7 @@ export type Database = {
           id: string
           lancamento_id: string | null
           observacao: string | null
+          unidade_id: string | null
           updated_at: string
           user_id: string | null
           valor_total: number
@@ -965,6 +1136,7 @@ export type Database = {
           id?: string
           lancamento_id?: string | null
           observacao?: string | null
+          unidade_id?: string | null
           updated_at?: string
           user_id?: string | null
           valor_total?: number
@@ -976,6 +1148,7 @@ export type Database = {
           id?: string
           lancamento_id?: string | null
           observacao?: string | null
+          unidade_id?: string | null
           updated_at?: string
           user_id?: string | null
           valor_total?: number
@@ -986,6 +1159,13 @@ export type Database = {
             columns: ["lancamento_id"]
             isOneToOne: false
             referencedRelation: "lancamentos_financeiros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendas_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
             referencedColumns: ["id"]
           },
         ]
@@ -1003,6 +1183,7 @@ export type Database = {
           subtotal: number
           tamanho_pizza: string | null
           tipo_produto: string
+          unidade_id: string | null
           user_id: string | null
           venda_id: string
         }
@@ -1018,6 +1199,7 @@ export type Database = {
           subtotal?: number
           tamanho_pizza?: string | null
           tipo_produto: string
+          unidade_id?: string | null
           user_id?: string | null
           venda_id: string
         }
@@ -1033,6 +1215,7 @@ export type Database = {
           subtotal?: number
           tamanho_pizza?: string | null
           tipo_produto?: string
+          unidade_id?: string | null
           user_id?: string | null
           venda_id?: string
         }
@@ -1056,6 +1239,13 @@ export type Database = {
             columns: ["insumo_bebida_id"]
             isOneToOne: false
             referencedRelation: "insumos_comprados"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendas_itens_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
             referencedColumns: ["id"]
           },
           {
@@ -1099,6 +1289,11 @@ export type Database = {
         Args: { _unidade_id: string; _user_id: string }
         Returns: boolean
       }
+      pode_editar_negocio: {
+        Args: { _unidade_id: string; _user_id: string }
+        Returns: boolean
+      }
+      primeira_unidade_do_user: { Args: { _user_id: string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "gerente" | "caixa"
