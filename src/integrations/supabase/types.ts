@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_logs: {
+        Row: {
+          acao: string
+          created_at: string
+          detalhes: Json | null
+          entidade: string | null
+          entidade_id: string | null
+          id: string
+          unidade_id: string | null
+          user_id: string
+        }
+        Insert: {
+          acao: string
+          created_at?: string
+          detalhes?: Json | null
+          entidade?: string | null
+          entidade_id?: string | null
+          id?: string
+          unidade_id?: string | null
+          user_id: string
+        }
+        Update: {
+          acao?: string
+          created_at?: string
+          detalhes?: Json | null
+          entidade?: string | null
+          entidade_id?: string | null
+          id?: string
+          unidade_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_logs_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       combos_fixos: {
         Row: {
           created_at: string | null
@@ -808,6 +849,103 @@ export type Database = {
         }
         Relationships: []
       }
+      unidade_membros: {
+        Row: {
+          created_at: string
+          id: string
+          unidade_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          unidade_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          unidade_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "unidade_membros_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      unidades: {
+        Row: {
+          ativo: boolean
+          cidade: string | null
+          created_at: string
+          created_by: string
+          endereco: string | null
+          estado: string | null
+          id: string
+          nome: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          cidade?: string | null
+          created_at?: string
+          created_by?: string
+          endereco?: string | null
+          estado?: string | null
+          id?: string
+          nome: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          cidade?: string | null
+          created_at?: string
+          created_by?: string
+          endereco?: string | null
+          estado?: string | null
+          id?: string
+          nome?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          unidade_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          unidade_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          unidade_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vendas: {
         Row: {
           created_at: string
@@ -934,10 +1072,36 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_unidades: {
+        Args: { _user_id: string }
+        Returns: {
+          ativo: boolean
+          cidade: string
+          estado: string
+          nome: string
+          role: Database["public"]["Enums"]["app_role"]
+          unidade_id: string
+        }[]
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _unidade_id: string
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_admin_of_unidade: {
+        Args: { _unidade_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_member_of_unidade: {
+        Args: { _unidade_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "gerente" | "caixa"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1064,6 +1228,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "gerente", "caixa"],
+    },
   },
 } as const
