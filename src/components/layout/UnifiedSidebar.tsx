@@ -37,7 +37,6 @@ const sidebarItems: SidebarItem[] = [
     subItems: [
       { label: "Comprados", path: "/insumos/comprados" },
       { label: "Produzidos", path: "/insumos/produzidos" },
-      { label: "Estoque", path: "/estoque" },
     ],
   },
   {

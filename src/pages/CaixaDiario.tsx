@@ -15,12 +15,11 @@ import {
 } from "@/components/ui/alert-dialog";
 import { formatMoney } from "@/components/MoneyInput";
 import {
-  CalendarIcon, Wallet, CreditCard, Smartphone, ShoppingBag, Trash2, Lock, Unlock, CheckCircle2, ChevronRight, ShoppingCart,
+  CalendarIcon, Wallet, CreditCard, Smartphone, ShoppingBag, Trash2, Lock, Unlock, CheckCircle2, ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { VendaRapidaButton } from "@/components/caixa/VendaRapidaButton";
-import { NovaVendaProdutoModal } from "@/components/caixa/NovaVendaProdutoModal";
 import { useCaixaDiario, CATEGORIA_FECHAMENTO } from "@/hooks/useCaixaDiario";
 import { useHistoricoCaixa } from "@/hooks/useHistoricoCaixa";
 import { EmptyState } from "@/components/EmptyState";
@@ -38,7 +37,6 @@ export default function CaixaDiario() {
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [confirmFechar, setConfirmFechar] = useState(false);
   const [confirmReabrir, setConfirmReabrir] = useState(false);
-  const [novaVendaOpen, setNovaVendaOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const {
@@ -136,11 +134,6 @@ export default function CaixaDiario() {
         </div>
 
         <div className="flex gap-2">
-          {!isClosed && (
-            <Button onClick={() => setNovaVendaOpen(true)} className="gap-2">
-              <ShoppingCart size={14} /> Nova venda (com produtos)
-            </Button>
-          )}
           {isClosed ? (
             <Button variant="outline" size="sm" onClick={() => setConfirmReabrir(true)} className="gap-2">
               <Unlock size={14} /> Reabrir caixa
@@ -159,11 +152,11 @@ export default function CaixaDiario() {
         {/* LEFT: Quick entry */}
         <Card className="xl:col-span-2 rounded-2xl border-border/60 shadow-sm">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base font-semibold">Lançamento rápido (só valor)</CardTitle>
+            <CardTitle className="text-base font-semibold">Lançamento rápido</CardTitle>
             <p className="text-xs text-muted-foreground">
               {isClosed
                 ? "Reabra o caixa para registrar novas vendas"
-                : "Para baixar estoque automaticamente, use 'Nova venda (com produtos)' acima."}
+                : "Clique numa forma de pagamento para lançar o valor da venda."}
             </p>
           </CardHeader>
           <CardContent>
