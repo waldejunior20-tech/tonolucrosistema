@@ -10,13 +10,9 @@ import {
   TrendingUp, TrendingDown, Bell, Clock,
   Wallet, Receipt, PiggyBank, AlertTriangle, ArrowUp, ArrowDown, Minus,
 } from "lucide-react";
-import CaixaRapido from "@/components/CaixaRapido";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { OnboardingChecklist } from "@/components/dashboard/OnboardingChecklist";
-import { RankingProdutos } from "@/components/dashboard/RankingProdutos";
 import { usePriceAlerts } from "@/hooks/usePriceAlerts";
-import { useEstoqueAlertas } from "@/hooks/useEstoque";
-import { useRankingProdutos } from "@/hooks/useRankingProdutos";
 
 function formatBRL(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -237,13 +233,11 @@ function DashboardAlerts({ contasVencendo, cmvPct, cmvMeta, faturamentoMes, onNa
   onNavigate: (path: string) => void;
 }) {
   const { data: priceAlerts = [] } = usePriceAlerts();
-  const { data: estoqueAlertas = [] } = useEstoqueAlertas();
 
   const hasAny =
     contasVencendo.length > 0 ||
     (cmvPct > cmvMeta && faturamentoMes > 0) ||
-    priceAlerts.length > 0 ||
-    estoqueAlertas.length > 0;
+    priceAlerts.length > 0;
 
   return (
     <div className="fade-up fade-up-d3">
@@ -253,21 +247,12 @@ function DashboardAlerts({ contasVencendo, cmvPct, cmvMeta, faturamentoMes, onNa
           Alertas
           {hasAny && (
             <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-white/15 text-white/90 font-bold">
-              {contasVencendo.length + priceAlerts.length + estoqueAlertas.length + (cmvPct > cmvMeta && faturamentoMes > 0 ? 1 : 0)}
+              {contasVencendo.length + priceAlerts.length + (cmvPct > cmvMeta && faturamentoMes > 0 ? 1 : 0)}
             </span>
           )}
         </h3>
         {hasAny ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-            {estoqueAlertas.map((e: any, i: number) => (
-              <AlertItem
-                key={`est-${i}`}
-                severity="critical"
-                title={`${e.nome} em falta`}
-                detail={`Saldo ${Number(e.estoque_atual).toFixed(2)} ${e.unidade} < mín ${Number(e.estoque_minimo).toFixed(2)} — reabastecer`}
-                onClick={() => onNavigate("/estoque")}
-              />
-            ))}
             {priceAlerts.map((a, i) => (
               <AlertItem
                 key={`price-${i}`}
@@ -320,11 +305,8 @@ export default function Dashboard() {
     comparativos,
   } = useDashboardData();
 
-  const ranking = useRankingProdutos();
-  // Usa CMV real (custo das fichas das vendas reais) quando houver vendas no mês,
-  // senão cai no CMV estimado por categoria de despesa.
-  const cmvDisplayPct = ranking.totalReceita > 0 ? ranking.cmvRealPct : cmvPct;
-  const cmvIsReal = ranking.totalReceita > 0;
+  const cmvDisplayPct = cmvPct;
+  const cmvIsReal = false;
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
