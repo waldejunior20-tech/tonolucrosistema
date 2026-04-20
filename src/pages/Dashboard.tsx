@@ -371,11 +371,6 @@ export default function Dashboard() {
         <MiniKPI label={cmvIsReal ? "Custo (Real)" : "Custo"} value={faturamentoMes > 0 || cmvIsReal ? `${cmvDisplayPct.toFixed(1)}%` : "—"} numericValue={(faturamentoMes > 0 || cmvIsReal) ? cmvDisplayPct : undefined} formatter={(v) => `${v.toFixed(1)}%`} icon={TrendingDown} trendLabel={(faturamentoMes > 0 || cmvIsReal) ? `Meta ${cmvMeta}%` : undefined} kpiType={cmvDisplayPct <= cmvMeta ? "cmv_ok" : "cmv_bad"} />
       </div>
 
-      {/* ─── CAIXA RÁPIDO ─── */}
-      <div className="fade-up fade-up-d1">
-        <CaixaRapido />
-      </div>
-
       {/* ─── CHART: Revenue ─── */}
       <div className="fade-up fade-up-d2">
         <div className="bg-card border border-border rounded-2xl p-7 transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)]">
@@ -444,11 +439,6 @@ export default function Dashboard() {
             </div>
           )}
         </div>
-      </div>
-
-      {/* ─── RANKING DE PRODUTOS ─── */}
-      <div className="fade-up fade-up-d2">
-        <RankingProdutos />
       </div>
 
       {/* ─── ALERTAS ACIONÁVEIS ─── */}
