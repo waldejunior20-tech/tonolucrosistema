@@ -313,63 +313,6 @@ export type Database = {
           },
         ]
       }
-      estoque_movimentos: {
-        Row: {
-          created_at: string
-          data_movimento: string
-          id: string
-          insumo_id: string
-          motivo: string | null
-          quantidade: number
-          tipo: string
-          unidade: string
-          unidade_id: string | null
-          user_id: string | null
-          venda_item_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          data_movimento?: string
-          id?: string
-          insumo_id: string
-          motivo?: string | null
-          quantidade: number
-          tipo: string
-          unidade: string
-          unidade_id?: string | null
-          user_id?: string | null
-          venda_item_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          data_movimento?: string
-          id?: string
-          insumo_id?: string
-          motivo?: string | null
-          quantidade?: number
-          tipo?: string
-          unidade?: string
-          unidade_id?: string | null
-          user_id?: string | null
-          venda_item_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "estoque_movimentos_insumo_id_fkey"
-            columns: ["insumo_id"]
-            isOneToOne: false
-            referencedRelation: "insumos_comprados"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "estoque_movimentos_unidade_id_fkey"
-            columns: ["unidade_id"]
-            isOneToOne: false
-            referencedRelation: "unidades"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       fichas_tecnicas_pizza: {
         Row: {
           created_at: string | null
@@ -654,8 +597,6 @@ export type Database = {
           codigo: string | null
           created_at: string | null
           data_compra: string | null
-          estoque_atual: number
-          estoque_minimo: number
           fornecedor: string | null
           id: string
           nome: string
@@ -671,8 +612,6 @@ export type Database = {
           codigo?: string | null
           created_at?: string | null
           data_compra?: string | null
-          estoque_atual?: number
-          estoque_minimo?: number
           fornecedor?: string | null
           id?: string
           nome: string
@@ -688,8 +627,6 @@ export type Database = {
           codigo?: string | null
           created_at?: string | null
           data_compra?: string | null
-          estoque_atual?: number
-          estoque_minimo?: number
           fornecedor?: string | null
           id?: string
           nome?: string
@@ -1187,147 +1124,6 @@ export type Database = {
             columns: ["unidade_id"]
             isOneToOne: false
             referencedRelation: "unidades"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      vendas: {
-        Row: {
-          created_at: string
-          data_venda: string
-          forma_pagamento: string
-          id: string
-          lancamento_id: string | null
-          observacao: string | null
-          unidade_id: string | null
-          updated_at: string
-          user_id: string | null
-          valor_total: number
-        }
-        Insert: {
-          created_at?: string
-          data_venda?: string
-          forma_pagamento: string
-          id?: string
-          lancamento_id?: string | null
-          observacao?: string | null
-          unidade_id?: string | null
-          updated_at?: string
-          user_id?: string | null
-          valor_total?: number
-        }
-        Update: {
-          created_at?: string
-          data_venda?: string
-          forma_pagamento?: string
-          id?: string
-          lancamento_id?: string | null
-          observacao?: string | null
-          unidade_id?: string | null
-          updated_at?: string
-          user_id?: string | null
-          valor_total?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "vendas_lancamento_id_fkey"
-            columns: ["lancamento_id"]
-            isOneToOne: false
-            referencedRelation: "lancamentos_financeiros"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "vendas_unidade_id_fkey"
-            columns: ["unidade_id"]
-            isOneToOne: false
-            referencedRelation: "unidades"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      vendas_itens: {
-        Row: {
-          created_at: string
-          ficha_pizza_id: string | null
-          ficha_produto_id: string | null
-          id: string
-          insumo_bebida_id: string | null
-          nome_produto: string
-          preco_unitario: number
-          quantidade: number
-          subtotal: number
-          tamanho_pizza: string | null
-          tipo_produto: string
-          unidade_id: string | null
-          user_id: string | null
-          venda_id: string
-        }
-        Insert: {
-          created_at?: string
-          ficha_pizza_id?: string | null
-          ficha_produto_id?: string | null
-          id?: string
-          insumo_bebida_id?: string | null
-          nome_produto: string
-          preco_unitario?: number
-          quantidade?: number
-          subtotal?: number
-          tamanho_pizza?: string | null
-          tipo_produto: string
-          unidade_id?: string | null
-          user_id?: string | null
-          venda_id: string
-        }
-        Update: {
-          created_at?: string
-          ficha_pizza_id?: string | null
-          ficha_produto_id?: string | null
-          id?: string
-          insumo_bebida_id?: string | null
-          nome_produto?: string
-          preco_unitario?: number
-          quantidade?: number
-          subtotal?: number
-          tamanho_pizza?: string | null
-          tipo_produto?: string
-          unidade_id?: string | null
-          user_id?: string | null
-          venda_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "vendas_itens_ficha_pizza_id_fkey"
-            columns: ["ficha_pizza_id"]
-            isOneToOne: false
-            referencedRelation: "fichas_tecnicas_pizza"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "vendas_itens_ficha_produto_id_fkey"
-            columns: ["ficha_produto_id"]
-            isOneToOne: false
-            referencedRelation: "fichas_tecnicas_produtos"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "vendas_itens_insumo_bebida_id_fkey"
-            columns: ["insumo_bebida_id"]
-            isOneToOne: false
-            referencedRelation: "insumos_comprados"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "vendas_itens_unidade_id_fkey"
-            columns: ["unidade_id"]
-            isOneToOne: false
-            referencedRelation: "unidades"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "vendas_itens_venda_id_fkey"
-            columns: ["venda_id"]
-            isOneToOne: false
-            referencedRelation: "vendas"
             referencedColumns: ["id"]
           },
         ]
