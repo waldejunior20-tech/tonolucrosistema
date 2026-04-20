@@ -55,6 +55,45 @@ export type Database = {
           },
         ]
       }
+      alertas_cmv: {
+        Row: {
+          cmv_anterior: number
+          cmv_atual: number
+          created_at: string
+          ficha_tecnica_id: string | null
+          id: string
+          nome_produto: string
+          preco_sugerido: number
+          status: string
+          unidade_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          cmv_anterior?: number
+          cmv_atual?: number
+          created_at?: string
+          ficha_tecnica_id?: string | null
+          id?: string
+          nome_produto: string
+          preco_sugerido?: number
+          status?: string
+          unidade_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          cmv_anterior?: number
+          cmv_atual?: number
+          created_at?: string
+          ficha_tecnica_id?: string | null
+          id?: string
+          nome_produto?: string
+          preco_sugerido?: number
+          status?: string
+          unidade_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       combos_fixos: {
         Row: {
           created_at: string | null
@@ -572,6 +611,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      historico_precos_insumos: {
+        Row: {
+          created_at: string
+          id: string
+          insumo_id: string | null
+          nome_insumo: string
+          preco_anterior: number
+          preco_novo: number
+          unidade_id: string | null
+          user_id: string | null
+          variacao_percentual: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          insumo_id?: string | null
+          nome_insumo: string
+          preco_anterior?: number
+          preco_novo?: number
+          unidade_id?: string | null
+          user_id?: string | null
+          variacao_percentual?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          insumo_id?: string | null
+          nome_insumo?: string
+          preco_anterior?: number
+          preco_novo?: number
+          unidade_id?: string | null
+          user_id?: string | null
+          variacao_percentual?: number
+        }
+        Relationships: []
       }
       insumos_comprados: {
         Row: {
