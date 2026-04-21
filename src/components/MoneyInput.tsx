@@ -239,13 +239,13 @@ export function QuantityInput({
     <Input
       id={id}
       type="text"
-      inputMode="decimal"
+      inputMode={allowDecimals ? "decimal" : "numeric"}
       className={cn(className)}
       value={displayValue}
       onChange={handleChange}
       onFocus={handleFocus}
       onBlur={handleBlur}
-      placeholder={placeholder}
+      placeholder={effectivePlaceholder}
       disabled={disabled}
       required={required}
     />
