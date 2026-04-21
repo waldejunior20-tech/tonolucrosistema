@@ -17,7 +17,8 @@ import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
 import { Pencil, Trash2, Plus, Search, X, Beaker } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
-import { QuantityInput, formatMoney } from "@/components/MoneyInput";
+import { QuantityInput, formatMoney, formatQuantidade } from "@/components/MoneyInput";
+import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { EmptyState } from "@/components/EmptyState";
 import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
@@ -139,12 +140,14 @@ export default function InsumosProduzidos() {
   // Insert
   const insertMutation = useMutation({
     mutationFn: async (data: FormState) => {
+      const unidade_id = requireActiveUnidadeId();
       const { data: inserted, error } = await supabase
         .from("insumos_proprios")
         .insert({
           nome: data.nome,
           rendimento: data.rendimento,
           unidade_rendimento: data.unidade_rendimento,
+          unidade_id,
         })
         .select()
         .single();
@@ -159,6 +162,7 @@ export default function InsumosProduzidos() {
               insumo_comprado_id: ing.insumo_comprado_id,
               quantidade: ing.quantidade,
               unidade: ing.unidade,
+              unidade_id,
             }))
           );
         if (ingError) throw ingError;
@@ -176,6 +180,7 @@ export default function InsumosProduzidos() {
   // Update
   const updateMutation = useMutation({
     mutationFn: async ({ id, ...data }: FormState & { id: string }) => {
+      const unidade_id = requireActiveUnidadeId();
       const { error } = await supabase
         .from("insumos_proprios")
         .update({
@@ -202,6 +207,7 @@ export default function InsumosProduzidos() {
               insumo_comprado_id: ing.insumo_comprado_id,
               quantidade: ing.quantidade,
               unidade: ing.unidade,
+              unidade_id,
             }))
           );
         if (ingError) throw ingError;
@@ -365,6 +371,7 @@ export default function InsumosProduzidos() {
                     id="rendimento"
                     className={fieldErrorClass(showErr("rendimento"))}
                     value={form.rendimento}
+                    unidade={form.unidade_rendimento}
                     onChange={(v) => setForm({ ...form, rendimento: v })}
                   />
                   <FieldError show={showErr("rendimento")} />
@@ -461,6 +468,7 @@ export default function InsumosProduzidos() {
                       <QuantityInput
                         className="h-8 text-sm"
                         value={ing.quantidade}
+                        unidade={ing.unidade}
                         onChange={(v) => updateIngrediente(idx, "quantidade", v)}
                       />
                     </div>
@@ -526,7 +534,7 @@ export default function InsumosProduzidos() {
                   <TableRow key={ip.id}>
                     <TableCell className="font-medium">{ip.nome}</TableCell>
                     <TableCell className="text-right">
-                      {Number(ip.rendimento)} {ip.unidade_rendimento}
+                      {formatQuantidade(Number(ip.rendimento), ip.unidade_rendimento)}
                     </TableCell>
                     <TableCell className="text-right">
                       {formatMoney(custoPorUn)}/{ip.unidade_rendimento}

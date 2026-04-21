@@ -20,7 +20,7 @@ import { appError } from "@/lib/error-codes";
 import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
 import { Pencil, Trash2, Plus, Filter, Package, ChevronDown, LayoutGrid, List } from "lucide-react";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
-import { MoneyInput, QuantityInput, formatMoney, formatQty } from "@/components/MoneyInput";
+import { MoneyInput, QuantityInput, formatMoney, formatQuantidade } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { EmptyState } from "@/components/EmptyState";
 import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
@@ -243,10 +243,9 @@ export default function InsumosComprados() {
       <TableCell className="text-right tabular-nums font-bold text-foreground">
         {formatMoney(Number(insumo.preco_pago))}
       </TableCell>
-      <TableCell className="text-right tabular-nums text-foreground">
-        {formatQty(Number(insumo.quantidade))}
+      <TableCell className="text-right tabular-nums text-foreground" colSpan={2}>
+        {formatQuantidade(Number(insumo.quantidade), insumo.unidade)}
       </TableCell>
-      <TableCell className="text-muted-foreground">{insumo.unidade}</TableCell>
       <TableCell className="text-muted-foreground">{insumo.fornecedor ?? "—"}</TableCell>
       <TableCell className="text-muted-foreground tabular-nums">
         {insumo.data_compra
@@ -285,8 +284,7 @@ export default function InsumosComprados() {
         <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Categoria</TableHead>
       )}
       <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider text-right">Preço (R$)</TableHead>
-      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider text-right">Qtd</TableHead>
-      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Unidade</TableHead>
+      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider text-right" colSpan={2}>Quantidade</TableHead>
       <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Fornecedor</TableHead>
       <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Data Compra</TableHead>
       <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider w-[100px]">Ações</TableHead>
@@ -340,7 +338,7 @@ export default function InsumosComprados() {
                 </div>
                 <div>
                   <Label htmlFor="qtd">Quantidade *</Label>
-                  <QuantityInput id="qtd" className={fieldErrorClass(showErr("quantidade"))} value={form.quantidade} onChange={(v) => setForm({ ...form, quantidade: v })} />
+                  <QuantityInput id="qtd" className={fieldErrorClass(showErr("quantidade"))} value={form.quantidade} unidade={form.unidade} onChange={(v) => setForm({ ...form, quantidade: v })} />
                   <FieldError show={showErr("quantidade")} />
                 </div>
                 <div>
