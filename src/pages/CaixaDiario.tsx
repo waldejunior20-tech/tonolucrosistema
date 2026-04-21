@@ -20,6 +20,7 @@ import {
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { VendaRapidaButton } from "@/components/caixa/VendaRapidaButton";
+import { FechamentoDiaForm } from "@/components/caixa/FechamentoDiaForm";
 import { useCaixaDiario, CATEGORIA_FECHAMENTO } from "@/hooks/useCaixaDiario";
 import { useHistoricoCaixa } from "@/hooks/useHistoricoCaixa";
 import { EmptyState } from "@/components/EmptyState";
@@ -103,8 +104,11 @@ export default function CaixaDiario() {
     <div className="space-y-6 page-enter">
       <PageHeader
         title="Caixa Diário"
-        description="Lance vendas em tempo real e feche o dia ao final do expediente."
+        description="Registre o fechamento de vendas por forma de pagamento. Os valores alimentam automaticamente DRE e Ponto de Equilíbrio."
       />
+
+      {/* Formulário consolidado de fechamento */}
+      <FechamentoDiaForm taxas={taxas} onSelectDate={setSelectedDate} />
 
       {/* Date selector + status */}
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -152,11 +156,11 @@ export default function CaixaDiario() {
         {/* LEFT: Quick entry */}
         <Card className="xl:col-span-2 rounded-2xl border-border/60 shadow-sm">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base font-semibold">Lançamento rápido</CardTitle>
+            <CardTitle className="text-base font-semibold">Lançamento avulso</CardTitle>
             <p className="text-xs text-muted-foreground">
               {isClosed
-                ? "Reabra o caixa para registrar novas vendas"
-                : "Clique numa forma de pagamento para lançar o valor da venda."}
+                ? "Reabra o caixa para registrar novas entradas"
+                : "Atalho para registrar uma entrada pontual (uma venda só) na data selecionada acima."}
             </p>
           </CardHeader>
           <CardContent>
@@ -261,8 +265,8 @@ export default function CaixaDiario() {
             {totalVendas === 0 && (
               <div className="mt-6">
                 <EmptyState
-                  title="Nenhuma venda registrada hoje"
-                  description="Clique em uma forma de pagamento acima para lançar a primeira venda do dia."
+                  title="Nenhum fechamento lançado para esta data"
+                  description="Use o formulário acima para registrar o fechamento do dia, ou clique em uma forma de pagamento para uma entrada avulsa."
                 />
               </div>
             )}
