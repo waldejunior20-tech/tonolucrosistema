@@ -15,23 +15,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { formatMoney } from "@/components/MoneyInput";
 import {
-  CalendarIcon, Wallet, CreditCard, Smartphone, ShoppingBag, Trash2, Lock, Unlock, CheckCircle2, ChevronRight,
+  CalendarIcon, Trash2, Lock, Unlock, CheckCircle2, ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { VendaRapidaButton } from "@/components/caixa/VendaRapidaButton";
 import { FechamentoDiaForm } from "@/components/caixa/FechamentoDiaForm";
 import { useCaixaDiario, CATEGORIA_FECHAMENTO } from "@/hooks/useCaixaDiario";
 import { useHistoricoCaixa } from "@/hooks/useHistoricoCaixa";
 import { EmptyState } from "@/components/EmptyState";
-
-const FORMAS = [
-  { forma: "Dinheiro/PIX" as const, icon: Wallet, colorClass: "text-success", bgClass: "bg-success/10", ringClass: "border-success/30 hover:border-success/60" },
-  { forma: "Débito" as const, icon: CreditCard, colorClass: "text-info", bgClass: "bg-info/10", ringClass: "border-info/30 hover:border-info/60" },
-  { forma: "Crédito" as const, icon: CreditCard, colorClass: "text-primary", bgClass: "bg-primary/10", ringClass: "border-primary/30 hover:border-primary/60" },
-  { forma: "iFood" as const, icon: ShoppingBag, colorClass: "text-destructive", bgClass: "bg-destructive/10", ringClass: "border-destructive/30 hover:border-destructive/60" },
-  { forma: "Outros Apps" as const, icon: Smartphone, colorClass: "text-orange", bgClass: "bg-orange/10", ringClass: "border-orange/30 hover:border-orange/60" },
-];
 
 export default function CaixaDiario() {
   const [selectedDate, setSelectedDate] = useState(new Date());
