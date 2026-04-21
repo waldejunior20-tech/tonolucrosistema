@@ -60,36 +60,57 @@ export type Database = {
           cmv_anterior: number
           cmv_atual: number
           created_at: string
+          created_by: string
           ficha_tecnica_id: string | null
           id: string
+          metadata: Json
           nome_produto: string
           preco_sugerido: number
+          preco_sugerido_g: number | null
+          preco_sugerido_m: number | null
+          preco_sugerido_p: number | null
           status: string
+          tipo_ficha: string
           unidade_id: string | null
+          updated_at: string
           user_id: string | null
         }
         Insert: {
           cmv_anterior?: number
           cmv_atual?: number
           created_at?: string
+          created_by?: string
           ficha_tecnica_id?: string | null
           id?: string
+          metadata?: Json
           nome_produto: string
           preco_sugerido?: number
+          preco_sugerido_g?: number | null
+          preco_sugerido_m?: number | null
+          preco_sugerido_p?: number | null
           status?: string
+          tipo_ficha?: string
           unidade_id?: string | null
+          updated_at?: string
           user_id?: string | null
         }
         Update: {
           cmv_anterior?: number
           cmv_atual?: number
           created_at?: string
+          created_by?: string
           ficha_tecnica_id?: string | null
           id?: string
+          metadata?: Json
           nome_produto?: string
           preco_sugerido?: number
+          preco_sugerido_g?: number | null
+          preco_sugerido_m?: number | null
+          preco_sugerido_p?: number | null
           status?: string
+          tipo_ficha?: string
           unidade_id?: string | null
+          updated_at?: string
           user_id?: string | null
         }
         Relationships: []
@@ -555,39 +576,116 @@ export type Database = {
           },
         ]
       }
+      fichas_tecnicas_warnings: {
+        Row: {
+          created_at: string
+          detalhes: Json
+          ficha_tecnica_id: string
+          id: string
+          motivo: string
+          resolved_at: string | null
+          resolvido: boolean
+          tipo_ficha: string
+          unidade_id: string
+        }
+        Insert: {
+          created_at?: string
+          detalhes?: Json
+          ficha_tecnica_id: string
+          id?: string
+          motivo: string
+          resolved_at?: string | null
+          resolvido?: boolean
+          tipo_ficha: string
+          unidade_id: string
+        }
+        Update: {
+          created_at?: string
+          detalhes?: Json
+          ficha_tecnica_id?: string
+          id?: string
+          motivo?: string
+          resolved_at?: string | null
+          resolvido?: boolean
+          tipo_ficha?: string
+          unidade_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fichas_tecnicas_warnings_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       historico_precos_insumos: {
         Row: {
           created_at: string
+          created_by: string
           id: string
           insumo_id: string | null
           nome_insumo: string
           preco_anterior: number
           preco_novo: number
+          source: string
           unidade_id: string | null
           user_id: string | null
           variacao_percentual: number
         }
         Insert: {
           created_at?: string
+          created_by?: string
           id?: string
           insumo_id?: string | null
           nome_insumo: string
           preco_anterior?: number
           preco_novo?: number
+          source?: string
           unidade_id?: string | null
           user_id?: string | null
           variacao_percentual?: number
         }
         Update: {
           created_at?: string
+          created_by?: string
           id?: string
           insumo_id?: string | null
           nome_insumo?: string
           preco_anterior?: number
           preco_novo?: number
+          source?: string
           unidade_id?: string | null
           user_id?: string | null
           variacao_percentual?: number
+        }
+        Relationships: []
+      }
+      insumos_catalog: {
+        Row: {
+          aliases: string[]
+          categoria: string | null
+          created_at: string
+          id: string
+          nome_canonico: string
+          unidade_padrao: string | null
+        }
+        Insert: {
+          aliases?: string[]
+          categoria?: string | null
+          created_at?: string
+          id?: string
+          nome_canonico: string
+          unidade_padrao?: string | null
+        }
+        Update: {
+          aliases?: string[]
+          categoria?: string | null
+          created_at?: string
+          id?: string
+          nome_canonico?: string
+          unidade_padrao?: string | null
         }
         Relationships: []
       }
@@ -599,6 +697,7 @@ export type Database = {
           data_compra: string | null
           fornecedor: string | null
           id: string
+          insumo_catalog_id: string | null
           nome: string
           preco_pago: number
           quantidade: number
@@ -614,6 +713,7 @@ export type Database = {
           data_compra?: string | null
           fornecedor?: string | null
           id?: string
+          insumo_catalog_id?: string | null
           nome: string
           preco_pago: number
           quantidade: number
@@ -629,6 +729,7 @@ export type Database = {
           data_compra?: string | null
           fornecedor?: string | null
           id?: string
+          insumo_catalog_id?: string | null
           nome?: string
           preco_pago?: number
           quantidade?: number
@@ -638,6 +739,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "insumos_comprados_insumo_catalog_id_fkey"
+            columns: ["insumo_catalog_id"]
+            isOneToOne: false
+            referencedRelation: "insumos_catalog"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "insumos_comprados_unidade_id_fkey"
             columns: ["unidade_id"]
@@ -1128,6 +1236,62 @@ export type Database = {
           },
         ]
       }
+      workflow_runs: {
+        Row: {
+          alertas_criados: number
+          duration_ms: number | null
+          fichas_com_erro: Json
+          fichas_processadas: number
+          finished_at: string | null
+          id: string
+          metadata: Json
+          started_at: string
+          status: string
+          trigger_record_id: string | null
+          trigger_source: string
+          unidade_id: string | null
+          workflow_name: string
+        }
+        Insert: {
+          alertas_criados?: number
+          duration_ms?: number | null
+          fichas_com_erro?: Json
+          fichas_processadas?: number
+          finished_at?: string | null
+          id?: string
+          metadata?: Json
+          started_at?: string
+          status: string
+          trigger_record_id?: string | null
+          trigger_source: string
+          unidade_id?: string | null
+          workflow_name: string
+        }
+        Update: {
+          alertas_criados?: number
+          duration_ms?: number | null
+          fichas_com_erro?: Json
+          fichas_processadas?: number
+          finished_at?: string | null
+          id?: string
+          metadata?: Json
+          started_at?: string
+          status?: string
+          trigger_record_id?: string | null
+          trigger_source?: string
+          unidade_id?: string | null
+          workflow_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_runs_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -1165,6 +1329,10 @@ export type Database = {
         Returns: boolean
       }
       primeira_unidade_do_user: { Args: { _user_id: string }; Returns: string }
+      validar_ficha_pizza_completa: {
+        Args: { p_ficha_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "gerente" | "caixa"
