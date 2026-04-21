@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
+import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
 import { Plus, Pencil, Trash2, Check, AlertTriangle, Clock, CircleDollarSign } from "lucide-react";
 import { MoneyInput } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
