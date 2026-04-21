@@ -340,7 +340,7 @@ export default function InsumosComprados() {
                 </div>
                 <div>
                   <Label htmlFor="qtd">Quantidade *</Label>
-                  <QuantityInput id="qtd" className={fieldErrorClass(showErr("quantidade"))} value={form.quantidade} onChange={(v) => setForm({ ...form, quantidade: v })} />
+                  <QuantityInput id="qtd" className={fieldErrorClass(showErr("quantidade"))} value={form.quantidade} unidade={form.unidade} onChange={(v) => setForm({ ...form, quantidade: v })} />
                   <FieldError show={showErr("quantidade")} />
                 </div>
                 <div>
