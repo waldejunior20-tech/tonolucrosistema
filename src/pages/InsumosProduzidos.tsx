@@ -335,7 +335,7 @@ export default function InsumosProduzidos() {
   const custoPorUnidade = form.rendimento > 0 ? custoFormulario / form.rendimento : 0;
 
   const filteredComprados = insumosComprados.filter((ic) =>
-    ic.nome.toLowerCase().includes(buscaIngrediente.toLowerCase())
+    matchesSearch(ic.nome, buscaIngrediente)
   );
 
   return (

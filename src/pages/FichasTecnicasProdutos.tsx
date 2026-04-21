@@ -415,11 +415,10 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
 
   // Filter available insumos for search
   const getInsumosFiltered = (tipo: string) => {
-    const termo = buscaIngrediente.toLowerCase();
     if (tipo === "comprado") {
-      return insumosComprados.filter((ic) => ic.nome.toLowerCase().includes(termo));
+      return insumosComprados.filter((ic) => matchesSearch(ic.nome, buscaIngrediente));
     }
-    return insumosProprios.filter((ip) => ip.nome.toLowerCase().includes(termo));
+    return insumosProprios.filter((ip) => matchesSearch(ip.nome, buscaIngrediente));
   };
 
   return (
