@@ -30,6 +30,10 @@ import ResetPassword from "@/pages/ResetPassword";
 import ComboSimulator from "@/pages/ComboSimulator";
 import PromocoesAtivas from "@/pages/PromocoesAtivas";
 import Configuracoes from "@/pages/Configuracoes";
+import AutomacaoAlertas from "@/pages/AutomacaoAlertas";
+import AutomacaoHistoricoPrecos from "@/pages/AutomacaoHistoricoPrecos";
+import AutomacaoFichasWarnings from "@/pages/AutomacaoFichasWarnings";
+import AutomacaoSaude from "@/pages/AutomacaoSaude";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -107,6 +111,10 @@ function AppRoutes() {
         <Route path="/financeiro/ponto-de-equilibrio" element={<FinanceiroPontoEquilibrio />} />
         <Route path="/promocoes/ativas" element={<PromocoesAtivas />} />
         <Route path="/promocoes/combos" element={<ComboSimulator />} />
+        <Route path="/automacao/alertas" element={<AutomacaoAlertas />} />
+        <Route path="/automacao/historico-precos" element={<AutomacaoHistoricoPrecos />} />
+        <Route path="/automacao/fichas-warnings" element={<AutomacaoFichasWarnings />} />
+        <Route path="/automacao/saude" element={<AutomacaoSaude />} />
         <Route path="/configuracoes" element={<Configuracoes />} />
       </Route>
       <Route path="*" element={<NotFound />} />

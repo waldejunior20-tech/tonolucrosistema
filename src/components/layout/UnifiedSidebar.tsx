@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, Package, BookOpen, DollarSign, 
-  TrendingUp, Tag, ChevronDown, Warehouse,
+  TrendingUp, Tag, ChevronDown, Warehouse, Bot,
   PanelLeftClose, PanelLeft, Pizza, Cog, LogOut, ChevronUp
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -14,7 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-export type ModuleKey = "dashboard" | "insumos" | "fichas" | "precificacao" | "financeiro" | "promocoes" | "configuracoes";
+export type ModuleKey = "dashboard" | "insumos" | "fichas" | "precificacao" | "financeiro" | "promocoes" | "automacao" | "configuracoes";
 
 interface SubItem {
   label: string;
@@ -70,6 +70,15 @@ const sidebarItems: SidebarItem[] = [
       { label: "Caixa", path: "/financeiro/caixa-diario" },
       { label: "Contas a Pagar", path: "/financeiro/contas-a-pagar" },
       { label: "Resumo do Mês", path: "/financeiro/dre" },
+    ],
+  },
+  {
+    key: "automacao", label: "Automação", icon: Bot,
+    subItems: [
+      { label: "Alertas de CMV", path: "/automacao/alertas" },
+      { label: "Histórico de Preços", path: "/automacao/historico-precos" },
+      { label: "Fichas Incompletas", path: "/automacao/fichas-warnings" },
+      { label: "Saúde do Sistema", path: "/automacao/saude" },
     ],
   },
   { key: "configuracoes", label: "Configurações", icon: Cog, path: "/configuracoes" },

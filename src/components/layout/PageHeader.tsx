@@ -28,6 +28,10 @@ const ROUTE_LABELS: Record<string, string> = {
   "/financeiro/caixa-diario": "Caixa Diário",
   "/promocoes/ativas": "Promoções Ativas",
   "/promocoes/combos": "Combos Fixos",
+  "/automacao/alertas": "Alertas de CMV",
+  "/automacao/historico-precos": "Histórico de Preços",
+  "/automacao/fichas-warnings": "Fichas Incompletas",
+  "/automacao/saude": "Saúde do Sistema",
   "/configuracoes": "Configurações",
 };
 
@@ -37,6 +41,7 @@ const SECTION_LABELS: Record<string, string> = {
   precificacao: "Precificação",
   financeiro: "Financeiro",
   promocoes: "Promoções",
+  automacao: "Automação",
 };
 
 export function PageHeader({ title, description, children, className }: PageHeaderProps) {
