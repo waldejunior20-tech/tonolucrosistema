@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
+import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
 import { Pencil, Trash2, Plus, Filter, Package } from "lucide-react";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 import { MoneyInput, QuantityInput, formatMoney, formatQty } from "@/components/MoneyInput";
@@ -79,7 +80,8 @@ export default function InsumosComprados() {
   // Insert
   const insertMutation = useMutation({
     mutationFn: async (payload: TablesInsert<"insumos_comprados">) => {
-      const { error } = await supabase.from("insumos_comprados").insert(payload);
+      const unidade_id = requireActiveUnidadeId();
+      const { error } = await supabase.from("insumos_comprados").insert({ ...payload, unidade_id });
       if (error) throw error;
     },
     onSuccess: () => {

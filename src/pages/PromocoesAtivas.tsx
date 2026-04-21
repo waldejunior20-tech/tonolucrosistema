@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
+import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
 import {
   Plus, Pencil, Copy, Trash2, Pause, Play, AlertTriangle, Search, X,
 } from "lucide-react";
@@ -299,7 +300,8 @@ export default function PromocoesAtivas() {
         const { error } = await supabase.from("promocoes").update(payload).eq("id", editingId);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("promocoes").insert(payload);
+        const unidade_id = requireActiveUnidadeId();
+        const { error } = await supabase.from("promocoes").insert({ ...payload, unidade_id });
         if (error) throw error;
       }
     },

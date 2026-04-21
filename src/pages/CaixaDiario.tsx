@@ -5,6 +5,7 @@ import { format, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
+import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -53,6 +54,7 @@ export default function CaixaDiario() {
 
   const fecharMutation = useMutation({
     mutationFn: async () => {
+      const unidade_id = requireActiveUnidadeId();
       const { error } = await supabase.from("lancamentos_financeiros").insert({
         tipo: "receita",
         categoria: CATEGORIA_FECHAMENTO,
@@ -60,6 +62,7 @@ export default function CaixaDiario() {
         valor: 0,
         data_lancamento: dataStr,
         pago: true,
+        unidade_id,
       });
       if (error) throw error;
     },

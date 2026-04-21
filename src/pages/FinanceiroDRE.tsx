@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { MoneyInput } from "@/components/MoneyInput";
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
+import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
 import { Plus, Target, AlertTriangle, TrendingUp, TrendingDown } from "lucide-react";
 import { HealthStatus } from "@/components/HealthStatus";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -187,7 +188,8 @@ export default function FinanceiroDRE() {
 
   const createMutation = useMutation({
     mutationFn: async (data: { descricao: string; valor: number; tipo: string; categoria: string; data_lancamento: string }) => {
-      const { error } = await supabase.from("lancamentos_financeiros").insert(data);
+      const unidade_id = requireActiveUnidadeId();
+      const { error } = await supabase.from("lancamentos_financeiros").insert({ ...data, unidade_id });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -206,6 +208,7 @@ export default function FinanceiroDRE() {
       const end = new Date(form.data_fim + "T12:00:00");
       const days = Math.max(1, Math.round((end.getTime() - start.getTime()) / 86400000) + 1);
       const dailyValue = form.valor / days;
+      const unidade_id = requireActiveUnidadeId();
       const entries = [];
       for (let i = 0; i < days; i++) {
         const d = new Date(start);
@@ -216,6 +219,7 @@ export default function FinanceiroDRE() {
           tipo: dialogTipo,
           categoria: form.categoria,
           data_lancamento: d.toISOString().slice(0, 10),
+          unidade_id,
         });
       }
       supabase.from("lancamentos_financeiros").insert(entries).then(({ error }) => {

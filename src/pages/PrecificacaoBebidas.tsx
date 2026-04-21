@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
+import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
 import { AlertTriangle, Beer, GlassWater, Check } from "lucide-react";
 import { formatMoney } from "@/components/MoneyInput";
 import {
@@ -203,7 +204,8 @@ export default function PrecificacaoBebidas() {
           const { error } = await supabase.from("precificacao_bebidas").update({ preco_venda: numVal }).eq("id", existing.id);
           if (error) throw error;
         } else {
-          const { error } = await supabase.from("precificacao_bebidas").insert({ insumo_comprado_id: insumoId, preco_venda: numVal });
+          const unidade_id = requireActiveUnidadeId();
+          const { error } = await supabase.from("precificacao_bebidas").insert({ insumo_comprado_id: insumoId, preco_venda: numVal, unidade_id });
           if (error) throw error;
         }
         queryClient.invalidateQueries({ queryKey: ["precificacao_bebidas"] });
@@ -227,7 +229,8 @@ export default function PrecificacaoBebidas() {
         const { error } = await supabase.from("precificacao_produtos").update({ preco_venda: preco }).eq("ficha_id", fichaId);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("precificacao_produtos").insert({ ficha_id: fichaId, preco_venda: preco });
+        const unidade_id = requireActiveUnidadeId();
+        const { error } = await supabase.from("precificacao_produtos").insert({ ficha_id: fichaId, preco_venda: preco, unidade_id });
         if (error) throw error;
       }
       toast.success("Preço salvo!");
