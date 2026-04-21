@@ -15,6 +15,37 @@ const qtyFormatter = new Intl.NumberFormat("pt-BR", {
 });
 
 /**
+ * Casas decimais padrão por unidade de medida.
+ * Unidades contínuas (kg, L) usam 3 casas; discretas (g, ml, un) usam 0.
+ */
+export const unidadeDecimals = (unidade?: string | null): number => {
+  if (!unidade) return 3;
+  const u = unidade.toLowerCase().trim();
+  if (u === "kg" || u === "l") return 3;
+  if (u === "g" || u === "ml" || u === "mg") return 0;
+  // unidade, caixa, pacote, fardo, dúzia, etc → inteiro
+  return 0;
+};
+
+/**
+ * Formata uma quantidade já com a unidade no padrão brasileiro:
+ *   1.5 + "kg"  → "1,5 kg"
+ *   500 + "g"   → "500 g"
+ *   1   + "L"   → "1 L"
+ *   10  + "un"  → "10 un"
+ */
+export const formatQuantidade = (value: number, unidade?: string | null): string => {
+  if (value == null || isNaN(value)) return "";
+  const decimals = unidadeDecimals(unidade);
+  const fmt = new Intl.NumberFormat("pt-BR", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: decimals,
+  });
+  const num = fmt.format(value);
+  return unidade ? `${num} ${unidade}` : num;
+};
+
+/**
  * Format a number as Brazilian currency: R$ 1.500,00
  */
 export const formatMoney = (value: number): string => {
@@ -24,6 +55,7 @@ export const formatMoney = (value: number): string => {
 
 /**
  * Format a quantity with 3 decimal places: 200,000
+ * @deprecated prefira formatQuantidade(value, unidade)
  */
 export const formatQty = (value: number): string => {
   if (value == null) return "";
@@ -140,19 +172,29 @@ interface QuantityInputProps {
   id?: string;
   required?: boolean;
   step?: string;
+  /** Casas decimais para formatação. Se omitido, usa 3 (legado). */
+  decimals?: number;
+  /** Unidade de medida; se passada, infere decimais via unidadeDecimals. */
+  unidade?: string | null;
 }
 
 export function QuantityInput({
   value,
   onChange,
   className,
-  placeholder = "0,000",
+  placeholder,
   disabled,
   id,
   required,
+  decimals,
+  unidade,
 }: QuantityInputProps) {
   const [focused, setFocused] = useState(false);
   const [localValue, setLocalValue] = useState("");
+
+  const effectiveDecimals = decimals ?? (unidade ? unidadeDecimals(unidade) : 3);
+  const allowDecimals = effectiveDecimals > 0;
+  const effectivePlaceholder = placeholder ?? (allowDecimals ? "0,000" : "0");
 
   const handleFocus = useCallback(() => {
     setFocused(true);
@@ -163,24 +205,34 @@ export function QuantityInput({
   const handleBlur = useCallback(() => {
     setFocused(false);
     const parsed = parseFormattedNumber(localValue);
-    onChange(parsed);
-  }, [localValue, onChange]);
+    // Se a unidade não aceita decimais, arredonda
+    const final = allowDecimals ? parsed : Math.round(parsed);
+    onChange(final);
+  }, [localValue, onChange, allowDecimals]);
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    // Allow digits and one comma
-    let raw = e.target.value.replace(/[^\d,]/g, "");
-    // Only one comma allowed
-    const parts = raw.split(",");
-    if (parts.length > 2) {
-      raw = parts[0] + "," + parts.slice(1).join("");
+    let raw = e.target.value;
+    if (allowDecimals) {
+      raw = raw.replace(/[^\d,]/g, "");
+      const parts = raw.split(",");
+      if (parts.length > 2) {
+        raw = parts[0] + "," + parts.slice(1).join("");
+      }
+    } else {
+      raw = raw.replace(/\D/g, "");
     }
     setLocalValue(raw);
-  }, []);
+  }, [allowDecimals]);
+
+  const formatter = new Intl.NumberFormat("pt-BR", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: effectiveDecimals,
+  });
 
   const displayValue = focused
     ? localValue
     : value
-      ? formatQty(value)
+      ? formatter.format(value)
       : "";
 
   return (
