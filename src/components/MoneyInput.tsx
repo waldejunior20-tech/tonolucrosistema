@@ -63,16 +63,30 @@ export const formatQty = (value: number): string => {
 };
 
 /**
- * Parse a formatted string back to a number.
- * Handles "R$ 1.500,00" → 1500, "200,000" → 200, plain numbers, etc.
+ * Parser robusto pt-BR.
+ * Regras:
+ *   - Vírgula é SEMPRE separador decimal.
+ *   - Ponto é SEMPRE separador de milhar (descartado).
+ *   - "8,5"      → 8.5
+ *   - "8.500"    → 8500   (ponto = milhar)
+ *   - "8.500,75" → 8500.75
+ *   - "1500"     → 1500
+ *   - "R$ 1.500,00" → 1500
+ * Para entradas que vêm de <input type="number"> nativo (com ".") use parseFloat direto.
  */
 export const parseFormattedNumber = (str: string): number => {
   if (!str) return 0;
   let clean = str.replace(/R\$\s?/g, "").trim();
+  if (!clean) return 0;
+  // Se tem vírgula, é o decimal: remove todos os pontos (milhar) e troca vírgula por ponto.
   if (clean.includes(",")) {
     clean = clean.replace(/\./g, "").replace(",", ".");
+  } else {
+    // Sem vírgula: pontos são separadores de milhar — remove todos.
+    clean = clean.replace(/\./g, "");
   }
-  return parseFloat(clean) || 0;
+  const n = parseFloat(clean);
+  return isNaN(n) ? 0 : n;
 };
 
 /**
