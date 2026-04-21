@@ -20,7 +20,7 @@ import { appError } from "@/lib/error-codes";
 import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
 import { Pencil, Trash2, Plus, Filter, Package, ChevronDown, LayoutGrid, List } from "lucide-react";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
-import { MoneyInput, QuantityInput, formatMoney, formatQty } from "@/components/MoneyInput";
+import { MoneyInput, QuantityInput, formatMoney, formatQuantidade } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { EmptyState } from "@/components/EmptyState";
 import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
@@ -243,10 +243,9 @@ export default function InsumosComprados() {
       <TableCell className="text-right tabular-nums font-bold text-foreground">
         {formatMoney(Number(insumo.preco_pago))}
       </TableCell>
-      <TableCell className="text-right tabular-nums text-foreground">
-        {formatQty(Number(insumo.quantidade))}
+      <TableCell className="text-right tabular-nums text-foreground" colSpan={2}>
+        {formatQuantidade(Number(insumo.quantidade), insumo.unidade)}
       </TableCell>
-      <TableCell className="text-muted-foreground">{insumo.unidade}</TableCell>
       <TableCell className="text-muted-foreground">{insumo.fornecedor ?? "—"}</TableCell>
       <TableCell className="text-muted-foreground tabular-nums">
         {insumo.data_compra
