@@ -51,7 +51,7 @@ export function VendaRapidaButton({
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success(`Venda de ${formatMoney(valor)} registrada!`);
+      toast.success(`Entrada de ${formatMoney(valor)} registrada!`);
       setValor(0);
       setDescricao("");
       setOpen(false);
@@ -93,7 +93,7 @@ export function VendaRapidaButton({
               <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center", bgClass, colorClass)}>
                 <Icon size={16} />
               </div>
-              Venda — {forma}
+              Registrar entrada — {forma}
             </DialogTitle>
           </DialogHeader>
 
@@ -128,7 +128,7 @@ export function VendaRapidaButton({
               disabled={valor <= 0 || mutation.isPending}
               className="btn-action-add"
             >
-              {mutation.isPending ? "Salvando..." : "Registrar Venda"}
+              {mutation.isPending ? "Salvando..." : "Registrar Entrada"}
             </Button>
           </DialogFooter>
         </DialogContent>
