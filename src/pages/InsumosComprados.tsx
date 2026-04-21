@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -13,16 +13,19 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
 import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
-import { Pencil, Trash2, Plus, Filter, Package } from "lucide-react";
+import { Pencil, Trash2, Plus, Filter, Package, ChevronDown, LayoutGrid, List } from "lucide-react";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 import { MoneyInput, QuantityInput, formatMoney, formatQty } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { EmptyState } from "@/components/EmptyState";
 import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
 import { CategoryBadge } from "@/components/CategoryBadge";
+import { cn } from "@/lib/utils";
 
 const CATEGORIAS = [
   "Proteínas", "Laticínios", "Hortifruti", "Secos", "Bebidas",
@@ -44,6 +47,8 @@ const emptyForm: Omit<TablesInsert<"insumos_comprados">, "id" | "created_at" | "
   codigo: "",
 };
 
+type ViewMode = "grouped" | "list";
+
 export default function InsumosComprados() {
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -51,6 +56,10 @@ export default function InsumosComprados() {
   const [form, setForm] = useState(emptyForm);
   const [filtroCategoria, setFiltroCategoria] = useState<string>("todas");
   const [submitted, setSubmitted] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("grouped");
+  const [collapsedCats, setCollapsedCats] = useState<Set<string>>(new Set());
+  const [highlightId, setHighlightId] = useState<string | null>(null);
+  const lastCreatedCatRef = useRef<string | null>(null);
 
   // Validation
   const errors = {
@@ -77,6 +86,27 @@ export default function InsumosComprados() {
     },
   });
 
+  // After insumos refetch following create, expand category & highlight new item
+  useEffect(() => {
+    const cat = lastCreatedCatRef.current;
+    if (!cat || insumos.length === 0) return;
+    // Find newest item in that category
+    const newest = [...insumos]
+      .filter((i) => i.categoria === cat)
+      .sort((a, b) => (b.created_at ?? "").localeCompare(a.created_at ?? ""))[0];
+    if (newest) {
+      setCollapsedCats((prev) => {
+        const next = new Set(prev);
+        next.delete(cat);
+        return next;
+      });
+      setHighlightId(newest.id);
+      const t = setTimeout(() => setHighlightId(null), 1500);
+      lastCreatedCatRef.current = null;
+      return () => clearTimeout(t);
+    }
+  }, [insumos]);
+
   // Insert
   const insertMutation = useMutation({
     mutationFn: async (payload: TablesInsert<"insumos_comprados">) => {
@@ -84,7 +114,8 @@ export default function InsumosComprados() {
       const { error } = await supabase.from("insumos_comprados").insert({ ...payload, unidade_id });
       if (error) throw error;
     },
-    onSuccess: () => {
+    onSuccess: (_d, variables) => {
+      lastCreatedCatRef.current = variables.categoria;
       queryClient.invalidateQueries({ queryKey: ["insumos_comprados"] });
       toast.success("Insumo cadastrado com sucesso!");
       resetForm();
@@ -157,7 +188,110 @@ export default function InsumosComprados() {
     ? insumos
     : insumos.filter((i) => i.categoria === filtroCategoria);
 
+  // Grouped data: keep the order of CATEGORIAS list, plus any unknown categories at the end
+  const grouped = useMemo(() => {
+    const map = new Map<string, Insumo[]>();
+    for (const i of filtered) {
+      const arr = map.get(i.categoria) ?? [];
+      arr.push(i);
+      map.set(i.categoria, arr);
+    }
+    // sort items A→Z within each group
+    for (const arr of map.values()) {
+      arr.sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+    }
+    const ordered: Array<{ categoria: string; itens: Insumo[] }> = [];
+    for (const c of CATEGORIAS) {
+      if (map.has(c)) {
+        ordered.push({ categoria: c, itens: map.get(c)! });
+        map.delete(c);
+      }
+    }
+    // unknown categories
+    for (const [c, itens] of map) {
+      ordered.push({ categoria: c, itens });
+    }
+    return ordered;
+  }, [filtered]);
+
+  const toggleCat = (cat: string) => {
+    setCollapsedCats((prev) => {
+      const next = new Set(prev);
+      if (next.has(cat)) next.delete(cat);
+      else next.add(cat);
+      return next;
+    });
+  };
+
   const showErr = (field: keyof typeof errors) => submitted && errors[field];
+
+  const renderRow = (insumo: Insumo, idx: number) => (
+    <TableRow
+      key={insumo.id}
+      className={cn(
+        "border-b border-border/40 transition-colors hover:bg-primary/5",
+        idx % 2 === 0 ? "bg-card" : "bg-muted/20",
+        highlightId === insumo.id && "bg-primary/15 animate-pulse",
+      )}
+    >
+      <TableCell className="font-bold text-foreground">{insumo.nome}</TableCell>
+      {viewMode === "list" && (
+        <TableCell>
+          <CategoryBadge categoria={insumo.categoria} />
+        </TableCell>
+      )}
+      <TableCell className="text-right tabular-nums font-bold text-foreground">
+        {formatMoney(Number(insumo.preco_pago))}
+      </TableCell>
+      <TableCell className="text-right tabular-nums text-foreground">
+        {formatQty(Number(insumo.quantidade))}
+      </TableCell>
+      <TableCell className="text-muted-foreground">{insumo.unidade}</TableCell>
+      <TableCell className="text-muted-foreground">{insumo.fornecedor ?? "—"}</TableCell>
+      <TableCell className="text-muted-foreground tabular-nums">
+        {insumo.data_compra
+          ? new Date(insumo.data_compra + "T00:00:00").toLocaleDateString("pt-BR")
+          : "—"}
+      </TableCell>
+      <TableCell>
+        <div className="flex gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
+            onClick={() => handleEdit(insumo)}
+            aria-label="Editar"
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive"
+            onClick={() => deleteMutation.mutate(insumo.id)}
+            aria-label="Excluir"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+
+  const headerCells = (
+    <TableRow className="bg-muted/40 hover:bg-muted/40 border-b border-border/60">
+      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Nome</TableHead>
+      {viewMode === "list" && (
+        <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Categoria</TableHead>
+      )}
+      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider text-right">Preço (R$)</TableHead>
+      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider text-right">Qtd</TableHead>
+      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Unidade</TableHead>
+      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Fornecedor</TableHead>
+      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Data Compra</TableHead>
+      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider w-[100px]">Ações</TableHead>
+    </TableRow>
+  );
 
   return (
     <div className="space-y-6 page-enter">
@@ -231,8 +365,8 @@ export default function InsumosComprados() {
         </Dialog>
       </PageHeader>
 
-      {/* Filtro */}
-      <div className="flex items-center gap-3">
+      {/* Filtro + Toggle de visualização */}
+      <div className="flex items-center gap-3 flex-wrap">
         <Filter className="h-4 w-4 text-muted-foreground" />
         <Select value={filtroCategoria} onValueChange={setFiltroCategoria}>
           <SelectTrigger className="w-[220px]">
@@ -243,9 +377,26 @@ export default function InsumosComprados() {
             {CATEGORIAS.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
           </SelectContent>
         </Select>
+
+        <div className="ml-auto">
+          <ToggleGroup
+            type="single"
+            value={viewMode}
+            onValueChange={(v) => v && setViewMode(v as ViewMode)}
+            variant="outline"
+            size="sm"
+          >
+            <ToggleGroupItem value="grouped" aria-label="Visualização agrupada" className="gap-1.5">
+              <LayoutGrid className="h-4 w-4" /> Agrupada
+            </ToggleGroupItem>
+            <ToggleGroupItem value="list" aria-label="Visualização em lista" className="gap-1.5">
+              <List className="h-4 w-4" /> Lista
+            </ToggleGroupItem>
+          </ToggleGroup>
+        </div>
       </div>
 
-      {/* Tabela */}
+      {/* Conteúdo */}
       {isLoading ? (
         <p className="text-muted-foreground">Carregando...</p>
       ) : filtered.length === 0 ? (
@@ -256,74 +407,57 @@ export default function InsumosComprados() {
           actionLabel="Cadastrar Insumo"
           onAction={() => setDialogOpen(true)}
         />
-      ) : (
+      ) : viewMode === "list" ? (
         <div className="rounded-2xl border border-border/60 bg-card overflow-hidden shadow-sm fade-up fade-up-d1">
           <Table>
-            <TableHeader>
-              <TableRow className="bg-muted/40 hover:bg-muted/40 border-b border-border/60">
-                <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Nome</TableHead>
-                <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Categoria</TableHead>
-                <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider text-right">Preço (R$)</TableHead>
-                <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider text-right">Qtd</TableHead>
-                <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Unidade</TableHead>
-                <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Fornecedor</TableHead>
-                <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Data Compra</TableHead>
-                <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider w-[100px]">Ações</TableHead>
-              </TableRow>
-            </TableHeader>
+            <TableHeader>{headerCells}</TableHeader>
             <TableBody>
-              {filtered.map((insumo, idx) => (
-                <TableRow
-                  key={insumo.id}
-                  className={`border-b border-border/40 transition-colors hover:bg-primary/5 ${
-                    idx % 2 === 0 ? "bg-card" : "bg-muted/20"
-                  }`}
-                >
-                  <TableCell className="font-bold text-foreground">{insumo.nome}</TableCell>
-                  <TableCell>
-                    <CategoryBadge categoria={insumo.categoria} />
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums font-bold text-foreground">
-                    {formatMoney(Number(insumo.preco_pago))}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums text-foreground">
-                    {formatQty(Number(insumo.quantidade))}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">{insumo.unidade}</TableCell>
-                  <TableCell className="text-muted-foreground">{insumo.fornecedor ?? "—"}</TableCell>
-                  <TableCell className="text-muted-foreground tabular-nums">
-                    {insumo.data_compra
-                      ? new Date(insumo.data_compra + "T00:00:00").toLocaleDateString("pt-BR")
-                      : "—"}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
-                        onClick={() => handleEdit(insumo)}
-                        aria-label="Editar"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive"
-                        onClick={() => deleteMutation.mutate(insumo.id)}
-                        aria-label="Excluir"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {filtered.map((insumo, idx) => renderRow(insumo, idx))}
             </TableBody>
           </Table>
         </div>
-
+      ) : (
+        <div className="space-y-4 fade-up fade-up-d1">
+          {grouped.map(({ categoria, itens }) => {
+            const collapsed = collapsedCats.has(categoria);
+            return (
+              <Collapsible
+                key={categoria}
+                open={!collapsed}
+                onOpenChange={() => toggleCat(categoria)}
+                className="rounded-2xl border border-border/60 bg-card overflow-hidden shadow-sm"
+              >
+                <CollapsibleTrigger asChild>
+                  <button
+                    type="button"
+                    className="w-full flex items-center justify-between gap-3 px-4 py-3 bg-muted/30 hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <CategoryBadge categoria={categoria} />
+                      <span className="text-sm font-semibold text-muted-foreground tabular-nums">
+                        ({itens.length})
+                      </span>
+                    </div>
+                    <ChevronDown
+                      className={cn(
+                        "h-4 w-4 text-muted-foreground transition-transform",
+                        collapsed && "-rotate-90",
+                      )}
+                    />
+                  </button>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <Table>
+                    <TableHeader>{headerCells}</TableHeader>
+                    <TableBody>
+                      {itens.map((insumo, idx) => renderRow(insumo, idx))}
+                    </TableBody>
+                  </Table>
+                </CollapsibleContent>
+              </Collapsible>
+            );
+          })}
+        </div>
       )}
     </div>
   );
