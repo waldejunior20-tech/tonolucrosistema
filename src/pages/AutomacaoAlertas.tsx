@@ -64,7 +64,7 @@ export default function AutomacaoAlertas() {
       // 1) Atualiza preço de venda na ficha (se tipo_ficha for pizza ou produto)
       if (alerta.ficha_tecnica_id) {
         if (alerta.tipo_ficha === "pizza") {
-          const updates: Record<string, number> = {};
+          const updates: { preco_venda_p?: number; preco_venda_m?: number; preco_venda_g?: number } = {};
           if (alerta.preco_sugerido_p) updates.preco_venda_p = alerta.preco_sugerido_p;
           if (alerta.preco_sugerido_m) updates.preco_venda_m = alerta.preco_sugerido_m;
           if (alerta.preco_sugerido_g) updates.preco_venda_g = alerta.preco_sugerido_g;
