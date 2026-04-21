@@ -53,6 +53,7 @@ export default function CaixaDiario() {
 
   const fecharMutation = useMutation({
     mutationFn: async () => {
+      const unidade_id = requireActiveUnidadeId();
       const { error } = await supabase.from("lancamentos_financeiros").insert({
         tipo: "receita",
         categoria: CATEGORIA_FECHAMENTO,
@@ -60,6 +61,7 @@ export default function CaixaDiario() {
         valor: 0,
         data_lancamento: dataStr,
         pago: true,
+        unidade_id,
       });
       if (error) throw error;
     },
