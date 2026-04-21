@@ -1333,6 +1333,15 @@ export type Database = {
         Args: { p_ficha_id: string }
         Returns: boolean
       }
+      varredura_fichas_incompletas: {
+        Args: never
+        Returns: {
+          out_ficha_id: string
+          out_motivo: string
+          out_nome: string
+          out_tipo: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "gerente" | "caixa"
