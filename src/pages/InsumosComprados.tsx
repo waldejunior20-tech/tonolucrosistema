@@ -284,8 +284,7 @@ export default function InsumosComprados() {
         <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Categoria</TableHead>
       )}
       <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider text-right">Preço (R$)</TableHead>
-      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider text-right">Qtd</TableHead>
-      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Unidade</TableHead>
+      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider text-right" colSpan={2}>Quantidade</TableHead>
       <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Fornecedor</TableHead>
       <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Data Compra</TableHead>
       <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider w-[100px]">Ações</TableHead>
