@@ -153,46 +153,24 @@ export default function CaixaDiario() {
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* LEFT: Quick entry */}
+        {/* LEFT: Resumo do dia */}
         <Card className="xl:col-span-2 rounded-2xl border-border/60 shadow-sm">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base font-semibold">Lançamento avulso</CardTitle>
+            <CardTitle className="text-base font-semibold">Resumo do dia</CardTitle>
             <p className="text-xs text-muted-foreground">
-              {isClosed
-                ? "Reabra o caixa para registrar novas entradas"
-                : "Atalho para registrar uma entrada pontual (uma venda só) na data selecionada acima."}
+              Vendas lançadas em <strong>{format(selectedDate, "dd/MM/yyyy")}</strong> por forma de pagamento.
             </p>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-              {FORMAS.map((f) => (
-                <VendaRapidaButton
-                  key={f.forma}
-                  forma={f.forma}
-                  icon={f.icon}
-                  colorClass={f.colorClass}
-                  bgClass={f.bgClass}
-                  ringClass={f.ringClass}
-                  dataStr={dataStr}
-                  taxaPct={taxas[f.forma]}
-                  disabled={isClosed}
-                />
-              ))}
-            </div>
-
-            {/* Breakdown */}
-            {totalVendas > 0 && (
-              <div className="mt-6 space-y-2">
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                  Resumo por forma de pagamento
-                </p>
+            {totalVendas > 0 ? (
+              <div className="space-y-2">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   {breakdown.filter((b) => b.count > 0).map((b) => (
                     <div key={b.forma} className="flex items-center justify-between p-3 rounded-lg bg-muted/40 border border-border/40">
                       <div>
                         <p className="text-[13px] font-semibold text-foreground">{b.forma}</p>
                         <p className="text-[10px] text-muted-foreground">
-                          {b.count} venda{b.count > 1 ? "s" : ""} · taxa {b.taxaPct}%
+                          {b.count} lançamento{b.count > 1 ? "s" : ""} · taxa {b.taxaPct}%
                         </p>
                       </div>
                       <div className="text-right">
@@ -216,59 +194,55 @@ export default function CaixaDiario() {
                     <p className="text-base font-bold text-destructive tabular-nums">- {formatMoney(totalTaxas)}</p>
                   </div>
                   <div>
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Líquido</p>
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Líquido → DRE</p>
                     <p className="text-xl font-extrabold text-success tabular-nums">{formatMoney(totalLiquido)}</p>
                   </div>
                 </div>
-              </div>
-            )}
 
-            {/* Lançamentos individuais */}
-            {lancamentos.length > 0 && (
-              <div className="mt-6">
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                  Vendas individuais ({lancamentos.length})
-                </p>
-                <div className="max-h-[280px] overflow-y-auto space-y-1 pr-1">
-                  {lancamentos.map((l) => (
-                    <div key={l.id} className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-muted/40 transition-colors group">
-                      <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <span className="text-[10px] text-muted-foreground font-mono shrink-0">
-                          {format(new Date(l.created_at), "HH:mm")}
-                        </span>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[12px] font-medium text-foreground truncate">
-                            {l.categoria.replace("Vendas - ", "")}
-                          </p>
-                          {l.descricao && l.descricao !== `Venda ${l.categoria.replace("Vendas - ", "")}` && (
-                            <p className="text-[10px] text-muted-foreground truncate">{l.descricao}</p>
-                          )}
+                {/* Lançamentos individuais (apenas remoção, sem nova entrada) */}
+                {lancamentos.length > 0 && (
+                  <div className="mt-6">
+                    <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                      Lançamentos do dia ({lancamentos.length})
+                    </p>
+                    <div className="max-h-[280px] overflow-y-auto space-y-1 pr-1">
+                      {lancamentos.map((l) => (
+                        <div key={l.id} className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-muted/40 transition-colors group">
+                          <div className="flex items-center gap-3 min-w-0 flex-1">
+                            <span className="text-[10px] text-muted-foreground font-mono shrink-0">
+                              {format(new Date(l.created_at), "HH:mm")}
+                            </span>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-[12px] font-medium text-foreground truncate">
+                                {l.categoria.replace("Vendas - ", "")}
+                              </p>
+                              {l.descricao && (
+                                <p className="text-[10px] text-muted-foreground truncate">{l.descricao}</p>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3 shrink-0">
+                            <span className="text-[13px] font-bold text-money tabular-nums">{formatMoney(l.valor)}</span>
+                            {!isClosed && (
+                              <button
+                                onClick={() => deleteMutation.mutate(l.id)}
+                                className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all"
+                              >
+                                <Trash2 size={13} />
+                              </button>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-3 shrink-0">
-                        <span className="text-[13px] font-bold text-money tabular-nums">{formatMoney(l.valor)}</span>
-                        {!isClosed && (
-                          <button
-                            onClick={() => deleteMutation.mutate(l.id)}
-                            className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all"
-                          >
-                            <Trash2 size={13} />
-                          </button>
-                        )}
-                      </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  </div>
+                )}
               </div>
-            )}
-
-            {totalVendas === 0 && (
-              <div className="mt-6">
-                <EmptyState
-                  title="Nenhum fechamento lançado para esta data"
-                  description="Use o formulário acima para registrar o fechamento do dia, ou clique em uma forma de pagamento para uma entrada avulsa."
-                />
-              </div>
+            ) : (
+              <EmptyState
+                title="Nenhum fechamento lançado para esta data"
+                description="Use o formulário acima para registrar o fechamento do dia."
+              />
             )}
           </CardContent>
         </Card>
