@@ -22,6 +22,7 @@ import { formatMoney, formatQty } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { EmptyState } from "@/components/EmptyState";
 import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
+import { matchesSearch } from "@/lib/utils";
 
 const UNIDADES = ["kg", "g", "L", "ml", "unidade"];
 
@@ -415,11 +416,10 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
 
   // Filter available insumos for search
   const getInsumosFiltered = (tipo: string) => {
-    const termo = buscaIngrediente.toLowerCase();
     if (tipo === "comprado") {
-      return insumosComprados.filter((ic) => ic.nome.toLowerCase().includes(termo));
+      return insumosComprados.filter((ic) => matchesSearch(ic.nome, buscaIngrediente));
     }
-    return insumosProprios.filter((ip) => ip.nome.toLowerCase().includes(termo));
+    return insumosProprios.filter((ip) => matchesSearch(ip.nome, buscaIngrediente));
   };
 
   return (

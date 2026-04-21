@@ -29,6 +29,7 @@ import {
   Plus, Pencil, Copy, Trash2, Pause, Play, AlertTriangle, Search, X,
 } from "lucide-react";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { matchesSearch } from "@/lib/utils";
 
 // ─── Constants ────────────────────────────────────────────────────────
 const TIPO_LABELS: Record<string, string> = {
@@ -403,8 +404,7 @@ export default function PromocoesAtivas() {
   };
 
   const filteredProducts = useMemo(() => {
-    const s = productSearch.toLowerCase();
-    return uniqueProducts.filter((p) => p.nome.toLowerCase().includes(s));
+    return uniqueProducts.filter((p) => matchesSearch(p.nome, productSearch));
   }, [uniqueProducts, productSearch]);
 
   // ─── Render ─────────────────────────────────────────────────────

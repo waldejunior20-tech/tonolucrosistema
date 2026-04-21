@@ -22,6 +22,7 @@ import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { EmptyState } from "@/components/EmptyState";
 import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
+import { matchesSearch } from "@/lib/utils";
 
 const UNIDADES_RENDIMENTO = ["kg", "g", "L", "ml", "unidade"];
 const UNIDADES_INGREDIENTE = ["kg", "g", "L", "ml", "unidade", "caixa", "pacote"];
@@ -335,7 +336,7 @@ export default function InsumosProduzidos() {
   const custoPorUnidade = form.rendimento > 0 ? custoFormulario / form.rendimento : 0;
 
   const filteredComprados = insumosComprados.filter((ic) =>
-    ic.nome.toLowerCase().includes(buscaIngrediente.toLowerCase())
+    matchesSearch(ic.nome, buscaIngrediente)
   );
 
   return (

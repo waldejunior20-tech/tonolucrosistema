@@ -23,6 +23,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
 import type { Tables } from "@/integrations/supabase/types";
 import { formatQty } from "@/components/MoneyInput";
+import { matchesSearch } from "@/lib/utils";
 
 const TIPOS = ["tradicional", "especial", "premium", "doce"];
 const UNIDADES = ["kg", "g", "L", "ml", "unidade"];
@@ -529,16 +530,14 @@ export default function FichasTecnicasPizza() {
   const filteredFichas = filtroTipo === "todos" ? fichas : fichas.filter((f) => f.tipo === filtroTipo);
 
   const getFilteredInsumos = (tipo: string) => {
-    const term = buscaIngrediente.toLowerCase();
     if (tipo === "comprado") {
-      return insumosComprados.filter((ic) => ic.nome.toLowerCase().includes(term)).slice(0, 10);
+      return insumosComprados.filter((ic) => matchesSearch(ic.nome, buscaIngrediente)).slice(0, 10);
     }
-    return insumosProprios.filter((ip) => ip.nome.toLowerCase().includes(term)).slice(0, 10);
+    return insumosProprios.filter((ip) => matchesSearch(ip.nome, buscaIngrediente)).slice(0, 10);
   };
 
   const getFilteredEmbalagemInsumos = () => {
-    const term = buscaEmbalagemTermo.toLowerCase();
-    return insumosComprados.filter((ic) => ic.nome.toLowerCase().includes(term)).slice(0, 10);
+    return insumosComprados.filter((ic) => matchesSearch(ic.nome, buscaEmbalagemTermo)).slice(0, 10);
   };
 
   const custoForm = calcularCustosForm();
