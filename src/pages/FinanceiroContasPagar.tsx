@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
+import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
 import { Plus, Pencil, Trash2, Check, AlertTriangle, Clock, CircleDollarSign } from "lucide-react";
 import { MoneyInput } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -144,7 +145,7 @@ export default function FinanceiroContasPagar() {
 
   const saveMutation = useMutation({
     mutationFn: async () => {
-      const payload = {
+      const basePayload = {
         descricao: form.descricao,
         valor: parseFloat(form.valor) || 0,
         tipo: "despesa" as const,
@@ -155,13 +156,16 @@ export default function FinanceiroContasPagar() {
       if (editingId) {
         const { error } = await supabase
           .from("lancamentos_financeiros")
-          .update(payload)
+          .update(basePayload)
           .eq("id", editingId);
         if (error) throw error;
       } else {
+        const { data: auth } = await supabase.auth.getUser();
+        if (!auth.user) throw new Error("Sessão expirada");
+        const unidade_id = requireActiveUnidadeId();
         const { error } = await supabase
           .from("lancamentos_financeiros")
-          .insert(payload);
+          .insert({ ...basePayload, unidade_id, user_id: auth.user.id });
         if (error) throw error;
       }
     },
