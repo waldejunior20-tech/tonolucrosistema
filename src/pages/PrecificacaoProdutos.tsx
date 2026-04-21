@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
+import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
 import { AlertTriangle, Check } from "lucide-react";
 import { formatMoney } from "@/components/MoneyInput";
 import {
@@ -206,7 +207,8 @@ export default function PrecificacaoProdutos() {
           const { error } = await supabase.from("precificacao_produtos").update({ preco_venda: numVal }).eq("id", existing.id);
           if (error) throw error;
         } else {
-          const { error } = await supabase.from("precificacao_produtos").insert({ ficha_id: fichaId, preco_venda: numVal });
+          const unidade_id = requireActiveUnidadeId();
+          const { error } = await supabase.from("precificacao_produtos").insert({ ficha_id: fichaId, preco_venda: numVal, unidade_id });
           if (error) throw error;
         }
         queryClient.invalidateQueries({ queryKey: ["precificacao_produtos"] });
