@@ -22,6 +22,7 @@ import { formatMoney, formatQty } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { EmptyState } from "@/components/EmptyState";
 import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
+import { matchesSearch } from "@/lib/utils";
 
 const UNIDADES = ["kg", "g", "L", "ml", "unidade"];
 
