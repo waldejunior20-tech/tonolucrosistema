@@ -24,6 +24,7 @@ import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
 import type { Tables } from "@/integrations/supabase/types";
 import { formatQty } from "@/components/MoneyInput";
 import { matchesSearch } from "@/lib/utils";
+import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
 
 const TIPOS = ["tradicional", "especial", "premium", "doce"];
 const UNIDADES = ["kg", "g", "L", "ml", "unidade"];
