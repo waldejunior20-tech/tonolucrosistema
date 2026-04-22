@@ -24,6 +24,7 @@ import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
 import type { Tables } from "@/integrations/supabase/types";
 import { formatQty } from "@/components/MoneyInput";
 import { matchesSearch } from "@/lib/utils";
+import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
 
 const TIPOS = ["tradicional", "especial", "premium", "doce"];
 const UNIDADES = ["kg", "g", "L", "ml", "unidade"];
@@ -252,18 +253,20 @@ export default function FichasTecnicasPizza() {
 
   // Expande ingredientes do form para rows do DB
   const expandIngredientesParaDB = (ingredientes: IngredienteForm[], fichaId: string) => {
-    const rows: Array<{ficha_id: string; tipo_insumo: string; insumo_comprado_id: string | null; insumo_proprio_id: string | null; qtd_p: number; qtd_m: number; qtd_g: number; unidade: string}> = [];
+    const unidade_id = requireActiveUnidadeId();
+    const rows: Array<{ficha_id: string; tipo_insumo: string; insumo_comprado_id: string | null; insumo_proprio_id: string | null; qtd_p: number; qtd_m: number; qtd_g: number; unidade: string; unidade_id: string}> = [];
     ingredientes.forEach((ing) => {
       if (ing.tipo_insumo === "embalagem") {
-        if (ing.caixa_p_id) rows.push({ ficha_id: fichaId, tipo_insumo: "embalagem_p", insumo_comprado_id: ing.caixa_p_id, insumo_proprio_id: null, qtd_p: 1, qtd_m: 0, qtd_g: 0, unidade: "unidade" });
-        if (ing.caixa_m_id) rows.push({ ficha_id: fichaId, tipo_insumo: "embalagem_m", insumo_comprado_id: ing.caixa_m_id, insumo_proprio_id: null, qtd_p: 0, qtd_m: 1, qtd_g: 0, unidade: "unidade" });
-        if (ing.caixa_g_id) rows.push({ ficha_id: fichaId, tipo_insumo: "embalagem_g", insumo_comprado_id: ing.caixa_g_id, insumo_proprio_id: null, qtd_p: 0, qtd_m: 0, qtd_g: 1, unidade: "unidade" });
+        if (ing.caixa_p_id) rows.push({ ficha_id: fichaId, tipo_insumo: "embalagem_p", insumo_comprado_id: ing.caixa_p_id, insumo_proprio_id: null, qtd_p: 1, qtd_m: 0, qtd_g: 0, unidade: "unidade", unidade_id });
+        if (ing.caixa_m_id) rows.push({ ficha_id: fichaId, tipo_insumo: "embalagem_m", insumo_comprado_id: ing.caixa_m_id, insumo_proprio_id: null, qtd_p: 0, qtd_m: 1, qtd_g: 0, unidade: "unidade", unidade_id });
+        if (ing.caixa_g_id) rows.push({ ficha_id: fichaId, tipo_insumo: "embalagem_g", insumo_comprado_id: ing.caixa_g_id, insumo_proprio_id: null, qtd_p: 0, qtd_m: 0, qtd_g: 1, unidade: "unidade", unidade_id });
       } else {
         rows.push({
           ficha_id: fichaId, tipo_insumo: ing.tipo_insumo,
           insumo_comprado_id: ing.insumo_comprado_id || null,
           insumo_proprio_id: ing.insumo_proprio_id || null,
           qtd_p: ing.qtd_p, qtd_m: ing.qtd_m, qtd_g: ing.qtd_g, unidade: ing.unidade,
+          unidade_id,
         });
       }
     });
