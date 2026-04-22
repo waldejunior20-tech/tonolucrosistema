@@ -1021,18 +1021,18 @@ export default function FichasTecnicasPizza() {
                         {renderCaixaSlot("g", "G", "35cm", ing.caixa_g_id, ing.caixa_g_nome)}
                       </div>
 
-                      {/* EXTRAS DE EMBALAGEM — ketchup/maionese (só doces) e mesinha (todas) */}
+                      {/* EXTRAS DE EMBALAGEM — ketchup/maionese (só salgadas) e mesinha (todas) */}
                       <div className="rounded-md border border-border bg-card p-3 space-y-2">
                         <div className="flex items-center justify-between flex-wrap gap-1">
                           <p className="text-sm font-bold">Extras</p>
                           <p className="text-[10px] text-muted-foreground">
-                            Mesinha vai em todas. Ketchup e Maionese só nas doces.
+                            Mesinha vai em todas. Ketchup e Maionese só nas salgadas.
                           </p>
                         </div>
                         <div className="grid grid-cols-3 gap-2">
                           {[
-                            { label: "🍅 Ketchup", on: ketchupOn, terms: ketchupTerms, allowed: isPizzaDoce, hint: !isPizzaDoce ? "Só pizzas doces" : null },
-                            { label: "🥚 Maionese", on: maioneseOn, terms: maioneseTerms, allowed: isPizzaDoce, hint: !isPizzaDoce ? "Só pizzas doces" : null },
+                            { label: "🍅 Ketchup", on: ketchupOn, terms: ketchupTerms, allowed: !isPizzaDoce, hint: isPizzaDoce ? "Só pizzas salgadas" : null },
+                            { label: "🥚 Maionese", on: maioneseOn, terms: maioneseTerms, allowed: !isPizzaDoce, hint: isPizzaDoce ? "Só pizzas salgadas" : null },
                             { label: "🪑 Mesinha", on: mesinhaOn, terms: mesinhaTerms, allowed: true, hint: null },
                           ].map((x) => (
                             <button
