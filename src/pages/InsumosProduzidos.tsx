@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
-import { Pencil, Trash2, Plus, Search, X, Beaker } from "lucide-react";
+import { Pencil, Trash2, Plus, Search, X, Beaker, AlertTriangle } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 import { QuantityInput, formatMoney, formatQuantidade } from "@/components/MoneyInput";
 import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
