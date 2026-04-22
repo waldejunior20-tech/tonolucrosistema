@@ -119,6 +119,8 @@ export default function FichasTecnicasPizza() {
   const [savedFields, setSavedFields] = useState<Record<string, boolean>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [salvarBaseOpen, setSalvarBaseOpen] = useState(false);
+  const [baseOrigemId, setBaseOrigemId] = useState<string | null>(null);
+  const [ingredientesBaseIds, setIngredientesBaseIds] = useState<Set<string>>(new Set());
 
   // Queries
   const { data: fichas = [], isLoading } = useQuery({
