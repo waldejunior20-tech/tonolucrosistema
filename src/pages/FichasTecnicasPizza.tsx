@@ -17,7 +17,9 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
-import { Pencil, Trash2, Plus, Filter, Search, X, Check, Pizza } from "lucide-react";
+import { Pencil, Trash2, Plus, Filter, Search, X, Check, Pizza, AlertTriangle, Package, Sparkles } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { EmptyState } from "@/components/EmptyState";
 import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
@@ -117,6 +119,8 @@ export default function FichasTecnicasPizza() {
   const [savedFields, setSavedFields] = useState<Record<string, boolean>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [salvarBaseOpen, setSalvarBaseOpen] = useState(false);
+  const [baseOrigemId, setBaseOrigemId] = useState<string | null>(null);
+  const [ingredientesBaseIds, setIngredientesBaseIds] = useState<Set<string>>(new Set());
 
   // Queries
   const { data: fichas = [], isLoading } = useQuery({
@@ -371,6 +375,8 @@ export default function FichasTecnicasPizza() {
     setBuscaEmbalagemAberta(null);
     setBuscaEmbalagemTermo("");
     setTouched({});
+    setBaseOrigemId(null);
+    setIngredientesBaseIds(new Set());
   };
 
   // Validation
@@ -445,6 +451,14 @@ export default function FichasTecnicasPizza() {
       ingredientes: ingredientesForm,
     });
     setEditingId(ficha.id);
+    setBaseOrigemId(ficha.base_origem_id ?? null);
+    // Se a ficha veio de uma base, marca todos os ingredientes atualmente persistidos como vindos da base.
+    // Novos ingredientes adicionados depois (sem db_id) ficam como "único".
+    if (ficha.base_origem_id) {
+      setIngredientesBaseIds(new Set(ingredientesForm.map((i) => i.db_id).filter((x): x is string => !!x)));
+    } else {
+      setIngredientesBaseIds(new Set());
+    }
     setDialogOpen(true);
   };
 
@@ -563,339 +577,448 @@ export default function FichasTecnicasPizza() {
               <Plus className="h-4 w-4" /> Nova Ficha
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>{editingId ? "Editar Ficha Técnica" : "Nova Ficha Técnica"}</DialogTitle>
+          <DialogContent className="sm:max-w-5xl max-h-[92vh] p-0 gap-0 flex flex-col overflow-hidden">
+            <DialogHeader className="px-6 pt-5 pb-3 border-b border-border shrink-0">
+              <DialogTitle className="text-xl">{editingId ? "Editar Ficha Técnica" : "Nova Ficha Técnica"}</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {editingId && (
-                <BaseSelector
-                  tipoFicha="pizza"
-                  fichaId={editingId}
-                  onBaseAplicada={async () => {
-                    // Recarrega a ficha em edição com os novos ingredientes
-                    const ficha = fichas.find((f) => f.id === editingId);
-                    if (ficha) {
-                      await queryClient.invalidateQueries({ queryKey: ["fichas_tecnicas_pizza_ingredientes"] });
-                      handleEdit(ficha);
-                    }
-                  }}
-                  onCriarNovaBase={() => setSalvarBaseOpen(true)}
-                />
-              )}
-              {/* Dados principais */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="col-span-2">
-                  <Label htmlFor="nome">Nome da Pizza *</Label>
-                  <Input
-                    id="nome"
-                    placeholder="Ex: Margherita, Calabresa"
-                    value={form.nome}
-                    onChange={(e) => setForm({ ...form, nome: e.target.value })}
-                    onBlur={() => setTouched(t => ({ ...t, nome: true }))}
-                    className={fieldErrorClass(nomeInvalid)}
-                  />
-                  <FieldError show={nomeInvalid} />
-                </div>
-                <div>
-                  <Label htmlFor="numero_ficha">Nº da Ficha</Label>
-                  <Input
-                    id="numero_ficha"
-                    placeholder="Ex: FT-001"
-                    value={form.numero_ficha}
-                    onChange={(e) => setForm({ ...form, numero_ficha: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <Label>Tipo</Label>
-                  <Select value={form.tipo} onValueChange={(v) => setForm({ ...form, tipo: v })}>
-                    <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-                    <SelectContent>
-                      {TIPOS.map((t) => (
-                        <SelectItem key={t} value={t}>
-                          {t.charAt(0).toUpperCase() + t.slice(1)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="col-span-2">
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className="text-center">
-                      <p className="text-xs text-muted-foreground">Custo P</p>
-                      <p className="text-sm font-semibold text-foreground">R$ {fmt(custoForm.custoP)}</p>
+
+            {/* STICKY COST-STRIP */}
+            <div className="px-6 py-3 bg-muted/30 border-b border-border shrink-0">
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { label: "Custo P", value: custoForm.custoP, sub: "25cm" },
+                  { label: "Custo M", value: custoForm.custoM, sub: "30cm" },
+                  { label: "Custo G", value: custoForm.custoG, sub: "35cm" },
+                ].map((c) => (
+                  <div key={c.label} className="rounded-md bg-card border border-border px-3 py-2 flex items-center justify-between">
+                    <div>
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{c.label}</p>
+                      <p className="text-[10px] text-muted-foreground">{c.sub}</p>
                     </div>
-                    <div className="text-center">
-                      <p className="text-xs text-muted-foreground">Custo M</p>
-                      <p className="text-sm font-semibold text-foreground">R$ {fmt(custoForm.custoM)}</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-xs text-muted-foreground">Custo G</p>
-                      <p className="text-sm font-semibold text-foreground">R$ {fmt(custoForm.custoG)}</p>
-                    </div>
+                    <p className="text-lg font-bold text-money tabular-nums">R$ {fmt(c.value)}</p>
                   </div>
-                </div>
+                ))}
               </div>
+            </div>
 
-              <div>
-                <Label htmlFor="modo_preparo">Modo de Preparo</Label>
-                <Textarea
-                  id="modo_preparo"
-                  placeholder="Descreva o passo a passo do preparo..."
-                  value={form.modo_preparo}
-                  onChange={(e) => setForm({ ...form, modo_preparo: e.target.value })}
-                  rows={3}
-                />
-              </div>
-
-              {/* Ingredientes */}
-              <div className="space-y-3">
-                <Label className="text-base">Ingredientes *</Label>
-
-                {form.ingredientes.length === 0 && (
-                  <div className={ingredientesInvalid ? "rounded-lg border-2 border-destructive/50 p-3 bg-destructive/5" : ""}>
-                    <p className="text-sm text-muted-foreground">Nenhum ingrediente adicionado.</p>
-                    {ingredientesInvalid && <p className="text-[11px] text-destructive mt-1 font-medium">Adicione pelo menos um ingrediente</p>}
-                  </div>
+            <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+              <div className="flex-1 overflow-y-auto px-6 py-4 space-y-5">
+                {editingId && (
+                  <BaseSelector
+                    tipoFicha="pizza"
+                    fichaId={editingId}
+                    baseAplicadaId={baseOrigemId}
+                    onBaseAplicada={async (baseId) => {
+                      const ficha = fichas.find((f) => f.id === editingId);
+                      if (ficha) {
+                        await queryClient.invalidateQueries({ queryKey: ["fichas_tecnicas_pizza_ingredientes"] });
+                        await queryClient.invalidateQueries({ queryKey: ["fichas_tecnicas_pizza"] });
+                        // Persistir a origem da base na ficha
+                        await supabase.from("fichas_tecnicas_pizza").update({ base_origem_id: baseId }).eq("id", ficha.id);
+                        handleEdit({ ...ficha, base_origem_id: baseId });
+                      }
+                    }}
+                    onCriarNovaBase={() => setSalvarBaseOpen(true)}
+                  />
                 )}
 
-                {form.ingredientes.map((ing, idx) => {
-                  // Embalagem rendering
-                  if (ing.tipo_insumo === "embalagem") {
-                    const custoP = custoCompradoMap.get(ing.caixa_p_id) ?? 0;
-                    const custoM = custoCompradoMap.get(ing.caixa_m_id) ?? 0;
-                    const custoG = custoCompradoMap.get(ing.caixa_g_id) ?? 0;
+                {/* Dados principais */}
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="col-span-2">
+                    <Label htmlFor="nome">Nome da Pizza *</Label>
+                    <Input
+                      id="nome"
+                      placeholder="Ex: Margherita, Calabresa"
+                      value={form.nome}
+                      onChange={(e) => setForm({ ...form, nome: e.target.value })}
+                      onBlur={() => setTouched(t => ({ ...t, nome: true }))}
+                      className={fieldErrorClass(nomeInvalid)}
+                    />
+                    <FieldError show={nomeInvalid} />
+                  </div>
+                  <div>
+                    <Label htmlFor="numero_ficha">Nº da Ficha</Label>
+                    <Input
+                      id="numero_ficha"
+                      placeholder="Ex: FT-001"
+                      value={form.numero_ficha}
+                      onChange={(e) => setForm({ ...form, numero_ficha: e.target.value })}
+                    />
+                  </div>
+                  <div className="col-span-3">
+                    <Label>Tipo</Label>
+                    <Select value={form.tipo} onValueChange={(v) => setForm({ ...form, tipo: v })}>
+                      <SelectTrigger className="w-[260px]"><SelectValue placeholder="Selecione" /></SelectTrigger>
+                      <SelectContent>
+                        {TIPOS.map((t) => (
+                          <SelectItem key={t} value={t}>
+                            {t.charAt(0).toUpperCase() + t.slice(1)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
 
-                    const renderCaixaField = (size: "p" | "m" | "g", label: string, caixaId: string, caixaNome: string, custo: number) => {
-                      const key = `${idx}-${size}`;
+                {/* INGREDIENTES — TABELA DENSA */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-base">Ingredientes *</Label>
+                    <Button type="button" size="sm" className="btn-action-add gap-1" onClick={addIngrediente}>
+                      <Plus className="h-3.5 w-3.5" /> Adicionar Ingrediente
+                    </Button>
+                  </div>
+
+                  {(() => {
+                    const normais = form.ingredientes
+                      .map((ing, idx) => ({ ing, idx }))
+                      .filter(({ ing }) => ing.tipo_insumo !== "embalagem");
+
+                    if (normais.length === 0) {
                       return (
-                        <div key={size} className="flex items-center gap-2 flex-1">
-                          <div className="flex-1 relative">
-                            <Label className="text-xs">Caixa {label}</Label>
-                            {caixaId ? (
-                              <div className="flex items-center gap-1 h-8">
-                                <span className="text-sm font-medium text-foreground truncate">{caixaNome}</span>
-                                <Button type="button" variant="ghost" size="icon" className="h-5 w-5 shrink-0" onClick={() => {
-                                  const updated = [...form.ingredientes];
-                                  if (size === "p") updated[idx] = { ...updated[idx], caixa_p_id: "", caixa_p_nome: "" };
-                                  else if (size === "m") updated[idx] = { ...updated[idx], caixa_m_id: "", caixa_m_nome: "" };
-                                  else updated[idx] = { ...updated[idx], caixa_g_id: "", caixa_g_nome: "" };
-                                  setForm({ ...form, ingredientes: updated });
-                                }}>
-                                  <X className="h-3 w-3" />
-                                </Button>
-                              </div>
-                            ) : (
-                              <div className="relative">
-                                <div className="relative">
-                                  <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
-                                  <Input
-                                    placeholder="Buscar caixa..."
-                                    className="pl-7 h-8 text-sm"
-                                    value={buscaEmbalagemAberta === key ? buscaEmbalagemTermo : ""}
-                                    onFocus={() => { setBuscaEmbalagemAberta(key); setBuscaEmbalagemTermo(""); }}
-                                    onChange={(e) => setBuscaEmbalagemTermo(e.target.value)}
-                                  />
-                                </div>
-                                {buscaEmbalagemAberta === key && (
-                                  <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-popover border border-border rounded-md shadow-md max-h-40 overflow-y-auto">
-                                    {getFilteredEmbalagemInsumos().length === 0 ? (
-                                      <p className="p-2 text-xs text-muted-foreground">Nenhum insumo encontrado.</p>
-                                    ) : (
-                                      getFilteredEmbalagemInsumos().map((item) => (
-                                        <button key={item.id} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors"
-                                          onClick={() => selectEmbalagemInsumo(idx, size, item.id, item.nome)}>
-                                          <span className="font-medium">{item.nome}</span>
-                                          <span className="text-xs text-muted-foreground ml-2">R$ {fmt(custoCompradoMap.get(item.id) ?? 0)}/un</span>
-                                        </button>
-                                      ))
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                          <div className="min-w-[70px] text-center">
-                            <p className="text-[10px] text-muted-foreground leading-none mb-0.5">Custo {label}</p>
-                            <p className="text-xs font-medium text-foreground">R$ {fmt(custo)}</p>
-                          </div>
+                        <div className={cn(
+                          "rounded-md border border-dashed border-border p-6 text-center text-sm text-muted-foreground",
+                          ingredientesInvalid && "border-destructive/50 bg-destructive/5",
+                        )}>
+                          Nenhum ingrediente adicionado. Aplique uma base ou clique em "Adicionar Ingrediente".
+                          {ingredientesInvalid && <p className="text-[11px] text-destructive mt-1 font-medium">Adicione pelo menos um ingrediente</p>}
                         </div>
                       );
-                    };
+                    }
 
                     return (
-                      <div key={idx} className="rounded-md border border-border p-3 space-y-2 bg-muted/20">
-                        <div className="flex items-center justify-between">
-                          <Label className="text-sm font-semibold">Embalagem por tamanho</Label>
-                          <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => removeIngrediente(idx)}>
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
+                      <div className="rounded-md border border-border overflow-hidden">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead className="w-[280px]">Ingrediente</TableHead>
+                              <TableHead className="w-[90px]">Origem</TableHead>
+                              <TableHead className="w-[100px]">Unidade</TableHead>
+                              <TableHead className="w-[88px] text-right">Qtd P</TableHead>
+                              <TableHead className="w-[88px] text-right">Qtd M</TableHead>
+                              <TableHead className="w-[88px] text-right">Qtd G</TableHead>
+                              <TableHead className="w-[80px] text-right">Custo P</TableHead>
+                              <TableHead className="w-[80px] text-right">Custo M</TableHead>
+                              <TableHead className="w-[80px] text-right">Custo G</TableHead>
+                              <TableHead className="w-[40px]"></TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {normais.map(({ ing, idx }) => {
+                              const insumoId = ing.tipo_insumo === "comprado" ? ing.insumo_comprado_id : ing.insumo_proprio_id;
+                              const custoUnit = ing.tipo_insumo === "comprado"
+                                ? (custoCompradoMap.get(insumoId) ?? 0)
+                                : (custoProprioMap.get(insumoId) ?? 0);
+                              const fromBase = !!ing.db_id && ingredientesBaseIds.has(ing.db_id);
+
+                              // Validação: unidade do insumo comprado vs unidade usada
+                              const insumoCompradoSel = insumosComprados.find((i) => i.id === ing.insumo_comprado_id);
+                              const familiaCompra = insumoCompradoSel
+                                ? (["kg", "g"].includes(insumoCompradoSel.unidade) ? "peso"
+                                  : ["L", "ml"].includes(insumoCompradoSel.unidade) ? "volume" : "un")
+                                : null;
+                              const familiaUso = ["kg", "g"].includes(ing.unidade) ? "peso"
+                                : ["L", "ml"].includes(ing.unidade) ? "volume" : "un";
+                              const mismatchUnidade = ing.tipo_insumo === "comprado" && familiaCompra && ing.unidade && familiaCompra !== familiaUso;
+
+                              const renderQtdInput = (qtdKey: "qtd_p" | "qtd_m" | "qtd_g", qtdVal: number) => {
+                                const invalid = qtdVal < 0 || qtdVal > 999;
+                                return (
+                                  <Input
+                                    type="number" step="0.01" min="0"
+                                    className={cn(
+                                      "h-9 text-sm text-right tabular-nums px-2",
+                                      invalid && "border-destructive focus-visible:border-destructive",
+                                    )}
+                                    value={qtdVal || ""}
+                                    onChange={(e) => updateIngrediente(idx, qtdKey, parseFloat(e.target.value) || 0)}
+                                    onBlur={() => autoSaveIngredienteQtd(ing, qtdKey, ing[qtdKey])}
+                                    placeholder="0"
+                                  />
+                                );
+                              };
+
+                              return (
+                                <TableRow
+                                  key={idx}
+                                  className={cn(
+                                    "group",
+                                    fromBase && "border-l-2 border-l-success",
+                                  )}
+                                >
+                                  {/* Ingrediente: nome + tipo + busca */}
+                                  <TableCell className="align-top py-2">
+                                    <div className="flex items-center gap-2">
+                                      <Select value={ing.tipo_insumo} onValueChange={(v) => updateIngrediente(idx, "tipo_insumo", v)}>
+                                        <SelectTrigger className="h-9 w-[110px] text-xs"><SelectValue /></SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="comprado">Comprado</SelectItem>
+                                          <SelectItem value="produzido">Produzido</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                      <div className="flex-1 relative">
+                                        {hasInsumoSelected(ing) ? (
+                                          <div className="flex items-center gap-1 h-9">
+                                            <span className="text-sm font-medium text-foreground truncate" title={ing.nome_display}>{ing.nome_display}</span>
+                                            <Button type="button" variant="ghost" size="icon" className="h-5 w-5 shrink-0 opacity-0 group-hover:opacity-100" onClick={() => clearInsumoSelection(idx)}>
+                                              <X className="h-3 w-3" />
+                                            </Button>
+                                          </div>
+                                        ) : (
+                                          <>
+                                            <div className="relative">
+                                              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
+                                              <Input
+                                                placeholder="Buscar..."
+                                                className="pl-7 h-9 text-sm"
+                                                value={buscaAberta === idx ? buscaIngrediente : ""}
+                                                onFocus={() => { setBuscaAberta(idx); setBuscaIngrediente(""); }}
+                                                onChange={(e) => setBuscaIngrediente(e.target.value)}
+                                              />
+                                            </div>
+                                            {buscaAberta === idx && (
+                                              <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-popover border border-border rounded-md shadow-md max-h-40 overflow-y-auto">
+                                                {getFilteredInsumos(ing.tipo_insumo).length === 0 ? (
+                                                  <p className="p-2 text-xs text-muted-foreground">Nenhum insumo encontrado.</p>
+                                                ) : (
+                                                  getFilteredInsumos(ing.tipo_insumo).map((item) => (
+                                                    <button key={item.id} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors"
+                                                      onClick={() => selectInsumo(idx, item.id, item.nome, ing.tipo_insumo)}>
+                                                      <span className="font-medium">{item.nome}</span>
+                                                    </button>
+                                                  ))
+                                                )}
+                                              </div>
+                                            )}
+                                          </>
+                                        )}
+                                      </div>
+                                    </div>
+                                    {mismatchUnidade && (
+                                      <p className="flex items-center gap-1 text-[10px] text-warning mt-1">
+                                        <AlertTriangle className="h-3 w-3" />
+                                        Comprado em <strong>{insumoCompradoSel?.unidade}</strong>, usando em <strong>{ing.unidade}</strong>
+                                      </p>
+                                    )}
+                                  </TableCell>
+
+                                  {/* Origem */}
+                                  <TableCell className="align-middle py-2">
+                                    {fromBase ? (
+                                      <Badge variant="secondary" className="bg-success/15 text-success border-success/30 text-[10px] uppercase tracking-wide">
+                                        <Sparkles className="h-2.5 w-2.5 mr-0.5" /> base
+                                      </Badge>
+                                    ) : (
+                                      <Badge variant="outline" className="text-[10px] uppercase tracking-wide border-warning/40 text-warning">
+                                        único
+                                      </Badge>
+                                    )}
+                                  </TableCell>
+
+                                  {/* Unidade */}
+                                  <TableCell className="align-middle py-2">
+                                    <Select value={ing.unidade} onValueChange={(v) => updateIngrediente(idx, "unidade", v)}>
+                                      <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Un" /></SelectTrigger>
+                                      <SelectContent>
+                                        {UNIDADES.map((u) => <SelectItem key={u} value={u}>{u}</SelectItem>)}
+                                      </SelectContent>
+                                    </Select>
+                                  </TableCell>
+
+                                  {/* Quantidades */}
+                                  <TableCell className="align-middle py-2">{renderQtdInput("qtd_p", ing.qtd_p)}</TableCell>
+                                  <TableCell className="align-middle py-2">{renderQtdInput("qtd_m", ing.qtd_m)}</TableCell>
+                                  <TableCell className="align-middle py-2">{renderQtdInput("qtd_g", ing.qtd_g)}</TableCell>
+
+                                  {/* Custos */}
+                                  <TableCell className="text-right text-xs font-medium tabular-nums align-middle py-2">
+                                    R$ {fmt(custoUnit * converterQuantidade(ing.qtd_p, ing.unidade))}
+                                  </TableCell>
+                                  <TableCell className="text-right text-xs font-medium tabular-nums align-middle py-2">
+                                    R$ {fmt(custoUnit * converterQuantidade(ing.qtd_m, ing.unidade))}
+                                  </TableCell>
+                                  <TableCell className="text-right text-xs font-medium tabular-nums align-middle py-2">
+                                    R$ {fmt(custoUnit * converterQuantidade(ing.qtd_g, ing.unidade))}
+                                  </TableCell>
+
+                                  <TableCell className="align-middle py-2">
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-8 w-8 opacity-0 group-hover:opacity-100"
+                                      onClick={() => removeIngrediente(idx)}
+                                    >
+                                      <Trash2 className="h-4 w-4 text-destructive" />
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            })}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    );
+                  })()}
+                </div>
+
+                {/* SEÇÃO EMBALAGENS */}
+                {(() => {
+                  const embIdx = form.ingredientes.findIndex((i) => i.tipo_insumo === "embalagem");
+                  const ing = embIdx >= 0 ? form.ingredientes[embIdx] : null;
+
+                  if (!ing) {
+                    return (
+                      <div className="rounded-md border border-dashed border-border p-4 flex items-center justify-between bg-muted/20">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Package className="h-4 w-4" />
+                          <span>Sem embalagens cadastradas — recomendado para CMV correto.</span>
                         </div>
-                        <div className="space-y-2">
-                          {renderCaixaField("p", "P (25cm)", ing.caixa_p_id, ing.caixa_p_nome, custoP)}
-                          {renderCaixaField("m", "M (30cm)", ing.caixa_m_id, ing.caixa_m_nome, custoM)}
-                          {renderCaixaField("g", "G (35cm)", ing.caixa_g_id, ing.caixa_g_nome, custoG)}
-                        </div>
+                        <Button type="button" size="sm" variant="outline" onClick={addEmbalagem} className="gap-1">
+                          <Plus className="h-3.5 w-3.5" /> Adicionar Embalagens
+                        </Button>
                       </div>
                     );
                   }
 
-                  // Normal ingredient rendering
-                  const insumoId = ing.tipo_insumo === "comprado" ? ing.insumo_comprado_id : ing.insumo_proprio_id;
-                  const custoUnit = ing.tipo_insumo === "comprado"
-                    ? (custoCompradoMap.get(insumoId) ?? 0)
-                    : (custoProprioMap.get(insumoId) ?? 0);
+                  const faltando = !ing.caixa_p_id || !ing.caixa_m_id || !ing.caixa_g_id;
 
-                  return (
-                    <div key={idx} className="rounded-md border border-border p-3 space-y-2">
-                      <div className="flex items-end gap-2">
-                        <div className="w-36">
-                          <Label className="text-xs">Tipo</Label>
-                          <Select value={ing.tipo_insumo} onValueChange={(v) => updateIngrediente(idx, "tipo_insumo", v)}>
-                            <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="comprado">Comprado</SelectItem>
-                              <SelectItem value="produzido">Produzido</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        <div className="flex-1 relative">
-                          <Label className="text-xs">
-                            {ing.tipo_insumo === "comprado" ? "Insumo Comprado" : "Insumo Produzido"}
-                          </Label>
-                          {hasInsumoSelected(ing) ? (
-                            <div className="flex items-center gap-2 h-8">
-                              <span className="text-sm font-medium text-foreground">{ing.nome_display}</span>
-                              <Button type="button" variant="ghost" size="icon" className="h-5 w-5" onClick={() => clearInsumoSelection(idx)}>
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          ) : (
-                            <div className="relative">
-                              <div className="relative">
-                                <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
-                                <Input
-                                  placeholder="Buscar..."
-                                  className="pl-7 h-8 text-sm"
-                                  value={buscaAberta === idx ? buscaIngrediente : ""}
-                                  onFocus={() => { setBuscaAberta(idx); setBuscaIngrediente(""); }}
-                                  onChange={(e) => setBuscaIngrediente(e.target.value)}
-                                />
-                              </div>
-                              {buscaAberta === idx && (
-                                <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-popover border border-border rounded-md shadow-md max-h-40 overflow-y-auto">
-                                  {getFilteredInsumos(ing.tipo_insumo).length === 0 ? (
-                                    <p className="p-2 text-xs text-muted-foreground">Nenhum insumo encontrado.</p>
-                                  ) : (
-                                    getFilteredInsumos(ing.tipo_insumo).map((item) => (
-                                      <button key={item.id} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors"
-                                        onClick={() => selectInsumo(idx, item.id, item.nome, ing.tipo_insumo)}>
-                                        <span className="font-medium">{item.nome}</span>
-                                      </button>
-                                    ))
-                                  )}
-                                </div>
-                              )}
-                            </div>
+                  const renderCaixaSlot = (size: "p" | "m" | "g", label: string, dim: string, caixaId: string, caixaNome: string) => {
+                    const key = `${embIdx}-${size}`;
+                    const custo = custoCompradoMap.get(caixaId) ?? 0;
+                    return (
+                      <div className="rounded-md border border-border bg-card p-3 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-bold">Caixa {label}</p>
+                            <p className="text-[10px] text-muted-foreground">{dim}</p>
+                          </div>
+                          {caixaId && (
+                            <p className="text-xs font-semibold text-money tabular-nums">R$ {fmt(custo)}</p>
                           )}
                         </div>
+                        {caixaId ? (
+                          <div className="flex items-center gap-1">
+                            <span className="text-xs font-medium text-foreground truncate flex-1" title={caixaNome}>{caixaNome}</span>
+                            <Button type="button" variant="ghost" size="icon" className="h-6 w-6" onClick={() => {
+                              const updated = [...form.ingredientes];
+                              if (size === "p") updated[embIdx] = { ...updated[embIdx], caixa_p_id: "", caixa_p_nome: "" };
+                              else if (size === "m") updated[embIdx] = { ...updated[embIdx], caixa_m_id: "", caixa_m_nome: "" };
+                              else updated[embIdx] = { ...updated[embIdx], caixa_g_id: "", caixa_g_nome: "" };
+                              setForm({ ...form, ingredientes: updated });
+                            }}>
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="relative">
+                            <div className="relative">
+                              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
+                              <Input
+                                placeholder="Buscar caixa..."
+                                className="pl-7 h-8 text-sm"
+                                value={buscaEmbalagemAberta === key ? buscaEmbalagemTermo : ""}
+                                onFocus={() => { setBuscaEmbalagemAberta(key); setBuscaEmbalagemTermo(""); }}
+                                onChange={(e) => setBuscaEmbalagemTermo(e.target.value)}
+                              />
+                            </div>
+                            {buscaEmbalagemAberta === key && (
+                              <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-popover border border-border rounded-md shadow-md max-h-40 overflow-y-auto">
+                                {getFilteredEmbalagemInsumos().length === 0 ? (
+                                  <p className="p-2 text-xs text-muted-foreground">Nenhum insumo encontrado.</p>
+                                ) : (
+                                  getFilteredEmbalagemInsumos().map((item) => (
+                                    <button key={item.id} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors"
+                                      onClick={() => selectEmbalagemInsumo(embIdx, size, item.id, item.nome)}>
+                                      <span className="font-medium">{item.nome}</span>
+                                      <span className="text-xs text-muted-foreground ml-2">R$ {fmt(custoCompradoMap.get(item.id) ?? 0)}/un</span>
+                                    </button>
+                                  ))
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  };
 
-                        <div className="w-24">
-                          <Label className="text-xs">Unidade</Label>
-                          <Select value={ing.unidade} onValueChange={(v) => updateIngrediente(idx, "unidade", v)}>
-                            <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Un" /></SelectTrigger>
-                            <SelectContent>
-                              {UNIDADES.map((u) => <SelectItem key={u} value={u}>{u}</SelectItem>)}
-                            </SelectContent>
-                          </Select>
+                  return (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Package className="h-4 w-4 text-foreground" />
+                          <Label className="text-base">Embalagens por Tamanho</Label>
                         </div>
-
-                        <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => removeIngrediente(idx)}>
-                          <Trash2 className="h-4 w-4 text-destructive" />
+                        <Button type="button" variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => removeIngrediente(embIdx)}>
+                          <Trash2 className="h-3.5 w-3.5" /> Remover
                         </Button>
                       </div>
 
-                      <div className="flex items-end gap-2 bg-muted/40 rounded px-2 py-1.5">
-                        {[
-                          { label: "P", qtdKey: "qtd_p" as const, qtdVal: ing.qtd_p },
-                          { label: "M", qtdKey: "qtd_m" as const, qtdVal: ing.qtd_m },
-                          { label: "G", qtdKey: "qtd_g" as const, qtdVal: ing.qtd_g },
-                        ].map(({ label, qtdKey, qtdVal }) => (
-                          <div key={label} className="flex items-end gap-1.5 flex-1">
-                            <div className="flex-1 min-w-0 relative">
-                              <Label className="text-xs">Qtd {label}</Label>
-                              <Input
-                                type="number" step="0.01" min="0" className="h-8 text-sm pr-6"
-                                value={qtdVal || ""}
-                                onChange={(e) => updateIngrediente(idx, qtdKey, parseFloat(e.target.value) || 0)}
-                                onBlur={() => autoSaveIngredienteQtd(ing, qtdKey, ing[qtdKey])}
-                                placeholder="0,000"
-                              />
-                              {ing.db_id && savedFields[`${ing.db_id}-${qtdKey}`] && (
-                                <Check className="absolute right-1 top-[50%] h-3.5 w-3.5 text-success animate-in fade-in duration-200" />
-                              )}
-                            </div>
-                            <div className="min-w-[70px] text-center pb-1">
-                              <p className="text-[10px] text-muted-foreground leading-none mb-0.5">Custo {label}</p>
-                              <p className="text-xs font-medium text-foreground">
-                                R$ {fmt(custoUnit * converterQuantidade(qtdVal, ing.unidade))}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
+                      {faltando && (
+                        <div className="flex items-center gap-2 rounded-md bg-warning/10 border border-warning/30 px-3 py-2 text-xs text-warning">
+                          <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                          <span>Faltam embalagens — selecione caixa para cada tamanho usado.</span>
+                        </div>
+                      )}
+
+                      <div className="grid grid-cols-3 gap-3">
+                        {renderCaixaSlot("p", "P", "25cm", ing.caixa_p_id, ing.caixa_p_nome)}
+                        {renderCaixaSlot("m", "M", "30cm", ing.caixa_m_id, ing.caixa_m_nome)}
+                        {renderCaixaSlot("g", "G", "35cm", ing.caixa_g_id, ing.caixa_g_nome)}
                       </div>
                     </div>
                   );
-                })}
+                })()}
 
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    size="sm"
-                    className="btn-action-add gap-1 flex-1"
-                    onClick={addIngrediente}
-                  >
-                    <Plus className="h-3 w-3" /> Adicionar Ingrediente
-                  </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    className="gap-1"
-                    onClick={addEmbalagem}
-                    disabled={form.ingredientes.some((i) => i.tipo_insumo === "embalagem")}
-                  >
-                    <Plus className="h-3 w-3" /> Embalagem por Tamanho
-                  </Button>
+                {/* MODO DE PREPARO */}
+                <div>
+                  <Label htmlFor="modo_preparo">Modo de Preparo</Label>
+                  <Textarea
+                    id="modo_preparo"
+                    placeholder="Descreva o passo a passo do preparo..."
+                    value={form.modo_preparo}
+                    onChange={(e) => setForm({ ...form, modo_preparo: e.target.value })}
+                    rows={3}
+                  />
                 </div>
-
-                {form.ingredientes.length > 0 && (
-                  <div className="grid grid-cols-3 gap-3 text-right text-sm text-muted-foreground border-t border-border pt-2">
-                    <p>Total P: R$ {fmt(custoForm.custoP)}</p>
-                    <p>Total M: R$ {fmt(custoForm.custoM)}</p>
-                    <p>Total G: R$ {fmt(custoForm.custoG)}</p>
-                  </div>
-                )}
               </div>
 
-              <div className="flex justify-end gap-2 pt-2">
-                {form.ingredientes.length > 0 && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setSalvarBaseOpen(true)}
-                    className="mr-auto"
-                  >
-                    <Plus className="h-3.5 w-3.5" />
-                    Salvar como base
-                  </Button>
-                )}
-                <Button type="button" variant="outline" onClick={resetForm}>Cancelar</Button>
-                <Button type="submit" disabled={insertMutation.isPending || updateMutation.isPending || (!editingId && !formIsValid)} className={!editingId && !formIsValid ? "opacity-50" : ""}>
-                  {editingId ? "Salvar" : "Cadastrar"}
-                </Button>
+              {/* STICKY FOOTER */}
+              <div className="border-t border-border bg-card/95 backdrop-blur px-6 py-3 shrink-0">
+                <div className="flex items-center justify-between gap-4 flex-wrap">
+                  <div className="flex items-center gap-4 text-sm">
+                    <div>
+                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Total P</span>
+                      <p className="font-bold text-money tabular-nums">R$ {fmt(custoForm.custoP)}</p>
+                    </div>
+                    <div>
+                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Total M</span>
+                      <p className="font-bold text-money tabular-nums">R$ {fmt(custoForm.custoM)}</p>
+                    </div>
+                    <div>
+                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Total G</span>
+                      <p className="font-bold text-money tabular-nums">R$ {fmt(custoForm.custoG)}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {form.ingredientes.length > 0 && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSalvarBaseOpen(true)}
+                      >
+                        <Sparkles className="h-3.5 w-3.5" />
+                        Salvar como base
+                      </Button>
+                    )}
+                    <Button type="button" variant="outline" onClick={resetForm}>Cancelar</Button>
+                    <Button type="submit" disabled={insertMutation.isPending || updateMutation.isPending || (!editingId && !formIsValid)} className={!editingId && !formIsValid ? "opacity-50" : ""}>
+                      {editingId ? "Salvar" : "Cadastrar"}
+                    </Button>
+                  </div>
+                </div>
               </div>
             </form>
 
@@ -925,6 +1048,7 @@ export default function FichasTecnicasPizza() {
               })}
             />
           </DialogContent>
+
         </Dialog>
       </PageHeader>
 
