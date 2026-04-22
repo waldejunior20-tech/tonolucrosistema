@@ -442,10 +442,15 @@ export default function InsumosProduzidos() {
                   <FieldError show={showErr("unidade_rendimento")} />
                 </div>
                 <div className="flex flex-col justify-end">
-                  <p className="text-sm text-muted-foreground">Custo/{form.unidade_rendimento || "un"}:</p>
+                  <p className="text-sm text-muted-foreground">Custo/{unidadeBaseRendimento}:</p>
                   <p className="text-lg font-semibold text-foreground">
                     {formatMoney(custoPorUnidade)}
                   </p>
+                  {temIncompativel && (
+                    <p className="text-xs text-destructive flex items-center gap-1 mt-1">
+                      <AlertTriangle className="h-3 w-3" /> Unidades incompatíveis
+                    </p>
+                  )}
                 </div>
               </div>
 
