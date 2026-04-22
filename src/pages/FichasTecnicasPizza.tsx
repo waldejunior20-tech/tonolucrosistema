@@ -1020,6 +1020,45 @@ export default function FichasTecnicasPizza() {
                         {renderCaixaSlot("m", "M", "30cm", ing.caixa_m_id, ing.caixa_m_nome)}
                         {renderCaixaSlot("g", "G", "35cm", ing.caixa_g_id, ing.caixa_g_nome)}
                       </div>
+
+                      {/* EXTRAS DE EMBALAGEM — ketchup/maionese (só doces) e mesinha (todas) */}
+                      <div className="rounded-md border border-border bg-card p-3 space-y-2">
+                        <div className="flex items-center justify-between flex-wrap gap-1">
+                          <p className="text-sm font-bold">Extras</p>
+                          <p className="text-[10px] text-muted-foreground">
+                            Mesinha vai em todas. Ketchup e Maionese só nas doces.
+                          </p>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2">
+                          {[
+                            { label: "🍅 Ketchup", on: ketchupOn, terms: ketchupTerms, allowed: isPizzaDoce, hint: !isPizzaDoce ? "Só pizzas doces" : null },
+                            { label: "🥚 Maionese", on: maioneseOn, terms: maioneseTerms, allowed: isPizzaDoce, hint: !isPizzaDoce ? "Só pizzas doces" : null },
+                            { label: "🪑 Mesinha", on: mesinhaOn, terms: mesinhaTerms, allowed: true, hint: null },
+                          ].map((x) => (
+                            <button
+                              key={x.label}
+                              type="button"
+                              disabled={!x.allowed && !x.on}
+                              onClick={() => toggleExtra(x.terms, x.label)}
+                              className={cn(
+                                "rounded-md border px-3 py-2 text-xs text-left transition",
+                                x.on
+                                  ? "bg-foreground text-background border-foreground"
+                                  : x.allowed
+                                    ? "bg-muted/30 border-border hover:border-primary hover:text-primary"
+                                    : "bg-muted/10 border-border text-muted-foreground/50 cursor-not-allowed",
+                              )}
+                              title={x.hint ?? ""}
+                            >
+                              <div className="flex items-center justify-between gap-1">
+                                <span className="font-medium">{x.label}</span>
+                                {x.on && <Check className="h-3 w-3" />}
+                              </div>
+                              {x.hint && <p className="text-[10px] mt-0.5 opacity-70">{x.hint}</p>}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   );
                 })()}
