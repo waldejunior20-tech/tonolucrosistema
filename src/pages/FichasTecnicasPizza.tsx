@@ -375,6 +375,8 @@ export default function FichasTecnicasPizza() {
     setBuscaEmbalagemAberta(null);
     setBuscaEmbalagemTermo("");
     setTouched({});
+    setBaseOrigemId(null);
+    setIngredientesBaseIds(new Set());
   };
 
   // Validation
