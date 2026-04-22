@@ -302,6 +302,10 @@ export default function InsumosProduzidos() {
     e.preventDefault();
     setSubmitted(true);
     if (!formIsValid) return;
+    if (temIncompativel) {
+      toast.error("Há ingredientes com unidade incompatível com a unidade de compra. Corrija antes de salvar.");
+      return;
+    }
     if (editingId) {
       updateMutation.mutate({ ...form, id: editingId });
     } else {
