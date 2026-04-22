@@ -369,14 +369,25 @@ export default function InsumosProduzidos() {
     setBuscaAberta(null);
   };
 
-  // Calcula custo do formulário atual
-  const custoFormulario = form.ingredientes.reduce((acc, ing) => {
-    const custoUnit = custoUnitarioMap.get(ing.insumo_comprado_id) ?? 0;
-    const qtdConvertida = converterQuantidade(ing.quantidade, ing.unidade);
-    return acc + custoUnit * qtdConvertida;
-  }, 0);
+  // Resultado por ingrediente do formulário (custo + flag de compatibilidade).
+  const ingredientesCalc = form.ingredientes.map((ing) => {
+    if (!ing.insumo_comprado_id) return { custo: 0, ok: true };
+    return calcularCustoIngrediente(ing.insumo_comprado_id, ing.quantidade, ing.unidade);
+  });
+  const custoFormulario = ingredientesCalc.reduce((acc, r) => acc + r.custo, 0);
+  const temIncompativel = ingredientesCalc.some((r, i) => form.ingredientes[i].insumo_comprado_id && !r.ok);
 
-  const custoPorUnidade = form.rendimento > 0 ? custoFormulario / form.rendimento : 0;
+  // CRÍTICO 1: rendimento convertido para a unidade-base (kg/L/un) antes de dividir.
+  // Assim "500 g" vira 0,5 kg e o custo/kg sai correto.
+  const rendimentoBase = converterParaBase(form.rendimento, form.unidade_rendimento) ?? form.rendimento;
+  const unidadeBaseRendimento = (() => {
+    const f = familiaUnidade(form.unidade_rendimento);
+    if (f === "peso") return "kg";
+    if (f === "volume") return "L";
+    if (f === "discreto") return form.unidade_rendimento || "un";
+    return form.unidade_rendimento || "un";
+  })();
+  const custoPorUnidade = rendimentoBase > 0 ? custoFormulario / rendimentoBase : 0;
 
   const filteredComprados = insumosComprados.filter((ic) =>
     matchesSearch(ic.nome, buscaIngrediente)
