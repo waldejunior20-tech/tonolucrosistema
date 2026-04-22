@@ -115,6 +115,130 @@ export type Database = {
         }
         Relationships: []
       }
+      bases_ficha: {
+        Row: {
+          created_at: string
+          descricao: string | null
+          id: string
+          is_padrao: boolean
+          nome: string
+          tipo_ficha: string
+          unidade_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          is_padrao?: boolean
+          nome: string
+          tipo_ficha: string
+          unidade_id: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          is_padrao?: boolean
+          nome?: string
+          tipo_ficha?: string
+          unidade_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bases_ficha_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bases_ficha_ingredientes: {
+        Row: {
+          base_id: string
+          created_at: string
+          id: string
+          insumo_comprado_id: string | null
+          insumo_proprio_id: string | null
+          ordem: number
+          qtd_g: number | null
+          qtd_m: number | null
+          qtd_p: number | null
+          quantidade: number | null
+          tipo_insumo: string
+          unidade: string
+          unidade_id: string
+          user_id: string
+        }
+        Insert: {
+          base_id: string
+          created_at?: string
+          id?: string
+          insumo_comprado_id?: string | null
+          insumo_proprio_id?: string | null
+          ordem?: number
+          qtd_g?: number | null
+          qtd_m?: number | null
+          qtd_p?: number | null
+          quantidade?: number | null
+          tipo_insumo: string
+          unidade: string
+          unidade_id: string
+          user_id?: string
+        }
+        Update: {
+          base_id?: string
+          created_at?: string
+          id?: string
+          insumo_comprado_id?: string | null
+          insumo_proprio_id?: string | null
+          ordem?: number
+          qtd_g?: number | null
+          qtd_m?: number | null
+          qtd_p?: number | null
+          quantidade?: number | null
+          tipo_insumo?: string
+          unidade?: string
+          unidade_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bases_ficha_ingredientes_base_id_fkey"
+            columns: ["base_id"]
+            isOneToOne: false
+            referencedRelation: "bases_ficha"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bases_ficha_ingredientes_insumo_comprado_id_fkey"
+            columns: ["insumo_comprado_id"]
+            isOneToOne: false
+            referencedRelation: "insumos_comprados"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bases_ficha_ingredientes_insumo_proprio_id_fkey"
+            columns: ["insumo_proprio_id"]
+            isOneToOne: false
+            referencedRelation: "insumos_proprios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bases_ficha_ingredientes_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       combos_fixos: {
         Row: {
           created_at: string | null
@@ -336,6 +460,7 @@ export type Database = {
       }
       fichas_tecnicas_pizza: {
         Row: {
+          base_origem_id: string | null
           created_at: string | null
           id: string
           modo_preparo: string | null
@@ -350,6 +475,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          base_origem_id?: string | null
           created_at?: string | null
           id?: string
           modo_preparo?: string | null
@@ -364,6 +490,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          base_origem_id?: string | null
           created_at?: string | null
           id?: string
           modo_preparo?: string | null
@@ -378,6 +505,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "fichas_tecnicas_pizza_base_origem_id_fkey"
+            columns: ["base_origem_id"]
+            isOneToOne: false
+            referencedRelation: "bases_ficha"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "fichas_tecnicas_pizza_unidade_id_fkey"
             columns: ["unidade_id"]
@@ -460,6 +594,7 @@ export type Database = {
       }
       fichas_tecnicas_produtos: {
         Row: {
+          base_origem_id: string | null
           categoria: string
           created_at: string
           id: string
@@ -472,6 +607,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          base_origem_id?: string | null
           categoria: string
           created_at?: string
           id?: string
@@ -484,6 +620,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          base_origem_id?: string | null
           categoria?: string
           created_at?: string
           id?: string
@@ -496,6 +633,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "fichas_tecnicas_produtos_base_origem_id_fkey"
+            columns: ["base_origem_id"]
+            isOneToOne: false
+            referencedRelation: "bases_ficha"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "fichas_tecnicas_produtos_unidade_id_fkey"
             columns: ["unidade_id"]
@@ -1297,6 +1441,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      aplicar_base_em_ficha: {
+        Args: { p_base_id: string; p_ficha_id: string; p_tipo_ficha: string }
+        Returns: number
+      }
       auditar_rendimentos_suspeitos: {
         Args: never
         Returns: {
