@@ -1297,6 +1297,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      auditar_rendimentos_suspeitos: {
+        Args: never
+        Returns: {
+          created_at: string
+          id: string
+          nome: string
+          rendimento: number
+          unidade_id: string
+          unidade_rendimento: string
+        }[]
+      }
       get_user_unidades: {
         Args: { _user_id: string }
         Returns: {

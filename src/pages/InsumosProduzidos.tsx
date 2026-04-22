@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
-import { Pencil, Trash2, Plus, Search, X, Beaker } from "lucide-react";
+import { Pencil, Trash2, Plus, Search, X, Beaker, AlertTriangle } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 import { QuantityInput, formatMoney, formatQuantidade } from "@/components/MoneyInput";
 import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
@@ -118,23 +118,66 @@ export default function InsumosProduzidos() {
     unidadeCompradoMap.set(ic.id, ic.unidade);
   });
 
-  // Converte quantidade do ingrediente para a unidade base do insumo comprado
-  const converterQuantidade = (quantidade: number, unidadeIngrediente: string) => {
-    if (unidadeIngrediente === "g" || unidadeIngrediente === "ml") {
-      return quantidade / 1000;
-    }
-    return quantidade;
+  // Família de uma unidade: "peso" | "volume" | "discreto" | "desconhecido"
+  const familiaUnidade = (u?: string | null): "peso" | "volume" | "discreto" | "desconhecido" => {
+    if (!u) return "desconhecido";
+    const x = u.toLowerCase().trim();
+    if (x === "kg" || x === "g" || x === "mg") return "peso";
+    if (x === "l" || x === "ml") return "volume";
+    if (x === "unidade" || x === "un" || x === "caixa" || x === "pacote" || x === "fardo" || x === "duzia" || x === "dúzia") return "discreto";
+    return "desconhecido";
   };
 
-  // Calcula custo total de um insumo próprio
+  // Converte uma quantidade para a unidade-base da sua família (kg, L ou un).
+  // Retorna null se a unidade for desconhecida.
+  const converterParaBase = (quantidade: number, unidade: string): number | null => {
+    const f = familiaUnidade(unidade);
+    const u = unidade.toLowerCase().trim();
+    if (f === "peso") return u === "kg" ? quantidade : quantidade / 1000; // g, mg → kg
+    if (f === "volume") return u === "l" ? quantidade : quantidade / 1000; // ml → L
+    if (f === "discreto") return quantidade; // un/caixa/pacote ficam como estão
+    return null;
+  };
+
+  // Compatibilidade entre a unidade do ingrediente e a unidade de compra do insumo.
+  const unidadesCompativeis = (uIngrediente: string, uCompra: string): boolean => {
+    const fa = familiaUnidade(uIngrediente);
+    const fb = familiaUnidade(uCompra);
+    if (fa === "desconhecido" || fb === "desconhecido") return false;
+    return fa === fb;
+  };
+
+  // Calcula custo de UM ingrediente. Retorna { custo, ok } — ok=false se unidades incompatíveis.
+  const calcularCustoIngrediente = (
+    insumoCompradoId: string,
+    quantidade: number,
+    unidade: string
+  ): { custo: number; ok: boolean } => {
+    const ic = insumosComprados.find((i) => i.id === insumoCompradoId);
+    if (!ic) return { custo: 0, ok: false };
+    if (!unidadesCompativeis(unidade, ic.unidade)) return { custo: 0, ok: false };
+
+    const qtdBaseIngrediente = converterParaBase(quantidade, unidade);
+    const qtdBaseCompra = converterParaBase(Number(ic.quantidade), ic.unidade);
+    if (qtdBaseIngrediente == null || qtdBaseCompra == null || qtdBaseCompra === 0) {
+      return { custo: 0, ok: false };
+    }
+    const custoPorBase = Number(ic.preco_pago) / qtdBaseCompra;
+    return { custo: custoPorBase * qtdBaseIngrediente, ok: true };
+  };
+
+  // Calcula custo total de um insumo próprio (já salvo no banco).
   const calcularCusto = (insumoId: string) => {
     const ingredientes = todosIngredientes.filter(
       (ing) => ing.insumo_proprio_id === insumoId
     );
     return ingredientes.reduce((acc, ing) => {
-      const custoUnit = custoUnitarioMap.get(ing.insumo_comprado_id ?? "") ?? 0;
-      const qtdConvertida = converterQuantidade(Number(ing.quantidade), ing.unidade);
-      return acc + custoUnit * qtdConvertida;
+      const { custo } = calcularCustoIngrediente(
+        ing.insumo_comprado_id ?? "",
+        Number(ing.quantidade),
+        ing.unidade
+      );
+      return acc + custo;
     }, 0);
   };
 
@@ -259,6 +302,10 @@ export default function InsumosProduzidos() {
     e.preventDefault();
     setSubmitted(true);
     if (!formIsValid) return;
+    if (temIncompativel) {
+      toast.error("Há ingredientes com unidade incompatível com a unidade de compra. Corrija antes de salvar.");
+      return;
+    }
     if (editingId) {
       updateMutation.mutate({ ...form, id: editingId });
     } else {
@@ -326,14 +373,25 @@ export default function InsumosProduzidos() {
     setBuscaAberta(null);
   };
 
-  // Calcula custo do formulário atual
-  const custoFormulario = form.ingredientes.reduce((acc, ing) => {
-    const custoUnit = custoUnitarioMap.get(ing.insumo_comprado_id) ?? 0;
-    const qtdConvertida = converterQuantidade(ing.quantidade, ing.unidade);
-    return acc + custoUnit * qtdConvertida;
-  }, 0);
+  // Resultado por ingrediente do formulário (custo + flag de compatibilidade).
+  const ingredientesCalc = form.ingredientes.map((ing) => {
+    if (!ing.insumo_comprado_id) return { custo: 0, ok: true };
+    return calcularCustoIngrediente(ing.insumo_comprado_id, ing.quantidade, ing.unidade);
+  });
+  const custoFormulario = ingredientesCalc.reduce((acc, r) => acc + r.custo, 0);
+  const temIncompativel = ingredientesCalc.some((r, i) => form.ingredientes[i].insumo_comprado_id && !r.ok);
 
-  const custoPorUnidade = form.rendimento > 0 ? custoFormulario / form.rendimento : 0;
+  // CRÍTICO 1: rendimento convertido para a unidade-base (kg/L/un) antes de dividir.
+  // Assim "500 g" vira 0,5 kg e o custo/kg sai correto.
+  const rendimentoBase = converterParaBase(form.rendimento, form.unidade_rendimento) ?? form.rendimento;
+  const unidadeBaseRendimento = (() => {
+    const f = familiaUnidade(form.unidade_rendimento);
+    if (f === "peso") return "kg";
+    if (f === "volume") return "L";
+    if (f === "discreto") return form.unidade_rendimento || "un";
+    return form.unidade_rendimento || "un";
+  })();
+  const custoPorUnidade = rendimentoBase > 0 ? custoFormulario / rendimentoBase : 0;
 
   const filteredComprados = insumosComprados.filter((ic) =>
     matchesSearch(ic.nome, buscaIngrediente)
@@ -388,10 +446,15 @@ export default function InsumosProduzidos() {
                   <FieldError show={showErr("unidade_rendimento")} />
                 </div>
                 <div className="flex flex-col justify-end">
-                  <p className="text-sm text-muted-foreground">Custo/{form.unidade_rendimento || "un"}:</p>
+                  <p className="text-sm text-muted-foreground">Custo/{unidadeBaseRendimento}:</p>
                   <p className="text-lg font-semibold text-foreground">
                     {formatMoney(custoPorUnidade)}
                   </p>
+                  {temIncompativel && (
+                    <p className="text-xs text-destructive flex items-center gap-1 mt-1">
+                      <AlertTriangle className="h-3 w-3" /> Unidades incompatíveis
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -408,8 +471,18 @@ export default function InsumosProduzidos() {
                   <p className="text-sm text-muted-foreground">Nenhum ingrediente adicionado.</p>
                 )}
 
-                {form.ingredientes.map((ing, idx) => (
-                  <div key={idx} className="flex items-end gap-2 rounded-md border border-border p-3">
+                {form.ingredientes.map((ing, idx) => {
+                  const calc = ingredientesCalc[idx];
+                  const incompat = ing.insumo_comprado_id && !calc?.ok;
+                  const ic = insumosComprados.find((i) => i.id === ing.insumo_comprado_id);
+                  return (
+                  <div key={idx} className={`flex items-end gap-2 rounded-md border p-3 ${incompat ? "border-destructive/60 bg-destructive/5" : "border-border"}`}>
+                    {incompat && ic && (
+                      <div className="absolute -mt-9 ml-1 text-xs text-destructive flex items-center gap-1">
+                        <AlertTriangle className="h-3 w-3" />
+                        Comprado em "{ic.unidade}" — use unidade compatível
+                      </div>
+                    )}
                     {/* Busca insumo comprado */}
                     <div className="flex-1 relative">
                       <Label className="text-xs">Insumo Comprado</Label>
@@ -490,7 +563,8 @@ export default function InsumosProduzidos() {
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   </div>
-                ))}
+                  );
+                })}
 
                 {form.ingredientes.length > 0 && (
                   <div className="text-right text-sm text-muted-foreground">
