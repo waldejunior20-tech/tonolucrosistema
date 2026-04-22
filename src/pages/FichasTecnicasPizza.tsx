@@ -25,6 +25,9 @@ import type { Tables } from "@/integrations/supabase/types";
 import { formatQty } from "@/components/MoneyInput";
 import { matchesSearch } from "@/lib/utils";
 import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
+import { BaseSelector } from "@/components/fichas/BaseSelector";
+import { SalvarComoBaseDialog } from "@/components/fichas/SalvarComoBaseDialog";
+import type { BaseIngredienteInput } from "@/hooks/useBasesFicha";
 
 const TIPOS = ["tradicional", "especial", "premium", "doce"];
 const UNIDADES = ["kg", "g", "L", "ml", "unidade"];
