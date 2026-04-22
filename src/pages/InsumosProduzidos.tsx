@@ -559,7 +559,8 @@ export default function InsumosProduzidos() {
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   </div>
-                ))}
+                  );
+                })}
 
                 {form.ingredientes.length > 0 && (
                   <div className="text-right text-sm text-muted-foreground">
