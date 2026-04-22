@@ -881,6 +881,59 @@ export default function FichasTecnicasPizza() {
                     );
                   }
 
+                  // Helpers para extras (ketchup, maionese, mesinha) — buscam o insumo comprado por nome
+                  const isPizzaDoce = form.tipo === "doce";
+                  const findInsumoByName = (terms: string[]) =>
+                    insumosComprados.find((ic) =>
+                      terms.some((t) => ic.nome.toLowerCase().includes(t)),
+                    );
+                  const hasExtra = (terms: string[]) => {
+                    const insumo = findInsumoByName(terms);
+                    if (!insumo) return false;
+                    return form.ingredientes.some(
+                      (i) => i.tipo_insumo === "comprado" && i.insumo_comprado_id === insumo.id,
+                    );
+                  };
+                  const toggleExtra = (terms: string[], label: string) => {
+                    const insumo = findInsumoByName(terms);
+                    if (!insumo) {
+                      toast.error(`Cadastre "${label}" em Insumos Comprados primeiro.`);
+                      return;
+                    }
+                    const existing = form.ingredientes.findIndex(
+                      (i) => i.tipo_insumo === "comprado" && i.insumo_comprado_id === insumo.id,
+                    );
+                    if (existing >= 0) {
+                      const updated = [...form.ingredientes];
+                      updated.splice(existing, 1);
+                      setForm({ ...form, ingredientes: updated });
+                    } else {
+                      setForm({
+                        ...form,
+                        ingredientes: [
+                          ...form.ingredientes,
+                          {
+                            ...emptyIngrediente,
+                            tipo_insumo: "comprado",
+                            insumo_comprado_id: insumo.id,
+                            nome_display: insumo.nome,
+                            unidade: insumo.unidade,
+                            qtd_p: 1,
+                            qtd_m: 1,
+                            qtd_g: 1,
+                          },
+                        ],
+                      });
+                    }
+                  };
+
+                  const ketchupTerms = ["ketchup", "catchup"];
+                  const maioneseTerms = ["maionese"];
+                  const mesinhaTerms = ["mesinha"];
+                  const ketchupOn = hasExtra(ketchupTerms);
+                  const maioneseOn = hasExtra(maioneseTerms);
+                  const mesinhaOn = hasExtra(mesinhaTerms);
+
                   const faltando = !ing.caixa_p_id || !ing.caixa_m_id || !ing.caixa_g_id;
 
                   const renderCaixaSlot = (size: "p" | "m" | "g", label: string, dim: string, caixaId: string, caixaNome: string) => {
