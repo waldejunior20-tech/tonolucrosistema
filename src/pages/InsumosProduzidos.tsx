@@ -467,8 +467,18 @@ export default function InsumosProduzidos() {
                   <p className="text-sm text-muted-foreground">Nenhum ingrediente adicionado.</p>
                 )}
 
-                {form.ingredientes.map((ing, idx) => (
-                  <div key={idx} className="flex items-end gap-2 rounded-md border border-border p-3">
+                {form.ingredientes.map((ing, idx) => {
+                  const calc = ingredientesCalc[idx];
+                  const incompat = ing.insumo_comprado_id && !calc?.ok;
+                  const ic = insumosComprados.find((i) => i.id === ing.insumo_comprado_id);
+                  return (
+                  <div key={idx} className={`flex items-end gap-2 rounded-md border p-3 ${incompat ? "border-destructive/60 bg-destructive/5" : "border-border"}`}>
+                    {incompat && ic && (
+                      <div className="absolute -mt-9 ml-1 text-xs text-destructive flex items-center gap-1">
+                        <AlertTriangle className="h-3 w-3" />
+                        Comprado em "{ic.unidade}" — use unidade compatível
+                      </div>
+                    )}
                     {/* Busca insumo comprado */}
                     <div className="flex-1 relative">
                       <Label className="text-xs">Insumo Comprado</Label>
