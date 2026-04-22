@@ -451,6 +451,14 @@ export default function FichasTecnicasPizza() {
       ingredientes: ingredientesForm,
     });
     setEditingId(ficha.id);
+    setBaseOrigemId(ficha.base_origem_id ?? null);
+    // Se a ficha veio de uma base, marca todos os ingredientes atualmente persistidos como vindos da base.
+    // Novos ingredientes adicionados depois (sem db_id) ficam como "único".
+    if (ficha.base_origem_id) {
+      setIngredientesBaseIds(new Set(ingredientesForm.map((i) => i.db_id).filter((x): x is string => !!x)));
+    } else {
+      setIngredientesBaseIds(new Set());
+    }
     setDialogOpen(true);
   };
 
