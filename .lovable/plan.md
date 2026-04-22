@@ -1,52 +1,40 @@
 
 
-# Agrupar insumos por categoria automaticamente
+## Refatoração da Ficha Técnica de Pizza — só estrutura, mantém visual atual
 
-## O que muda
-Hoje a tabela em **Insumos Comprados** mostra tudo misturado por data de cadastro. Você cadastra "Mussarela" (Laticínios) e ela aparece no topo, longe das outras proteínas/laticínios.
+Aplicando o fluxo aprovado do protótipo dentro da skin atual (slate/zinc + emerald/burgundy, Inter, `card-premium`).
 
-A ideia: ao salvar, o insumo **já aparece visualmente agrupado com os da mesma categoria**, sem você precisar filtrar.
+### O que muda em `src/pages/FichasTecnicasPizza.tsx`
 
-## Como vai funcionar
+**1. Header sticky** — faixa fixa com Custo P/M/G + Preço Sugerido + badge CMV em tempo real. Usa `Card` atual + cores semânticas.
 
-**Visualização "Agrupada por categoria" (padrão novo):**
+**2. Barra de Bases** — `BaseSelector` já existente, posicionado abaixo do header sticky.
 
+**3. Tabela densa de ingredientes** (substitui cards verticais):
 ```text
-🥩 PROTEÍNAS (3)
-   Frango ......... R$ 18,90 / kg
-   Calabresa ...... R$ 24,00 / kg
-   Bacon .......... R$ 32,00 / kg
-
-🥛 LATICÍNIOS (2)
-   Mussarela ...... R$ 36,00 / kg
-   Catupiry ....... R$ 28,00 / kg
-
-📦 EMBALAGENS (1)
-   Caixa Pizza G .. R$ 0,80 / un
+| Ingrediente | Origem | Qtd P | Qtd M | Qtd G | Custo P | Custo M | Custo G | 🗑 |
 ```
+- `Table` do design system (zebra + hover já vêm).
+- Badge "base" (emerald) ou "único" (laranja) na coluna Origem.
+- Borda esquerda emerald nas linhas vindas da base.
+- Inputs inline 36px, tabular-nums.
+- Ações aparecem só no hover.
+- Tab navega Qtd P → M → G → próxima linha.
 
-- Cada categoria vira um **bloco com cabeçalho colorido** (mesma cor do `CategoryBadge` que já existe).
-- Dentro do bloco: insumos ordenados por nome (A→Z).
-- Categoria fica **recolhível** (clica no cabeçalho → fecha/abre).
-- Contador de quantos itens em cada categoria.
+**4. Seção "Embalagens por Tamanho"** — card separado com 3 mini-cards (P/M/G) + grid de extras (sachês, mesinha). Aviso âmbar quando faltar tamanho.
 
-**Toggle de visualização** no topo (ao lado do filtro):
-- `[ Agrupada ]` ← padrão
-- `[ Lista ]` ← visualização antiga (linear, ordenada por data)
+**5. Footer sticky** — Custo total P/M/G + lucro estimado (verde/vermelho) + botões Cancelar | Salvar como base | Salvar ficha.
 
-O filtro de categoria existente continua funcionando em ambos os modos.
+**6. Validação inline** — input vermelho se Qtd > 999 ou negativa; warning âmbar em mismatch de família de unidade (reaproveita `familiaUnidade`).
 
-## Comportamento ao cadastrar
-1. Você abre "Novo Insumo", escolhe categoria "Proteínas", salva.
-2. A tela atualiza e o item **já aparece dentro do bloco "Proteínas"**, ordenado pelo nome.
-3. Se a categoria estava recolhida, ela **abre automaticamente** e dá um leve highlight no item recém-criado (1 segundo) pra você ver onde caiu.
+### O que NÃO muda
+Paleta, fontes, radius, `card-premium`, `Table`, `Button`, hooks (`useBasesFicha`, `useAplicarBase`, `useSalvarComoBase`), migration `bases_ficha`, lógica de cálculo/conversão/salvamento.
 
-## Arquivos afetados
-- `src/pages/InsumosComprados.tsx` — adicionar agrupamento + toggle de modo + lógica de auto-expand após criar.
-- Nenhuma mudança de banco. Nenhuma mudança em RLS. Nenhum impacto no n8n / cascata de preços.
+### Arquivos afetados
+- `src/pages/FichasTecnicasPizza.tsx` — refatoração do form (único arquivo pesado)
+- `src/components/fichas/BaseSelector.tsx` — pequeno ajuste de espaçamento
 
-## Fora do escopo
-- Não muda fichas técnicas, precificação ou caixa.
-- Não cria nova categoria automaticamente — continua usando a lista fixa de `CATEGORIAS`.
-- Não mexe em insumos próprios (essa tela é só dos comprados). Se quiser depois, replicamos lá.
+### Fora do escopo agora
+- Replicar layout em Produtos/Bebidas (depois, após validar pizza)
+- Atalhos de teclado avançados (Enter=salvar, Esc=cancelar) — segunda passada se quiser
 
