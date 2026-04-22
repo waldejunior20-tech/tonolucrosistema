@@ -568,6 +568,21 @@ export default function FichasTecnicasPizza() {
               <DialogTitle>{editingId ? "Editar Ficha Técnica" : "Nova Ficha Técnica"}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-5">
+              {editingId && (
+                <BaseSelector
+                  tipoFicha="pizza"
+                  fichaId={editingId}
+                  onBaseAplicada={async () => {
+                    // Recarrega a ficha em edição com os novos ingredientes
+                    const ficha = fichas.find((f) => f.id === editingId);
+                    if (ficha) {
+                      await queryClient.invalidateQueries({ queryKey: ["fichas_tecnicas_pizza_ingredientes"] });
+                      handleEdit(ficha);
+                    }
+                  }}
+                  onCriarNovaBase={() => setSalvarBaseOpen(true)}
+                />
+              )}
               {/* Dados principais */}
               <div className="grid grid-cols-3 gap-4">
                 <div className="col-span-2">
