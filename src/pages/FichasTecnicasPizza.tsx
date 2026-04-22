@@ -25,6 +25,9 @@ import type { Tables } from "@/integrations/supabase/types";
 import { formatQty } from "@/components/MoneyInput";
 import { matchesSearch } from "@/lib/utils";
 import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
+import { BaseSelector } from "@/components/fichas/BaseSelector";
+import { SalvarComoBaseDialog } from "@/components/fichas/SalvarComoBaseDialog";
+import type { BaseIngredienteInput } from "@/hooks/useBasesFicha";
 
 const TIPOS = ["tradicional", "especial", "premium", "doce"];
 const UNIDADES = ["kg", "g", "L", "ml", "unidade"];
@@ -113,6 +116,7 @@ export default function FichasTecnicasPizza() {
   const [buscaEmbalagemTermo, setBuscaEmbalagemTermo] = useState("");
   const [savedFields, setSavedFields] = useState<Record<string, boolean>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [salvarBaseOpen, setSalvarBaseOpen] = useState(false);
 
   // Queries
   const { data: fichas = [], isLoading } = useQuery({
@@ -564,6 +568,21 @@ export default function FichasTecnicasPizza() {
               <DialogTitle>{editingId ? "Editar Ficha Técnica" : "Nova Ficha Técnica"}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-5">
+              {editingId && (
+                <BaseSelector
+                  tipoFicha="pizza"
+                  fichaId={editingId}
+                  onBaseAplicada={async () => {
+                    // Recarrega a ficha em edição com os novos ingredientes
+                    const ficha = fichas.find((f) => f.id === editingId);
+                    if (ficha) {
+                      await queryClient.invalidateQueries({ queryKey: ["fichas_tecnicas_pizza_ingredientes"] });
+                      handleEdit(ficha);
+                    }
+                  }}
+                  onCriarNovaBase={() => setSalvarBaseOpen(true)}
+                />
+              )}
               {/* Dados principais */}
               <div className="grid grid-cols-3 gap-4">
                 <div className="col-span-2">
@@ -861,12 +880,50 @@ export default function FichasTecnicasPizza() {
               </div>
 
               <div className="flex justify-end gap-2 pt-2">
+                {form.ingredientes.length > 0 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSalvarBaseOpen(true)}
+                    className="mr-auto"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    Salvar como base
+                  </Button>
+                )}
                 <Button type="button" variant="outline" onClick={resetForm}>Cancelar</Button>
                 <Button type="submit" disabled={insertMutation.isPending || updateMutation.isPending || (!editingId && !formIsValid)} className={!editingId && !formIsValid ? "opacity-50" : ""}>
                   {editingId ? "Salvar" : "Cadastrar"}
                 </Button>
               </div>
             </form>
+
+            <SalvarComoBaseDialog
+              open={salvarBaseOpen}
+              onOpenChange={setSalvarBaseOpen}
+              tipoFicha="pizza"
+              ingredientes={form.ingredientes.flatMap<BaseIngredienteInput>((ing) => {
+                if (ing.tipo_insumo === "embalagem") {
+                  const rows: BaseIngredienteInput[] = [];
+                  if (ing.caixa_p_id) rows.push({ tipo_insumo: "embalagem_p", insumo_comprado_id: ing.caixa_p_id, insumo_proprio_id: null, qtd_p: 1, qtd_m: 0, qtd_g: 0, unidade: "unidade" });
+                  if (ing.caixa_m_id) rows.push({ tipo_insumo: "embalagem_m", insumo_comprado_id: ing.caixa_m_id, insumo_proprio_id: null, qtd_p: 0, qtd_m: 1, qtd_g: 0, unidade: "unidade" });
+                  if (ing.caixa_g_id) rows.push({ tipo_insumo: "embalagem_g", insumo_comprado_id: ing.caixa_g_id, insumo_proprio_id: null, qtd_p: 0, qtd_m: 0, qtd_g: 1, unidade: "unidade" });
+                  return rows;
+                }
+                if (ing.tipo_insumo !== "comprado" && ing.tipo_insumo !== "proprio") return [];
+                if (!ing.insumo_comprado_id && !ing.insumo_proprio_id) return [];
+                return [{
+                  tipo_insumo: ing.tipo_insumo as "comprado" | "proprio",
+                  insumo_comprado_id: ing.insumo_comprado_id || null,
+                  insumo_proprio_id: ing.insumo_proprio_id || null,
+                  qtd_p: ing.qtd_p,
+                  qtd_m: ing.qtd_m,
+                  qtd_g: ing.qtd_g,
+                  unidade: ing.unidade,
+                }];
+              })}
+            />
           </DialogContent>
         </Dialog>
       </PageHeader>
