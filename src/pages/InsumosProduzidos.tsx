@@ -118,23 +118,66 @@ export default function InsumosProduzidos() {
     unidadeCompradoMap.set(ic.id, ic.unidade);
   });
 
-  // Converte quantidade do ingrediente para a unidade base do insumo comprado
-  const converterQuantidade = (quantidade: number, unidadeIngrediente: string) => {
-    if (unidadeIngrediente === "g" || unidadeIngrediente === "ml") {
-      return quantidade / 1000;
-    }
-    return quantidade;
+  // Família de uma unidade: "peso" | "volume" | "discreto" | "desconhecido"
+  const familiaUnidade = (u?: string | null): "peso" | "volume" | "discreto" | "desconhecido" => {
+    if (!u) return "desconhecido";
+    const x = u.toLowerCase().trim();
+    if (x === "kg" || x === "g" || x === "mg") return "peso";
+    if (x === "l" || x === "ml") return "volume";
+    if (x === "unidade" || x === "un" || x === "caixa" || x === "pacote" || x === "fardo" || x === "duzia" || x === "dúzia") return "discreto";
+    return "desconhecido";
   };
 
-  // Calcula custo total de um insumo próprio
+  // Converte uma quantidade para a unidade-base da sua família (kg, L ou un).
+  // Retorna null se a unidade for desconhecida.
+  const converterParaBase = (quantidade: number, unidade: string): number | null => {
+    const f = familiaUnidade(unidade);
+    const u = unidade.toLowerCase().trim();
+    if (f === "peso") return u === "kg" ? quantidade : quantidade / 1000; // g, mg → kg
+    if (f === "volume") return u === "l" ? quantidade : quantidade / 1000; // ml → L
+    if (f === "discreto") return quantidade; // un/caixa/pacote ficam como estão
+    return null;
+  };
+
+  // Compatibilidade entre a unidade do ingrediente e a unidade de compra do insumo.
+  const unidadesCompativeis = (uIngrediente: string, uCompra: string): boolean => {
+    const fa = familiaUnidade(uIngrediente);
+    const fb = familiaUnidade(uCompra);
+    if (fa === "desconhecido" || fb === "desconhecido") return false;
+    return fa === fb;
+  };
+
+  // Calcula custo de UM ingrediente. Retorna { custo, ok } — ok=false se unidades incompatíveis.
+  const calcularCustoIngrediente = (
+    insumoCompradoId: string,
+    quantidade: number,
+    unidade: string
+  ): { custo: number; ok: boolean } => {
+    const ic = insumosComprados.find((i) => i.id === insumoCompradoId);
+    if (!ic) return { custo: 0, ok: false };
+    if (!unidadesCompativeis(unidade, ic.unidade)) return { custo: 0, ok: false };
+
+    const qtdBaseIngrediente = converterParaBase(quantidade, unidade);
+    const qtdBaseCompra = converterParaBase(Number(ic.quantidade), ic.unidade);
+    if (qtdBaseIngrediente == null || qtdBaseCompra == null || qtdBaseCompra === 0) {
+      return { custo: 0, ok: false };
+    }
+    const custoPorBase = Number(ic.preco_pago) / qtdBaseCompra;
+    return { custo: custoPorBase * qtdBaseIngrediente, ok: true };
+  };
+
+  // Calcula custo total de um insumo próprio (já salvo no banco).
   const calcularCusto = (insumoId: string) => {
     const ingredientes = todosIngredientes.filter(
       (ing) => ing.insumo_proprio_id === insumoId
     );
     return ingredientes.reduce((acc, ing) => {
-      const custoUnit = custoUnitarioMap.get(ing.insumo_comprado_id ?? "") ?? 0;
-      const qtdConvertida = converterQuantidade(Number(ing.quantidade), ing.unidade);
-      return acc + custoUnit * qtdConvertida;
+      const { custo } = calcularCustoIngrediente(
+        ing.insumo_comprado_id ?? "",
+        Number(ing.quantidade),
+        ing.unidade
+      );
+      return acc + custo;
     }, 0);
   };
 
