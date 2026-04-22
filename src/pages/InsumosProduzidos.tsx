@@ -596,7 +596,7 @@ export default function InsumosProduzidos() {
               <TableRow>
                 <TableHead className="">Nome</TableHead>
                 <TableHead className="text-right">Rendimento</TableHead>
-                <TableHead className="text-right">Custo/Unidade</TableHead>
+                <TableHead className="text-right">Custo/kg</TableHead>
                 <TableHead className="text-right">Custo Total</TableHead>
                 <TableHead className="w-[100px]">Ações</TableHead>
               </TableRow>
@@ -604,7 +604,10 @@ export default function InsumosProduzidos() {
             <TableBody>
               {insumosProprios.map((ip) => {
                 const custoTotal = calcularCusto(ip.id);
-                const custoPorUn = Number(ip.rendimento) > 0 ? custoTotal / Number(ip.rendimento) : 0;
+                const rendBase = converterParaBase(Number(ip.rendimento), ip.unidade_rendimento) ?? Number(ip.rendimento);
+                const fam = familiaUnidade(ip.unidade_rendimento);
+                const unBase = fam === "peso" ? "kg" : fam === "volume" ? "L" : (ip.unidade_rendimento || "un");
+                const custoPorUn = rendBase > 0 ? custoTotal / rendBase : 0;
                 return (
                   <TableRow key={ip.id}>
                     <TableCell className="font-medium">{ip.nome}</TableCell>
@@ -612,7 +615,7 @@ export default function InsumosProduzidos() {
                       {formatQuantidade(Number(ip.rendimento), ip.unidade_rendimento)}
                     </TableCell>
                     <TableCell className="text-right">
-                      {formatMoney(custoPorUn)}/{ip.unidade_rendimento}
+                      {formatMoney(custoPorUn)}/{unBase}
                     </TableCell>
                     <TableCell className="text-right">
                       {formatMoney(custoTotal)}
