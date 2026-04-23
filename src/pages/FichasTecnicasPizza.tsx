@@ -687,7 +687,7 @@ export default function FichasTecnicasPizza() {
                     }
 
                     return (
-                      <div className="rounded-md border border-border overflow-hidden">
+                      <div className="rounded-md border border-border overflow-visible">
                         <Table>
                           <TableHeader>
                             <TableRow>
@@ -747,7 +747,7 @@ export default function FichasTecnicasPizza() {
                                   )}
                                 >
                                   {/* Ingrediente: nome + tipo + busca */}
-                                  <TableCell className="align-top py-2">
+                                  <TableCell className="align-top py-2 overflow-visible relative">
                                     <div className="flex items-center gap-2">
                                       <Select value={ing.tipo_insumo} onValueChange={(v) => updateIngrediente(idx, "tipo_insumo", v)}>
                                         <SelectTrigger className="h-9 w-[110px] text-xs"><SelectValue /></SelectTrigger>
@@ -783,7 +783,7 @@ export default function FichasTecnicasPizza() {
                                                 ) : (
                                                   getFilteredInsumos(ing.tipo_insumo).map((item) => (
                                                     <button key={item.id} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors"
-                                                      onClick={() => selectInsumo(idx, item.id, item.nome, ing.tipo_insumo)}>
+                                                      onMouseDown={(e) => { e.preventDefault(); selectInsumo(idx, item.id, item.nome, ing.tipo_insumo); }}>
                                                       <span className="font-medium">{item.nome}</span>
                                                     </button>
                                                   ))
