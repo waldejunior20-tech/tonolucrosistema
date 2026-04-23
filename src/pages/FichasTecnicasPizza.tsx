@@ -687,7 +687,7 @@ export default function FichasTecnicasPizza() {
                     }
 
                     return (
-                      <div className="rounded-md border border-border overflow-hidden">
+                      <div className="rounded-md border border-border overflow-visible">
                         <Table>
                           <TableHeader>
                             <TableRow>
