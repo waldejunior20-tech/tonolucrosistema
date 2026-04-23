@@ -747,7 +747,7 @@ export default function FichasTecnicasPizza() {
                                   )}
                                 >
                                   {/* Ingrediente: nome + tipo + busca */}
-                                  <TableCell className="align-top py-2">
+                                  <TableCell className="align-top py-2 overflow-visible relative">
                                     <div className="flex items-center gap-2">
                                       <Select value={ing.tipo_insumo} onValueChange={(v) => updateIngrediente(idx, "tipo_insumo", v)}>
                                         <SelectTrigger className="h-9 w-[110px] text-xs"><SelectValue /></SelectTrigger>
