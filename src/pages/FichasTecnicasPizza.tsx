@@ -783,7 +783,7 @@ export default function FichasTecnicasPizza() {
                                                 ) : (
                                                   getFilteredInsumos(ing.tipo_insumo).map((item) => (
                                                     <button key={item.id} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors"
-                                                      onClick={() => selectInsumo(idx, item.id, item.nome, ing.tipo_insumo)}>
+                                                      onMouseDown={(e) => { e.preventDefault(); selectInsumo(idx, item.id, item.nome, ing.tipo_insumo); }}>
                                                       <span className="font-medium">{item.nome}</span>
                                                     </button>
                                                   ))
