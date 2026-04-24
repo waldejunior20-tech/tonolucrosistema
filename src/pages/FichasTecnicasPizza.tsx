@@ -766,32 +766,37 @@ export default function FichasTecnicasPizza() {
                                             </Button>
                                           </div>
                                         ) : (
-                                          <>
-                                            <div className="relative">
-                                              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
-                                              <Input
-                                                placeholder="Buscar..."
-                                                className="pl-7 h-9 text-sm"
-                                                value={buscaAberta === idx ? buscaIngrediente : ""}
-                                                onFocus={() => { setBuscaAberta(idx); setBuscaIngrediente(""); }}
-                                                onChange={(e) => setBuscaIngrediente(e.target.value)}
-                                              />
-                                            </div>
-                                            {buscaAberta === idx && (
-                                              <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-popover border border-border rounded-md shadow-md max-h-40 overflow-y-auto">
-                                                {getFilteredInsumos(ing.tipo_insumo).length === 0 ? (
-                                                  <p className="p-2 text-xs text-muted-foreground">Nenhum insumo encontrado.</p>
-                                                ) : (
-                                                  getFilteredInsumos(ing.tipo_insumo).map((item) => (
-                                                    <button key={item.id} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors"
-                                                      onMouseDown={(e) => { e.preventDefault(); selectInsumo(idx, item.id, item.nome, ing.tipo_insumo); }}>
-                                                      <span className="font-medium">{item.nome}</span>
-                                                    </button>
-                                                  ))
-                                                )}
+                                          <Popover open={buscaAberta === idx} onOpenChange={(o) => { if (!o) setBuscaAberta(null); }}>
+                                            <PopoverTrigger asChild>
+                                              <div className="relative">
+                                                <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground pointer-events-none" />
+                                                <Input
+                                                  placeholder="Buscar..."
+                                                  className="pl-7 h-9 text-sm"
+                                                  value={buscaAberta === idx ? buscaIngrediente : ""}
+                                                  onFocus={() => { setBuscaAberta(idx); setBuscaIngrediente(""); }}
+                                                  onChange={(e) => setBuscaIngrediente(e.target.value)}
+                                                />
                                               </div>
-                                            )}
-                                          </>
+                                            </PopoverTrigger>
+                                            <PopoverContent
+                                              align="start"
+                                              sideOffset={4}
+                                              onOpenAutoFocus={(e) => e.preventDefault()}
+                                              className="p-0 w-[var(--radix-popover-trigger-width)] max-h-56 overflow-y-auto"
+                                            >
+                                              {getFilteredInsumos(ing.tipo_insumo).length === 0 ? (
+                                                <p className="p-2 text-xs text-muted-foreground">Nenhum insumo encontrado.</p>
+                                              ) : (
+                                                getFilteredInsumos(ing.tipo_insumo).map((item) => (
+                                                  <button key={item.id} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors"
+                                                    onMouseDown={(e) => { e.preventDefault(); selectInsumo(idx, item.id, item.nome, ing.tipo_insumo); }}>
+                                                    <span className="font-medium">{item.nome}</span>
+                                                  </button>
+                                                ))
+                                              )}
+                                            </PopoverContent>
+                                          </Popover>
                                         )}
                                       </div>
                                     </div>
