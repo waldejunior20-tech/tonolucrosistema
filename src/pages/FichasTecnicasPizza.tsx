@@ -1092,21 +1092,19 @@ export default function FichasTecnicasPizza() {
               </div>
 
               {/* STICKY FOOTER */}
-              <div className="border-t border-border bg-card/95 backdrop-blur px-6 py-3 shrink-0">
+              <div className="border-t border-foreground/10 bg-cream/95 backdrop-blur px-8 py-3 shrink-0">
                 <div className="flex items-center justify-between gap-4 flex-wrap">
-                  <div className="flex items-center gap-4 text-sm">
-                    <div>
-                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Total P</span>
-                      <p className="font-bold text-money tabular-nums">R$ {fmt(custoForm.custoP)}</p>
-                    </div>
-                    <div>
-                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Total M</span>
-                      <p className="font-bold text-money tabular-nums">R$ {fmt(custoForm.custoM)}</p>
-                    </div>
-                    <div>
-                      <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Total G</span>
-                      <p className="font-bold text-money tabular-nums">R$ {fmt(custoForm.custoG)}</p>
-                    </div>
+                  <div className="flex items-center gap-4 text-xs font-body">
+                    {[
+                      { l: "Total P", v: custoForm.custoP },
+                      { l: "Total M", v: custoForm.custoM },
+                      { l: "Total G", v: custoForm.custoG },
+                    ].map((t) => (
+                      <div key={t.l}>
+                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{t.l}</span>
+                        <p className="font-tabular font-bold text-foreground">R$ {fmt(t.v)}</p>
+                      </div>
+                    ))}
                   </div>
                   <div className="flex items-center gap-2">
                     {form.ingredientes.length > 0 && (
