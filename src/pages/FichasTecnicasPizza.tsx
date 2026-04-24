@@ -626,27 +626,6 @@ export default function FichasTecnicasPizza() {
             </div>
 
             <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
-              <div className="flex-1 overflow-y-auto px-6 py-4 space-y-5">
-                {editingId && (
-                  <BaseSelector
-                    tipoFicha="pizza"
-                    fichaId={editingId}
-                    baseAplicadaId={baseOrigemId}
-                    onBaseAplicada={async (baseId) => {
-                      const ficha = fichas.find((f) => f.id === editingId);
-                      if (ficha) {
-                        await queryClient.invalidateQueries({ queryKey: ["fichas_tecnicas_pizza_ingredientes"] });
-                        await queryClient.invalidateQueries({ queryKey: ["fichas_tecnicas_pizza"] });
-                        // Persistir a origem da base na ficha
-                        await supabase.from("fichas_tecnicas_pizza").update({ base_origem_id: baseId }).eq("id", ficha.id);
-                        handleEdit({ ...ficha, base_origem_id: baseId });
-                      }
-                    }}
-                    onCriarNovaBase={() => setSalvarBaseOpen(true)}
-                  />
-                )}
-
-            <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
               <div className="flex-1 overflow-y-auto px-8 py-6 space-y-10">
                 {editingId && (
                   <BaseSelector
