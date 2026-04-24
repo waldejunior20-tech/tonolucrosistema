@@ -970,33 +970,38 @@ export default function FichasTecnicasPizza() {
                             </Button>
                           </div>
                         ) : (
-                          <div className="relative">
-                            <div className="relative">
-                              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground" />
-                              <Input
-                                placeholder="Buscar caixa..."
-                                className="pl-7 h-8 text-sm"
-                                value={buscaEmbalagemAberta === key ? buscaEmbalagemTermo : ""}
-                                onFocus={() => { setBuscaEmbalagemAberta(key); setBuscaEmbalagemTermo(""); }}
-                                onChange={(e) => setBuscaEmbalagemTermo(e.target.value)}
-                              />
-                            </div>
-                            {buscaEmbalagemAberta === key && (
-                              <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-popover border border-border rounded-md shadow-md max-h-40 overflow-y-auto">
-                                {getFilteredEmbalagemInsumos().length === 0 ? (
-                                  <p className="p-2 text-xs text-muted-foreground">Nenhum insumo encontrado.</p>
-                                ) : (
-                                  getFilteredEmbalagemInsumos().map((item) => (
-                                    <button key={item.id} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors"
-                                      onClick={() => selectEmbalagemInsumo(embIdx, size, item.id, item.nome)}>
-                                      <span className="font-medium">{item.nome}</span>
-                                      <span className="text-xs text-muted-foreground ml-2">R$ {fmt(custoCompradoMap.get(item.id) ?? 0)}/un</span>
-                                    </button>
-                                  ))
-                                )}
+                          <Popover open={buscaEmbalagemAberta === key} onOpenChange={(o) => { if (!o) setBuscaEmbalagemAberta(null); }}>
+                            <PopoverTrigger asChild>
+                              <div className="relative">
+                                <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground pointer-events-none" />
+                                <Input
+                                  placeholder="Buscar caixa..."
+                                  className="pl-7 h-8 text-sm"
+                                  value={buscaEmbalagemAberta === key ? buscaEmbalagemTermo : ""}
+                                  onFocus={() => { setBuscaEmbalagemAberta(key); setBuscaEmbalagemTermo(""); }}
+                                  onChange={(e) => setBuscaEmbalagemTermo(e.target.value)}
+                                />
                               </div>
-                            )}
-                          </div>
+                            </PopoverTrigger>
+                            <PopoverContent
+                              align="start"
+                              sideOffset={4}
+                              onOpenAutoFocus={(e) => e.preventDefault()}
+                              className="p-0 w-[var(--radix-popover-trigger-width)] max-h-56 overflow-y-auto"
+                            >
+                              {getFilteredEmbalagemInsumos().length === 0 ? (
+                                <p className="p-2 text-xs text-muted-foreground">Nenhum insumo encontrado.</p>
+                              ) : (
+                                getFilteredEmbalagemInsumos().map((item) => (
+                                  <button key={item.id} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors"
+                                    onMouseDown={(e) => { e.preventDefault(); selectEmbalagemInsumo(embIdx, size, item.id, item.nome); }}>
+                                    <span className="font-medium">{item.nome}</span>
+                                    <span className="text-xs text-muted-foreground ml-2">R$ {fmt(custoCompradoMap.get(item.id) ?? 0)}/un</span>
+                                  </button>
+                                ))
+                              )}
+                            </PopoverContent>
+                          </Popover>
                         )}
                       </div>
                     );
