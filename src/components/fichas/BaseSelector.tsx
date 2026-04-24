@@ -66,38 +66,50 @@ export function BaseSelector({
 
   const baseAtual = bases.find((b) => b.id === baseAplicadaId);
 
+  // Empty state inline e discreto
+  if (!isLoading && bases.length === 0) {
+    return (
+      <p className="text-xs text-muted-foreground font-body">
+        <span className="opacity-60">Bases:</span>{" "}
+        <span className="italic">nenhuma</span>
+        {onCriarNovaBase && (
+          <>
+            {" · "}
+            <button
+              type="button"
+              onClick={onCriarNovaBase}
+              className="text-primary hover:underline font-medium inline-flex items-center gap-1"
+            >
+              <Plus className="h-3 w-3" />
+              criar primeira base
+            </button>
+          </>
+        )}
+      </p>
+    );
+  }
+
   return (
-    <div className="rounded-lg border border-dashed border-muted-foreground/30 bg-muted/30 p-4 space-y-3">
-      <div className="flex items-start justify-between gap-3 flex-wrap">
-        <div>
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-primary" />
-            <h4 className="text-sm font-semibold">Bases salvas</h4>
-          </div>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Aplique uma base e poupe tempo de cadastro
-          </p>
+    <div className="space-y-2">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground font-body">
+          <Sparkles className="h-3.5 w-3.5 text-primary" />
+          <span className="font-semibold uppercase tracking-wider">Bases salvas</span>
         </div>
         {onCriarNovaBase && (
-          <Button
+          <button
             type="button"
-            variant="outline"
-            size="sm"
             onClick={onCriarNovaBase}
-            className="text-xs"
+            className="text-xs text-primary hover:underline font-medium inline-flex items-center gap-1"
           >
-            <Plus className="h-3.5 w-3.5" />
-            Salvar como base
-          </Button>
+            <Plus className="h-3 w-3" />
+            nova base
+          </button>
         )}
       </div>
 
       {isLoading ? (
         <p className="text-xs text-muted-foreground">Carregando bases…</p>
-      ) : bases.length === 0 ? (
-        <p className="text-xs text-muted-foreground italic">
-          Nenhuma base cadastrada. Crie uma para reaproveitar ingredientes em outras fichas.
-        </p>
       ) : (
         <div className="flex flex-wrap gap-2">
           {bases.map((base) => {
@@ -110,7 +122,7 @@ export function BaseSelector({
                   onClick={() => handleAplicar(base.id)}
                   disabled={aplicar.isPending}
                   className={cn(
-                    "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-l-full text-xs font-medium border transition",
+                    "inline-flex items-center gap-1.5 px-3 py-1 rounded-l-full text-xs font-medium border transition font-body",
                     ativa
                       ? "bg-foreground text-background border-foreground"
                       : "bg-card border-border text-foreground hover:border-primary hover:text-primary",
@@ -124,13 +136,13 @@ export function BaseSelector({
                       padrão
                     </span>
                   )}
-                  <span className="ml-1 opacity-60">· {ingsCount}</span>
+                  <span className="ml-1 opacity-60 font-tabular">· {ingsCount}</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setConfirmDelete(base.id)}
                   className={cn(
-                    "px-2 py-1.5 rounded-r-full text-xs border border-l-0 transition",
+                    "px-2 py-1 rounded-r-full text-xs border border-l-0 transition",
                     ativa
                       ? "bg-foreground text-background border-foreground hover:bg-destructive hover:border-destructive"
                       : "bg-card border-border text-muted-foreground hover:bg-destructive hover:text-white hover:border-destructive",
