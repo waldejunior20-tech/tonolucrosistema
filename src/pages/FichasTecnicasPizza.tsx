@@ -698,20 +698,19 @@ export default function FichasTecnicasPizza() {
                     }
 
                     return (
-                      <div className="rounded-md border border-border overflow-visible">
+                      <div className="rounded-md border border-border/60 overflow-visible bg-card/40">
                         <Table>
                           <TableHeader>
-                            <TableRow>
-                              <TableHead className="w-[280px]">Ingrediente</TableHead>
-                              <TableHead className="w-[90px]">Origem</TableHead>
-                              <TableHead className="w-[100px]">Unidade</TableHead>
-                              <TableHead className="w-[88px] text-right">Qtd P</TableHead>
-                              <TableHead className="w-[88px] text-right">Qtd M</TableHead>
-                              <TableHead className="w-[88px] text-right">Qtd G</TableHead>
-                              <TableHead className="w-[80px] text-right">Custo P</TableHead>
-                              <TableHead className="w-[80px] text-right">Custo M</TableHead>
-                              <TableHead className="w-[80px] text-right">Custo G</TableHead>
-                              <TableHead className="w-[40px]"></TableHead>
+                            <TableRow className="!bg-transparent">
+                              <TableHead className="w-[300px] font-body">Ingrediente</TableHead>
+                              <TableHead className="w-[80px] font-body">Un</TableHead>
+                              <TableHead className="w-[64px] text-right font-body">Qtd P</TableHead>
+                              <TableHead className="w-[64px] text-right font-body">Qtd M</TableHead>
+                              <TableHead className="w-[64px] text-right font-body">Qtd G</TableHead>
+                              <TableHead className="w-[68px] text-right font-body">R$ P</TableHead>
+                              <TableHead className="w-[68px] text-right font-body">R$ M</TableHead>
+                              <TableHead className="w-[68px] text-right font-body">R$ G</TableHead>
+                              <TableHead className="w-[36px] !px-1"></TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
@@ -722,7 +721,6 @@ export default function FichasTecnicasPizza() {
                                 : (custoProprioMap.get(insumoId) ?? 0);
                               const fromBase = !!ing.db_id && ingredientesBaseIds.has(ing.db_id);
 
-                              // Validação: unidade do insumo comprado vs unidade usada
                               const insumoCompradoSel = insumosComprados.find((i) => i.id === ing.insumo_comprado_id);
                               const familiaCompra = insumoCompradoSel
                                 ? (["kg", "g"].includes(insumoCompradoSel.unidade) ? "peso"
@@ -738,7 +736,7 @@ export default function FichasTecnicasPizza() {
                                   <Input
                                     type="number" step="0.01" min="0"
                                     className={cn(
-                                      "h-9 text-sm text-right tabular-nums px-2",
+                                      "h-8 text-xs text-right font-tabular px-1.5 !min-w-0",
                                       invalid && "border-destructive focus-visible:border-destructive",
                                     )}
                                     value={qtdVal || ""}
@@ -753,25 +751,28 @@ export default function FichasTecnicasPizza() {
                                 <TableRow
                                   key={idx}
                                   className={cn(
-                                    "group",
+                                    "group !bg-transparent hover:!bg-foreground/[0.02]",
                                     fromBase && "border-l-2 border-l-success",
                                   )}
                                 >
-                                  {/* Ingrediente: nome + tipo + busca */}
-                                  <TableCell className="align-top py-2 overflow-visible relative">
-                                    <div className="flex items-center gap-2">
+                                  {/* Ingrediente: tipo + nome/busca + badge base inline */}
+                                  <TableCell className="align-middle !py-2 !px-2 overflow-visible relative">
+                                    <div className="flex items-center gap-1.5">
                                       <Select value={ing.tipo_insumo} onValueChange={(v) => updateIngrediente(idx, "tipo_insumo", v)}>
-                                        <SelectTrigger className="h-9 w-[110px] text-xs"><SelectValue /></SelectTrigger>
+                                        <SelectTrigger className="h-8 w-[92px] text-[11px] px-2"><SelectValue /></SelectTrigger>
                                         <SelectContent>
                                           <SelectItem value="comprado">Comprado</SelectItem>
                                           <SelectItem value="produzido">Produzido</SelectItem>
                                         </SelectContent>
                                       </Select>
-                                      <div className="flex-1 relative">
+                                      <div className="flex-1 relative min-w-0">
                                         {hasInsumoSelected(ing) ? (
-                                          <div className="flex items-center gap-1 h-9">
-                                            <span className="text-sm font-medium text-foreground truncate" title={ing.nome_display}>{ing.nome_display}</span>
-                                            <Button type="button" variant="ghost" size="icon" className="h-5 w-5 shrink-0 opacity-0 group-hover:opacity-100" onClick={() => clearInsumoSelection(idx)}>
+                                          <div className="flex items-center gap-1 h-8">
+                                            <span className="text-xs font-body font-medium text-foreground truncate" title={ing.nome_display}>{ing.nome_display}</span>
+                                            {fromBase && (
+                                              <Sparkles className="h-3 w-3 text-success shrink-0" aria-label="da base" />
+                                            )}
+                                            <Button type="button" variant="ghost" size="icon" className="h-5 w-5 shrink-0 opacity-0 group-hover:opacity-100 ml-auto" onClick={() => clearInsumoSelection(idx)}>
                                               <X className="h-3 w-3" />
                                             </Button>
                                           </div>
@@ -782,7 +783,7 @@ export default function FichasTecnicasPizza() {
                                                 <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground pointer-events-none" />
                                                 <Input
                                                   placeholder="Buscar..."
-                                                  className="pl-7 h-9 text-sm"
+                                                  className="pl-7 h-8 text-xs"
                                                   value={buscaAberta === idx ? buscaIngrediente : ""}
                                                   onFocus={() => { setBuscaAberta(idx); setBuscaIngrediente(""); }}
                                                   onChange={(e) => setBuscaIngrediente(e.target.value)}
@@ -818,23 +819,10 @@ export default function FichasTecnicasPizza() {
                                     )}
                                   </TableCell>
 
-                                  {/* Origem */}
-                                  <TableCell className="align-middle py-2">
-                                    {fromBase ? (
-                                      <Badge variant="secondary" className="bg-success/15 text-success border-success/30 text-[10px] uppercase tracking-wide">
-                                        <Sparkles className="h-2.5 w-2.5 mr-0.5" /> base
-                                      </Badge>
-                                    ) : (
-                                      <Badge variant="outline" className="text-[10px] uppercase tracking-wide border-warning/40 text-warning">
-                                        único
-                                      </Badge>
-                                    )}
-                                  </TableCell>
-
                                   {/* Unidade */}
-                                  <TableCell className="align-middle py-2">
+                                  <TableCell className="align-middle !py-2 !px-1.5">
                                     <Select value={ing.unidade} onValueChange={(v) => updateIngrediente(idx, "unidade", v)}>
-                                      <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Un" /></SelectTrigger>
+                                      <SelectTrigger className="h-8 text-[11px] px-2"><SelectValue placeholder="Un" /></SelectTrigger>
                                       <SelectContent>
                                         {UNIDADES.map((u) => <SelectItem key={u} value={u}>{u}</SelectItem>)}
                                       </SelectContent>
@@ -842,30 +830,30 @@ export default function FichasTecnicasPizza() {
                                   </TableCell>
 
                                   {/* Quantidades */}
-                                  <TableCell className="align-middle py-2">{renderQtdInput("qtd_p", ing.qtd_p)}</TableCell>
-                                  <TableCell className="align-middle py-2">{renderQtdInput("qtd_m", ing.qtd_m)}</TableCell>
-                                  <TableCell className="align-middle py-2">{renderQtdInput("qtd_g", ing.qtd_g)}</TableCell>
+                                  <TableCell className="align-middle !py-2 !px-1">{renderQtdInput("qtd_p", ing.qtd_p)}</TableCell>
+                                  <TableCell className="align-middle !py-2 !px-1">{renderQtdInput("qtd_m", ing.qtd_m)}</TableCell>
+                                  <TableCell className="align-middle !py-2 !px-1">{renderQtdInput("qtd_g", ing.qtd_g)}</TableCell>
 
                                   {/* Custos */}
-                                  <TableCell className="text-right text-xs font-medium tabular-nums align-middle py-2">
-                                    R$ {fmt(custoUnit * converterQuantidade(ing.qtd_p, ing.unidade))}
+                                  <TableCell className="text-right text-xs font-tabular align-middle !py-2 !px-1.5">
+                                    {fmt(custoUnit * converterQuantidade(ing.qtd_p, ing.unidade))}
                                   </TableCell>
-                                  <TableCell className="text-right text-xs font-medium tabular-nums align-middle py-2">
-                                    R$ {fmt(custoUnit * converterQuantidade(ing.qtd_m, ing.unidade))}
+                                  <TableCell className="text-right text-xs font-tabular align-middle !py-2 !px-1.5">
+                                    {fmt(custoUnit * converterQuantidade(ing.qtd_m, ing.unidade))}
                                   </TableCell>
-                                  <TableCell className="text-right text-xs font-medium tabular-nums align-middle py-2">
-                                    R$ {fmt(custoUnit * converterQuantidade(ing.qtd_g, ing.unidade))}
+                                  <TableCell className="text-right text-xs font-tabular align-middle !py-2 !px-1.5">
+                                    {fmt(custoUnit * converterQuantidade(ing.qtd_g, ing.unidade))}
                                   </TableCell>
 
-                                  <TableCell className="align-middle py-2">
+                                  <TableCell className="align-middle !py-2 !px-1">
                                     <Button
                                       type="button"
                                       variant="ghost"
                                       size="icon"
-                                      className="h-8 w-8 opacity-0 group-hover:opacity-100"
+                                      className="h-7 w-7 opacity-0 group-hover:opacity-100"
                                       onClick={() => removeIngrediente(idx)}
                                     >
-                                      <Trash2 className="h-4 w-4 text-destructive" />
+                                      <Trash2 className="h-3.5 w-3.5 text-destructive" />
                                     </Button>
                                   </TableCell>
                                 </TableRow>
