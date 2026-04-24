@@ -578,25 +578,48 @@ export default function FichasTecnicasPizza() {
               <Plus className="h-4 w-4" /> Nova Ficha
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-5xl max-h-[92vh] p-0 gap-0 flex flex-col overflow-hidden">
-            <DialogHeader className="px-6 pt-5 pb-3 border-b border-border shrink-0">
-              <DialogTitle className="text-xl">{editingId ? "Editar Ficha Técnica" : "Nova Ficha Técnica"}</DialogTitle>
+          <DialogContent className="sm:max-w-5xl max-h-[92vh] p-0 gap-0 flex flex-col overflow-hidden bg-cream">
+            {/* HEADER UNIFICADO: Nome · Nº ficha · Tipo */}
+            <DialogHeader className="px-8 pt-6 pb-4 shrink-0">
+              <DialogTitle asChild>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <span className="font-display italic text-2xl font-semibold text-foreground">
+                    {form.nome || (editingId ? "Sem nome" : "Nova ficha")}
+                  </span>
+                  {form.numero_ficha && (
+                    <>
+                      <span className="text-muted-foreground/50">·</span>
+                      <span className="font-tabular text-sm text-muted-foreground">{form.numero_ficha}</span>
+                    </>
+                  )}
+                  <span className="text-muted-foreground/50">·</span>
+                  <Select value={form.tipo} onValueChange={(v) => setForm({ ...form, tipo: v })}>
+                    <SelectTrigger className="h-8 w-[160px] text-xs border-foreground/15 bg-transparent">
+                      <SelectValue placeholder="Selecionar tipo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TIPOS.map((t) => (
+                        <SelectItem key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </DialogTitle>
             </DialogHeader>
 
-            {/* STICKY COST-STRIP */}
-            <div className="px-6 py-3 bg-muted/30 border-b border-border shrink-0">
-              <div className="grid grid-cols-3 gap-3">
+            {/* COST-STRIP HORIZONTAL COMPACTO: P · M · G */}
+            <div className="px-8 py-2 shrink-0">
+              <div className="inline-flex items-center gap-4 text-xs font-body">
                 {[
-                  { label: "Custo P", value: custoForm.custoP, sub: "25cm" },
-                  { label: "Custo M", value: custoForm.custoM, sub: "30cm" },
-                  { label: "Custo G", value: custoForm.custoG, sub: "35cm" },
-                ].map((c) => (
-                  <div key={c.label} className="rounded-md bg-card border border-border px-3 py-2 flex items-center justify-between">
-                    <div>
-                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{c.label}</p>
-                      <p className="text-[10px] text-muted-foreground">{c.sub}</p>
-                    </div>
-                    <p className="text-lg font-bold text-money tabular-nums">R$ {fmt(c.value)}</p>
+                  { label: "P", dim: "25cm", value: custoForm.custoP },
+                  { label: "M", dim: "30cm", value: custoForm.custoM },
+                  { label: "G", dim: "35cm", value: custoForm.custoG },
+                ].map((c, i) => (
+                  <div key={c.label} className="flex items-center gap-1.5">
+                    {i > 0 && <span className="text-muted-foreground/40">·</span>}
+                    <span className="font-semibold text-foreground">{c.label}</span>
+                    <span className="text-muted-foreground/70">{c.dim}</span>
+                    <span className="font-tabular font-semibold text-foreground">R$ {fmt(c.value)}</span>
                   </div>
                 ))}
               </div>
