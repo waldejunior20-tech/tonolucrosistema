@@ -417,3 +417,21 @@ label, .label {
   font-weight: 600;
   font-size: 15px;
 }
+
+/* ══════════════════════════════════════════════════
+   FONTES PARA REDESIGN DE FICHA TÉCNICA
+   ══════════════════════════════════════════════════ */
+.font-display {
+  font-family: 'Fraunces', Georgia, serif;
+  font-optical-sizing: auto;
+}
+.font-body {
+  font-family: 'Geist', 'Inter', system-ui, sans-serif;
+}
+.font-tabular {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+.bg-cream {
+  background-color: #FAF7F2;
+}
