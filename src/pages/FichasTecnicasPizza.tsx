@@ -646,48 +646,56 @@ export default function FichasTecnicasPizza() {
                   />
                 )}
 
-                {/* Dados principais */}
+            <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+              <div className="flex-1 overflow-y-auto px-8 py-6 space-y-10">
+                {editingId && (
+                  <BaseSelector
+                    tipoFicha="pizza"
+                    fichaId={editingId}
+                    baseAplicadaId={baseOrigemId}
+                    onBaseAplicada={async (baseId) => {
+                      const ficha = fichas.find((f) => f.id === editingId);
+                      if (ficha) {
+                        await queryClient.invalidateQueries({ queryKey: ["fichas_tecnicas_pizza_ingredientes"] });
+                        await queryClient.invalidateQueries({ queryKey: ["fichas_tecnicas_pizza"] });
+                        await supabase.from("fichas_tecnicas_pizza").update({ base_origem_id: baseId }).eq("id", ficha.id);
+                        handleEdit({ ...ficha, base_origem_id: baseId });
+                      }
+                    }}
+                    onCriarNovaBase={() => setSalvarBaseOpen(true)}
+                  />
+                )}
+
+                {/* Dados principais — inputs minimalistas (tipo já está no header) */}
                 <div className="grid grid-cols-3 gap-4">
                   <div className="col-span-2">
-                    <Label htmlFor="nome">Nome da Pizza *</Label>
+                    <Label htmlFor="nome" className="font-body text-xs uppercase tracking-wider text-muted-foreground">Nome da Pizza *</Label>
                     <Input
                       id="nome"
                       placeholder="Ex: Margherita, Calabresa"
                       value={form.nome}
                       onChange={(e) => setForm({ ...form, nome: e.target.value })}
                       onBlur={() => setTouched(t => ({ ...t, nome: true }))}
-                      className={fieldErrorClass(nomeInvalid)}
+                      className={cn("font-display text-base bg-transparent border-foreground/15", fieldErrorClass(nomeInvalid))}
                     />
                     <FieldError show={nomeInvalid} />
                   </div>
                   <div>
-                    <Label htmlFor="numero_ficha">Nº da Ficha</Label>
+                    <Label htmlFor="numero_ficha" className="font-body text-xs uppercase tracking-wider text-muted-foreground">Nº da Ficha</Label>
                     <Input
                       id="numero_ficha"
-                      placeholder="Ex: FT-001"
+                      placeholder="FT-001"
                       value={form.numero_ficha}
                       onChange={(e) => setForm({ ...form, numero_ficha: e.target.value })}
+                      className="font-tabular text-sm bg-transparent border-foreground/15"
                     />
-                  </div>
-                  <div className="col-span-3">
-                    <Label>Tipo</Label>
-                    <Select value={form.tipo} onValueChange={(v) => setForm({ ...form, tipo: v })}>
-                      <SelectTrigger className="w-[260px]"><SelectValue placeholder="Selecione" /></SelectTrigger>
-                      <SelectContent>
-                        {TIPOS.map((t) => (
-                          <SelectItem key={t} value={t}>
-                            {t.charAt(0).toUpperCase() + t.slice(1)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
                   </div>
                 </div>
 
                 {/* INGREDIENTES — TABELA DENSA */}
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <Label className="text-base">Ingredientes *</Label>
+                    <Label className="font-display italic text-lg font-semibold text-foreground">Ingredientes *</Label>
                     <Button type="button" size="sm" className="btn-action-add gap-1" onClick={addIngrediente}>
                       <Plus className="h-3.5 w-3.5" /> Adicionar Ingrediente
                     </Button>
@@ -701,7 +709,7 @@ export default function FichasTecnicasPizza() {
                     if (normais.length === 0) {
                       return (
                         <div className={cn(
-                          "rounded-md border border-dashed border-border p-6 text-center text-sm text-muted-foreground",
+                          "rounded-md border border-dashed border-border p-6 text-center text-sm text-muted-foreground bg-transparent",
                           ingredientesInvalid && "border-destructive/50 bg-destructive/5",
                         )}>
                           Nenhum ingrediente adicionado. Aplique uma base ou clique em "Adicionar Ingrediente".
