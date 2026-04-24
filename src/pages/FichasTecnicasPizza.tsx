@@ -943,69 +943,46 @@ export default function FichasTecnicasPizza() {
 
                   const faltando = !ing.caixa_p_id || !ing.caixa_m_id || !ing.caixa_g_id;
 
+                  const embalagensDisponiveis = insumosComprados.filter((ic) => ic.categoria === "Embalagens");
+
                   const renderCaixaSlot = (size: "p" | "m" | "g", label: string, dim: string, caixaId: string, caixaNome: string) => {
-                    const key = `${embIdx}-${size}`;
                     const custo = custoCompradoMap.get(caixaId) ?? 0;
                     return (
-                      <div className="rounded-md border border-border bg-card p-3 space-y-2">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm font-bold">Caixa {label}</p>
-                            <p className="text-[10px] text-muted-foreground">{dim}</p>
-                          </div>
-                          {caixaId && (
-                            <p className="text-xs font-semibold text-money tabular-nums">R$ {fmt(custo)}</p>
-                          )}
+                      <div className="space-y-1.5">
+                        <div className="flex items-baseline justify-between">
+                          <span className="font-display italic text-sm font-semibold text-foreground">Caixa {label}</span>
+                          <span className="text-[10px] text-muted-foreground font-body">{dim}</span>
                         </div>
-                        {caixaId ? (
-                          <div className="flex items-center gap-1">
-                            <span className="text-xs font-medium text-foreground truncate flex-1" title={caixaNome}>{caixaNome}</span>
-                            <Button type="button" variant="ghost" size="icon" className="h-6 w-6" onClick={() => {
-                              const updated = [...form.ingredientes];
-                              if (size === "p") updated[embIdx] = { ...updated[embIdx], caixa_p_id: "", caixa_p_nome: "" };
-                              else if (size === "m") updated[embIdx] = { ...updated[embIdx], caixa_m_id: "", caixa_m_nome: "" };
-                              else updated[embIdx] = { ...updated[embIdx], caixa_g_id: "", caixa_g_nome: "" };
-                              setForm({ ...form, ingredientes: updated });
-                            }}>
-                              <X className="h-3 w-3" />
-                            </Button>
+                        {embalagensDisponiveis.length === 0 ? (
+                          <div className="text-[10px] text-muted-foreground italic px-2 py-2 border border-dashed border-border rounded-md">
+                            Nenhuma embalagem cadastrada.
                           </div>
                         ) : (
-                          <Popover open={buscaEmbalagemAberta === key} onOpenChange={(o) => { if (!o) setBuscaEmbalagemAberta(null); }}>
-                            <PopoverTrigger asChild>
-                              <div className="relative">
-                                <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground pointer-events-none" />
-                                <Input
-                                  placeholder="Buscar caixa..."
-                                  className="pl-7 h-8 text-sm"
-                                  value={buscaEmbalagemAberta === key ? buscaEmbalagemTermo : ""}
-                                  onFocus={() => { setBuscaEmbalagemAberta(key); setBuscaEmbalagemTermo(""); }}
-                                  onChange={(e) => setBuscaEmbalagemTermo(e.target.value)}
-                                />
-                              </div>
-                            </PopoverTrigger>
-                            <PopoverContent
-                              align="start"
-                              sideOffset={4}
-                              onOpenAutoFocus={(e) => e.preventDefault()}
-                              className="p-0 w-[var(--radix-popover-trigger-width)] max-h-56 overflow-y-auto"
-                            >
-                              {getFilteredEmbalagemInsumos().length === 0 ? (
-                                <div className="p-3 text-xs text-muted-foreground space-y-1">
-                                  <p>Nenhuma embalagem encontrada.</p>
-                                  <p className="text-[10px]">Cadastre em <strong>Insumos Comprados</strong> com categoria <strong>"Embalagens"</strong>.</p>
-                                </div>
-                              ) : (
-                                getFilteredEmbalagemInsumos().map((item) => (
-                                  <button key={item.id} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors"
-                                    onMouseDown={(e) => { e.preventDefault(); selectEmbalagemInsumo(embIdx, size, item.id, item.nome); }}>
-                                    <span className="font-medium">{item.nome}</span>
-                                    <span className="text-xs text-muted-foreground ml-2">R$ {fmt(custoCompradoMap.get(item.id) ?? 0)}/un</span>
-                                  </button>
-                                ))
-                              )}
-                            </PopoverContent>
-                          </Popover>
+                          <Select
+                            value={caixaId || undefined}
+                            onValueChange={(id) => {
+                              const item = embalagensDisponiveis.find((i) => i.id === id);
+                              if (item) selectEmbalagemInsumo(embIdx, size, item.id, item.nome);
+                            }}
+                          >
+                            <SelectTrigger className="h-9 text-xs bg-transparent border-foreground/15">
+                              <SelectValue placeholder="Selecionar caixa" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {embalagensDisponiveis.map((item) => (
+                                <SelectItem key={item.id} value={item.id}>
+                                  <span className="font-medium">{item.nome}</span>
+                                  <span className="text-xs text-muted-foreground ml-2 font-tabular">R$ {fmt(custoCompradoMap.get(item.id) ?? 0)}</span>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
+                        {caixaId && (
+                          <div className="flex items-center justify-between text-[11px] font-body">
+                            <span className="text-muted-foreground truncate" title={caixaNome}>{caixaNome}</span>
+                            <span className="font-tabular font-semibold text-foreground">R$ {fmt(custo)}</span>
+                          </div>
                         )}
                       </div>
                     );
