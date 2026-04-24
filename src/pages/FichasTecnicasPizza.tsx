@@ -559,7 +559,10 @@ export default function FichasTecnicasPizza() {
   };
 
   const getFilteredEmbalagemInsumos = () => {
-    return insumosComprados.filter((ic) => matchesSearch(ic.nome, buscaEmbalagemTermo)).slice(0, 10);
+    return insumosComprados
+      .filter((ic) => ic.categoria === "Embalagens")
+      .filter((ic) => matchesSearch(ic.nome, buscaEmbalagemTermo))
+      .slice(0, 10);
   };
 
   const custoForm = calcularCustosForm();
