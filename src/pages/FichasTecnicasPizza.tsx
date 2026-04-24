@@ -1016,7 +1016,7 @@ export default function FichasTecnicasPizza() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <Package className="h-4 w-4 text-foreground" />
-                          <Label className="text-base">Embalagens por Tamanho</Label>
+                          <Label className="font-display italic text-lg font-semibold text-foreground">Embalagens por Tamanho</Label>
                         </div>
                         <Button type="button" variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => removeIngrediente(embIdx)}>
                           <Trash2 className="h-3.5 w-3.5" /> Remover
