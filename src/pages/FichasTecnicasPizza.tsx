@@ -991,7 +991,10 @@ export default function FichasTecnicasPizza() {
                               className="p-0 w-[var(--radix-popover-trigger-width)] max-h-56 overflow-y-auto"
                             >
                               {getFilteredEmbalagemInsumos().length === 0 ? (
-                                <p className="p-2 text-xs text-muted-foreground">Nenhum insumo encontrado.</p>
+                                <div className="p-3 text-xs text-muted-foreground space-y-1">
+                                  <p>Nenhuma embalagem encontrada.</p>
+                                  <p className="text-[10px]">Cadastre em <strong>Insumos Comprados</strong> com categoria <strong>"Embalagens"</strong>.</p>
+                                </div>
                               ) : (
                                 getFilteredEmbalagemInsumos().map((item) => (
                                   <button key={item.id} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors"
