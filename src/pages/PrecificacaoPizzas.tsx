@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
-import { Cog, Save, AlertTriangle, Check, TrendingUp, TrendingDown, Activity, ChevronDown } from "lucide-react";
+import { Cog, Save, AlertTriangle, Check, TrendingUp, TrendingDown, Activity, ChevronDown, Info } from "lucide-react";
 import { formatMoney } from "@/components/MoneyInput";
 import {
   fmt, fmtPct, calcCmv, converterQuantidade, cmvBg, cmvColor, cmvEmoji, cmvMessage,
@@ -325,21 +325,31 @@ export default function PrecificacaoPizzas() {
   const sizes = ["p", "m", "g"] as const;
   const sizeLabels = { p: "P", m: "M", g: "G" };
 
-  // CMV pill colors
+  // CMV pill colors — padrão Abrasel (alinhado com pricing-helpers.ts)
+  // < 25% azul (margem alta) | 25-35% verde (ideal) | 35-40% amarelo (atenção) | > 40% vermelho (prejuízo)
   const getCmvPillStyle = (cmv: number) => {
-    if (cmv > 35) return { bg: 'hsl(var(--destructive))', text: 'hsl(var(--destructive-foreground))', glow: 'hsl(var(--destructive) / 0.25)' };
-    if (cmv > 30) return { bg: 'hsl(var(--warning))', text: 'hsl(var(--foreground))', glow: 'hsl(var(--warning) / 0.25)' };
+    if (cmv > 40) return { bg: 'hsl(var(--destructive))', text: 'hsl(var(--destructive-foreground))', glow: 'hsl(var(--destructive) / 0.25)' };
+    if (cmv > 35) return { bg: 'hsl(var(--warning))', text: 'hsl(var(--foreground))', glow: 'hsl(var(--warning) / 0.25)' };
+    if (cmv < 25) return { bg: 'hsl(var(--info, 217 91% 60%))', text: 'hsl(var(--primary-foreground))', glow: 'hsl(var(--info, 217 91% 60%) / 0.25)' };
     return { bg: 'hsl(var(--success))', text: 'hsl(var(--primary-foreground))', glow: 'hsl(var(--success) / 0.25)' };
   };
 
-  // Health dot for card header
+  // Health dot for card header — mesmas faixas Abrasel
   const getHealthColor = (cmvs: { p: number; m: number; g: number }, precos: { p: number; m: number; g: number }) => {
     const activeCmvs = sizes.filter(s => precos[s] > 0).map(s => cmvs[s]);
     if (activeCmvs.length === 0) return { color: 'hsl(var(--muted-foreground))', glow: 'transparent' };
     const worst = Math.max(...activeCmvs);
-    if (worst > 35) return { color: 'hsl(var(--destructive))', glow: 'hsl(var(--destructive) / 0.4)' };
-    if (worst > 30) return { color: 'hsl(var(--warning))', glow: 'hsl(var(--warning) / 0.4)' };
+    if (worst > 40) return { color: 'hsl(var(--destructive))', glow: 'hsl(var(--destructive) / 0.4)' };
+    if (worst > 35) return { color: 'hsl(var(--warning))', glow: 'hsl(var(--warning) / 0.4)' };
     return { color: 'hsl(var(--success))', glow: 'hsl(var(--success) / 0.4)' };
+  };
+
+  // Border do input "Seu Preço" — mesmas faixas
+  const getCmvBorderColors = (cmv: number, preco: number) => {
+    if (preco <= 0) return { border: 'hsl(var(--border))', glow: 'transparent' };
+    if (cmv > 40) return { border: 'hsl(var(--destructive))', glow: 'hsl(var(--destructive) / 0.10)' };
+    if (cmv > 35) return { border: 'hsl(var(--warning))', glow: 'hsl(var(--warning) / 0.10)' };
+    return { border: 'hsl(var(--success))', glow: 'hsl(var(--success) / 0.10)' };
   };
 
   return (
