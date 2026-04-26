@@ -453,6 +453,25 @@ export default function PrecificacaoPizzas() {
           </div>
         </div>
 
+        {/* ═══ Legenda das faixas de CMV (padrão Abrasel) ═══ */}
+        <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold">
+          <span className="text-muted-foreground uppercase tracking-wider mr-1">Faixas de CMV:</span>
+          <span className="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">&lt; 25% Margem alta</span>
+          <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">25–35% Ideal</span>
+          <span className="px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">35–40% Atenção</span>
+          <span className="px-2.5 py-1 rounded-full bg-red-50 text-red-700 border border-red-200">&gt; 40% Prejuízo</span>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button type="button" className="ml-1 text-muted-foreground hover:text-foreground transition-colors">
+                <Info className="h-3.5 w-3.5" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="max-w-xs text-xs">
+              CMV = Custo da Mercadoria Vendida. Mostra quanto do preço de venda é consumido pelo custo do produto. Faixas baseadas no padrão Abrasel para food service.
+            </TooltipContent>
+          </Tooltip>
+        </div>
+
         {/* ═══ Pizza Cards — Summary + Expand ═══ */}
         <div className="space-y-4">
           {fichas.length === 0 ? (
