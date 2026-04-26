@@ -581,23 +581,23 @@ export default function FichasTecnicasPizza() {
               <Plus className="h-4 w-4" /> Nova Ficha
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-5xl max-h-[92vh] p-0 gap-0 flex flex-col overflow-hidden !bg-[#FAF7F2]">
+          <DialogContent className="sm:max-w-5xl max-h-[92vh] p-0 gap-0 flex flex-col overflow-hidden ">
             {/* HEADER UNIFICADO: Nome · Nº ficha · Tipo */}
             <DialogHeader className="px-8 pt-6 pb-4 shrink-0">
               <DialogTitle asChild>
                 <div className="flex items-center gap-3 flex-wrap">
-                  <span className="font-display italic text-2xl font-semibold text-foreground">
+                  <span className="text-2xl font-semibold text-foreground">
                     {form.nome || (editingId ? "Sem nome" : "Nova ficha")}
                   </span>
                   {form.numero_ficha && (
                     <>
                       <span className="text-muted-foreground/50">·</span>
-                      <span className="font-tabular text-sm text-muted-foreground">{form.numero_ficha}</span>
+                      <span className=" text-sm text-muted-foreground">{form.numero_ficha}</span>
                     </>
                   )}
                   <span className="text-muted-foreground/50">·</span>
                   <Select value={form.tipo} onValueChange={(v) => setForm({ ...form, tipo: v })}>
-                    <SelectTrigger className="h-8 w-[160px] text-xs border-foreground/15 bg-transparent">
+                    <SelectTrigger className="h-8 w-[160px] text-xs border-input bg-transparent">
                       <SelectValue placeholder="Selecionar tipo" />
                     </SelectTrigger>
                     <SelectContent>
@@ -612,7 +612,7 @@ export default function FichasTecnicasPizza() {
 
             {/* COST-STRIP HORIZONTAL COMPACTO: P · M · G */}
             <div className="px-8 py-2 shrink-0">
-              <div className="inline-flex items-center gap-4 text-xs font-body">
+              <div className="inline-flex items-center gap-4 text-xs ">
                 {[
                   { label: "P", dim: "25cm", value: custoForm.custoP },
                   { label: "M", dim: "30cm", value: custoForm.custoM },
@@ -622,7 +622,7 @@ export default function FichasTecnicasPizza() {
                     {i > 0 && <span className="text-muted-foreground/40">·</span>}
                     <span className="font-semibold text-foreground">{c.label}</span>
                     <span className="text-muted-foreground/70">{c.dim}</span>
-                    <span className="font-tabular font-semibold text-foreground">R$ {fmt(c.value)}</span>
+                    <span className=" font-semibold text-foreground">R$ {fmt(c.value)}</span>
                   </div>
                 ))}
               </div>
@@ -651,25 +651,25 @@ export default function FichasTecnicasPizza() {
                 {/* Dados principais — inputs minimalistas (tipo já está no header) */}
                 <div className="grid grid-cols-3 gap-4">
                   <div className="col-span-2">
-                    <Label htmlFor="nome" className="font-body text-xs uppercase tracking-wider text-muted-foreground">Nome da Pizza *</Label>
+                    <Label htmlFor="nome" className=" text-xs uppercase tracking-wider text-muted-foreground">Nome da Pizza *</Label>
                     <Input
                       id="nome"
                       placeholder="Ex: Margherita, Calabresa"
                       value={form.nome}
                       onChange={(e) => setForm({ ...form, nome: e.target.value })}
                       onBlur={() => setTouched(t => ({ ...t, nome: true }))}
-                      className={cn("font-display text-base bg-transparent border-foreground/15", fieldErrorClass(nomeInvalid))}
+                      className={cn("text-base border-input", fieldErrorClass(nomeInvalid))}
                     />
                     <FieldError show={nomeInvalid} />
                   </div>
                   <div>
-                    <Label htmlFor="numero_ficha" className="font-body text-xs uppercase tracking-wider text-muted-foreground">Nº da Ficha</Label>
+                    <Label htmlFor="numero_ficha" className=" text-xs uppercase tracking-wider text-muted-foreground">Nº da Ficha</Label>
                     <Input
                       id="numero_ficha"
                       placeholder="FT-001"
                       value={form.numero_ficha}
                       onChange={(e) => setForm({ ...form, numero_ficha: e.target.value })}
-                      className="font-tabular text-sm bg-transparent border-foreground/15"
+                      className=" text-sm border-input"
                     />
                   </div>
                 </div>
@@ -677,7 +677,7 @@ export default function FichasTecnicasPizza() {
                 {/* INGREDIENTES — TABELA DENSA */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <Label className="font-display italic text-lg font-semibold text-foreground">Ingredientes *</Label>
+                    <Label className="text-lg font-semibold text-foreground">Ingredientes *</Label>
                     <Button type="button" size="sm" className="btn-action-add gap-1" onClick={addIngrediente}>
                       <Plus className="h-3.5 w-3.5" /> Adicionar Ingrediente
                     </Button>
@@ -705,14 +705,14 @@ export default function FichasTecnicasPizza() {
                         <Table>
                           <TableHeader>
                             <TableRow className="!bg-transparent">
-                              <TableHead className="w-[300px] font-body">Ingrediente</TableHead>
-                              <TableHead className="w-[80px] font-body">Un</TableHead>
-                              <TableHead className="w-[64px] text-right font-body">Qtd P</TableHead>
-                              <TableHead className="w-[64px] text-right font-body">Qtd M</TableHead>
-                              <TableHead className="w-[64px] text-right font-body">Qtd G</TableHead>
-                              <TableHead className="w-[68px] text-right font-body">R$ P</TableHead>
-                              <TableHead className="w-[68px] text-right font-body">R$ M</TableHead>
-                              <TableHead className="w-[68px] text-right font-body">R$ G</TableHead>
+                              <TableHead className="w-[300px] ">Ingrediente</TableHead>
+                              <TableHead className="w-[80px] ">Un</TableHead>
+                              <TableHead className="w-[64px] text-right ">Qtd P</TableHead>
+                              <TableHead className="w-[64px] text-right ">Qtd M</TableHead>
+                              <TableHead className="w-[64px] text-right ">Qtd G</TableHead>
+                              <TableHead className="w-[68px] text-right ">R$ P</TableHead>
+                              <TableHead className="w-[68px] text-right ">R$ M</TableHead>
+                              <TableHead className="w-[68px] text-right ">R$ G</TableHead>
                               <TableHead className="w-[36px] !px-1"></TableHead>
                             </TableRow>
                           </TableHeader>
@@ -739,7 +739,7 @@ export default function FichasTecnicasPizza() {
                                   <Input
                                     type="number" step="0.01" min="0"
                                     className={cn(
-                                      "h-8 text-xs text-right font-tabular px-1.5 !min-w-0",
+                                      "h-8 text-xs text-right  px-1.5 !min-w-0",
                                       invalid && "border-destructive focus-visible:border-destructive",
                                     )}
                                     value={qtdVal || ""}
@@ -754,7 +754,7 @@ export default function FichasTecnicasPizza() {
                                 <TableRow
                                   key={idx}
                                   className={cn(
-                                    "group !bg-transparent hover:!bg-foreground/[0.02]",
+                                    "group !hover:!bg-foreground/[0.02]",
                                     fromBase && "border-l-2 border-l-success",
                                   )}
                                 >
@@ -771,7 +771,7 @@ export default function FichasTecnicasPizza() {
                                       <div className="flex-1 relative min-w-0">
                                         {hasInsumoSelected(ing) ? (
                                           <div className="flex items-center gap-1 h-8">
-                                            <span className="text-xs font-body font-medium text-foreground truncate" title={ing.nome_display}>{ing.nome_display}</span>
+                                            <span className="text-xs  font-medium text-foreground truncate" title={ing.nome_display}>{ing.nome_display}</span>
                                             {fromBase && (
                                               <Sparkles className="h-3 w-3 text-success shrink-0" aria-label="da base" />
                                             )}
@@ -838,13 +838,13 @@ export default function FichasTecnicasPizza() {
                                   <TableCell className="align-middle !py-2 !px-1">{renderQtdInput("qtd_g", ing.qtd_g)}</TableCell>
 
                                   {/* Custos */}
-                                  <TableCell className="text-right text-xs font-tabular align-middle !py-2 !px-1.5">
+                                  <TableCell className="text-right text-xs  align-middle !py-2 !px-1.5">
                                     {fmt(custoUnit * converterQuantidade(ing.qtd_p, ing.unidade))}
                                   </TableCell>
-                                  <TableCell className="text-right text-xs font-tabular align-middle !py-2 !px-1.5">
+                                  <TableCell className="text-right text-xs  align-middle !py-2 !px-1.5">
                                     {fmt(custoUnit * converterQuantidade(ing.qtd_m, ing.unidade))}
                                   </TableCell>
-                                  <TableCell className="text-right text-xs font-tabular align-middle !py-2 !px-1.5">
+                                  <TableCell className="text-right text-xs  align-middle !py-2 !px-1.5">
                                     {fmt(custoUnit * converterQuantidade(ing.qtd_g, ing.unidade))}
                                   </TableCell>
 
@@ -950,8 +950,8 @@ export default function FichasTecnicasPizza() {
                     return (
                       <div className="space-y-1.5">
                         <div className="flex items-baseline justify-between">
-                          <span className="font-display italic text-sm font-semibold text-foreground">Caixa {label}</span>
-                          <span className="text-[10px] text-muted-foreground font-body">{dim}</span>
+                          <span className="text-sm font-semibold text-foreground">Caixa {label}</span>
+                          <span className="text-[10px] text-muted-foreground ">{dim}</span>
                         </div>
                         {embalagensDisponiveis.length === 0 ? (
                           <div className="text-[10px] text-muted-foreground italic px-2 py-2 border border-dashed border-border rounded-md">
@@ -965,23 +965,23 @@ export default function FichasTecnicasPizza() {
                               if (item) selectEmbalagemInsumo(embIdx, size, item.id, item.nome);
                             }}
                           >
-                            <SelectTrigger className="h-9 text-xs bg-transparent border-foreground/15">
+                            <SelectTrigger className="h-9 text-xs border-input">
                               <SelectValue placeholder="Selecionar caixa" />
                             </SelectTrigger>
                             <SelectContent>
                               {embalagensDisponiveis.map((item) => (
                                 <SelectItem key={item.id} value={item.id}>
                                   <span className="font-medium">{item.nome}</span>
-                                  <span className="text-xs text-muted-foreground ml-2 font-tabular">R$ {fmt(custoCompradoMap.get(item.id) ?? 0)}</span>
+                                  <span className="text-xs text-muted-foreground ml-2 ">R$ {fmt(custoCompradoMap.get(item.id) ?? 0)}</span>
                                 </SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
                         )}
                         {caixaId && (
-                          <div className="flex items-center justify-between text-[11px] font-body">
+                          <div className="flex items-center justify-between text-[11px] ">
                             <span className="text-muted-foreground truncate" title={caixaNome}>{caixaNome}</span>
-                            <span className="font-tabular font-semibold text-foreground">R$ {fmt(custo)}</span>
+                            <span className=" font-semibold text-foreground">R$ {fmt(custo)}</span>
                           </div>
                         )}
                       </div>
@@ -993,7 +993,7 @@ export default function FichasTecnicasPizza() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <Package className="h-4 w-4 text-foreground" />
-                          <Label className="font-display italic text-lg font-semibold text-foreground">Embalagens por Tamanho</Label>
+                          <Label className="text-lg font-semibold text-foreground">Embalagens por Tamanho</Label>
                         </div>
                         <Button type="button" variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => removeIngrediente(embIdx)}>
                           <Trash2 className="h-3.5 w-3.5" /> Remover
@@ -1069,9 +1069,9 @@ export default function FichasTecnicasPizza() {
               </div>
 
               {/* STICKY FOOTER */}
-              <div className="border-t border-foreground/10 bg-cream/95 backdrop-blur px-8 py-3 shrink-0">
+              <div className="border-t border-border bg-background px-8 py-3 shrink-0">
                 <div className="flex items-center justify-between gap-4 flex-wrap">
-                  <div className="flex items-center gap-4 text-xs font-body">
+                  <div className="flex items-center gap-4 text-xs ">
                     {[
                       { l: "Total P", v: custoForm.custoP },
                       { l: "Total M", v: custoForm.custoM },
@@ -1079,7 +1079,7 @@ export default function FichasTecnicasPizza() {
                     ].map((t) => (
                       <div key={t.l}>
                         <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{t.l}</span>
-                        <p className="font-tabular font-bold text-foreground">R$ {fmt(t.v)}</p>
+                        <p className=" font-bold text-foreground">R$ {fmt(t.v)}</p>
                       </div>
                     ))}
                   </div>
