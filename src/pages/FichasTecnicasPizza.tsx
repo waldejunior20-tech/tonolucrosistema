@@ -15,7 +15,7 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger, PopoverAnchor } from "@/components/ui/popover";
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
 import { Pencil, Trash2, Plus, Filter, Search, X, Check, Pizza, AlertTriangle, Package, Sparkles } from "lucide-react";
@@ -781,22 +781,26 @@ export default function FichasTecnicasPizza() {
                                           </div>
                                         ) : (
                                           <Popover open={buscaAberta === idx} onOpenChange={(o) => { if (!o) setBuscaAberta(null); }}>
-                                            <PopoverTrigger asChild>
+                                            <PopoverAnchor asChild>
                                               <div className="relative">
-                                                <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground pointer-events-none" />
+                                                <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground pointer-events-none z-10" />
                                                 <Input
                                                   placeholder="Buscar..."
                                                   className="pl-7 h-8 text-xs"
                                                   value={buscaAberta === idx ? buscaIngrediente : ""}
-                                                  onFocus={() => { setBuscaAberta(idx); setBuscaIngrediente(""); }}
-                                                  onChange={(e) => setBuscaIngrediente(e.target.value)}
+                                                  onFocus={() => { if (buscaAberta !== idx) { setBuscaAberta(idx); setBuscaIngrediente(""); } }}
+                                                  onChange={(e) => { setBuscaAberta(idx); setBuscaIngrediente(e.target.value); }}
                                                 />
                                               </div>
-                                            </PopoverTrigger>
+                                            </PopoverAnchor>
                                             <PopoverContent
                                               align="start"
                                               sideOffset={4}
                                               onOpenAutoFocus={(e) => e.preventDefault()}
+                                              onInteractOutside={(e) => {
+                                                const target = e.target as HTMLElement;
+                                                if (target.closest('input')) e.preventDefault();
+                                              }}
                                               className="p-0 w-[var(--radix-popover-trigger-width)] max-h-56 overflow-y-auto"
                                             >
                                               {getFilteredInsumos(ing.tipo_insumo).length === 0 ? (
