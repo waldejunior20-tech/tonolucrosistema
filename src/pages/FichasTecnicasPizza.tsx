@@ -1114,6 +1114,13 @@ export default function FichasTecnicasPizza() {
               open={salvarBaseOpen}
               onOpenChange={setSalvarBaseOpen}
               tipoFicha="pizza"
+              linhasIgnoradas={form.ingredientes.filter((ing) => {
+                if (ing.tipo_insumo === "embalagem") {
+                  return !ing.caixa_p_id && !ing.caixa_m_id && !ing.caixa_g_id;
+                }
+                if (ing.tipo_insumo !== "comprado" && ing.tipo_insumo !== "proprio") return false;
+                return !ing.insumo_comprado_id && !ing.insumo_proprio_id;
+              }).length}
               ingredientes={form.ingredientes.flatMap<BaseIngredienteInput>((ing) => {
                 if (ing.tipo_insumo === "embalagem") {
                   const rows: BaseIngredienteInput[] = [];
