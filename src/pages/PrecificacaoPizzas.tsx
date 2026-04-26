@@ -616,7 +616,19 @@ export default function PrecificacaoPizzas() {
                                 </div>
                                 <div className="h-px bg-border/40" />
                                 <div className="flex items-center justify-between">
-                                  <span className="text-[10px] font-bold uppercase tracking-[0.12em]" style={{ color: '#5D5D5D' }}>Sugerido</span>
+                                  <span className="text-[10px] font-bold uppercase tracking-[0.12em] flex items-center gap-1" style={{ color: '#5D5D5D' }}>
+                                    Sugerido
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <button type="button" className="opacity-60 hover:opacity-100 transition-opacity">
+                                          <Info className="h-3 w-3" />
+                                        </button>
+                                      </TooltipTrigger>
+                                      <TooltipContent side="top" className="max-w-xs text-xs">
+                                        Preço mínimo para cobrir o custo do produto + custos fixos + taxas de pagamento + seu lucro desejado. Cobrar acima é melhor; cobrar abaixo aperta sua margem.
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </span>
                                   <div className="flex items-baseline gap-1">
                                     <span className="text-xs font-bold" style={{ color: '#5D5D5D' }}>R$</span>
                                     <span className="text-base font-bold font-terminal" style={{ color: '#5D5D5D' }}>{sug.toFixed(2)}</span>
