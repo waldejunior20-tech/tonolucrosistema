@@ -19,9 +19,11 @@ interface Props {
   onOpenChange: (open: boolean) => void;
   tipoFicha: TipoFicha;
   ingredientes: BaseIngredienteInput[];
+  /** Linhas no formulário que serão ignoradas por estarem incompletas (sem produto selecionado). */
+  linhasIgnoradas?: number;
 }
 
-export function SalvarComoBaseDialog({ open, onOpenChange, tipoFicha, ingredientes }: Props) {
+export function SalvarComoBaseDialog({ open, onOpenChange, tipoFicha, ingredientes, linhasIgnoradas = 0 }: Props) {
   const [nome, setNome] = useState("");
   const [isPadrao, setIsPadrao] = useState(false);
   const salvar = useSalvarComoBase();
