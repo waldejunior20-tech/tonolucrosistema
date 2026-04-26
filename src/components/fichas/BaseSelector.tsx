@@ -69,7 +69,7 @@ export function BaseSelector({
   // Empty state inline e discreto
   if (!isLoading && bases.length === 0) {
     return (
-      <p className="text-xs text-muted-foreground font-body">
+      <p className="text-xs text-muted-foreground ">
         <span className="opacity-60">Bases:</span>{" "}
         <span className="italic">nenhuma</span>
         {onCriarNovaBase && (
@@ -92,7 +92,7 @@ export function BaseSelector({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground font-body">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground ">
           <Sparkles className="h-3.5 w-3.5 text-primary" />
           <span className="font-semibold uppercase tracking-wider">Bases salvas</span>
         </div>
@@ -122,7 +122,7 @@ export function BaseSelector({
                   onClick={() => handleAplicar(base.id)}
                   disabled={aplicar.isPending}
                   className={cn(
-                    "inline-flex items-center gap-1.5 px-3 py-1 rounded-l-full text-xs font-medium border transition font-body",
+                    "inline-flex items-center gap-1.5 px-3 py-1 rounded-l-full text-xs font-medium border transition ",
                     ativa
                       ? "bg-foreground text-background border-foreground"
                       : "bg-card border-border text-foreground hover:border-primary hover:text-primary",
@@ -136,7 +136,7 @@ export function BaseSelector({
                       padrão
                     </span>
                   )}
-                  <span className="ml-1 opacity-60 font-tabular">· {ingsCount}</span>
+                  <span className="ml-1 opacity-60 ">· {ingsCount}</span>
                 </button>
                 <button
                   type="button"
