@@ -439,7 +439,7 @@ export default function PrecificacaoPizzas() {
               {fmtPct(indicators.avgCmv)}
             </p>
             <p className="text-[12px] text-muted-foreground font-medium mt-3">
-              {indicators.avgCmv > 40 ? "Custo alto — revise os preços" : indicators.avgCmv > 35 ? "Atenção — custo no limite" : "Custo saudável"}
+              {cmvMessage(indicators.avgCmv)}
             </p>
           </div>
 
@@ -561,8 +561,7 @@ export default function PrecificacaoPizzas() {
                           const preco = precos[s];
                           const cmv = cmvs[s];
                           const fieldKey = `${ficha.id}-${s}`;
-                          const borderColor = preco <= 0 ? 'hsl(var(--border))' : cmv > 35 ? 'hsl(var(--destructive))' : cmv > 30 ? 'hsl(var(--warning))' : 'hsl(var(--success))';
-                          const glowColor = preco <= 0 ? 'transparent' : cmv > 35 ? 'hsl(var(--destructive) / 0.10)' : cmv > 30 ? 'hsl(var(--warning) / 0.10)' : 'hsl(var(--success) / 0.10)';
+                          const { border: borderColor, glow: glowColor } = getCmvBorderColors(cmv, preco);
                           const belowSuggested = preco > 0 && sug > 0 && preco < sug;
                           const pill = getCmvPillStyle(cmv);
 
