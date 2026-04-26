@@ -290,6 +290,7 @@ export default function FichasTecnicasPizza() {
   // Insert
   const insertMutation = useMutation({
     mutationFn: async (data: FormState) => {
+      const unidade_id = requireActiveUnidadeId();
       const { data: inserted, error } = await supabase
         .from("fichas_tecnicas_pizza")
         .insert({
@@ -297,6 +298,7 @@ export default function FichasTecnicasPizza() {
           numero_ficha: data.numero_ficha || null,
           tipo: data.tipo || null,
           modo_preparo: data.modo_preparo || null,
+          unidade_id,
         })
         .select()
         .single();
