@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
-import { Cog, Save, AlertTriangle, Check, TrendingUp, TrendingDown, Activity, ChevronDown } from "lucide-react";
+import { Cog, Save, AlertTriangle, Check, TrendingUp, TrendingDown, Activity, ChevronDown, Info } from "lucide-react";
 import { formatMoney } from "@/components/MoneyInput";
 import {
   fmt, fmtPct, calcCmv, converterQuantidade, cmvBg, cmvColor, cmvEmoji, cmvMessage,
@@ -325,21 +325,31 @@ export default function PrecificacaoPizzas() {
   const sizes = ["p", "m", "g"] as const;
   const sizeLabels = { p: "P", m: "M", g: "G" };
 
-  // CMV pill colors
+  // CMV pill colors — padrão Abrasel (alinhado com pricing-helpers.ts)
+  // < 25% azul (margem alta) | 25-35% verde (ideal) | 35-40% amarelo (atenção) | > 40% vermelho (prejuízo)
   const getCmvPillStyle = (cmv: number) => {
-    if (cmv > 35) return { bg: 'hsl(var(--destructive))', text: 'hsl(var(--destructive-foreground))', glow: 'hsl(var(--destructive) / 0.25)' };
-    if (cmv > 30) return { bg: 'hsl(var(--warning))', text: 'hsl(var(--foreground))', glow: 'hsl(var(--warning) / 0.25)' };
+    if (cmv > 40) return { bg: 'hsl(var(--destructive))', text: 'hsl(var(--destructive-foreground))', glow: 'hsl(var(--destructive) / 0.25)' };
+    if (cmv > 35) return { bg: 'hsl(var(--warning))', text: 'hsl(var(--foreground))', glow: 'hsl(var(--warning) / 0.25)' };
+    if (cmv < 25) return { bg: 'hsl(var(--info, 217 91% 60%))', text: 'hsl(var(--primary-foreground))', glow: 'hsl(var(--info, 217 91% 60%) / 0.25)' };
     return { bg: 'hsl(var(--success))', text: 'hsl(var(--primary-foreground))', glow: 'hsl(var(--success) / 0.25)' };
   };
 
-  // Health dot for card header
+  // Health dot for card header — mesmas faixas Abrasel
   const getHealthColor = (cmvs: { p: number; m: number; g: number }, precos: { p: number; m: number; g: number }) => {
     const activeCmvs = sizes.filter(s => precos[s] > 0).map(s => cmvs[s]);
     if (activeCmvs.length === 0) return { color: 'hsl(var(--muted-foreground))', glow: 'transparent' };
     const worst = Math.max(...activeCmvs);
-    if (worst > 35) return { color: 'hsl(var(--destructive))', glow: 'hsl(var(--destructive) / 0.4)' };
-    if (worst > 30) return { color: 'hsl(var(--warning))', glow: 'hsl(var(--warning) / 0.4)' };
+    if (worst > 40) return { color: 'hsl(var(--destructive))', glow: 'hsl(var(--destructive) / 0.4)' };
+    if (worst > 35) return { color: 'hsl(var(--warning))', glow: 'hsl(var(--warning) / 0.4)' };
     return { color: 'hsl(var(--success))', glow: 'hsl(var(--success) / 0.4)' };
+  };
+
+  // Border do input "Seu Preço" — mesmas faixas
+  const getCmvBorderColors = (cmv: number, preco: number) => {
+    if (preco <= 0) return { border: 'hsl(var(--border))', glow: 'transparent' };
+    if (cmv > 40) return { border: 'hsl(var(--destructive))', glow: 'hsl(var(--destructive) / 0.10)' };
+    if (cmv > 35) return { border: 'hsl(var(--warning))', glow: 'hsl(var(--warning) / 0.10)' };
+    return { border: 'hsl(var(--success))', glow: 'hsl(var(--success) / 0.10)' };
   };
 
   return (
@@ -429,7 +439,7 @@ export default function PrecificacaoPizzas() {
               {fmtPct(indicators.avgCmv)}
             </p>
             <p className="text-[12px] text-muted-foreground font-medium mt-3">
-              {indicators.avgCmv > 40 ? "Custo alto — revise os preços" : indicators.avgCmv > 35 ? "Atenção — custo no limite" : "Custo saudável"}
+              {cmvMessage(indicators.avgCmv)}
             </p>
           </div>
 
@@ -441,6 +451,25 @@ export default function PrecificacaoPizzas() {
             <p className="text-[48px] font-extrabold leading-none text-destructive font-terminal">{indicators.foraMetaCount}</p>
             <p className="text-[12px] text-muted-foreground font-medium mt-3">Tamanhos com custo &gt; 40%</p>
           </div>
+        </div>
+
+        {/* ═══ Legenda das faixas de CMV (padrão Abrasel) ═══ */}
+        <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold">
+          <span className="text-muted-foreground uppercase tracking-wider mr-1">Faixas de CMV:</span>
+          <span className="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">&lt; 25% Margem alta</span>
+          <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">25–35% Ideal</span>
+          <span className="px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">35–40% Atenção</span>
+          <span className="px-2.5 py-1 rounded-full bg-red-50 text-red-700 border border-red-200">&gt; 40% Prejuízo</span>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button type="button" className="ml-1 text-muted-foreground hover:text-foreground transition-colors">
+                <Info className="h-3.5 w-3.5" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="max-w-xs text-xs">
+              CMV = Custo da Mercadoria Vendida. Mostra quanto do preço de venda é consumido pelo custo do produto. Faixas baseadas no padrão Abrasel para food service.
+            </TooltipContent>
+          </Tooltip>
         </div>
 
         {/* ═══ Pizza Cards — Summary + Expand ═══ */}
@@ -551,8 +580,7 @@ export default function PrecificacaoPizzas() {
                           const preco = precos[s];
                           const cmv = cmvs[s];
                           const fieldKey = `${ficha.id}-${s}`;
-                          const borderColor = preco <= 0 ? 'hsl(var(--border))' : cmv > 35 ? 'hsl(var(--destructive))' : cmv > 30 ? 'hsl(var(--warning))' : 'hsl(var(--success))';
-                          const glowColor = preco <= 0 ? 'transparent' : cmv > 35 ? 'hsl(var(--destructive) / 0.10)' : cmv > 30 ? 'hsl(var(--warning) / 0.10)' : 'hsl(var(--success) / 0.10)';
+                          const { border: borderColor, glow: glowColor } = getCmvBorderColors(cmv, preco);
                           const belowSuggested = preco > 0 && sug > 0 && preco < sug;
                           const pill = getCmvPillStyle(cmv);
 
@@ -588,7 +616,19 @@ export default function PrecificacaoPizzas() {
                                 </div>
                                 <div className="h-px bg-border/40" />
                                 <div className="flex items-center justify-between">
-                                  <span className="text-[10px] font-bold uppercase tracking-[0.12em]" style={{ color: '#5D5D5D' }}>Sugerido</span>
+                                  <span className="text-[10px] font-bold uppercase tracking-[0.12em] flex items-center gap-1" style={{ color: '#5D5D5D' }}>
+                                    Sugerido
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <button type="button" className="opacity-60 hover:opacity-100 transition-opacity">
+                                          <Info className="h-3 w-3" />
+                                        </button>
+                                      </TooltipTrigger>
+                                      <TooltipContent side="top" className="max-w-xs text-xs">
+                                        Preço mínimo para cobrir o custo do produto + custos fixos + taxas de pagamento + seu lucro desejado. Cobrar acima é melhor; cobrar abaixo aperta sua margem.
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </span>
                                   <div className="flex items-baseline gap-1">
                                     <span className="text-xs font-bold" style={{ color: '#5D5D5D' }}>R$</span>
                                     <span className="text-base font-bold font-terminal" style={{ color: '#5D5D5D' }}>{sug.toFixed(2)}</span>

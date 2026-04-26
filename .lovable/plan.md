@@ -1,75 +1,48 @@
-## Plano: voltar ao padrão visual e arrumar a ficha do jeito certo
 
-### Passo 1 — Você reverte primeiro (eu não toco em nada antes)
+## Problema confirmado
 
-Antes de eu mexer no código, **você** abre o histórico e reverte para a versão **anterior ao redesign bege/Fraunces** (a que tinha layout normal do sistema, com os bug-fixes da busca via Popover já aplicados — aquela mensagem onde só mexi nos 4 dropdowns para usar `Popover`).
+A tela **Precificação de Pizzas** usa regras de cor locais diferentes do resto do sistema:
 
+| Local | Verde | Amarelo | Vermelho |
+|---|---|---|---|
+| `pricing-helpers.ts` (Abrasel — usado em Fichas Técnicas, Dashboard) | 25% – 35% | 35% – 40% | > 40% |
+| `PrecificacaoPizzas.tsx` (regra local — bug) | ≤ 30% | 30% – 35% | > 35% |
+
+Por isso **CMV 30,5% aparece amarelo** nessa tela, mesmo estando dentro da faixa saudável Abrasel (25–35%). O preço de R$ 50 está **correto e saudável** — o problema é só a cor.
+
+Além disso, o usuário não entende a diferença entre **Preço Sugerido** (mínimo para bater meta de markup) e **CMV%** (custo/preço de venda). Falta sinalização visual explicando.
+
+## O que vai ser feito
+
+### 1. Unificar faixas de CMV (corrige o bug do amarelo)
+Em `src/pages/PrecificacaoPizzas.tsx`:
+- Remover as funções locais `getCmvPillStyle`, `getHealthColor` e os ternários inline com limites 30/35.
+- Usar os helpers compartilhados `cmvColor`, `cmvBg`, `cmvMessage` de `pricing-helpers.ts` (faixas Abrasel 25/35/40).
+- Atualizar também o contador "Precisam de atenção" para usar o mesmo critério (CMV > 40 = vermelho).
+
+Resultado: CMV 30,5% passará a aparecer **verde** (faixa ideal), consistente com as Fichas Técnicas.
+
+### 2. Tooltip explicativo no card de cada tamanho
+No card de Tamanho P/M/G, adicionar um ícone `(i)` com tooltip ao lado de:
+- **SUGERIDO**: "Preço mínimo para cobrir custo do produto + custos fixos + taxas + seu lucro desejado. Cobrar acima é melhor, cobrar abaixo aperta sua margem."
+- **CMV %**: "Quanto do preço de venda é consumido pelo custo do produto. Ideal entre 25% e 35% (padrão Abrasel)."
+
+### 3. Legenda das faixas de CMV
+Adicionar uma faixa horizontal discreta no topo da página (abaixo do título) mostrando as 4 faixas com cores e rótulos curtos:
 ```text
-[Hoje] Redesign bege Fraunces ❌ (não queremos)
-[Hoje] Filtro embalagens + selects horizontais ❌ (não queremos)
-[Hoje] Fix busca via Popover ✅ ← REVERTER PARA AQUI
-[Hoje] Ketchup/Maionese só salgadas ✅
+< 25% Margem alta  |  25–35% Ideal  |  35–40% Atenção  |  > 40% Prejuízo
 ```
+Assim o usuário entende as cores sem precisar abrir tooltip.
 
-Quando você confirmar que reverteu, eu sigo para o passo 2 em cima dessa versão limpa.
+## Detalhes técnicos
 
-### Passo 2 — Ajustes em cima da versão revertida
+- **Arquivo principal**: `src/pages/PrecificacaoPizzas.tsx` (linhas ~329, 336, 467, 554-557).
+- **Helpers reutilizados**: `cmvColor`, `cmvBg`, `cmvMessage` já existentes em `src/lib/pricing-helpers.ts` (não precisa criar nada novo).
+- **Para os badges pill** (que hoje usam estilo inline com `hsl(var(--warning))`), trocar por classes Tailwind do `cmvBg` que já retornam combo bg+text+border consistente com o tema.
+- **Para o glow do border do card** (linha 554), substituir os ternários por uma função baseada em `cmvColor` que mapeia para os tokens semânticos `success`/`warning`/`destructive`.
+- **Tooltip**: usar o componente `Tooltip` já existente em `src/components/ui/tooltip.tsx` com ícone `Info` do lucide-react.
 
-Tudo no arquivo `src/pages/FichasTecnicasPizza.tsx` (sem mexer em design tokens, sem fontes novas, sem fundo bege, sem italics).
+## Fora do escopo
 
-**A. Extras com quantidade por sachê**
-
-Hoje os botões "Ketchup / Maionese / Mesinha" são apenas decorativos. Vou transformar em **3 mini-cards com input numérico**:
-
-```text
-┌─ Extras ──────────────────────────────────────┐
-│ 🍅 Ketchup    [ 1 ] sachê(s)   (só salgadas)  │
-│ 🟡 Maionese   [ 1 ] sachê(s)   (só salgadas)  │
-│ 🪑 Mesinha    [ 1 ] un.        (sempre)       │
-└───────────────────────────────────────────────┘
-```
-
-- Cada extra é um insumo comprado real (já existe na tabela `insumos_comprados`, categoria "Embalagens").
-- Quando você digita a quantidade, esses extras entram automaticamente nos ingredientes da ficha como linhas com `tipo_insumo = 'comprado'`, qtd igual nos 3 tamanhos (P=M=G).
-- Para pizzas doces (tipo = "doce"), Ketchup e Maionese ficam desabilitados (input cinza, hint "só salgadas"). Mesinha sempre ativa.
-- O custo deles entra normalmente no Total P/M/G.
-
-**B. Auto-sugerir "Salvar como base"**
-
-Hoje já existe o botão "Salvar como base" no rodapé. Vou adicionar uma **faixa amarela discreta** que aparece quando:
-- A ficha tem ≥ 3 ingredientes preenchidos
-- Ainda não existe nenhuma base padrão para pizzas (`useBasesFicha("pizza")` retorna `[]`)
-- Você ainda não dispensou a sugestão nesta sessão
-
-```text
-┌─────────────────────────────────────────────────────────┐
-│ 💡 Vai usar esses mesmos ingredientes em outras pizzas? │
-│    [ Salvar como base padrão ]    [ Agora não ]         │
-└─────────────────────────────────────────────────────────┘
-```
-
-Clicar em "Salvar como base padrão" abre o `SalvarComoBaseDialog` já existente, com `is_padrao = true` pré-marcado. A próxima ficha nova já vem com a base aplicada automaticamente.
-
-**C. Garantir que a busca continue funcionando**
-
-Manter os 4 `Popover` do fix anterior (busca de ingrediente + 3 buscas de embalagem P/M/G). A busca de embalagem fica **filtrada** por `categoria === "Embalagens"` (foi um bom ajuste do redesign que vou preservar).
-
-### O que NÃO vou fazer
-
-- ❌ Não importar Fraunces, Geist ou JetBrains Mono
-- ❌ Não usar fundo bege (`#FAF7F2`)
-- ❌ Não usar italics em títulos
-- ❌ Não mexer em `index.html`, `src/index.css`, `tailwind.config.ts`
-- ❌ Não mexer em `BaseSelector.tsx` (volta ao original na reversão)
-- ❌ Não criar migrations (estrutura do banco já suporta tudo)
-
-### Arquivos que vou editar
-
-- `src/pages/FichasTecnicasPizza.tsx` — só este arquivo
-
-### Resultado
-
-- Visual idêntico ao resto do sistema (Inter, branco, bordas padrão).
-- Extras com quantidade real entrando no custo.
-- Sugestão proativa de criar base na primeira ficha "completa".
-- Busca de ingredientes e embalagens funcionando.
+- Não vou mexer na fórmula de Preço Sugerido (ela está correta — markup + meta CMV, pegando o maior).
+- Não vou alterar Precificação de Produtos/Bebidas nesta rodada (mas se você quiser depois, é só pedir — a mesma padronização se aplica).
