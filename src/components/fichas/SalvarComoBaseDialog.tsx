@@ -64,6 +64,11 @@ export function SalvarComoBaseDialog({ open, onOpenChange, tipoFicha, ingredient
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-2">
+          {linhasIgnoradas > 0 && (
+            <div className="rounded-md border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-foreground">
+              <strong>Atenção:</strong> {linhasIgnoradas} linha(s) do formulário será(ão) ignorada(s) por estarem incompletas (sem produto selecionado). Cancele, complete-as e tente de novo se quiser incluí-las.
+            </div>
+          )}
           <div className="space-y-2">
             <Label htmlFor="base-nome">Nome da base</Label>
             <Input
