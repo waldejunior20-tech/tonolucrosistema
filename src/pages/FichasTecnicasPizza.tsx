@@ -631,7 +631,7 @@ export default function FichasTecnicasPizza() {
   const fmt = (v: number) => v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   const hasInsumoSelected = (ing: IngredienteForm) =>
-    ing.tipo_insumo === "comprado" ? !!ing.insumo_comprado_id : !!ing.insumo_proprio_id;
+    normalizarTipoInsumo(ing.tipo_insumo) === "comprado" ? !!ing.insumo_comprado_id : !!ing.insumo_proprio_id;
 
   return (
     <div className="space-y-6 page-enter">
@@ -788,8 +788,9 @@ export default function FichasTecnicasPizza() {
                           </TableHeader>
                           <TableBody>
                             {normais.map(({ ing, idx }) => {
-                              const insumoId = ing.tipo_insumo === "comprado" ? ing.insumo_comprado_id : ing.insumo_proprio_id;
-                              const custoUnit = ing.tipo_insumo === "comprado"
+                              const tipoInsumo = normalizarTipoInsumo(ing.tipo_insumo);
+                              const insumoId = tipoInsumo === "comprado" ? ing.insumo_comprado_id : ing.insumo_proprio_id;
+                              const custoUnit = tipoInsumo === "comprado"
                                 ? (custoCompradoMap.get(insumoId) ?? 0)
                                 : (custoProprioMap.get(insumoId) ?? 0);
                               const fromBase = !!ing.db_id && ingredientesBaseIds.has(ing.db_id);
@@ -801,7 +802,7 @@ export default function FichasTecnicasPizza() {
                                 : null;
                               const familiaUso = ["kg", "g"].includes(ing.unidade) ? "peso"
                                 : ["L", "ml"].includes(ing.unidade) ? "volume" : "un";
-                              const mismatchUnidade = ing.tipo_insumo === "comprado" && familiaCompra && ing.unidade && familiaCompra !== familiaUso;
+                              const mismatchUnidade = tipoInsumo === "comprado" && familiaCompra && ing.unidade && familiaCompra !== familiaUso;
 
                               const renderQtdInput = (qtdKey: "qtd_p" | "qtd_m" | "qtd_g", qtdVal: number) => {
                                 const invalid = qtdVal < 0 || qtdVal > 999;
@@ -831,11 +832,11 @@ export default function FichasTecnicasPizza() {
                                   {/* Ingrediente: tipo + nome/busca + badge base inline */}
                                   <TableCell className="align-middle !py-2 !px-2 overflow-visible relative">
                                     <div className="flex items-center gap-1.5">
-                                      <Select value={ing.tipo_insumo} onValueChange={(v) => updateIngrediente(idx, "tipo_insumo", v)}>
+                                      <Select value={normalizarTipoInsumo(ing.tipo_insumo)} onValueChange={(v) => updateIngrediente(idx, "tipo_insumo", v)}>
                                         <SelectTrigger className="h-8 w-[92px] text-[11px] px-2"><SelectValue /></SelectTrigger>
                                         <SelectContent>
                                           <SelectItem value="comprado">Comprado</SelectItem>
-                                          <SelectItem value="produzido">Produzido</SelectItem>
+                                          <SelectItem value="proprio">Produzido</SelectItem>
                                         </SelectContent>
                                       </Select>
                                       <div className="flex-1 relative min-w-0">
