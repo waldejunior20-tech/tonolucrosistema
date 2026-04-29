@@ -97,6 +97,8 @@ const converterQuantidade = (quantidade: number, unidade: string) => {
   return quantidade;
 };
 
+const normalizarTipoInsumo = (tipo: string) => tipo === "produzido" ? "proprio" : tipo;
+
 export default function FichasTecnicasPizza() {
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
@@ -247,9 +249,10 @@ export default function FichasTecnicasPizza() {
         custoM += (custoCompradoMap.get(ing.caixa_m_id) ?? 0) * 1;
         custoG += (custoCompradoMap.get(ing.caixa_g_id) ?? 0) * 1;
       } else {
-        const id = ing.tipo_insumo === "comprado" ? ing.insumo_comprado_id : ing.insumo_proprio_id;
+        const tipoInsumo = normalizarTipoInsumo(ing.tipo_insumo);
+        const id = tipoInsumo === "comprado" ? ing.insumo_comprado_id : ing.insumo_proprio_id;
         if (!id) return;
-        const custoUnit = ing.tipo_insumo === "comprado"
+        const custoUnit = tipoInsumo === "comprado"
           ? (custoCompradoMap.get(id) ?? 0)
           : (custoProprioMap.get(id) ?? 0);
         custoP += custoUnit * converterQuantidade(ing.qtd_p, ing.unidade);
@@ -270,8 +273,9 @@ export default function FichasTecnicasPizza() {
         if (ing.caixa_m_id) rows.push({ ficha_id: fichaId, tipo_insumo: "embalagem_m", insumo_comprado_id: ing.caixa_m_id, insumo_proprio_id: null, qtd_p: 0, qtd_m: 1, qtd_g: 0, unidade: "unidade", unidade_id });
         if (ing.caixa_g_id) rows.push({ ficha_id: fichaId, tipo_insumo: "embalagem_g", insumo_comprado_id: ing.caixa_g_id, insumo_proprio_id: null, qtd_p: 0, qtd_m: 0, qtd_g: 1, unidade: "unidade", unidade_id });
       } else {
+        const tipoInsumo = normalizarTipoInsumo(ing.tipo_insumo);
         rows.push({
-          ficha_id: fichaId, tipo_insumo: ing.tipo_insumo,
+          ficha_id: fichaId, tipo_insumo: tipoInsumo,
           insumo_comprado_id: ing.insumo_comprado_id || null,
           insumo_proprio_id: ing.insumo_proprio_id || null,
           qtd_p: ing.qtd_p, qtd_m: ing.qtd_m, qtd_g: ing.qtd_g, unidade: ing.unidade,
@@ -627,7 +631,7 @@ export default function FichasTecnicasPizza() {
   const fmt = (v: number) => v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   const hasInsumoSelected = (ing: IngredienteForm) =>
-    ing.tipo_insumo === "comprado" ? !!ing.insumo_comprado_id : !!ing.insumo_proprio_id;
+    normalizarTipoInsumo(ing.tipo_insumo) === "comprado" ? !!ing.insumo_comprado_id : !!ing.insumo_proprio_id;
 
   return (
     <div className="space-y-6 page-enter">
@@ -784,8 +788,9 @@ export default function FichasTecnicasPizza() {
                           </TableHeader>
                           <TableBody>
                             {normais.map(({ ing, idx }) => {
-                              const insumoId = ing.tipo_insumo === "comprado" ? ing.insumo_comprado_id : ing.insumo_proprio_id;
-                              const custoUnit = ing.tipo_insumo === "comprado"
+                              const tipoInsumo = normalizarTipoInsumo(ing.tipo_insumo);
+                              const insumoId = tipoInsumo === "comprado" ? ing.insumo_comprado_id : ing.insumo_proprio_id;
+                              const custoUnit = tipoInsumo === "comprado"
                                 ? (custoCompradoMap.get(insumoId) ?? 0)
                                 : (custoProprioMap.get(insumoId) ?? 0);
                               const fromBase = !!ing.db_id && ingredientesBaseIds.has(ing.db_id);
@@ -797,7 +802,7 @@ export default function FichasTecnicasPizza() {
                                 : null;
                               const familiaUso = ["kg", "g"].includes(ing.unidade) ? "peso"
                                 : ["L", "ml"].includes(ing.unidade) ? "volume" : "un";
-                              const mismatchUnidade = ing.tipo_insumo === "comprado" && familiaCompra && ing.unidade && familiaCompra !== familiaUso;
+                              const mismatchUnidade = tipoInsumo === "comprado" && familiaCompra && ing.unidade && familiaCompra !== familiaUso;
 
                               const renderQtdInput = (qtdKey: "qtd_p" | "qtd_m" | "qtd_g", qtdVal: number) => {
                                 const invalid = qtdVal < 0 || qtdVal > 999;
@@ -827,11 +832,11 @@ export default function FichasTecnicasPizza() {
                                   {/* Ingrediente: tipo + nome/busca + badge base inline */}
                                   <TableCell className="align-middle !py-2 !px-2 overflow-visible relative">
                                     <div className="flex items-center gap-1.5">
-                                      <Select value={ing.tipo_insumo} onValueChange={(v) => updateIngrediente(idx, "tipo_insumo", v)}>
+                                      <Select value={normalizarTipoInsumo(ing.tipo_insumo)} onValueChange={(v) => updateIngrediente(idx, "tipo_insumo", v)}>
                                         <SelectTrigger className="h-8 w-[92px] text-[11px] px-2"><SelectValue /></SelectTrigger>
                                         <SelectContent>
                                           <SelectItem value="comprado">Comprado</SelectItem>
-                                          <SelectItem value="produzido">Produzido</SelectItem>
+                                          <SelectItem value="proprio">Produzido</SelectItem>
                                         </SelectContent>
                                       </Select>
                                       <div className="flex-1 relative min-w-0">
@@ -1182,8 +1187,9 @@ export default function FichasTecnicasPizza() {
                 if (ing.tipo_insumo === "embalagem") {
                   return !ing.caixa_p_id && !ing.caixa_m_id && !ing.caixa_g_id;
                 }
-                if (ing.tipo_insumo !== "comprado" && ing.tipo_insumo !== "proprio") return false;
-                return !ing.insumo_comprado_id && !ing.insumo_proprio_id;
+                const tipoInsumo = normalizarTipoInsumo(ing.tipo_insumo);
+                if (tipoInsumo !== "comprado" && tipoInsumo !== "proprio") return false;
+                return tipoInsumo === "comprado" ? !ing.insumo_comprado_id : !ing.insumo_proprio_id;
               }).length}
               ingredientes={form.ingredientes.flatMap<BaseIngredienteInput>((ing) => {
                 if (ing.tipo_insumo === "embalagem") {
@@ -1193,12 +1199,14 @@ export default function FichasTecnicasPizza() {
                   if (ing.caixa_g_id) rows.push({ tipo_insumo: "embalagem_g", insumo_comprado_id: ing.caixa_g_id, insumo_proprio_id: null, qtd_p: 0, qtd_m: 0, qtd_g: 1, unidade: "unidade" });
                   return rows;
                 }
-                if (ing.tipo_insumo !== "comprado" && ing.tipo_insumo !== "proprio") return [];
-                if (!ing.insumo_comprado_id && !ing.insumo_proprio_id) return [];
+                const tipoInsumo = normalizarTipoInsumo(ing.tipo_insumo);
+                if (tipoInsumo !== "comprado" && tipoInsumo !== "proprio") return [];
+                if (tipoInsumo === "comprado" && !ing.insumo_comprado_id) return [];
+                if (tipoInsumo === "proprio" && !ing.insumo_proprio_id) return [];
                 return [{
-                  tipo_insumo: ing.tipo_insumo as "comprado" | "proprio",
-                  insumo_comprado_id: ing.insumo_comprado_id || null,
-                  insumo_proprio_id: ing.insumo_proprio_id || null,
+                  tipo_insumo: tipoInsumo as "comprado" | "proprio",
+                  insumo_comprado_id: tipoInsumo === "comprado" ? ing.insumo_comprado_id || null : null,
+                  insumo_proprio_id: tipoInsumo === "proprio" ? ing.insumo_proprio_id || null : null,
                   qtd_p: ing.qtd_p,
                   qtd_m: ing.qtd_m,
                   qtd_g: ing.qtd_g,
