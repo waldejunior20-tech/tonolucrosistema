@@ -97,6 +97,8 @@ const converterQuantidade = (quantidade: number, unidade: string) => {
   return quantidade;
 };
 
+const normalizarTipoInsumo = (tipo: string) => tipo === "produzido" ? "proprio" : tipo;
+
 export default function FichasTecnicasPizza() {
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
@@ -247,9 +249,10 @@ export default function FichasTecnicasPizza() {
         custoM += (custoCompradoMap.get(ing.caixa_m_id) ?? 0) * 1;
         custoG += (custoCompradoMap.get(ing.caixa_g_id) ?? 0) * 1;
       } else {
-        const id = ing.tipo_insumo === "comprado" ? ing.insumo_comprado_id : ing.insumo_proprio_id;
+        const tipoInsumo = normalizarTipoInsumo(ing.tipo_insumo);
+        const id = tipoInsumo === "comprado" ? ing.insumo_comprado_id : ing.insumo_proprio_id;
         if (!id) return;
-        const custoUnit = ing.tipo_insumo === "comprado"
+        const custoUnit = tipoInsumo === "comprado"
           ? (custoCompradoMap.get(id) ?? 0)
           : (custoProprioMap.get(id) ?? 0);
         custoP += custoUnit * converterQuantidade(ing.qtd_p, ing.unidade);
@@ -270,8 +273,9 @@ export default function FichasTecnicasPizza() {
         if (ing.caixa_m_id) rows.push({ ficha_id: fichaId, tipo_insumo: "embalagem_m", insumo_comprado_id: ing.caixa_m_id, insumo_proprio_id: null, qtd_p: 0, qtd_m: 1, qtd_g: 0, unidade: "unidade", unidade_id });
         if (ing.caixa_g_id) rows.push({ ficha_id: fichaId, tipo_insumo: "embalagem_g", insumo_comprado_id: ing.caixa_g_id, insumo_proprio_id: null, qtd_p: 0, qtd_m: 0, qtd_g: 1, unidade: "unidade", unidade_id });
       } else {
+        const tipoInsumo = normalizarTipoInsumo(ing.tipo_insumo);
         rows.push({
-          ficha_id: fichaId, tipo_insumo: ing.tipo_insumo,
+          ficha_id: fichaId, tipo_insumo: tipoInsumo,
           insumo_comprado_id: ing.insumo_comprado_id || null,
           insumo_proprio_id: ing.insumo_proprio_id || null,
           qtd_p: ing.qtd_p, qtd_m: ing.qtd_m, qtd_g: ing.qtd_g, unidade: ing.unidade,
