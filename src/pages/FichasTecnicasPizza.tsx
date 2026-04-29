@@ -1187,8 +1187,9 @@ export default function FichasTecnicasPizza() {
                 if (ing.tipo_insumo === "embalagem") {
                   return !ing.caixa_p_id && !ing.caixa_m_id && !ing.caixa_g_id;
                 }
-                if (ing.tipo_insumo !== "comprado" && ing.tipo_insumo !== "proprio") return false;
-                return !ing.insumo_comprado_id && !ing.insumo_proprio_id;
+                const tipoInsumo = normalizarTipoInsumo(ing.tipo_insumo);
+                if (tipoInsumo !== "comprado" && tipoInsumo !== "proprio") return false;
+                return tipoInsumo === "comprado" ? !ing.insumo_comprado_id : !ing.insumo_proprio_id;
               }).length}
               ingredientes={form.ingredientes.flatMap<BaseIngredienteInput>((ing) => {
                 if (ing.tipo_insumo === "embalagem") {
@@ -1198,12 +1199,14 @@ export default function FichasTecnicasPizza() {
                   if (ing.caixa_g_id) rows.push({ tipo_insumo: "embalagem_g", insumo_comprado_id: ing.caixa_g_id, insumo_proprio_id: null, qtd_p: 0, qtd_m: 0, qtd_g: 1, unidade: "unidade" });
                   return rows;
                 }
-                if (ing.tipo_insumo !== "comprado" && ing.tipo_insumo !== "proprio") return [];
-                if (!ing.insumo_comprado_id && !ing.insumo_proprio_id) return [];
+                const tipoInsumo = normalizarTipoInsumo(ing.tipo_insumo);
+                if (tipoInsumo !== "comprado" && tipoInsumo !== "proprio") return [];
+                if (tipoInsumo === "comprado" && !ing.insumo_comprado_id) return [];
+                if (tipoInsumo === "proprio" && !ing.insumo_proprio_id) return [];
                 return [{
-                  tipo_insumo: ing.tipo_insumo as "comprado" | "proprio",
-                  insumo_comprado_id: ing.insumo_comprado_id || null,
-                  insumo_proprio_id: ing.insumo_proprio_id || null,
+                  tipo_insumo: tipoInsumo as "comprado" | "proprio",
+                  insumo_comprado_id: tipoInsumo === "comprado" ? ing.insumo_comprado_id || null : null,
+                  insumo_proprio_id: tipoInsumo === "proprio" ? ing.insumo_proprio_id || null : null,
                   qtd_p: ing.qtd_p,
                   qtd_m: ing.qtd_m,
                   qtd_g: ing.qtd_g,
