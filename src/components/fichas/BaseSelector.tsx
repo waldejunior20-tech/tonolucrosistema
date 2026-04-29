@@ -22,12 +22,14 @@ import { cn } from "@/lib/utils";
 
 interface Props {
   tipoFicha: TipoFicha;
-  /** Id da ficha já salva — se ausente, mostra aviso de "salve antes de aplicar". */
+  /** Id da ficha já salva — se ausente, aplica localmente via onAplicarLocal. */
   fichaId: string | null;
   /** Id da base atualmente aplicada (vem de fichas.base_origem_id). */
   baseAplicadaId?: string | null;
-  /** Callback após aplicar com sucesso. */
+  /** Callback após aplicar com sucesso (modo ficha salva). */
   onBaseAplicada?: (baseId: string, count: number) => void;
+  /** Aplicação local em ficha nova (sem persistir). Quando presente e fichaId for null, é usada no clique. */
+  onAplicarLocal?: (baseId: string) => void;
   /** Abre o modal de criar nova base. */
   onCriarNovaBase?: () => void;
 }
@@ -37,6 +39,7 @@ export function BaseSelector({
   fichaId,
   baseAplicadaId,
   onBaseAplicada,
+  onAplicarLocal,
   onCriarNovaBase,
 }: Props) {
   const { data: bases = [], isLoading } = useBasesFicha(tipoFicha);
@@ -46,6 +49,10 @@ export function BaseSelector({
 
   const handleAplicar = (baseId: string) => {
     if (!fichaId) {
+      if (onAplicarLocal) {
+        onAplicarLocal(baseId);
+        return;
+      }
       toast.info("Salve a ficha primeiro para aplicar uma base.");
       return;
     }
