@@ -688,7 +688,7 @@ export default function FichasTecnicasPizza() {
 
             <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
               <div className="flex-1 overflow-y-auto px-8 py-6 space-y-10">
-                {editingId && (
+                {editingId ? (
                   <BaseSelector
                     tipoFicha="pizza"
                     fichaId={editingId}
@@ -702,6 +702,14 @@ export default function FichasTecnicasPizza() {
                         handleEdit({ ...ficha, base_origem_id: baseId });
                       }
                     }}
+                    onCriarNovaBase={() => setSalvarBaseOpen(true)}
+                  />
+                ) : (
+                  <BaseSelector
+                    tipoFicha="pizza"
+                    fichaId={null}
+                    baseAplicadaId={baseOrigemId}
+                    onAplicarLocal={aplicarBaseLocal}
                     onCriarNovaBase={() => setSalvarBaseOpen(true)}
                   />
                 )}
