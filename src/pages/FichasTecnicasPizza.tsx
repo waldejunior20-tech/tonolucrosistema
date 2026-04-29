@@ -30,7 +30,7 @@ import { matchesSearch } from "@/lib/utils";
 import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
 import { BaseSelector } from "@/components/fichas/BaseSelector";
 import { SalvarComoBaseDialog } from "@/components/fichas/SalvarComoBaseDialog";
-import type { BaseIngredienteInput } from "@/hooks/useBasesFicha";
+import { useBasesFicha, type BaseIngredienteInput } from "@/hooks/useBasesFicha";
 
 const TIPOS = ["tradicional", "especial", "premium", "doce"];
 const UNIDADES = ["kg", "g", "L", "ml", "unidade"];
