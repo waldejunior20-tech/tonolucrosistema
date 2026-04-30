@@ -1,48 +1,132 @@
+# Plano: Arquitetura híbrida n8n + Edge Function para Notas Fiscais
 
-## Problema confirmado
+## Objetivo
 
-A tela **Precificação de Pizzas** usa regras de cor locais diferentes do resto do sistema:
+Acabar com o ciclo de erros (credencial Postgres apagada, IF frágil, `user_id null`) **sem abandonar o n8n**. O n8n continua fazendo o que faz bem (WhatsApp + GPT Vision visual). A gravação no banco vai pra uma edge function Supabase, que é blindada contra esses problemas.
 
-| Local | Verde | Amarelo | Vermelho |
-|---|---|---|---|
-| `pricing-helpers.ts` (Abrasel — usado em Fichas Técnicas, Dashboard) | 25% – 35% | 35% – 40% | > 40% |
-| `PrecificacaoPizzas.tsx` (regra local — bug) | ≤ 30% | 30% – 35% | > 35% |
+---
 
-Por isso **CMV 30,5% aparece amarelo** nessa tela, mesmo estando dentro da faixa saudável Abrasel (25–35%). O preço de R$ 50 está **correto e saudável** — o problema é só a cor.
+## Divisão de responsabilidades
 
-Além disso, o usuário não entende a diferença entre **Preço Sugerido** (mínimo para bater meta de markup) e **CMV%** (custo/preço de venda). Falta sinalização visual explicando.
-
-## O que vai ser feito
-
-### 1. Unificar faixas de CMV (corrige o bug do amarelo)
-Em `src/pages/PrecificacaoPizzas.tsx`:
-- Remover as funções locais `getCmvPillStyle`, `getHealthColor` e os ternários inline com limites 30/35.
-- Usar os helpers compartilhados `cmvColor`, `cmvBg`, `cmvMessage` de `pricing-helpers.ts` (faixas Abrasel 25/35/40).
-- Atualizar também o contador "Precisam de atenção" para usar o mesmo critério (CMV > 40 = vermelho).
-
-Resultado: CMV 30,5% passará a aparecer **verde** (faixa ideal), consistente com as Fichas Técnicas.
-
-### 2. Tooltip explicativo no card de cada tamanho
-No card de Tamanho P/M/G, adicionar um ícone `(i)` com tooltip ao lado de:
-- **SUGERIDO**: "Preço mínimo para cobrir custo do produto + custos fixos + taxas + seu lucro desejado. Cobrar acima é melhor, cobrar abaixo aperta sua margem."
-- **CMV %**: "Quanto do preço de venda é consumido pelo custo do produto. Ideal entre 25% e 35% (padrão Abrasel)."
-
-### 3. Legenda das faixas de CMV
-Adicionar uma faixa horizontal discreta no topo da página (abaixo do título) mostrando as 4 faixas com cores e rótulos curtos:
 ```text
-< 25% Margem alta  |  25–35% Ideal  |  35–40% Atenção  |  > 40% Prejuízo
+┌─────────────────────┐      ┌──────────────────────────┐      ┌──────────────────────┐
+│  WhatsApp / Upload  │ ───▶ │  n8n workflow             │ ───▶ │  Edge Function        │
+│  manual no app      │      │  Ttd6M0adQ1ZMmXGt         │      │  ingest-nota-fiscal   │
+└─────────────────────┘      │                           │      │                       │
+                             │  1. Recebe webhook        │      │  1. Resolve user_id   │
+                             │  2. Identifica numero     │      │     a partir do       │
+                             │  3. GPT Vision extrai     │      │     whatsapp_number   │
+                             │     itens da nota         │      │  2. Insere em         │
+                             │  4. POST único pra        │      │     insumos_comprados │
+                             │     edge function         │      │  3. Insere em         │
+                             └───────────────────────────┘      │     lancamentos_fin   │
+                                                                │  4. Registra em       │
+                                                                │     workflow_runs     │
+                                                                └──────────────────────┘
 ```
-Assim o usuário entende as cores sem precisar abrir tooltip.
+
+**O n8n vira um cliente HTTP simples.** Zero credenciais Postgres, zero nó IF frágil, zero resolução de IDs espalhada.
+
+---
+
+## Etapas de implementação
+
+### Etapa 1 — Edge Function `ingest-nota-fiscal`
+
+Cria `supabase/functions/ingest-nota-fiscal/index.ts` que:
+
+- Aceita POST com payload:
+  ```json
+  {
+    "whatsapp_number": "5511999999999",  // OU user_id+unidade_id direto
+    "user_id": "uuid",                    // opcional se vier whatsapp_number
+    "unidade_id": "uuid",                 // opcional se vier whatsapp_number
+    "fornecedor": "Atacadão",
+    "data_compra": "2026-04-30",
+    "itens": [
+      { "nome": "Mussarela", "categoria": "Laticínios",
+        "quantidade": 5, "unidade": "kg", "preco_pago": 180 }
+    ]
+  }
+  ```
+- Resolve `user_id`/`unidade_id` via `whatsapp_users` se não vierem no payload
+- Valida com Zod (tipos corretos, sem string-vs-boolean drama)
+- Insere todos os itens em `insumos_comprados` (transação)
+- Insere despesa total em `lancamentos_financeiros`
+- Registra `workflow_runs` (sucesso/erro com detalhes)
+- Retorna `{ success, itens_inseridos, run_id }`
+- Usa `SUPABASE_SERVICE_ROLE_KEY` internamente (nunca exposta) — credencial gerenciada pelo Supabase, **não pode sumir**
+- Autenticação: header `x-api-key` validando contra secret `N8N_INGEST_SECRET` (n8n manda esse header)
+
+### Etapa 2 — Adicionar secret `N8N_INGEST_SECRET`
+
+Token aleatório forte que o n8n usa pra autenticar contra a edge function. Gero e adiciono via `add_secret`.
+
+### Etapa 3 — Simplificar o workflow n8n
+
+Atual: ~10 nós (Webhook → Set → Resolver IDs → Mesclar → IF → Loop Postgres → ...)
+
+Novo: **4 nós**
+1. **Webhook** (recebe mensagem WhatsApp)
+2. **GPT Vision** (extrai JSON estruturado da imagem)
+3. **HTTP Request** (POST pra edge function com header `x-api-key`)
+4. **Respond to Webhook** (devolve OK pro WhatsApp)
+
+Removo todos os nós Postgres → fim do problema de credencial perdida.
+Removo o IF "Precisa Buscar WhatsApp?" → fim do erro boolean.
+Removo "Mesclar IDs" → edge function resolve tudo.
+
+### Etapa 4 — Atualizar `src/lib/n8n-webhook.ts`
+
+Mantém o mesmo helper, mas agora o app pode escolher:
+- **Via n8n** (fluxo normal pra WhatsApp)
+- **Direto na edge function** (pra upload manual de nota fiscal pelo app, sem passar pelo n8n)
+
+Adiciono função `enviarNotaFiscalDireto()` que chama a edge function via `supabase.functions.invoke()`.
+
+### Etapa 5 — Testes end-to-end
+
+1. `curl_edge_functions` com payload de teste → confirma gravação em `insumos_comprados` + `lancamentos_financeiros` + `workflow_runs`
+2. `test_workflow` no n8n com pin data → confirma que o POST chega na edge
+3. Teste real via WhatsApp → fluxo completo
+
+---
 
 ## Detalhes técnicos
 
-- **Arquivo principal**: `src/pages/PrecificacaoPizzas.tsx` (linhas ~329, 336, 467, 554-557).
-- **Helpers reutilizados**: `cmvColor`, `cmvBg`, `cmvMessage` já existentes em `src/lib/pricing-helpers.ts` (não precisa criar nada novo).
-- **Para os badges pill** (que hoje usam estilo inline com `hsl(var(--warning))`), trocar por classes Tailwind do `cmvBg` que já retornam combo bg+text+border consistente com o tema.
-- **Para o glow do border do card** (linha 554), substituir os ternários por uma função baseada em `cmvColor` que mapeia para os tokens semânticos `success`/`warning`/`destructive`.
-- **Tooltip**: usar o componente `Tooltip` já existente em `src/components/ui/tooltip.tsx` com ícone `Info` do lucide-react.
+**Tabelas afetadas (já existem, sem migração):**
+- `insumos_comprados` (INSERT) — tem `unidade_id`, `user_id`, todas as colunas necessárias
+- `lancamentos_financeiros` (INSERT) — tipo='despesa', categoria='Insumos'
+- `workflow_runs` (INSERT) — registra cada execução
+- `whatsapp_users` (SELECT) — resolve user_id/unidade_id por número
 
-## Fora do escopo
+**RLS:** Edge function usa service role, então bypassa RLS. Mas valida `is_member_of_unidade` em código antes de inserir, pra evitar gravar em unidade errada se whatsapp_users tiver dado ruim.
 
-- Não vou mexer na fórmula de Preço Sugerido (ela está correta — markup + meta CMV, pegando o maior).
-- Não vou alterar Precificação de Produtos/Bebidas nesta rodada (mas se você quiser depois, é só pedir — a mesma padronização se aplica).
+**Logs:** Tudo cai em `workflow_runs.metadata` + edge function logs do Supabase. Posso ler com `supabase--edge_function_logs` quando algo der errado.
+
+**Validação:**
+- `whatsapp_number` formato E.164 (só dígitos, 10-15 chars)
+- `itens[].quantidade > 0`, `preco_pago > 0`
+- `categoria` deve ser uma das 9 conhecidas (`Proteínas`, `Laticínios`, etc.) — fallback `Outros`
+- `unidade` deve ser uma das 7 conhecidas — fallback `unidade`
+
+**Idempotência:** edge function aceita header opcional `x-idempotency-key` (n8n manda o execution_id). Se já existir um `workflow_runs` com esse trigger_record_id, retorna o resultado anterior em vez de duplicar.
+
+---
+
+## O que isso resolve
+
+| Problema | Como resolve |
+|---|---|
+| Credencial Postgres some no n8n | Edge function não usa credencial — service role injetada pelo Supabase |
+| IF "Precisa Buscar WhatsApp?" erro boolean | Removido. Lógica em TS type-safe |
+| `user_id null` quando webhook vem vazio | Edge function rejeita com 400 + mensagem clara |
+| Difícil testar gravação | `curl_edge_functions` testa direto, sem n8n |
+| Sem visibilidade de erros | `workflow_runs` + edge logs estruturados |
+| Workflow n8n complexo (10 nós) | Simplificado pra 4 nós |
+
+---
+
+## Aprovação
+
+Posso começar pela **Etapa 1 (edge function)** + **Etapa 2 (secret)**? Depois disso testo via curl e só então mexo no n8n. Assim nada quebra no meio do caminho.
