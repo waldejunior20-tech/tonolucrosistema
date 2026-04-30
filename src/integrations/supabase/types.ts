@@ -1380,6 +1380,39 @@ export type Database = {
           },
         ]
       }
+      whatsapp_users: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          id: string
+          nome_amigavel: string | null
+          numero_whatsapp: string
+          unidade_id_padrao: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          id?: string
+          nome_amigavel?: string | null
+          numero_whatsapp: string
+          unidade_id_padrao: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          id?: string
+          nome_amigavel?: string | null
+          numero_whatsapp?: string
+          unidade_id_padrao?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       workflow_runs: {
         Row: {
           alertas_criados: number
