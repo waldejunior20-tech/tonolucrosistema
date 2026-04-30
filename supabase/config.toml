@@ -1,1 +1,4 @@
 project_id = "lokqongxioqbesejavdm"
+
+[functions.ingest-nota-fiscal]
+verify_jwt = false
