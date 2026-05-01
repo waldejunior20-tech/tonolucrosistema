@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.disparar_cascata_preco_cmv() FROM PUBLIC, anon, authenticated;
