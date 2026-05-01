@@ -87,6 +87,8 @@ Deno.serve(async (req) => {
       falhas++;
       if (errosSample.length < 3) errosSample.push(String(e).slice(0, 200));
     }
+    // throttle: 250ms entre chamadas pra nao bater rate limit do edge runtime
+    await new Promise((res) => setTimeout(res, 250));
   }
 
   // 4. Le COUNTs finais
