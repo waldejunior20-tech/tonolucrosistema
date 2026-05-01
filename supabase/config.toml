@@ -15,5 +15,5 @@ verify_jwt = false
 [functions.bootstrap-cascata]
 verify_jwt = false
 
-[functions.test-insert-mussarela]
+[functions.test-cascata-real]
 verify_jwt = false
