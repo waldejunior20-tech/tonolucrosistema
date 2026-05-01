@@ -2,3 +2,6 @@ project_id = "lokqongxioqbesejavdm"
 
 [functions.ingest-nota-fiscal]
 verify_jwt = false
+
+[functions.cascata-preco-cmv]
+verify_jwt = false
