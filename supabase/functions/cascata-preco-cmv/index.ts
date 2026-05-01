@@ -25,7 +25,11 @@ const corsHeaders = {
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const INGEST_SECRET = Deno.env.get("N8N_INGEST_SECRET") ?? "";
+// Aceita qualquer um dos dois secrets (compat com migracao de chave)
+const INGEST_SECRETS = [
+  Deno.env.get("N8N_INGEST_SECRET") ?? "",
+  Deno.env.get("N8N_INGEST_SECRET_NEW") ?? "",
+].filter((s) => s.length > 0);
 
 const THRESHOLD_PCT = 5; // MVP: hardcoded. Configuravel depois via configuracoes_precificacao.
 
@@ -231,7 +235,7 @@ Deno.serve(async (req) => {
 
   // Auth
   const apiKey = req.headers.get("x-api-key") ?? "";
-  if (!INGEST_SECRET || apiKey !== INGEST_SECRET) {
+  if (INGEST_SECRETS.length === 0 || !INGEST_SECRETS.includes(apiKey)) {
     return jsonResponse({ error: "Unauthorized" }, 401);
   }
 
