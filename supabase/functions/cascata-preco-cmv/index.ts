@@ -236,6 +236,11 @@ Deno.serve(async (req) => {
   // Auth
   const apiKey = req.headers.get("x-api-key") ?? "";
   if (INGEST_SECRETS.length === 0 || !INGEST_SECRETS.includes(apiKey)) {
+    console.log("AUTH_FAIL", {
+      apiKeyLen: apiKey.length,
+      secretsLen: INGEST_SECRETS.map((s) => s.length),
+      match: INGEST_SECRETS.map((s) => s === apiKey),
+    });
     return jsonResponse({ error: "Unauthorized" }, 401);
   }
 
