@@ -1,6 +1,5 @@
 import { Menu } from "lucide-react";
 import { GlobalSearch } from "./GlobalSearch";
-import { BrasiliaClock } from "./BrasiliaClock";
 import { UnidadeSelector } from "./UnidadeSelector";
 
 interface HeaderProps {
@@ -26,9 +25,6 @@ export function Header({ onMenuClick, showMenuButton, sidebarWidth = "0px" }: He
 
       <div className="flex items-center gap-3 shrink-0">
         <UnidadeSelector />
-        <div className="hidden sm:block">
-          <BrasiliaClock />
-        </div>
       </div>
     </header>
   );
