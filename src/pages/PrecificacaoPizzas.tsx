@@ -143,6 +143,18 @@ export default function PrecificacaoPizzas() {
     },
   });
 
+  const { data: configNegocio } = useQuery({
+    queryKey: ["configuracoes_negocio_mix"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("configuracoes_negocio")
+        .select("pct_dinheiro_pix,pct_debito,pct_credito,pct_ifood,lucro_desejado_pct")
+        .limit(1)
+        .maybeSingle();
+      return data;
+    },
+  });
+
   // ─── Cost maps ───────────────────────────────────────────────────
   const custoCompradoMap = useMemo(() => {
     const m = new Map<string, number>();
