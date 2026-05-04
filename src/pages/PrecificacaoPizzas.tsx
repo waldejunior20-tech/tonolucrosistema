@@ -143,6 +143,18 @@ export default function PrecificacaoPizzas() {
     },
   });
 
+  const { data: configNegocio } = useQuery({
+    queryKey: ["configuracoes_negocio_mix"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("configuracoes_negocio")
+        .select("pct_dinheiro_pix,pct_debito,pct_credito,pct_ifood,lucro_desejado_pct")
+        .limit(1)
+        .maybeSingle();
+      return data;
+    },
+  });
+
   // ─── Cost maps ───────────────────────────────────────────────────
   const custoCompradoMap = useMemo(() => {
     const m = new Map<string, number>();
@@ -310,6 +322,37 @@ export default function PrecificacaoPizzas() {
 
   const cmvMeta = config?.cmv_meta_pct ?? 32;
   const activeApps = getActiveApps(config);
+
+  // ─── Taxa ponderada de pagamento + cálculos de sobra/breakeven ──
+  const taxaPonderada = useMemo(() => {
+    if (!config) return 0;
+    const m = configNegocio;
+    const somaMix = m ? Number(m.pct_dinheiro_pix ?? 0) + Number(m.pct_debito ?? 0) + Number(m.pct_credito ?? 0) + Number(m.pct_ifood ?? 0) : 0;
+    if (!m || somaMix < 1) {
+      return (config.taxa_credito_pct + config.taxa_debito_pct + config.taxa_pix_pct + config.taxa_ifood_pct) / 4;
+    }
+    return (
+      (Number(m.pct_dinheiro_pix) / 100) * config.taxa_pix_pct +
+      (Number(m.pct_debito)       / 100) * config.taxa_debito_pct +
+      (Number(m.pct_credito)      / 100) * config.taxa_credito_pct +
+      (Number(m.pct_ifood)        / 100) * config.taxa_ifood_pct
+    );
+  }, [config, configNegocio]);
+
+  const custosFixosPct = Number(config?.custos_fixos_pct ?? 22);
+
+  /** Sobra real (lucro líquido) em R$: preço − custo − custos_fixos% − taxas% */
+  const calcSobra = (preco: number, custo: number) => {
+    if (preco <= 0) return 0;
+    return preco - custo - preco * (custosFixosPct / 100) - preco * (taxaPonderada / 100);
+  };
+
+  /** Preço de breakeven (lucro zero): custo / (1 − (custos_fixos% + taxas%)) */
+  const calcPrecoZero = (custo: number) => {
+    const denom = 1 - (custosFixosPct + taxaPonderada) / 100;
+    if (denom <= 0) return 0;
+    return custo / denom;
+  };
 
   const tipoLabel = (tipo: string | null) => {
     if (!tipo) return "";
@@ -635,6 +678,57 @@ export default function PrecificacaoPizzas() {
                                   </div>
                                 </div>
                               </div>
+
+                              {/* Sobra real + Preço Zero */}
+                              {(() => {
+                                const precoZero = calcPrecoZero(custo);
+                                const sobra = calcSobra(preco, custo);
+                                const sobraPct = preco > 0 ? (sobra / preco) * 100 : 0;
+                                const sobraPositiva = sobra > 0;
+                                const sobraColor = sobraPositiva ? 'hsl(var(--success))' : 'hsl(var(--destructive))';
+                                return (
+                                  <div className="rounded-lg p-4 space-y-3" style={{ background: 'rgba(255,255,255,0.35)' }}>
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-[10px] font-bold uppercase tracking-[0.12em] flex items-center gap-1" style={{ color: sobraColor }}>
+                                        {sobraPositiva ? 'Sobra (lucro)' : 'Prejuízo'}
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <button type="button" className="opacity-60 hover:opacity-100"><Info className="h-3 w-3" /></button>
+                                          </TooltipTrigger>
+                                          <TooltipContent side="top" className="max-w-xs text-xs">
+                                            Quanto sobra de verdade após pagar o ingrediente, custos fixos ({custosFixosPct.toFixed(0)}%) e taxas de pagamento ponderadas ({taxaPonderada.toFixed(1)}%). É seu lucro líquido por pizza.
+                                          </TooltipContent>
+                                        </Tooltip>
+                                      </span>
+                                      <div className="flex items-baseline gap-1">
+                                        <span className="text-xs font-bold" style={{ color: sobraColor }}>R$</span>
+                                        <span className="text-base font-extrabold font-terminal" style={{ color: sobraColor }}>{sobra.toFixed(2)}</span>
+                                        {preco > 0 && (
+                                          <span className="text-[10px] font-bold ml-1" style={{ color: sobraColor }}>({sobraPct.toFixed(1)}%)</span>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <div className="h-px bg-border/40" />
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-[10px] font-bold uppercase tracking-[0.12em] flex items-center gap-1" style={{ color: '#5D5D5D' }}>
+                                        Preço Zero
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <button type="button" className="opacity-60 hover:opacity-100"><Info className="h-3 w-3" /></button>
+                                          </TooltipTrigger>
+                                          <TooltipContent side="top" className="max-w-xs text-xs">
+                                            Abaixo desse valor você opera no <strong>prejuízo</strong>. É o preço onde você apenas cobre o custo do ingrediente + custos fixos + taxas, sem lucro nenhum.
+                                          </TooltipContent>
+                                        </Tooltip>
+                                      </span>
+                                      <div className="flex items-baseline gap-1">
+                                        <span className="text-xs font-bold" style={{ color: '#5D5D5D' }}>R$</span>
+                                        <span className="text-base font-bold font-terminal" style={{ color: '#5D5D5D' }}>{precoZero.toFixed(2)}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              })()}
 
                               {/* Action block — Seu Preço */}
                               <div className="space-y-2">
