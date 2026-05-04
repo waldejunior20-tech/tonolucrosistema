@@ -323,6 +323,37 @@ export default function PrecificacaoPizzas() {
   const cmvMeta = config?.cmv_meta_pct ?? 32;
   const activeApps = getActiveApps(config);
 
+  // ─── Taxa ponderada de pagamento + cálculos de sobra/breakeven ──
+  const taxaPonderada = useMemo(() => {
+    if (!config) return 0;
+    const m = configNegocio;
+    const somaMix = m ? Number(m.pct_dinheiro_pix ?? 0) + Number(m.pct_debito ?? 0) + Number(m.pct_credito ?? 0) + Number(m.pct_ifood ?? 0) : 0;
+    if (!m || somaMix < 1) {
+      return (config.taxa_credito_pct + config.taxa_debito_pct + config.taxa_pix_pct + config.taxa_ifood_pct) / 4;
+    }
+    return (
+      (Number(m.pct_dinheiro_pix) / 100) * config.taxa_pix_pct +
+      (Number(m.pct_debito)       / 100) * config.taxa_debito_pct +
+      (Number(m.pct_credito)      / 100) * config.taxa_credito_pct +
+      (Number(m.pct_ifood)        / 100) * config.taxa_ifood_pct
+    );
+  }, [config, configNegocio]);
+
+  const custosFixosPct = Number(config?.custos_fixos_pct ?? 22);
+
+  /** Sobra real (lucro líquido) em R$: preço − custo − custos_fixos% − taxas% */
+  const calcSobra = (preco: number, custo: number) => {
+    if (preco <= 0) return 0;
+    return preco - custo - preco * (custosFixosPct / 100) - preco * (taxaPonderada / 100);
+  };
+
+  /** Preço de breakeven (lucro zero): custo / (1 − (custos_fixos% + taxas%)) */
+  const calcPrecoZero = (custo: number) => {
+    const denom = 1 - (custosFixosPct + taxaPonderada) / 100;
+    if (denom <= 0) return 0;
+    return custo / denom;
+  };
+
   const tipoLabel = (tipo: string | null) => {
     if (!tipo) return "";
     const map: Record<string, string> = {
