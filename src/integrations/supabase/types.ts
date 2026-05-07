@@ -1191,6 +1191,30 @@ export type Database = {
           },
         ]
       }
+      processamento_mensagens: {
+        Row: {
+          created_at: string | null
+          id: number
+          remote_jid: string | null
+          status: string | null
+          whatsapp_msg_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          remote_jid?: string | null
+          status?: string | null
+          whatsapp_msg_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          remote_jid?: string | null
+          status?: string | null
+          whatsapp_msg_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
