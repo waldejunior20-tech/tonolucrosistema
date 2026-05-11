@@ -115,6 +115,7 @@ export default function FichasTecnicasPizza() {
       setFiltroTipo("todos");
     }
   }, [searchParams]);
+  const [autoOpenedEditId, setAutoOpenedEditId] = useState<string | null>(null);
   const [buscaIngrediente, setBuscaIngrediente] = useState("");
   const [buscaAberta, setBuscaAberta] = useState<number | null>(null);
   const [buscaEmbalagemAberta, setBuscaEmbalagemAberta] = useState<string | null>(null);
@@ -524,6 +525,16 @@ export default function FichasTecnicasPizza() {
     }
     setDialogOpen(true);
   };
+
+  useEffect(() => {
+    const editar = searchParams.get("editar");
+    if (!editar || autoOpenedEditId === editar) return;
+    const ficha = fichas.find((f) => f.id === editar);
+    if (ficha) {
+      handleEdit(ficha as FichaTecnica);
+      setAutoOpenedEditId(editar);
+    }
+  }, [searchParams, fichas, autoOpenedEditId]);
 
   const addIngrediente = () => {
     setForm({ ...form, ingredientes: [...form.ingredientes, { ...emptyIngrediente }] });
