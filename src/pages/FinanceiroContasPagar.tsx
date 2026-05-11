@@ -329,7 +329,7 @@ export default function FinanceiroContasPagar() {
       num_parcelas: 1,
       primeiro_vencimento: c.data_vencimento,
       intervalo_dias: 30,
-      categoria: c.categoria ?? "Insumos",
+      categoria: c.categoria ?? "Proteínas / Açougue",
       subcategoria: c.subcategoria ?? "",
     });
     setDialogOpen(true);
