@@ -133,6 +133,48 @@ export type Database = {
         }
         Relationships: []
       }
+      aprendizado_categorizacao: {
+        Row: {
+          categoria_aprendida: string
+          cnpj: string | null
+          fornecedor: string | null
+          id: number
+          ocorrencias: number | null
+          palavra_chave: string | null
+          subcategoria_aprendida: string
+          tipo: string
+          ultima_atualizacao: string | null
+          unidade_id: string
+          user_id: string
+        }
+        Insert: {
+          categoria_aprendida: string
+          cnpj?: string | null
+          fornecedor?: string | null
+          id?: number
+          ocorrencias?: number | null
+          palavra_chave?: string | null
+          subcategoria_aprendida: string
+          tipo?: string
+          ultima_atualizacao?: string | null
+          unidade_id: string
+          user_id?: string
+        }
+        Update: {
+          categoria_aprendida?: string
+          cnpj?: string | null
+          fornecedor?: string | null
+          id?: number
+          ocorrencias?: number | null
+          palavra_chave?: string | null
+          subcategoria_aprendida?: string
+          tipo?: string
+          ultima_atualizacao?: string | null
+          unidade_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       bases_ficha: {
         Row: {
           created_at: string
@@ -256,6 +298,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      categorias_despesa: {
+        Row: {
+          ativo: boolean | null
+          categoria: string
+          cor_hex: string | null
+          created_at: string | null
+          emoji: string | null
+          id: number
+          ordem: number | null
+          palavras_chave: string[]
+          subcategoria: string
+          tipo: string
+        }
+        Insert: {
+          ativo?: boolean | null
+          categoria: string
+          cor_hex?: string | null
+          created_at?: string | null
+          emoji?: string | null
+          id?: number
+          ordem?: number | null
+          palavras_chave?: string[]
+          subcategoria: string
+          tipo: string
+        }
+        Update: {
+          ativo?: boolean | null
+          categoria?: string
+          cor_hex?: string | null
+          created_at?: string | null
+          emoji?: string | null
+          id?: number
+          ordem?: number | null
+          palavras_chave?: string[]
+          subcategoria?: string
+          tipo?: string
+        }
+        Relationships: []
       }
       combos_fixos: {
         Row: {
@@ -1013,11 +1094,14 @@ export type Database = {
       lancamentos_financeiros: {
         Row: {
           categoria: string
+          classificacao_origem: string | null
+          confianca_classificacao: number | null
           created_at: string
           data_lancamento: string
           descricao: string
           id: string
           pago: boolean
+          subcategoria: string | null
           tipo: string
           unidade_id: string | null
           updated_at: string
@@ -1026,11 +1110,14 @@ export type Database = {
         }
         Insert: {
           categoria: string
+          classificacao_origem?: string | null
+          confianca_classificacao?: number | null
           created_at?: string
           data_lancamento?: string
           descricao: string
           id?: string
           pago?: boolean
+          subcategoria?: string | null
           tipo: string
           unidade_id?: string | null
           updated_at?: string
@@ -1039,11 +1126,14 @@ export type Database = {
         }
         Update: {
           categoria?: string
+          classificacao_origem?: string | null
+          confianca_classificacao?: number | null
           created_at?: string
           data_lancamento?: string
           descricao?: string
           id?: string
           pago?: boolean
+          subcategoria?: string | null
           tipo?: string
           unidade_id?: string | null
           updated_at?: string
@@ -1513,7 +1603,27 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      v_resumo_financeiro: {
+        Row: {
+          categoria: string | null
+          mes: string | null
+          subcategoria: string | null
+          tipo: string | null
+          total: number | null
+          transacoes: number | null
+          unidade_id: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lancamentos_financeiros_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       aplicar_base_em_ficha: {
@@ -1529,6 +1639,16 @@ export type Database = {
           rendimento: number
           unidade_id: string
           unidade_rendimento: string
+        }[]
+      }
+      classificar_por_palavra_chave: {
+        Args: { texto_input: string }
+        Returns: {
+          categoria: string
+          emoji: string
+          match_score: number
+          subcategoria: string
+          tipo: string
         }[]
       }
       get_user_unidades: {
