@@ -22,11 +22,36 @@ const INGEST_SECRETS = [
   Deno.env.get("N8N_INGEST_SECRET_NEW") ?? "",
 ].filter((s) => s.length > 0);
 
-const CATEGORIAS_VALIDAS = new Set([
+const CATEGORIAS_INSUMO = new Set([
   "Proteínas", "Laticínios", "Hortifruti", "Secos", "Bebidas",
-  "Molhos e Condimentos", "Embalagens", "Congelados", "Confeitaria", "Outros",
+  "Molhos e Condimentos", "Embalagens", "Congelados", "Confeitaria",
 ]);
 const UNIDADES_VALIDAS = new Set(["kg", "g", "L", "ml", "unidade", "caixa", "pacote"]);
+
+// Palavras-chave que indicam serviço/despesa, não insumo
+const PALAVRAS_NAO_INSUMO = [
+  "spot", "comercial", "publicid", "anunc", "marketing",
+  "servic", "consultor", "mensalidade", "assinatura",
+  "aluguel", "internet", "telefon", "energia",
+  "contador", "honorar", "taxa", "tarifa", "juros",
+];
+
+function ehDespesaServico(nome: string, categoria?: string): boolean {
+  const cat = (categoria ?? "").toLowerCase();
+  if (cat && !CATEGORIAS_INSUMO.has(categoria!)) return true;
+  const n = nome.toLowerCase();
+  return PALAVRAS_NAO_INSUMO.some((p) => n.includes(p));
+}
+
+function normalizarUnidade(u?: string): string {
+  const v = (u ?? "").trim();
+  if (!v) return "unidade";
+  const map: Record<string, string> = {
+    UN: "unidade", Un: "unidade", un: "unidade",
+    KG: "kg", Kg: "kg", G: "g", L: "L", l: "L", ML: "ml", Ml: "ml",
+  };
+  return map[v] ?? (UNIDADES_VALIDAS.has(v) ? v : "unidade");
+}
 
 interface ItemPayload {
   nome?: string;
@@ -165,50 +190,81 @@ Deno.serve(async (req) => {
   const dataCompra = payload.data_compra ?? new Date().toISOString().slice(0, 10);
   const fornecedor = (payload.fornecedor ?? "").trim() || null;
 
-  const insumosRows = itens.map((it) => {
-    const categoria = it.categoria && CATEGORIAS_VALIDAS.has(it.categoria) ? it.categoria : "Outros";
-    const unidade = it.unidade && UNIDADES_VALIDAS.has(it.unidade) ? it.unidade : "unidade";
-    return {
-      user_id,
-      unidade_id,
-      nome: (it.nome ?? "Item sem nome").toString().trim(),
-      categoria,
-      quantidade: toNumber(it.quantidade),
-      unidade,
-      preco_pago: toNumber(it.preco_pago),
-      fornecedor,
-      data_compra: dataCompra,
-    };
-  });
+  // Separa itens em insumos vs despesas/serviços
+  const insumosRows: any[] = [];
+  const despesasItens: { nome: string; valor: number; categoria: string }[] = [];
 
-  const totalDespesa = insumosRows.reduce((s, r) => s + r.preco_pago, 0);
+  for (const it of itens) {
+    const nome = (it.nome ?? "Item sem nome").toString().trim();
+    const categoriaRaw = it.categoria ?? "";
 
-  const { data: inseridos, error: insErr } = await supabase
-    .from("insumos_comprados")
-    .insert(insumosRows)
-    .select("id");
+    if (ehDespesaServico(nome, categoriaRaw)) {
+      const catFinal = categoriaRaw && !CATEGORIAS_INSUMO.has(categoriaRaw)
+        ? categoriaRaw
+        : "Outros";
+      despesasItens.push({
+        nome,
+        valor: toNumber(it.preco_pago),
+        categoria: catFinal,
+      });
+    } else {
+      const categoria = CATEGORIAS_INSUMO.has(categoriaRaw) ? categoriaRaw : "Secos";
+      insumosRows.push({
+        user_id, unidade_id,
+        nome, categoria,
+        quantidade: toNumber(it.quantidade),
+        unidade: normalizarUnidade(it.unidade),
+        preco_pago: toNumber(it.preco_pago),
+        fornecedor, data_compra: dataCompra,
+      });
+    }
+  }
 
-  if (insErr) {
-    await supabase.from("workflow_runs").update({
-      status: "error",
-      finished_at: new Date().toISOString(),
-      duration_ms: Date.now() - startedAt,
-      metadata: { error: insErr.message, step: "insumos_comprados" },
-    }).eq("id", runId);
-    return jsonResponse({ error: "Erro ao inserir insumos", detail: insErr.message, run_id: runId }, 500);
+  const totalInsumos = insumosRows.reduce((s, r) => s + r.preco_pago, 0);
+  const totalDespesasServico = despesasItens.reduce((s, r) => s + r.valor, 0);
+  const totalDespesa = totalInsumos + totalDespesasServico;
+
+  let inseridos: { id: string }[] | null = [];
+  if (insumosRows.length > 0) {
+    const { data, error: insErr } = await supabase
+      .from("insumos_comprados")
+      .insert(insumosRows)
+      .select("id");
+    if (insErr) {
+      await supabase.from("workflow_runs").update({
+        status: "error",
+        finished_at: new Date().toISOString(),
+        duration_ms: Date.now() - startedAt,
+        metadata: { error: insErr.message, step: "insumos_comprados" },
+      }).eq("id", runId);
+      return jsonResponse({ error: "Erro ao inserir insumos", detail: insErr.message, run_id: runId }, 500);
+    }
+    inseridos = data;
+  }
+
+  // Lança despesas/serviços individualmente em lancamentos_financeiros
+  for (const d of despesasItens) {
+    await supabase.from("lancamentos_financeiros").insert({
+      user_id, unidade_id,
+      tipo: "despesa",
+      categoria: d.categoria,
+      descricao: `${d.nome}${fornecedor ? ` - ${fornecedor}` : ""}`,
+      valor: d.valor,
+      data_lancamento: dataCompra,
+      pago: true,
+    });
   }
 
   let lancamento_id: string | null = null;
-  if (totalDespesa > 0) {
+  if (totalInsumos > 0) {
     const { data: lanc, error: lancErr } = await supabase
       .from("lancamentos_financeiros")
       .insert({
-        user_id,
-        unidade_id,
+        user_id, unidade_id,
         tipo: "despesa",
         categoria: "Insumos",
         descricao: `Nota fiscal${fornecedor ? ` - ${fornecedor}` : ""} (${insumosRows.length} itens)`,
-        valor: totalDespesa,
+        valor: totalInsumos,
         data_lancamento: dataCompra,
         pago: true,
       })
