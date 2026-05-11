@@ -39,9 +39,18 @@ export function VendaRapidaButton({
     mutationFn: async () => {
       if (valor <= 0) throw new Error("Informe o valor da venda");
       const unidade_id = requireActiveUnidadeId();
+      const subcatPorForma: Record<typeof forma, string> = {
+        "Dinheiro/PIX": "PIX Recebido",
+        "Débito": "Vendas Balcão",
+        "Crédito": "Vendas Balcão",
+        "iFood": "Vendas Delivery",
+        "Outros Apps": "Vendas Delivery",
+      };
       const { error } = await supabase.from("lancamentos_financeiros").insert({
         tipo: "receita",
-        categoria: `Vendas - ${forma}`,
+        categoria: "Receitas",
+        subcategoria: subcatPorForma[forma],
+        classificacao_origem: "manual",
         descricao: descricao || `Venda ${forma}`,
         valor,
         data_lancamento: dataStr,
