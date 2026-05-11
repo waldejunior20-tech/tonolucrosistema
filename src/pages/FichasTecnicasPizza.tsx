@@ -536,6 +536,7 @@ export default function FichasTecnicasPizza() {
     }
   }, [searchParams, fichas, autoOpenedEditId]);
 
+  const addIngrediente = () => {
     setForm({ ...form, ingredientes: [...form.ingredientes, { ...emptyIngrediente }] });
   };
 
