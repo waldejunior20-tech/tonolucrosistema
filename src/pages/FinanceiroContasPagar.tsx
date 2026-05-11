@@ -23,10 +23,57 @@ import { PageHeader } from "@/components/layout/PageHeader";
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-const CATEGORIAS = [
-  "Insumos", "Operacional", "Logística", "Pessoal", "Marketing",
-  "Administrativo", "Manutenção", "Outros",
+// Categorias detalhadas, separando CMV (insumos que vão no prato)
+// de Custos Operacionais (o que faz o restaurante funcionar).
+// Sem "Outros" — toda despesa frequente merece categoria própria.
+const CATEGORIAS_GRUPOS: { grupo: string; itens: string[] }[] = [
+  {
+    grupo: "Insumos / CMV (vai no prato)",
+    itens: [
+      "Proteínas / Açougue",
+      "Laticínios",
+      "Hortifrúti",
+      "Secos / Mercearia",
+      "Bebidas",
+      "Molhos e Condimentos",
+      "Embalagens / Descartáveis",
+      "Congelados",
+      "Confeitaria",
+    ],
+  },
+  {
+    grupo: "Operacional (faz o restaurante funcionar)",
+    itens: [
+      "Aluguel",
+      "Energia Elétrica",
+      "Água",
+      "Gás",
+      "Internet / Telefone",
+    ],
+  },
+  {
+    grupo: "Pessoal",
+    itens: ["Salários", "Pró-labore", "Encargos / INSS / FGTS", "Vale Transporte", "Vale Refeição"],
+  },
+  {
+    grupo: "Logística / Combustível",
+    itens: ["Combustível / Gasolina", "Manutenção de Veículo", "Frete / Entregas", "App de Entregadores"],
+  },
+  {
+    grupo: "Marketing",
+    itens: ["Publicidade / Anúncios", "Spots / Comerciais", "Mídia Social / Tráfego Pago", "Material Gráfico"],
+  },
+  {
+    grupo: "Administrativo",
+    itens: ["Contador / Honorários", "Taxas e Tarifas Bancárias", "Software / Sistemas", "Material de Escritório"],
+  },
+  {
+    grupo: "Manutenção / Serviços",
+    itens: ["Manutenção de Equipamentos", "Consultoria", "Segurança / Monitoramento", "Limpeza / Dedetização"],
+  },
 ];
+
+const CATEGORIAS = CATEGORIAS_GRUPOS.flatMap((g) => g.itens);
 
 interface ContaPagar {
   id: string;
