@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -15,46 +15,58 @@ import { Pencil, Trash2, Plus, Sparkles } from "lucide-react";
 import { EmptyState } from "@/components/EmptyState";
 import { MoneyInput } from "@/components/MoneyInput";
 import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
+import { getOrCreateConfiguracoesNegocio } from "@/lib/config-helpers";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Borda = Tables<"bordas">;
+type SizeMap = Record<string, number>;
 
 interface FormState {
   nome: string;
-  preco_p: number;
-  preco_m: number;
-  preco_g: number;
-  custo_p: number;
-  custo_m: number;
-  custo_g: number;
+  precos: SizeMap;
+  custos: SizeMap;
 }
-
-const emptyForm: FormState = {
-  nome: "",
-  preco_p: 0,
-  preco_m: 0,
-  preco_g: 0,
-  custo_p: 0,
-  custo_m: 0,
-  custo_g: 0,
-};
 
 const fmt = (v: number) =>
   Number(v).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+const toMap = (raw: unknown, sizes: string[]): SizeMap => {
+  const obj = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  const out: SizeMap = {};
+  for (const s of sizes) out[s] = Number(obj[s] ?? 0) || 0;
+  return out;
+};
 
 export function BordasSection() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+
+  const { data: config } = useQuery({
+    queryKey: ["configuracoes_negocio"],
+    queryFn: getOrCreateConfiguracoesNegocio,
+  });
+
+  const sizes = useMemo<string[]>(() => {
+    const t = (config?.tamanhos_pizza as string[] | null) ?? ["P", "M", "G"];
+    return Array.isArray(t) && t.length ? t : ["P", "M", "G"];
+  }, [config]);
+
+  const emptyForm = useMemo<FormState>(
+    () => ({
+      nome: "",
+      precos: Object.fromEntries(sizes.map((s) => [s, 0])),
+      custos: Object.fromEntries(sizes.map((s) => [s, 0])),
+    }),
+    [sizes],
+  );
+
   const [form, setForm] = useState<FormState>(emptyForm);
 
   const { data: bordas = [], isLoading } = useQuery({
     queryKey: ["bordas"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("bordas")
-        .select("*")
-        .order("nome");
+      const { data, error } = await supabase.from("bordas").select("*").order("nome");
       if (error) throw error;
       return data as Borda[];
     },
@@ -69,24 +81,17 @@ export function BordasSection() {
   const upsertMut = useMutation({
     mutationFn: async () => {
       if (!form.nome.trim()) throw new Error("Informe o nome da borda");
+      const payload = {
+        nome: form.nome.trim(),
+        precos_por_tamanho: form.precos,
+        custos_por_tamanho: form.custos,
+      };
       if (editingId) {
-        const { error } = await supabase
-          .from("bordas")
-          .update({
-            nome: form.nome.trim(),
-            preco_p: form.preco_p, preco_m: form.preco_m, preco_g: form.preco_g,
-            custo_p: form.custo_p, custo_m: form.custo_m, custo_g: form.custo_g,
-          })
-          .eq("id", editingId);
+        const { error } = await supabase.from("bordas").update(payload).eq("id", editingId);
         if (error) throw error;
       } else {
         const unidade_id = requireActiveUnidadeId();
-        const { error } = await supabase.from("bordas").insert({
-          nome: form.nome.trim(),
-          preco_p: form.preco_p, preco_m: form.preco_m, preco_g: form.preco_g,
-          custo_p: form.custo_p, custo_m: form.custo_m, custo_g: form.custo_g,
-          unidade_id,
-        });
+        const { error } = await supabase.from("bordas").insert({ ...payload, unidade_id } as never);
         if (error) throw error;
       }
     },
@@ -113,19 +118,23 @@ export function BordasSection() {
   const handleEdit = (b: Borda) => {
     setForm({
       nome: b.nome,
-      preco_p: Number(b.preco_p), preco_m: Number(b.preco_m), preco_g: Number(b.preco_g),
-      custo_p: Number(b.custo_p), custo_m: Number(b.custo_m), custo_g: Number(b.custo_g),
+      precos: toMap(b.precos_por_tamanho, sizes),
+      custos: toMap(b.custos_por_tamanho, sizes),
     });
     setEditingId(b.id);
     setOpen(true);
   };
+
+  const sizesLabel = sizes.join(" · ");
 
   return (
     <div className="space-y-4 fade-up fade-up-d2">
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
           <h2 className="text-xl font-semibold text-foreground">Bordas Recheadas</h2>
-          <p className="text-sm text-muted-foreground">Preço extra cobrado por tamanho (P · M · G).</p>
+          <p className="text-sm text-muted-foreground">
+            Preço extra cobrado por tamanho ({sizesLabel}).
+          </p>
         </div>
         <Dialog open={open} onOpenChange={(o) => { if (!o) reset(); setOpen(o); }}>
           <DialogTrigger asChild>
@@ -133,7 +142,7 @@ export function BordasSection() {
               <Plus className="h-4 w-4" /> Nova Borda
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-xl">
+          <DialogContent className="sm:max-w-2xl">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4" />
@@ -153,15 +162,18 @@ export function BordasSection() {
 
               <div>
                 <Label className="text-sm font-semibold">Preço de venda (R$)</Label>
-                <div className="grid grid-cols-3 gap-3 mt-1.5">
-                  {(["p", "m", "g"] as const).map((s) => (
+                <div
+                  className="grid gap-3 mt-1.5"
+                  style={{ gridTemplateColumns: `repeat(${sizes.length}, minmax(0, 1fr))` }}
+                >
+                  {sizes.map((s) => (
                     <div key={`preco-${s}`}>
                       <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">
-                        {s.toUpperCase()}
+                        {s}
                       </Label>
                       <MoneyInput
-                        value={form[`preco_${s}` as const]}
-                        onChange={(v) => setForm({ ...form, [`preco_${s}`]: v })}
+                        value={form.precos[s] ?? 0}
+                        onChange={(v) => setForm({ ...form, precos: { ...form.precos, [s]: v } })}
                       />
                     </div>
                   ))}
@@ -170,15 +182,18 @@ export function BordasSection() {
 
               <div>
                 <Label className="text-sm font-semibold">Custo (opcional)</Label>
-                <div className="grid grid-cols-3 gap-3 mt-1.5">
-                  {(["p", "m", "g"] as const).map((s) => (
+                <div
+                  className="grid gap-3 mt-1.5"
+                  style={{ gridTemplateColumns: `repeat(${sizes.length}, minmax(0, 1fr))` }}
+                >
+                  {sizes.map((s) => (
                     <div key={`custo-${s}`}>
                       <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">
-                        {s.toUpperCase()}
+                        {s}
                       </Label>
                       <MoneyInput
-                        value={form[`custo_${s}` as const]}
-                        onChange={(v) => setForm({ ...form, [`custo_${s}`]: v })}
+                        value={form.custos[s] ?? 0}
+                        onChange={(v) => setForm({ ...form, custos: { ...form.custos, [s]: v } })}
                       />
                     </div>
                   ))}
@@ -201,7 +216,7 @@ export function BordasSection() {
         <EmptyState
           icon={Sparkles}
           title="Nenhuma borda cadastrada"
-          description="Cadastre bordas recheadas com preço por tamanho (P · M · G)."
+          description={`Cadastre bordas recheadas com preço por tamanho (${sizesLabel}).`}
           actionLabel="Nova Borda"
           onAction={() => setOpen(true)}
         />
@@ -211,46 +226,54 @@ export function BordasSection() {
             <TableHeader>
               <TableRow>
                 <TableHead>Nome</TableHead>
-                <TableHead className="text-right">Preço P</TableHead>
-                <TableHead className="text-right">Preço M</TableHead>
-                <TableHead className="text-right">Preço G</TableHead>
-                <TableHead className="text-right">Custo P</TableHead>
-                <TableHead className="text-right">Custo M</TableHead>
-                <TableHead className="text-right">Custo G</TableHead>
+                {sizes.map((s) => (
+                  <TableHead key={`h-preco-${s}`} className="text-right">Preço {s}</TableHead>
+                ))}
+                {sizes.map((s) => (
+                  <TableHead key={`h-custo-${s}`} className="text-right">Custo {s}</TableHead>
+                ))}
                 <TableHead className="w-[100px]">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {bordas.map((b) => (
-                <TableRow key={b.id}>
-                  <TableCell className="font-medium">{b.nome}</TableCell>
-                  <TableCell className="text-right">R$ {fmt(Number(b.preco_p))}</TableCell>
-                  <TableCell className="text-right">R$ {fmt(Number(b.preco_m))}</TableCell>
-                  <TableCell className="text-right">R$ {fmt(Number(b.preco_g))}</TableCell>
-                  <TableCell className="text-right text-muted-foreground">R$ {fmt(Number(b.custo_p))}</TableCell>
-                  <TableCell className="text-right text-muted-foreground">R$ {fmt(Number(b.custo_m))}</TableCell>
-                  <TableCell className="text-right text-muted-foreground">R$ {fmt(Number(b.custo_g))}</TableCell>
-                  <TableCell>
-                    <div className="flex gap-1">
-                      <Button
-                        variant="ghost" size="icon"
-                        onClick={() => handleEdit(b)}
-                        className="text-muted-foreground hover:text-foreground hover:bg-muted"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost" size="icon"
-                        onClick={() => {
-                          if (confirm(`Excluir a borda "${b.nome}"?`)) deleteMut.mutate(b.id);
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {bordas.map((b) => {
+                const precos = toMap(b.precos_por_tamanho, sizes);
+                const custos = toMap(b.custos_por_tamanho, sizes);
+                return (
+                  <TableRow key={b.id}>
+                    <TableCell className="font-medium">{b.nome}</TableCell>
+                    {sizes.map((s) => (
+                      <TableCell key={`p-${b.id}-${s}`} className="text-right">
+                        R$ {fmt(precos[s])}
+                      </TableCell>
+                    ))}
+                    {sizes.map((s) => (
+                      <TableCell key={`c-${b.id}-${s}`} className="text-right text-muted-foreground">
+                        R$ {fmt(custos[s])}
+                      </TableCell>
+                    ))}
+                    <TableCell>
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost" size="icon"
+                          onClick={() => handleEdit(b)}
+                          className="text-muted-foreground hover:text-foreground hover:bg-muted"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost" size="icon"
+                          onClick={() => {
+                            if (confirm(`Excluir a borda "${b.nome}"?`)) deleteMut.mutate(b.id);
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </div>
