@@ -43,6 +43,8 @@ export function BordasSection() {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
+  const [ingDialog, setIngDialog] = useState<Borda | null>(null);
+
   const { data: config } = useQuery({
     queryKey: ["configuracoes_negocio"],
     queryFn: getOrCreateConfiguracoesNegocio,
