@@ -543,8 +543,8 @@ export default function FinanceiroDRE() {
         </div>
       )}
 
-      {/* Dialog: Detalhe da categoria (mercado/fornecedor + subcategoria) */}
-      <Dialog open={!!detalheCat} onOpenChange={(o) => !o && setDetalheCat(null)}>
+      {/* Dialog: Detalhe da subcategoria (fornecedores) */}
+      <Dialog open={!!detalheSub} onOpenChange={(o) => !o && setDetalheSub(null)}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
             <DialogTitle>
