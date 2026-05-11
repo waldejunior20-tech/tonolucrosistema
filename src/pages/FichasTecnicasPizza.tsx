@@ -526,7 +526,16 @@ export default function FichasTecnicasPizza() {
     setDialogOpen(true);
   };
 
-  const addIngrediente = () => {
+  useEffect(() => {
+    const editar = searchParams.get("editar");
+    if (!editar || autoOpenedEditId === editar) return;
+    const ficha = fichas.find((f) => f.id === editar);
+    if (ficha) {
+      handleEdit(ficha as FichaTecnica);
+      setAutoOpenedEditId(editar);
+    }
+  }, [searchParams, fichas, autoOpenedEditId]);
+
     setForm({ ...form, ingredientes: [...form.ingredientes, { ...emptyIngrediente }] });
   };
 
