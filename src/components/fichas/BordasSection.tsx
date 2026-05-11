@@ -235,7 +235,7 @@ export function BordasSection() {
                 {sizes.map((s) => (
                   <TableHead key={`h-custo-${s}`} className="text-right">Custo {s}</TableHead>
                 ))}
-                <TableHead className="w-[100px]">Ações</TableHead>
+                <TableHead className="w-[140px]">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
