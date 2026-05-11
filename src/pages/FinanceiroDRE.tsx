@@ -513,20 +513,20 @@ export default function FinanceiroDRE() {
       {calc.categoriasOrdenadas.length > 0 && (
         <div className="card-premium dre-card">
           <h3 className="text-sm font-semibold text-foreground mb-1">Para onde foi o dinheiro?</h3>
-          <p className="text-xs text-muted-foreground mb-4">Clique em uma categoria para ver de qual mercado / fornecedor saiu.</p>
+          <p className="text-xs text-muted-foreground mb-4">Agrupado por subcategoria (área real do gasto). Clique para ver os fornecedores.</p>
           <div className="space-y-3">
             {calc.categoriasOrdenadas.map((c) => {
-              const barColor = CAT_COLORS[c.cat] || "bg-primary/70";
+              const barColor = "bg-primary/70";
               return (
                 <button
                   type="button"
-                  key={c.cat}
-                  onClick={() => setDetalheCat(c.cat)}
+                  key={c.sub}
+                  onClick={() => setDetalheSub(c.sub)}
                   className="w-full text-left space-y-1 group rounded-md p-2 -m-2 hover:bg-muted/50 transition-colors"
                 >
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground group-hover:text-foreground transition-colors">
-                      {c.label} <span className="text-[10px] opacity-60">▸ ver detalhes</span>
+                      {c.label} <span className="text-[10px] opacity-60">▸ ver fornecedores</span>
                     </span>
                     <div className="flex items-center gap-3">
                       <span className="font-semibold text-foreground">{fmt(c.valor)}</span>
