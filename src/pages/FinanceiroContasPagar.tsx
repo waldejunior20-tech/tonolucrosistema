@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -23,10 +23,57 @@ import { PageHeader } from "@/components/layout/PageHeader";
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-const CATEGORIAS = [
-  "Insumos", "Operacional", "Logística", "Pessoal", "Marketing",
-  "Administrativo", "Manutenção", "Outros",
+// Categorias detalhadas, separando CMV (insumos que vão no prato)
+// de Custos Operacionais (o que faz o restaurante funcionar).
+// Sem "Outros" — toda despesa frequente merece categoria própria.
+const CATEGORIAS_GRUPOS: { grupo: string; itens: string[] }[] = [
+  {
+    grupo: "Insumos / CMV (vai no prato)",
+    itens: [
+      "Proteínas / Açougue",
+      "Laticínios",
+      "Hortifrúti",
+      "Secos / Mercearia",
+      "Bebidas",
+      "Molhos e Condimentos",
+      "Embalagens / Descartáveis",
+      "Congelados",
+      "Confeitaria",
+    ],
+  },
+  {
+    grupo: "Operacional (faz o restaurante funcionar)",
+    itens: [
+      "Aluguel",
+      "Energia Elétrica",
+      "Água",
+      "Gás",
+      "Internet / Telefone",
+    ],
+  },
+  {
+    grupo: "Pessoal",
+    itens: ["Salários", "Pró-labore", "Encargos / INSS / FGTS", "Vale Transporte", "Vale Refeição"],
+  },
+  {
+    grupo: "Logística / Combustível",
+    itens: ["Combustível / Gasolina", "Manutenção de Veículo", "Frete / Entregas", "App de Entregadores"],
+  },
+  {
+    grupo: "Marketing",
+    itens: ["Publicidade / Anúncios", "Spots / Comerciais", "Mídia Social / Tráfego Pago", "Material Gráfico"],
+  },
+  {
+    grupo: "Administrativo",
+    itens: ["Contador / Honorários", "Taxas e Tarifas Bancárias", "Software / Sistemas", "Material de Escritório"],
+  },
+  {
+    grupo: "Manutenção / Serviços",
+    itens: ["Manutenção de Equipamentos", "Consultoria", "Segurança / Monitoramento", "Limpeza / Dedetização"],
+  },
 ];
+
+const CATEGORIAS = CATEGORIAS_GRUPOS.flatMap((g) => g.itens);
 
 interface ContaPagar {
   id: string;
@@ -74,7 +121,7 @@ const emptyForm: FormData = {
   num_parcelas: 1,
   primeiro_vencimento: "",
   intervalo_dias: 30,
-  categoria: "Insumos",
+  categoria: "Proteínas / Açougue",
   subcategoria: "",
 };
 
@@ -282,7 +329,7 @@ export default function FinanceiroContasPagar() {
       num_parcelas: 1,
       primeiro_vencimento: c.data_vencimento,
       intervalo_dias: 30,
-      categoria: c.categoria ?? "Insumos",
+      categoria: c.categoria ?? "Proteínas / Açougue",
       subcategoria: c.subcategoria ?? "",
     });
     setDialogOpen(true);
@@ -465,8 +512,17 @@ export default function FinanceiroContasPagar() {
                 <Label>Categoria</Label>
                 <Select value={form.categoria} onValueChange={(v) => setForm({ ...form, categoria: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {CATEGORIAS.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                  <SelectContent className="max-h-80">
+                    {CATEGORIAS_GRUPOS.map((g) => (
+                      <SelectGroup key={g.grupo}>
+                        <SelectLabel className="text-xs uppercase tracking-wide text-muted-foreground">
+                          {g.grupo}
+                        </SelectLabel>
+                        {g.itens.map((c) => (
+                          <SelectItem key={c} value={c}>{c}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
