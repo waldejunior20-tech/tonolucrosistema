@@ -557,6 +557,98 @@ export type Database = {
           },
         ]
       }
+      contas_a_pagar: {
+        Row: {
+          banco: string | null
+          categoria: string | null
+          cnpj_fornecedor: string | null
+          codigo_barras: string | null
+          created_at: string
+          data_emissao: string | null
+          data_pagamento: string | null
+          data_vencimento: string
+          descricao: string | null
+          forma_pagamento: string | null
+          fornecedor: string
+          id: string
+          linha_digitavel: string | null
+          nosso_numero: string | null
+          nota_fiscal_id: string | null
+          numero_parcela: number
+          observacoes: string | null
+          origem: string
+          status: string
+          subcategoria: string | null
+          total_parcelas: number
+          unidade_id: string
+          updated_at: string
+          user_id: string
+          valor: number
+        }
+        Insert: {
+          banco?: string | null
+          categoria?: string | null
+          cnpj_fornecedor?: string | null
+          codigo_barras?: string | null
+          created_at?: string
+          data_emissao?: string | null
+          data_pagamento?: string | null
+          data_vencimento: string
+          descricao?: string | null
+          forma_pagamento?: string | null
+          fornecedor: string
+          id?: string
+          linha_digitavel?: string | null
+          nosso_numero?: string | null
+          nota_fiscal_id?: string | null
+          numero_parcela?: number
+          observacoes?: string | null
+          origem?: string
+          status?: string
+          subcategoria?: string | null
+          total_parcelas?: number
+          unidade_id: string
+          updated_at?: string
+          user_id?: string
+          valor?: number
+        }
+        Update: {
+          banco?: string | null
+          categoria?: string | null
+          cnpj_fornecedor?: string | null
+          codigo_barras?: string | null
+          created_at?: string
+          data_emissao?: string | null
+          data_pagamento?: string | null
+          data_vencimento?: string
+          descricao?: string | null
+          forma_pagamento?: string | null
+          fornecedor?: string
+          id?: string
+          linha_digitavel?: string | null
+          nosso_numero?: string | null
+          nota_fiscal_id?: string | null
+          numero_parcela?: number
+          observacoes?: string | null
+          origem?: string
+          status?: string
+          subcategoria?: string | null
+          total_parcelas?: number
+          unidade_id?: string
+          updated_at?: string
+          user_id?: string
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contas_a_pagar_nota_fiscal_id_fkey"
+            columns: ["nota_fiscal_id"]
+            isOneToOne: false
+            referencedRelation: "notas_fiscais"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fichas_tecnicas_pizza: {
         Row: {
           base_origem_id: string | null
@@ -1096,10 +1188,12 @@ export type Database = {
           categoria: string
           classificacao_origem: string | null
           confianca_classificacao: number | null
+          conta_pagar_id: string | null
           created_at: string
           data_lancamento: string
           descricao: string
           id: string
+          nota_fiscal_id: string | null
           pago: boolean
           subcategoria: string | null
           tipo: string
@@ -1112,10 +1206,12 @@ export type Database = {
           categoria: string
           classificacao_origem?: string | null
           confianca_classificacao?: number | null
+          conta_pagar_id?: string | null
           created_at?: string
           data_lancamento?: string
           descricao: string
           id?: string
+          nota_fiscal_id?: string | null
           pago?: boolean
           subcategoria?: string | null
           tipo: string
@@ -1128,10 +1224,12 @@ export type Database = {
           categoria?: string
           classificacao_origem?: string | null
           confianca_classificacao?: number | null
+          conta_pagar_id?: string | null
           created_at?: string
           data_lancamento?: string
           descricao?: string
           id?: string
+          nota_fiscal_id?: string | null
           pago?: boolean
           subcategoria?: string | null
           tipo?: string
@@ -1141,6 +1239,20 @@ export type Database = {
           valor?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "lancamentos_financeiros_conta_pagar_id_fkey"
+            columns: ["conta_pagar_id"]
+            isOneToOne: false
+            referencedRelation: "contas_a_pagar"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lancamentos_financeiros_nota_fiscal_id_fkey"
+            columns: ["nota_fiscal_id"]
+            isOneToOne: false
+            referencedRelation: "notas_fiscais"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "lancamentos_financeiros_unidade_id_fkey"
             columns: ["unidade_id"]
@@ -1190,6 +1302,69 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      notas_fiscais: {
+        Row: {
+          categoria: string | null
+          chave_acesso: string | null
+          cnpj_fornecedor: string | null
+          created_at: string
+          data_emissao: string
+          data_recebimento: string
+          fornecedor: string
+          id: string
+          numero_nf: string | null
+          observacoes: string | null
+          origem: string
+          serie_nf: string | null
+          subcategoria: string | null
+          total_parcelas: number
+          unidade_id: string
+          updated_at: string
+          user_id: string
+          valor_total: number
+        }
+        Insert: {
+          categoria?: string | null
+          chave_acesso?: string | null
+          cnpj_fornecedor?: string | null
+          created_at?: string
+          data_emissao: string
+          data_recebimento?: string
+          fornecedor: string
+          id?: string
+          numero_nf?: string | null
+          observacoes?: string | null
+          origem?: string
+          serie_nf?: string | null
+          subcategoria?: string | null
+          total_parcelas?: number
+          unidade_id: string
+          updated_at?: string
+          user_id?: string
+          valor_total?: number
+        }
+        Update: {
+          categoria?: string | null
+          chave_acesso?: string | null
+          cnpj_fornecedor?: string | null
+          created_at?: string
+          data_emissao?: string
+          data_recebimento?: string
+          fornecedor?: string
+          id?: string
+          numero_nf?: string | null
+          observacoes?: string | null
+          origem?: string
+          serie_nf?: string | null
+          subcategoria?: string | null
+          total_parcelas?: number
+          unidade_id?: string
+          updated_at?: string
+          user_id?: string
+          valor_total?: number
+        }
+        Relationships: []
       }
       precificacao_bebidas: {
         Row: {
@@ -1603,6 +1778,19 @@ export type Database = {
       }
     }
     Views: {
+      v_resumo_contas_pagar: {
+        Row: {
+          qtd_atrasadas: number | null
+          qtd_em_aberto: number | null
+          qtd_pendentes: number | null
+          qtd_proximas_7d: number | null
+          total_a_pagar: number | null
+          total_atrasado: number | null
+          total_pago_mes: number | null
+          unidade_id: string | null
+        }
+        Relationships: []
+      }
       v_resumo_financeiro: {
         Row: {
           categoria: string | null
@@ -1630,6 +1818,7 @@ export type Database = {
         Args: { p_base_id: string; p_ficha_id: string; p_tipo_ficha: string }
         Returns: number
       }
+      atualizar_contas_atrasadas: { Args: never; Returns: number }
       auditar_rendimentos_suspeitos: {
         Args: never
         Returns: {
@@ -1677,6 +1866,15 @@ export type Database = {
       is_member_of_unidade: {
         Args: { _unidade_id: string; _user_id: string }
         Returns: boolean
+      }
+      marcar_conta_paga: {
+        Args: {
+          p_conta_id: string
+          p_data_pagamento?: string
+          p_forma_pagamento?: string
+          p_valor_pago?: number
+        }
+        Returns: Json
       }
       pode_editar_negocio: {
         Args: { _unidade_id: string; _user_id: string }
