@@ -289,6 +289,15 @@ export function BordasSection() {
           </Table>
         </div>
       )}
+
+      {ingDialog && (
+        <BordaIngredientesDialog
+          borda={ingDialog}
+          sizes={sizes}
+          open={!!ingDialog}
+          onOpenChange={(o) => { if (!o) setIngDialog(null); }}
+        />
+      )}
     </div>
   );
 }
