@@ -118,7 +118,7 @@ export default function FinanceiroDRE() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogTipo, setDialogTipo] = useState<"receita" | "despesa">("receita");
   const [form, setForm] = useState<FormData>(emptyForm("receita"));
-  const [detalheCat, setDetalheCat] = useState<string | null>(null);
+  const [detalheSub, setDetalheSub] = useState<string | null>(null);
 
   const startDate = `${ano}-${String(mes).padStart(2, "0")}-01`;
   const endDate = mes === 12
