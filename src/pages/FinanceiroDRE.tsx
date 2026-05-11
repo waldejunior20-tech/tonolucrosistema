@@ -590,7 +590,7 @@ export default function FinanceiroDRE() {
               const url = URL.createObjectURL(blob);
               const a = document.createElement("a");
               a.href = url;
-              a.download = `relatorio_${detalheCat}_${ano}-${String(mes).padStart(2,"0")}.csv`;
+              a.download = `relatorio_${(detalheSub ?? "geral").replace(/[^a-z0-9]+/gi,"_")}_${ano}-${String(mes).padStart(2,"0")}.csv`;
               a.click();
               URL.revokeObjectURL(url);
             };
