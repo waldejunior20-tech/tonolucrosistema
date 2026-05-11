@@ -512,8 +512,17 @@ export default function FinanceiroContasPagar() {
                 <Label>Categoria</Label>
                 <Select value={form.categoria} onValueChange={(v) => setForm({ ...form, categoria: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {CATEGORIAS.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                  <SelectContent className="max-h-80">
+                    {CATEGORIAS_GRUPOS.map((g) => (
+                      <SelectGroup key={g.grupo}>
+                        <SelectLabel className="text-xs uppercase tracking-wide text-muted-foreground">
+                          {g.grupo}
+                        </SelectLabel>
+                        {g.itens.map((c) => (
+                          <SelectItem key={c} value={c}>{c}</SelectItem>
+                        ))}
+                      </SelectGroup>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
