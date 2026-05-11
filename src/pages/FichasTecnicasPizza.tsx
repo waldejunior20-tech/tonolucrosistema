@@ -115,6 +115,7 @@ export default function FichasTecnicasPizza() {
       setFiltroTipo("todos");
     }
   }, [searchParams]);
+  const [autoOpenedEditId, setAutoOpenedEditId] = useState<string | null>(null);
   const [buscaIngrediente, setBuscaIngrediente] = useState("");
   const [buscaAberta, setBuscaAberta] = useState<number | null>(null);
   const [buscaEmbalagemAberta, setBuscaEmbalagemAberta] = useState<string | null>(null);
