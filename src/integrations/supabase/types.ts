@@ -1073,6 +1073,48 @@ export type Database = {
           },
         ]
       }
+      fornecedores_subcategoria: {
+        Row: {
+          aprendido_automaticamente: boolean
+          categoria: string
+          created_at: string
+          fornecedor_nome_original: string
+          fornecedor_normalizado: string
+          id: string
+          subcategoria: string | null
+          unidade_id: string
+          updated_at: string
+          user_id: string
+          vezes_usado: number
+        }
+        Insert: {
+          aprendido_automaticamente?: boolean
+          categoria: string
+          created_at?: string
+          fornecedor_nome_original: string
+          fornecedor_normalizado: string
+          id?: string
+          subcategoria?: string | null
+          unidade_id: string
+          updated_at?: string
+          user_id?: string
+          vezes_usado?: number
+        }
+        Update: {
+          aprendido_automaticamente?: boolean
+          categoria?: string
+          created_at?: string
+          fornecedor_nome_original?: string
+          fornecedor_normalizado?: string
+          id?: string
+          subcategoria?: string | null
+          unidade_id?: string
+          updated_at?: string
+          user_id?: string
+          vezes_usado?: number
+        }
+        Relationships: []
+      }
       historico_precos_insumos: {
         Row: {
           created_at: string
@@ -1958,6 +2000,10 @@ export type Database = {
           tipo: string
         }[]
       }
+      extrair_fornecedor_da_descricao: {
+        Args: { p_descricao: string }
+        Returns: string
+      }
       get_user_unidades: {
         Args: { _user_id: string }
         Returns: {
@@ -1994,6 +2040,7 @@ export type Database = {
         }
         Returns: Json
       }
+      normalizar_nome_fornecedor: { Args: { p_nome: string }; Returns: string }
       pode_editar_negocio: {
         Args: { _unidade_id: string; _user_id: string }
         Returns: boolean

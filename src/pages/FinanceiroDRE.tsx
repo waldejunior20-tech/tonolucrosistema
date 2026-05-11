@@ -118,7 +118,7 @@ export default function FinanceiroDRE() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogTipo, setDialogTipo] = useState<"receita" | "despesa">("receita");
   const [form, setForm] = useState<FormData>(emptyForm("receita"));
-  const [detalheCat, setDetalheCat] = useState<string | null>(null);
+  const [detalheSub, setDetalheSub] = useState<string | null>(null);
 
   const startDate = `${ano}-${String(mes).padStart(2, "0")}-01`;
   const endDate = mes === 12
@@ -278,15 +278,19 @@ export default function FinanceiroDRE() {
     const pontoEquilibrio = margemContribuicaoPct > 0 ? despFixasTotal / (margemContribuicaoPct / 100) : 0;
     const faltaPE = pontoEquilibrio - totalEntrou;
     const progressPE = pontoEquilibrio > 0 ? Math.min((totalEntrou / pontoEquilibrio) * 100, 150) : 0;
-    const porCategoria = despesas.reduce<Record<string, number>>((acc, l) => {
-      acc[l.categoria] = (acc[l.categoria] || 0) + Number(l.valor);
+    // Agrupa por SUBCATEGORIA (área real do gasto). Fallback: categoria.
+    const porSub = despesas.reduce<Record<string, number>>((acc, l) => {
+      const key = (l.subcategoria && l.subcategoria.trim() && l.subcategoria !== "A Classificar")
+        ? l.subcategoria
+        : (CAT_LABELS[l.categoria] || l.categoria || "Sem categoria");
+      acc[key] = (acc[key] || 0) + Number(l.valor);
       return acc;
     }, {});
-    const categoriasOrdenadas = Object.entries(porCategoria)
+    const categoriasOrdenadas = Object.entries(porSub)
       .sort((a, b) => b[1] - a[1])
-      .map(([cat, valor]) => ({
-        cat,
-        label: CAT_LABELS[cat] || cat,
+      .map(([sub, valor]) => ({
+        sub,
+        label: sub,
         valor,
         pct: totalEntrou > 0 ? (valor / totalEntrou) * 100 : 0,
         pctDespesas: totalSaiu > 0 ? (valor / totalSaiu) * 100 : 0,
@@ -509,20 +513,20 @@ export default function FinanceiroDRE() {
       {calc.categoriasOrdenadas.length > 0 && (
         <div className="card-premium dre-card">
           <h3 className="text-sm font-semibold text-foreground mb-1">Para onde foi o dinheiro?</h3>
-          <p className="text-xs text-muted-foreground mb-4">Clique em uma categoria para ver de qual mercado / fornecedor saiu.</p>
+          <p className="text-xs text-muted-foreground mb-4">Agrupado por subcategoria (área real do gasto). Clique para ver os fornecedores.</p>
           <div className="space-y-3">
             {calc.categoriasOrdenadas.map((c) => {
-              const barColor = CAT_COLORS[c.cat] || "bg-primary/70";
+              const barColor = "bg-primary/70";
               return (
                 <button
                   type="button"
-                  key={c.cat}
-                  onClick={() => setDetalheCat(c.cat)}
+                  key={c.sub}
+                  onClick={() => setDetalheSub(c.sub)}
                   className="w-full text-left space-y-1 group rounded-md p-2 -m-2 hover:bg-muted/50 transition-colors"
                 >
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground group-hover:text-foreground transition-colors">
-                      {c.label} <span className="text-[10px] opacity-60">▸ ver detalhes</span>
+                      {c.label} <span className="text-[10px] opacity-60">▸ ver fornecedores</span>
                     </span>
                     <div className="flex items-center gap-3">
                       <span className="font-semibold text-foreground">{fmt(c.valor)}</span>
@@ -539,17 +543,23 @@ export default function FinanceiroDRE() {
         </div>
       )}
 
-      {/* Dialog: Detalhe da categoria (mercado/fornecedor + subcategoria) */}
-      <Dialog open={!!detalheCat} onOpenChange={(o) => !o && setDetalheCat(null)}>
+      {/* Dialog: Detalhe da subcategoria (fornecedores) */}
+      <Dialog open={!!detalheSub} onOpenChange={(o) => !o && setDetalheSub(null)}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
             <DialogTitle>
-              Detalhe — {detalheCat ? (CAT_LABELS[detalheCat] || detalheCat) : ""}
+              Detalhe — {detalheSub ?? ""}
             </DialogTitle>
           </DialogHeader>
-          {detalheCat && (() => {
+          {detalheSub && (() => {
             const itens = lancamentos
-              .filter((l) => l.tipo === "despesa" && l.categoria === detalheCat)
+              .filter((l) => {
+                if (l.tipo !== "despesa") return false;
+                const sub = (l.subcategoria && l.subcategoria.trim() && l.subcategoria !== "A Classificar")
+                  ? l.subcategoria
+                  : (CAT_LABELS[l.categoria] || l.categoria || "Sem categoria");
+                return sub === detalheSub;
+              })
               .sort((a, b) => b.data_lancamento.localeCompare(a.data_lancamento));
             const total = itens.reduce((s, l) => s + Number(l.valor), 0);
 
@@ -580,7 +590,7 @@ export default function FinanceiroDRE() {
               const url = URL.createObjectURL(blob);
               const a = document.createElement("a");
               a.href = url;
-              a.download = `relatorio_${detalheCat}_${ano}-${String(mes).padStart(2,"0")}.csv`;
+              a.download = `relatorio_${(detalheSub ?? "geral").replace(/[^a-z0-9]+/gi,"_")}_${ano}-${String(mes).padStart(2,"0")}.csv`;
               a.click();
               URL.revokeObjectURL(url);
             };
