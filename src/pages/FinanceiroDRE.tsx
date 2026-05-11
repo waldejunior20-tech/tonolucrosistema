@@ -89,6 +89,7 @@ interface Lancamento {
   valor: number;
   tipo: string;
   categoria: string;
+  subcategoria?: string | null;
   data_lancamento: string;
   pago: boolean;
 }
