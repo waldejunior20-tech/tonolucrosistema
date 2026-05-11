@@ -658,12 +658,12 @@ export default function PrecificacaoPizzas() {
                                   </div>
                                 </div>
                                 <div className="h-px bg-border/40" />
-                                <div className="flex items-center justify-between">
-                                  <span className="text-[10px] font-bold uppercase tracking-[0.12em] flex items-center gap-1" style={{ color: '#5D5D5D' }}>
+                                <div className="flex items-center justify-between rounded-md px-2 py-1 -mx-2 bg-success/10 border border-success/30">
+                                  <span className="text-[10px] font-bold uppercase tracking-[0.12em] flex items-center gap-1 text-success">
                                     Sugerido
                                     <Tooltip>
                                       <TooltipTrigger asChild>
-                                        <button type="button" className="opacity-60 hover:opacity-100 transition-opacity">
+                                        <button type="button" className="opacity-70 hover:opacity-100 transition-opacity">
                                           <Info className="h-3 w-3" />
                                         </button>
                                       </TooltipTrigger>
@@ -672,9 +672,9 @@ export default function PrecificacaoPizzas() {
                                       </TooltipContent>
                                     </Tooltip>
                                   </span>
-                                  <div className="flex items-baseline gap-1">
-                                    <span className="text-xs font-bold" style={{ color: '#5D5D5D' }}>R$</span>
-                                    <span className="text-base font-bold font-terminal" style={{ color: '#5D5D5D' }}>{sug.toFixed(2)}</span>
+                                  <div className="flex items-baseline gap-1 text-success">
+                                    <span className="text-xs font-bold">R$</span>
+                                    <span className="text-base font-extrabold font-terminal">{sug.toFixed(2)}</span>
                                   </div>
                                 </div>
                               </div>
