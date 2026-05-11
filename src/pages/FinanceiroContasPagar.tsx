@@ -121,7 +121,7 @@ const emptyForm: FormData = {
   num_parcelas: 1,
   primeiro_vencimento: "",
   intervalo_dias: 30,
-  categoria: "Insumos",
+  categoria: "Proteínas / Açougue",
   subcategoria: "",
 };
 
