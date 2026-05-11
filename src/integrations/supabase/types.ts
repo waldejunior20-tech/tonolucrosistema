@@ -306,11 +306,13 @@ export type Database = {
           custo_g: number
           custo_m: number
           custo_p: number
+          custos_por_tamanho: Json
           id: string
           nome: string
           preco_g: number
           preco_m: number
           preco_p: number
+          precos_por_tamanho: Json
           unidade_id: string
           updated_at: string
           user_id: string
@@ -321,11 +323,13 @@ export type Database = {
           custo_g?: number
           custo_m?: number
           custo_p?: number
+          custos_por_tamanho?: Json
           id?: string
           nome: string
           preco_g?: number
           preco_m?: number
           preco_p?: number
+          precos_por_tamanho?: Json
           unidade_id: string
           updated_at?: string
           user_id?: string
@@ -336,11 +340,13 @@ export type Database = {
           custo_g?: number
           custo_m?: number
           custo_p?: number
+          custos_por_tamanho?: Json
           id?: string
           nome?: string
           preco_g?: number
           preco_m?: number
           preco_p?: number
+          precos_por_tamanho?: Json
           unidade_id?: string
           updated_at?: string
           user_id?: string
