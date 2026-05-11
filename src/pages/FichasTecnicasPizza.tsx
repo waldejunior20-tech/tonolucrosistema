@@ -1294,6 +1294,9 @@ export default function FichasTecnicasPizza() {
           </Table>
         </div>
       )}
+
+      {/* Bordas Recheadas (P · M · G) */}
+      <BordasSection />
     </div>
   );
 }
