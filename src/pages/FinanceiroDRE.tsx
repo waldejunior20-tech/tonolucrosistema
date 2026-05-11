@@ -278,15 +278,19 @@ export default function FinanceiroDRE() {
     const pontoEquilibrio = margemContribuicaoPct > 0 ? despFixasTotal / (margemContribuicaoPct / 100) : 0;
     const faltaPE = pontoEquilibrio - totalEntrou;
     const progressPE = pontoEquilibrio > 0 ? Math.min((totalEntrou / pontoEquilibrio) * 100, 150) : 0;
-    const porCategoria = despesas.reduce<Record<string, number>>((acc, l) => {
-      acc[l.categoria] = (acc[l.categoria] || 0) + Number(l.valor);
+    // Agrupa por SUBCATEGORIA (área real do gasto). Fallback: categoria.
+    const porSub = despesas.reduce<Record<string, number>>((acc, l) => {
+      const key = (l.subcategoria && l.subcategoria.trim() && l.subcategoria !== "A Classificar")
+        ? l.subcategoria
+        : (CAT_LABELS[l.categoria] || l.categoria || "Sem categoria");
+      acc[key] = (acc[key] || 0) + Number(l.valor);
       return acc;
     }, {});
-    const categoriasOrdenadas = Object.entries(porCategoria)
+    const categoriasOrdenadas = Object.entries(porSub)
       .sort((a, b) => b[1] - a[1])
-      .map(([cat, valor]) => ({
-        cat,
-        label: CAT_LABELS[cat] || cat,
+      .map(([sub, valor]) => ({
+        sub,
+        label: sub,
         valor,
         pct: totalEntrou > 0 ? (valor / totalEntrou) * 100 : 0,
         pctDespesas: totalSaiu > 0 ? (valor / totalSaiu) * 100 : 0,
