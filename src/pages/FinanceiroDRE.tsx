@@ -89,6 +89,7 @@ interface Lancamento {
   valor: number;
   tipo: string;
   categoria: string;
+  subcategoria?: string | null;
   data_lancamento: string;
   pago: boolean;
 }
@@ -117,6 +118,7 @@ export default function FinanceiroDRE() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogTipo, setDialogTipo] = useState<"receita" | "despesa">("receita");
   const [form, setForm] = useState<FormData>(emptyForm("receita"));
+  const [detalheCat, setDetalheCat] = useState<string | null>(null);
 
   const startDate = `${ano}-${String(mes).padStart(2, "0")}-01`;
   const endDate = mes === 12
@@ -506,14 +508,22 @@ export default function FinanceiroDRE() {
       {/* Para onde foi o dinheiro */}
       {calc.categoriasOrdenadas.length > 0 && (
         <div className="card-premium dre-card">
-          <h3 className="text-sm font-semibold text-foreground mb-4">Para onde foi o dinheiro?</h3>
+          <h3 className="text-sm font-semibold text-foreground mb-1">Para onde foi o dinheiro?</h3>
+          <p className="text-xs text-muted-foreground mb-4">Clique em uma categoria para ver de qual mercado / fornecedor saiu.</p>
           <div className="space-y-3">
             {calc.categoriasOrdenadas.map((c) => {
               const barColor = CAT_COLORS[c.cat] || "bg-primary/70";
               return (
-                <div key={c.cat} className="space-y-1">
+                <button
+                  type="button"
+                  key={c.cat}
+                  onClick={() => setDetalheCat(c.cat)}
+                  className="w-full text-left space-y-1 group rounded-md p-2 -m-2 hover:bg-muted/50 transition-colors"
+                >
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">{c.label}</span>
+                    <span className="text-muted-foreground group-hover:text-foreground transition-colors">
+                      {c.label} <span className="text-[10px] opacity-60">▸ ver detalhes</span>
+                    </span>
                     <div className="flex items-center gap-3">
                       <span className="font-semibold text-foreground">{fmt(c.valor)}</span>
                       <span className="text-xs text-muted-foreground w-10 text-right">{c.pct.toFixed(0)}%</span>
@@ -522,12 +532,130 @@ export default function FinanceiroDRE() {
                   <div className="h-2 bg-muted rounded-full overflow-hidden">
                     <div className={`h-full rounded-full ${barColor} transition-all duration-500`} style={{ width: `${c.pctDespesas}%` }} />
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>
         </div>
       )}
+
+      {/* Dialog: Detalhe da categoria (mercado/fornecedor + subcategoria) */}
+      <Dialog open={!!detalheCat} onOpenChange={(o) => !o && setDetalheCat(null)}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>
+              Detalhe — {detalheCat ? (CAT_LABELS[detalheCat] || detalheCat) : ""}
+            </DialogTitle>
+          </DialogHeader>
+          {detalheCat && (() => {
+            const itens = lancamentos
+              .filter((l) => l.tipo === "despesa" && l.categoria === detalheCat)
+              .sort((a, b) => b.data_lancamento.localeCompare(a.data_lancamento));
+            const total = itens.reduce((s, l) => s + Number(l.valor), 0);
+
+            // Agrupa por fornecedor (descricao normalizada)
+            const porFornecedor = new Map<string, { nome: string; total: number; count: number }>();
+            for (const l of itens) {
+              const nome = (l.descricao || "Sem fornecedor").trim();
+              const key = nome.toLowerCase();
+              const cur = porFornecedor.get(key) ?? { nome, total: 0, count: 0 };
+              cur.total += Number(l.valor);
+              cur.count += 1;
+              porFornecedor.set(key, cur);
+            }
+            const fornecedores = Array.from(porFornecedor.values()).sort((a, b) => b.total - a.total);
+
+            const exportCSV = () => {
+              const head = "Data;Fornecedor / Mercado;Subcategoria;Valor;Pago\n";
+              const rows = itens.map((l) =>
+                [
+                  l.data_lancamento,
+                  `"${(l.descricao || "").replace(/"/g, '""')}"`,
+                  `"${(l.subcategoria || "").replace(/"/g, '""')}"`,
+                  Number(l.valor).toFixed(2).replace(".", ","),
+                  l.pago ? "Sim" : "Não",
+                ].join(";")
+              ).join("\n");
+              const blob = new Blob(["\uFEFF" + head + rows], { type: "text/csv;charset=utf-8;" });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = `relatorio_${detalheCat}_${ano}-${String(mes).padStart(2,"0")}.csv`;
+              a.click();
+              URL.revokeObjectURL(url);
+            };
+
+            return (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/40 border border-border/40">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Total no mês</p>
+                    <p className="text-xl font-extrabold text-foreground tabular-nums">{fmt(total)}</p>
+                    <p className="text-xs text-muted-foreground">{itens.length} lançamento(s) · {fornecedores.length} fornecedor(es)</p>
+                  </div>
+                  <button
+                    onClick={exportCSV}
+                    className="h-9 px-4 rounded-lg bg-primary text-primary-foreground text-sm font-bold hover:brightness-110 transition-all"
+                  >
+                    Exportar CSV
+                  </button>
+                </div>
+
+                {/* Top fornecedores */}
+                <div>
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Por fornecedor / mercado</h4>
+                  <div className="space-y-1.5 max-h-[200px] overflow-auto pr-1">
+                    {fornecedores.map((f) => (
+                      <div key={f.nome} className="flex items-center justify-between text-sm border-b border-border/40 py-1.5">
+                        <span className="text-foreground truncate">{f.nome}</span>
+                        <div className="flex items-center gap-3 shrink-0">
+                          <span className="text-xs text-muted-foreground">{f.count}x</span>
+                          <span className="font-semibold tabular-nums">{fmt(f.total)}</span>
+                          <span className="text-xs text-muted-foreground w-10 text-right">
+                            {total > 0 ? ((f.total / total) * 100).toFixed(0) : 0}%
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Lançamentos */}
+                <div>
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Todos os lançamentos</h4>
+                  <div className="border border-border/40 rounded-lg overflow-hidden">
+                    <div className="max-h-[280px] overflow-auto">
+                      <table className="w-full text-sm">
+                        <thead className="bg-muted/40 text-xs uppercase tracking-wider text-muted-foreground sticky top-0">
+                          <tr>
+                            <th className="text-left px-3 py-2 font-semibold">Data</th>
+                            <th className="text-left px-3 py-2 font-semibold">Fornecedor</th>
+                            <th className="text-left px-3 py-2 font-semibold">Subcategoria</th>
+                            <th className="text-right px-3 py-2 font-semibold">Valor</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {itens.map((l) => (
+                            <tr key={l.id} className="border-t border-border/40 hover:bg-muted/30">
+                              <td className="px-3 py-2 text-muted-foreground tabular-nums">
+                                {new Date(l.data_lancamento + "T00:00:00").toLocaleDateString("pt-BR")}
+                              </td>
+                              <td className="px-3 py-2">{l.descricao || "—"}</td>
+                              <td className="px-3 py-2 text-muted-foreground">{l.subcategoria || "—"}</td>
+                              <td className="px-3 py-2 text-right font-semibold tabular-nums">{fmt(Number(l.valor))}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
+
 
       {/* Dialog (kept for future use if needed) */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
