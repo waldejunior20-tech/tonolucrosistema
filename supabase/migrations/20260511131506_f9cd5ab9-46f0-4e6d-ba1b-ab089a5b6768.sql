@@ -1,0 +1,1 @@
+DELETE FROM public.lancamentos_financeiros WHERE id = 'b54d0ebd-f9f6-43e1-81de-6a6514f4da98';
