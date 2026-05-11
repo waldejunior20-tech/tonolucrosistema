@@ -190,50 +190,81 @@ Deno.serve(async (req) => {
   const dataCompra = payload.data_compra ?? new Date().toISOString().slice(0, 10);
   const fornecedor = (payload.fornecedor ?? "").trim() || null;
 
-  const insumosRows = itens.map((it) => {
-    const categoria = it.categoria && CATEGORIAS_VALIDAS.has(it.categoria) ? it.categoria : "Outros";
-    const unidade = it.unidade && UNIDADES_VALIDAS.has(it.unidade) ? it.unidade : "unidade";
-    return {
-      user_id,
-      unidade_id,
-      nome: (it.nome ?? "Item sem nome").toString().trim(),
-      categoria,
-      quantidade: toNumber(it.quantidade),
-      unidade,
-      preco_pago: toNumber(it.preco_pago),
-      fornecedor,
-      data_compra: dataCompra,
-    };
-  });
+  // Separa itens em insumos vs despesas/serviços
+  const insumosRows: any[] = [];
+  const despesasItens: { nome: string; valor: number; categoria: string }[] = [];
 
-  const totalDespesa = insumosRows.reduce((s, r) => s + r.preco_pago, 0);
+  for (const it of itens) {
+    const nome = (it.nome ?? "Item sem nome").toString().trim();
+    const categoriaRaw = it.categoria ?? "";
 
-  const { data: inseridos, error: insErr } = await supabase
-    .from("insumos_comprados")
-    .insert(insumosRows)
-    .select("id");
+    if (ehDespesaServico(nome, categoriaRaw)) {
+      const catFinal = categoriaRaw && !CATEGORIAS_INSUMO.has(categoriaRaw)
+        ? categoriaRaw
+        : "Outros";
+      despesasItens.push({
+        nome,
+        valor: toNumber(it.preco_pago),
+        categoria: catFinal,
+      });
+    } else {
+      const categoria = CATEGORIAS_INSUMO.has(categoriaRaw) ? categoriaRaw : "Secos";
+      insumosRows.push({
+        user_id, unidade_id,
+        nome, categoria,
+        quantidade: toNumber(it.quantidade),
+        unidade: normalizarUnidade(it.unidade),
+        preco_pago: toNumber(it.preco_pago),
+        fornecedor, data_compra: dataCompra,
+      });
+    }
+  }
 
-  if (insErr) {
-    await supabase.from("workflow_runs").update({
-      status: "error",
-      finished_at: new Date().toISOString(),
-      duration_ms: Date.now() - startedAt,
-      metadata: { error: insErr.message, step: "insumos_comprados" },
-    }).eq("id", runId);
-    return jsonResponse({ error: "Erro ao inserir insumos", detail: insErr.message, run_id: runId }, 500);
+  const totalInsumos = insumosRows.reduce((s, r) => s + r.preco_pago, 0);
+  const totalDespesasServico = despesasItens.reduce((s, r) => s + r.valor, 0);
+  const totalDespesa = totalInsumos + totalDespesasServico;
+
+  let inseridos: { id: string }[] | null = [];
+  if (insumosRows.length > 0) {
+    const { data, error: insErr } = await supabase
+      .from("insumos_comprados")
+      .insert(insumosRows)
+      .select("id");
+    if (insErr) {
+      await supabase.from("workflow_runs").update({
+        status: "error",
+        finished_at: new Date().toISOString(),
+        duration_ms: Date.now() - startedAt,
+        metadata: { error: insErr.message, step: "insumos_comprados" },
+      }).eq("id", runId);
+      return jsonResponse({ error: "Erro ao inserir insumos", detail: insErr.message, run_id: runId }, 500);
+    }
+    inseridos = data;
+  }
+
+  // Lança despesas/serviços individualmente em lancamentos_financeiros
+  for (const d of despesasItens) {
+    await supabase.from("lancamentos_financeiros").insert({
+      user_id, unidade_id,
+      tipo: "despesa",
+      categoria: d.categoria,
+      descricao: `${d.nome}${fornecedor ? ` - ${fornecedor}` : ""}`,
+      valor: d.valor,
+      data_lancamento: dataCompra,
+      pago: true,
+    });
   }
 
   let lancamento_id: string | null = null;
-  if (totalDespesa > 0) {
+  if (totalInsumos > 0) {
     const { data: lanc, error: lancErr } = await supabase
       .from("lancamentos_financeiros")
       .insert({
-        user_id,
-        unidade_id,
+        user_id, unidade_id,
         tipo: "despesa",
         categoria: "Insumos",
         descricao: `Nota fiscal${fornecedor ? ` - ${fornecedor}` : ""} (${insumosRows.length} itens)`,
-        valor: totalDespesa,
+        valor: totalInsumos,
         data_lancamento: dataCompra,
         pago: true,
       })
