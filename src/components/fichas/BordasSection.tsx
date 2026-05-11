@@ -11,11 +11,12 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Pencil, Trash2, Plus, Sparkles } from "lucide-react";
+import { Pencil, Trash2, Plus, Sparkles, ListTree } from "lucide-react";
 import { EmptyState } from "@/components/EmptyState";
 import { MoneyInput } from "@/components/MoneyInput";
 import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
 import { getOrCreateConfiguracoesNegocio } from "@/lib/config-helpers";
+import { BordaIngredientesDialog } from "@/components/fichas/BordaIngredientesDialog";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Borda = Tables<"bordas">;
@@ -41,6 +42,8 @@ export function BordasSection() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+
+  const [ingDialog, setIngDialog] = useState<Borda | null>(null);
 
   const { data: config } = useQuery({
     queryKey: ["configuracoes_negocio"],
@@ -232,7 +235,7 @@ export function BordasSection() {
                 {sizes.map((s) => (
                   <TableHead key={`h-custo-${s}`} className="text-right">Custo {s}</TableHead>
                 ))}
-                <TableHead className="w-[100px]">Ações</TableHead>
+                <TableHead className="w-[140px]">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -256,6 +259,14 @@ export function BordasSection() {
                       <div className="flex gap-1">
                         <Button
                           variant="ghost" size="icon"
+                          onClick={() => setIngDialog(b)}
+                          title="Ingredientes"
+                          className="text-muted-foreground hover:text-foreground hover:bg-muted"
+                        >
+                          <ListTree className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost" size="icon"
                           onClick={() => handleEdit(b)}
                           className="text-muted-foreground hover:text-foreground hover:bg-muted"
                         >
@@ -277,6 +288,15 @@ export function BordasSection() {
             </TableBody>
           </Table>
         </div>
+      )}
+
+      {ingDialog && (
+        <BordaIngredientesDialog
+          borda={ingDialog}
+          sizes={sizes}
+          open={!!ingDialog}
+          onOpenChange={(o) => { if (!o) setIngDialog(null); }}
+        />
       )}
     </div>
   );

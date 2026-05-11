@@ -353,6 +353,70 @@ export type Database = {
         }
         Relationships: []
       }
+      bordas_ingredientes: {
+        Row: {
+          borda_id: string
+          created_at: string
+          id: string
+          insumo_comprado_id: string | null
+          insumo_proprio_id: string | null
+          qtds_por_tamanho: Json
+          tipo_insumo: string
+          unidade: string
+          unidade_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          borda_id: string
+          created_at?: string
+          id?: string
+          insumo_comprado_id?: string | null
+          insumo_proprio_id?: string | null
+          qtds_por_tamanho?: Json
+          tipo_insumo: string
+          unidade: string
+          unidade_id: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          borda_id?: string
+          created_at?: string
+          id?: string
+          insumo_comprado_id?: string | null
+          insumo_proprio_id?: string | null
+          qtds_por_tamanho?: Json
+          tipo_insumo?: string
+          unidade?: string
+          unidade_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bordas_ingredientes_borda_id_fkey"
+            columns: ["borda_id"]
+            isOneToOne: false
+            referencedRelation: "bordas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bordas_ingredientes_insumo_comprado_id_fkey"
+            columns: ["insumo_comprado_id"]
+            isOneToOne: false
+            referencedRelation: "insumos_comprados"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bordas_ingredientes_insumo_proprio_id_fkey"
+            columns: ["insumo_proprio_id"]
+            isOneToOne: false
+            referencedRelation: "insumos_proprios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       categorias_despesa: {
         Row: {
           ativo: boolean | null
