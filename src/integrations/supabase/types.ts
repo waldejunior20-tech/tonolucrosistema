@@ -299,6 +299,54 @@ export type Database = {
           },
         ]
       }
+      bordas: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          custo_g: number
+          custo_m: number
+          custo_p: number
+          id: string
+          nome: string
+          preco_g: number
+          preco_m: number
+          preco_p: number
+          unidade_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          custo_g?: number
+          custo_m?: number
+          custo_p?: number
+          id?: string
+          nome: string
+          preco_g?: number
+          preco_m?: number
+          preco_p?: number
+          unidade_id: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          custo_g?: number
+          custo_m?: number
+          custo_p?: number
+          id?: string
+          nome?: string
+          preco_g?: number
+          preco_m?: number
+          preco_p?: number
+          unidade_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       categorias_despesa: {
         Row: {
           ativo: boolean | null
