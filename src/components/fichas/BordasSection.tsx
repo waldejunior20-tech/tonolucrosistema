@@ -1,0 +1,260 @@
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter,
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
+import { Pencil, Trash2, Plus, Sparkles } from "lucide-react";
+import { EmptyState } from "@/components/EmptyState";
+import { MoneyInput } from "@/components/MoneyInput";
+import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
+import type { Tables } from "@/integrations/supabase/types";
+
+type Borda = Tables<"bordas">;
+
+interface FormState {
+  nome: string;
+  preco_p: number;
+  preco_m: number;
+  preco_g: number;
+  custo_p: number;
+  custo_m: number;
+  custo_g: number;
+}
+
+const emptyForm: FormState = {
+  nome: "",
+  preco_p: 0,
+  preco_m: 0,
+  preco_g: 0,
+  custo_p: 0,
+  custo_m: 0,
+  custo_g: 0,
+};
+
+const fmt = (v: number) =>
+  Number(v).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+export function BordasSection() {
+  const qc = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [form, setForm] = useState<FormState>(emptyForm);
+
+  const { data: bordas = [], isLoading } = useQuery({
+    queryKey: ["bordas"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("bordas")
+        .select("*")
+        .order("nome");
+      if (error) throw error;
+      return data as Borda[];
+    },
+  });
+
+  const reset = () => {
+    setForm(emptyForm);
+    setEditingId(null);
+    setOpen(false);
+  };
+
+  const upsertMut = useMutation({
+    mutationFn: async () => {
+      if (!form.nome.trim()) throw new Error("Informe o nome da borda");
+      if (editingId) {
+        const { error } = await supabase
+          .from("bordas")
+          .update({
+            nome: form.nome.trim(),
+            preco_p: form.preco_p, preco_m: form.preco_m, preco_g: form.preco_g,
+            custo_p: form.custo_p, custo_m: form.custo_m, custo_g: form.custo_g,
+          })
+          .eq("id", editingId);
+        if (error) throw error;
+      } else {
+        const unidade_id = requireActiveUnidadeId();
+        const { error } = await supabase.from("bordas").insert({
+          nome: form.nome.trim(),
+          preco_p: form.preco_p, preco_m: form.preco_m, preco_g: form.preco_g,
+          custo_p: form.custo_p, custo_m: form.custo_m, custo_g: form.custo_g,
+          unidade_id,
+        });
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["bordas"] });
+      toast.success(editingId ? "Borda atualizada!" : "Borda cadastrada!");
+      reset();
+    },
+    onError: (e: Error) => toast.error(e.message ?? "Erro ao salvar borda"),
+  });
+
+  const deleteMut = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("bordas").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["bordas"] });
+      toast.success("Borda excluída!");
+    },
+    onError: (e: Error) => toast.error(e.message ?? "Erro ao excluir"),
+  });
+
+  const handleEdit = (b: Borda) => {
+    setForm({
+      nome: b.nome,
+      preco_p: Number(b.preco_p), preco_m: Number(b.preco_m), preco_g: Number(b.preco_g),
+      custo_p: Number(b.custo_p), custo_m: Number(b.custo_m), custo_g: Number(b.custo_g),
+    });
+    setEditingId(b.id);
+    setOpen(true);
+  };
+
+  return (
+    <div className="space-y-4 fade-up fade-up-d2">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div>
+          <h2 className="text-xl font-semibold text-foreground">Bordas Recheadas</h2>
+          <p className="text-sm text-muted-foreground">Preço extra cobrado por tamanho (P · M · G).</p>
+        </div>
+        <Dialog open={open} onOpenChange={(o) => { if (!o) reset(); setOpen(o); }}>
+          <DialogTrigger asChild>
+            <Button className="btn-action-add gap-2">
+              <Plus className="h-4 w-4" /> Nova Borda
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-xl">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4" />
+                {editingId ? "Editar borda" : "Nova borda"}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="borda-nome">Nome</Label>
+                <Input
+                  id="borda-nome"
+                  placeholder="Ex.: Catupiry, Cheddar, Chocolate"
+                  value={form.nome}
+                  onChange={(e) => setForm({ ...form, nome: e.target.value })}
+                />
+              </div>
+
+              <div>
+                <Label className="text-sm font-semibold">Preço de venda (R$)</Label>
+                <div className="grid grid-cols-3 gap-3 mt-1.5">
+                  {(["p", "m", "g"] as const).map((s) => (
+                    <div key={`preco-${s}`}>
+                      <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                        {s.toUpperCase()}
+                      </Label>
+                      <MoneyInput
+                        value={form[`preco_${s}` as const]}
+                        onChange={(v) => setForm({ ...form, [`preco_${s}`]: v })}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <Label className="text-sm font-semibold">Custo (opcional)</Label>
+                <div className="grid grid-cols-3 gap-3 mt-1.5">
+                  {(["p", "m", "g"] as const).map((s) => (
+                    <div key={`custo-${s}`}>
+                      <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                        {s.toUpperCase()}
+                      </Label>
+                      <MoneyInput
+                        value={form[`custo_${s}` as const]}
+                        onChange={(v) => setForm({ ...form, [`custo_${s}`]: v })}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={reset}>Cancelar</Button>
+              <Button onClick={() => upsertMut.mutate()} disabled={upsertMut.isPending}>
+                {editingId ? "Salvar" : "Cadastrar"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {isLoading ? (
+        <p className="text-muted-foreground text-sm">Carregando bordas...</p>
+      ) : bordas.length === 0 ? (
+        <EmptyState
+          icon={Sparkles}
+          title="Nenhuma borda cadastrada"
+          description="Cadastre bordas recheadas com preço por tamanho (P · M · G)."
+          actionLabel="Nova Borda"
+          onAction={() => setOpen(true)}
+        />
+      ) : (
+        <div className="table-premium">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nome</TableHead>
+                <TableHead className="text-right">Preço P</TableHead>
+                <TableHead className="text-right">Preço M</TableHead>
+                <TableHead className="text-right">Preço G</TableHead>
+                <TableHead className="text-right">Custo P</TableHead>
+                <TableHead className="text-right">Custo M</TableHead>
+                <TableHead className="text-right">Custo G</TableHead>
+                <TableHead className="w-[100px]">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {bordas.map((b) => (
+                <TableRow key={b.id}>
+                  <TableCell className="font-medium">{b.nome}</TableCell>
+                  <TableCell className="text-right">R$ {fmt(Number(b.preco_p))}</TableCell>
+                  <TableCell className="text-right">R$ {fmt(Number(b.preco_m))}</TableCell>
+                  <TableCell className="text-right">R$ {fmt(Number(b.preco_g))}</TableCell>
+                  <TableCell className="text-right text-muted-foreground">R$ {fmt(Number(b.custo_p))}</TableCell>
+                  <TableCell className="text-right text-muted-foreground">R$ {fmt(Number(b.custo_m))}</TableCell>
+                  <TableCell className="text-right text-muted-foreground">R$ {fmt(Number(b.custo_g))}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost" size="icon"
+                        onClick={() => handleEdit(b)}
+                        className="text-muted-foreground hover:text-foreground hover:bg-muted"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost" size="icon"
+                        onClick={() => {
+                          if (confirm(`Excluir a borda "${b.nome}"?`)) deleteMut.mutate(b.id);
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+    </div>
+  );
+}

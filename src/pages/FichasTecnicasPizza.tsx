@@ -31,6 +31,7 @@ import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
 import { BaseSelector } from "@/components/fichas/BaseSelector";
 import { SalvarComoBaseDialog } from "@/components/fichas/SalvarComoBaseDialog";
 import { useBasesFicha, type BaseIngredienteInput } from "@/hooks/useBasesFicha";
+import { BordasSection } from "@/components/fichas/BordasSection";
 
 const TIPOS = ["tradicional", "especial", "premium", "doce"];
 const UNIDADES = ["kg", "g", "L", "ml", "unidade"];
@@ -1293,6 +1294,9 @@ export default function FichasTecnicasPizza() {
           </Table>
         </div>
       )}
+
+      {/* Bordas Recheadas (P · M · G) */}
+      <BordasSection />
     </div>
   );
 }
