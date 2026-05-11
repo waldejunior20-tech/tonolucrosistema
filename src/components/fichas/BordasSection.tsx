@@ -11,11 +11,12 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Pencil, Trash2, Plus, Sparkles } from "lucide-react";
+import { Pencil, Trash2, Plus, Sparkles, ListTree } from "lucide-react";
 import { EmptyState } from "@/components/EmptyState";
 import { MoneyInput } from "@/components/MoneyInput";
 import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
 import { getOrCreateConfiguracoesNegocio } from "@/lib/config-helpers";
+import { BordaIngredientesDialog } from "@/components/fichas/BordaIngredientesDialog";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Borda = Tables<"bordas">;
