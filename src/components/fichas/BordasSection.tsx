@@ -259,6 +259,14 @@ export function BordasSection() {
                       <div className="flex gap-1">
                         <Button
                           variant="ghost" size="icon"
+                          onClick={() => setIngDialog(b)}
+                          title="Ingredientes"
+                          className="text-muted-foreground hover:text-foreground hover:bg-muted"
+                        >
+                          <ListTree className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost" size="icon"
                           onClick={() => handleEdit(b)}
                           className="text-muted-foreground hover:text-foreground hover:bg-muted"
                         >
