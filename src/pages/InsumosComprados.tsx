@@ -188,6 +188,18 @@ export default function InsumosComprados() {
     ? insumos
     : insumos.filter((i) => i.categoria === filtroCategoria);
 
+  // Mapa de duplicatas: nome normalizado -> contagem
+  const dupCount = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const i of insumos) {
+      const k = i.nome.trim().toLowerCase();
+      m.set(k, (m.get(k) ?? 0) + 1);
+    }
+    return m;
+  }, [insumos]);
+
+  const isDup = (nome: string) => (dupCount.get(nome.trim().toLowerCase()) ?? 0) > 1;
+
   // Grouped data: keep the order of CATEGORIAS list, plus any unknown categories at the end
   const grouped = useMemo(() => {
     const map = new Map<string, Insumo[]>();
