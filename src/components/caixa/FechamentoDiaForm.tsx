@@ -85,9 +85,19 @@ export function FechamentoDiaForm({ taxas, onSelectDate }: Props) {
         ? ` (acumulado ${format(range.from, "dd/MM")}–${format(range.to!, "dd/MM")})`
         : "";
 
+      const subcatPorForma: Record<FormaPagamento, string> = {
+        "Dinheiro/PIX": "PIX Recebido",
+        "Débito": "Vendas Balcão",
+        "Crédito": "Vendas Balcão",
+        "iFood": "Vendas Delivery",
+        "Outros Apps": "Vendas Delivery",
+      };
+
       const rows = FORMAS.filter((f) => valores[f.forma] > 0).map((f) => ({
         tipo: "receita",
-        categoria: `Vendas - ${f.forma}`,
+        categoria: "Receitas",
+        subcategoria: subcatPorForma[f.forma],
+        classificacao_origem: "manual",
         descricao: `Fechamento ${f.forma}${descSuffix}`,
         valor: valores[f.forma],
         data_lancamento: dataLanc,
