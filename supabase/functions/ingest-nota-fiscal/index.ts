@@ -22,11 +22,36 @@ const INGEST_SECRETS = [
   Deno.env.get("N8N_INGEST_SECRET_NEW") ?? "",
 ].filter((s) => s.length > 0);
 
-const CATEGORIAS_VALIDAS = new Set([
+const CATEGORIAS_INSUMO = new Set([
   "Proteínas", "Laticínios", "Hortifruti", "Secos", "Bebidas",
-  "Molhos e Condimentos", "Embalagens", "Congelados", "Confeitaria", "Outros",
+  "Molhos e Condimentos", "Embalagens", "Congelados", "Confeitaria",
 ]);
 const UNIDADES_VALIDAS = new Set(["kg", "g", "L", "ml", "unidade", "caixa", "pacote"]);
+
+// Palavras-chave que indicam serviço/despesa, não insumo
+const PALAVRAS_NAO_INSUMO = [
+  "spot", "comercial", "publicid", "anunc", "marketing",
+  "servic", "consultor", "mensalidade", "assinatura",
+  "aluguel", "internet", "telefon", "energia",
+  "contador", "honorar", "taxa", "tarifa", "juros",
+];
+
+function ehDespesaServico(nome: string, categoria?: string): boolean {
+  const cat = (categoria ?? "").toLowerCase();
+  if (cat && !CATEGORIAS_INSUMO.has(categoria!)) return true;
+  const n = nome.toLowerCase();
+  return PALAVRAS_NAO_INSUMO.some((p) => n.includes(p));
+}
+
+function normalizarUnidade(u?: string): string {
+  const v = (u ?? "").trim();
+  if (!v) return "unidade";
+  const map: Record<string, string> = {
+    UN: "unidade", Un: "unidade", un: "unidade",
+    KG: "kg", Kg: "kg", G: "g", L: "L", l: "L", ML: "ml", Ml: "ml",
+  };
+  return map[v] ?? (UNIDADES_VALIDAS.has(v) ? v : "unidade");
+}
 
 interface ItemPayload {
   nome?: string;
