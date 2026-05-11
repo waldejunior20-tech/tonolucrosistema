@@ -548,12 +548,18 @@ export default function FinanceiroDRE() {
         <DialogContent className="max-w-3xl">
           <DialogHeader>
             <DialogTitle>
-              Detalhe — {detalheCat ? (CAT_LABELS[detalheCat] || detalheCat) : ""}
+              Detalhe — {detalheSub ?? ""}
             </DialogTitle>
           </DialogHeader>
-          {detalheCat && (() => {
+          {detalheSub && (() => {
             const itens = lancamentos
-              .filter((l) => l.tipo === "despesa" && l.categoria === detalheCat)
+              .filter((l) => {
+                if (l.tipo !== "despesa") return false;
+                const sub = (l.subcategoria && l.subcategoria.trim() && l.subcategoria !== "A Classificar")
+                  ? l.subcategoria
+                  : (CAT_LABELS[l.categoria] || l.categoria || "Sem categoria");
+                return sub === detalheSub;
+              })
               .sort((a, b) => b.data_lancamento.localeCompare(a.data_lancamento));
             const total = itens.reduce((s, l) => s + Number(l.valor), 0);
 
