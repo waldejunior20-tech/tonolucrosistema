@@ -187,33 +187,35 @@ export function FechamentoDiaForm({ taxas, onSelectDate }: Props) {
           })}
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl bg-gradient-to-r from-primary/5 to-success/5 border border-border/40">
-          <div className="flex flex-wrap gap-6">
-            <div>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Total bruto</p>
-              <p className="text-lg font-extrabold text-money tabular-nums">{formatMoney(totalBruto)}</p>
+        <div className="rounded-xl bg-gradient-to-r from-primary/5 to-success/5 border border-border/40 overflow-hidden">
+          <div className="grid grid-cols-3 divide-x divide-border/40">
+            <div className="p-4 text-center">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">Total bruto</p>
+              <p className="text-xl font-extrabold text-money tabular-nums">{formatMoney(totalBruto)}</p>
             </div>
-            <div>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Taxas</p>
-              <p className="text-base font-bold text-destructive tabular-nums">- {formatMoney(totalTaxas)}</p>
+            <div className="p-4 text-center">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">Taxas</p>
+              <p className="text-lg font-bold text-destructive tabular-nums">- {formatMoney(totalTaxas)}</p>
             </div>
-            <div>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1">
+            <div className="p-4 text-center">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1 flex items-center justify-center gap-1">
                 Líquido
-                <Link to="/financeiro/dre" className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-primary/10 text-primary text-[9px] font-bold hover:bg-primary/20 transition-colors">
+                <Link to="/financeiro/dre" className="inline-flex items-center px-1.5 py-0.5 rounded bg-primary/10 text-primary text-[9px] font-bold hover:bg-primary/20 transition-colors">
                   → DRE
                 </Link>
               </p>
-              <p className="text-lg font-extrabold text-success tabular-nums">{formatMoney(totalLiquido)}</p>
+              <p className="text-xl font-extrabold text-success tabular-nums">{formatMoney(totalLiquido)}</p>
             </div>
           </div>
-          <Button
-            onClick={() => mutation.mutate()}
-            disabled={totalBruto <= 0 || mutation.isPending || !range?.from}
-            className="btn-action-add gap-2"
-          >
-            {mutation.isPending ? "Salvando..." : <>Registrar vendas <ArrowRight size={14} /></>}
-          </Button>
+          <div className="border-t border-border/40 p-3 bg-background/50">
+            <Button
+              onClick={() => mutation.mutate()}
+              disabled={totalBruto <= 0 || mutation.isPending || !range?.from}
+              className="btn-action-add gap-2 w-full sm:w-auto sm:ml-auto sm:flex"
+            >
+              {mutation.isPending ? "Salvando..." : <>Registrar vendas <ArrowRight size={14} /></>}
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
