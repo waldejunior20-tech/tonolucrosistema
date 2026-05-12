@@ -1255,7 +1255,6 @@ export default function FichasTecnicasPizza() {
         <SkeletonTable rows={6} />
       ) : filteredFichas.length === 0 ? (
         <EmptyState icon={Pizza} title="Nenhuma ficha técnica encontrada" description="Crie fichas técnicas para suas pizzas com custos detalhados." actionLabel="Nova Ficha" onAction={() => setDialogOpen(true)} />
-        <EmptyState icon={Pizza} title="Nenhuma ficha técnica encontrada" description="Crie fichas técnicas para suas pizzas com custos detalhados." actionLabel="Nova Ficha" onAction={() => setDialogOpen(true)} />
       ) : (
         <div className="table-premium fade-up fade-up-d1">
           <Table>
