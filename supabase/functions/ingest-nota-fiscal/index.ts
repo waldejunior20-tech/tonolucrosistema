@@ -255,21 +255,36 @@ Deno.serve(async (req) => {
     });
   }
 
-  let lancamento_id: string | null = null;
-  if (totalInsumos > 0) {
-    const { data: lanc, error: lancErr } = await supabase
+  // Mapeia categoria do insumo (CMV) -> subcategoria do DRE
+  const CAT_TO_SUB: Record<string, string> = {
+    "Proteínas": "Açougue/Proteínas",
+    "Laticínios": "Laticínios",
+    "Hortifruti": "Hortifruti",
+    "Secos": "Mercearia",
+    "Bebidas": "Bebidas",
+    "Molhos e Condimentos": "Molhos e Condimentos",
+    "Embalagens": "Embalagens",
+    "Congelados": "Congelados",
+    "Confeitaria": "Confeitaria",
+  };
+
+  // Lança UM lancamento por item de insumo, cada um com sua subcategoria
+  let lancamentos_inseridos = 0;
+  if (insumosRows.length > 0) {
+    const lancsInsumos = insumosRows.map((r) => ({
+      user_id, unidade_id,
+      tipo: "despesa",
+      categoria: "Insumos",
+      subcategoria: CAT_TO_SUB[r.categoria] ?? "Outros Insumos",
+      descricao: `${r.nome}${fornecedor ? ` - ${fornecedor}` : ""}`,
+      valor: r.preco_pago,
+      data_lancamento: dataCompra,
+      pago: true,
+      classificacao_origem: "keyword",
+    }));
+    const { error: lancErr } = await supabase
       .from("lancamentos_financeiros")
-      .insert({
-        user_id, unidade_id,
-        tipo: "despesa",
-        categoria: "Insumos",
-        descricao: `Nota fiscal${fornecedor ? ` - ${fornecedor}` : ""} (${insumosRows.length} itens)`,
-        valor: totalInsumos,
-        data_lancamento: dataCompra,
-        pago: true,
-      })
-      .select("id")
-      .single();
+      .insert(lancsInsumos);
     if (lancErr) {
       await supabase.from("workflow_runs").update({
         status: "partial",
@@ -288,8 +303,9 @@ Deno.serve(async (req) => {
         itens_inseridos: inseridos?.length ?? 0,
       }, 207);
     }
-    lancamento_id = lanc.id;
+    lancamentos_inseridos = lancsInsumos.length;
   }
+  const lancamento_id: string | null = null;
 
   await supabase.from("workflow_runs").update({
     status: "success",
