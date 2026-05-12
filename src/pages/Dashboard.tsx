@@ -330,7 +330,8 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="space-y-6 page-enter">
+    <div className="flex flex-col min-h-[calc(100vh-8rem)] page-enter">
+      <div className="space-y-6 flex-1">
       {/* ─── HEADER ─── */}
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 fade-up">
         <div>
