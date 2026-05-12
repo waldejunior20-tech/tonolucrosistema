@@ -2031,6 +2031,10 @@ export type Database = {
         Args: { _unidade_id: string; _user_id: string }
         Returns: boolean
       }
+      map_categoria_insumo_subcategoria: {
+        Args: { p_cat: string }
+        Returns: string
+      }
       marcar_conta_paga: {
         Args: {
           p_conta_id: string
