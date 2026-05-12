@@ -208,7 +208,22 @@ Deno.serve(async (req) => {
         categoria: catFinal,
       });
     } else {
-      const categoria = CATEGORIAS_INSUMO.has(categoriaRaw) ? categoriaRaw : "Secos";
+      // Classificador inteligente: catálogo + palavras-chave + histórico
+      let categoria = "Secos";
+      try {
+        const { data: catCerta } = await supabase.rpc("classificar_insumo", {
+          p_nome: nome,
+          p_unidade_id: unidade_id,
+        });
+        if (catCerta && CATEGORIAS_INSUMO.has(catCerta)) {
+          categoria = catCerta;
+        } else if (CATEGORIAS_INSUMO.has(categoriaRaw)) {
+          categoria = categoriaRaw; // fallback no que veio do GPT
+        }
+      } catch (_e) {
+        if (CATEGORIAS_INSUMO.has(categoriaRaw)) categoria = categoriaRaw;
+      }
+
       insumosRows.push({
         user_id, unidade_id,
         nome, categoria,
