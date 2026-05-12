@@ -1,3 +1,4 @@
+import { SkeletonCard } from "@/components/SkeletonCard";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PercentInput } from "@/components/SmartInputs";
@@ -57,8 +58,9 @@ export default function PrecificacaoConfiguracoes() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      <div className="space-y-4 py-6">
+        <SkeletonCard />
+        <SkeletonCard />
       </div>
     );
   }

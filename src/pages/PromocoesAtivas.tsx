@@ -1,3 +1,4 @@
+import { SkeletonGrid } from "@/components/SkeletonCard";
 import { useState, useMemo, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -439,9 +440,7 @@ export default function PromocoesAtivas() {
 
       {/* List */}
       {isLoading ? (
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-        </div>
+        <SkeletonGrid count={4} />
       ) : filtered.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center text-muted-foreground">

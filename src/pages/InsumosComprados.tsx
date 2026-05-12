@@ -1,3 +1,4 @@
+import { SkeletonTable } from "@/components/SkeletonCard";
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -420,7 +421,7 @@ export default function InsumosComprados() {
 
       {/* Conteúdo */}
       {isLoading ? (
-        <p className="text-muted-foreground">Carregando...</p>
+        <SkeletonTable rows={6} />
       ) : filtered.length === 0 ? (
         <EmptyState
           icon={Package}

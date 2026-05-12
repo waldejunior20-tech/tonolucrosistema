@@ -1,3 +1,4 @@
+import { SkeletonTable } from "@/components/SkeletonCard";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -60,7 +61,7 @@ export default function AutomacaoSaude() {
 
       <Card className="p-0 overflow-hidden">
         {isLoading ? (
-          <div className="p-12 text-center text-muted-foreground">Carregando...</div>
+          <SkeletonTable rows={5} />
         ) : runs.length === 0 ? (
           <EmptyState
             icon={Activity}

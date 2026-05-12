@@ -1,3 +1,4 @@
+import { SkeletonTable } from "@/components/SkeletonCard";
 import { useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -137,7 +138,7 @@ export default function AutomacaoFichasWarnings() {
       )}
 
       {isLoading ? (
-        <Card className="p-12 text-center text-muted-foreground">Carregando...</Card>
+        <SkeletonTable rows={5} />
       ) : warnings.length === 0 ? (
         <Card className="p-0 overflow-hidden">
           <EmptyState

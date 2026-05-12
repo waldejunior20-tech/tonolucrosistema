@@ -1,3 +1,4 @@
+import { SkeletonTable } from "@/components/SkeletonCard";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -124,7 +125,7 @@ export default function AutomacaoAlertas() {
       />
 
       {isLoading ? (
-        <Card className="p-12 text-center text-muted-foreground">Carregando...</Card>
+        <SkeletonTable rows={5} />
       ) : alertas.length === 0 ? (
         <Card className="p-0 overflow-hidden">
           <EmptyState
