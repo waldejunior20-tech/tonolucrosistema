@@ -452,8 +452,10 @@ export default function Dashboard() {
       />
 
 
+      </div>
+
       {/* ─── FOOTER ─── */}
-      <div className="border-t border-border/40 pt-4 pb-2 text-center fade-up">
+      <div className="border-t border-border/40 pt-4 pb-2 mt-8 text-center fade-up">
         <p className="text-[10px] text-muted-foreground/50">
           {businessName || "TôNoLucro"} © {new Date().getFullYear()} — Sistema Profissional de Gestão
         </p>
