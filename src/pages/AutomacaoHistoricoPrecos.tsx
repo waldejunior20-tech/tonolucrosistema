@@ -33,7 +33,7 @@ export default function AutomacaoHistoricoPrecos() {
 
       <Card className="p-0 overflow-hidden">
         {isLoading ? (
-          <div className="p-12 text-center text-muted-foreground">Carregando...</div>
+          <SkeletonTable rows={5} />
         ) : historico.length === 0 ? (
           <EmptyState
             icon={History}

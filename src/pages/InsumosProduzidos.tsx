@@ -586,7 +586,7 @@ export default function InsumosProduzidos() {
 
       {/* Tabela */}
       {isLoading ? (
-        <p className="text-muted-foreground">Carregando...</p>
+        <SkeletonTable rows={6} />
       ) : insumosProprios.length === 0 ? (
         <EmptyState icon={Beaker} title="Nenhum pré-preparo cadastrado" description="Crie seus pré-preparos para calcular custos automaticamente." actionLabel="Novo Pré-Preparo" onAction={() => setDialogOpen(true)} />
       ) : (

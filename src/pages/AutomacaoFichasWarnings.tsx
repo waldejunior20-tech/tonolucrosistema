@@ -137,7 +137,7 @@ export default function AutomacaoFichasWarnings() {
       )}
 
       {isLoading ? (
-        <Card className="p-12 text-center text-muted-foreground">Carregando...</Card>
+        <SkeletonTable rows={5} />
       ) : warnings.length === 0 ? (
         <Card className="p-0 overflow-hidden">
           <EmptyState

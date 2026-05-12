@@ -420,7 +420,7 @@ export default function InsumosComprados() {
 
       {/* Conteúdo */}
       {isLoading ? (
-        <p className="text-muted-foreground">Carregando...</p>
+        <SkeletonTable rows={6} />
       ) : filtered.length === 0 ? (
         <EmptyState
           icon={Package}
