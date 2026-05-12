@@ -21,6 +21,7 @@ import type { Tables } from "@/integrations/supabase/types";
 import { formatMoney, formatQty } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { EmptyState } from "@/components/EmptyState";
+import { SkeletonTable } from "@/components/SkeletonCard";
 import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
 import { matchesSearch } from "@/lib/utils";
 
@@ -618,9 +619,7 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
 
       {/* Table */}
       {isLoading ? (
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-        </div>
+        <SkeletonTable rows={6} />
       ) : fichas.length === 0 ? (
         <div className="rounded-lg border bg-card p-12 text-center">
           <p className="text-muted-foreground">Nenhuma ficha técnica cadastrada para {label}.</p>

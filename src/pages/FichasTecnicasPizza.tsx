@@ -23,6 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { EmptyState } from "@/components/EmptyState";
+import { SkeletonTable } from "@/components/SkeletonCard";
 import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
 import type { Tables } from "@/integrations/supabase/types";
 import { formatQty } from "@/components/MoneyInput";
@@ -1252,8 +1253,8 @@ export default function FichasTecnicasPizza() {
       {/* Tabela */}
       {isLoading ? (
         <SkeletonTable rows={6} />
-      ) : false ? (
-        null
+      ) : filteredFichas.length === 0 ? (
+        <EmptyState icon={Pizza} title="Nenhuma ficha técnica encontrada" description="Crie fichas técnicas para suas pizzas com custos detalhados." actionLabel="Nova Ficha" onAction={() => setDialogOpen(true)} />
         <EmptyState icon={Pizza} title="Nenhuma ficha técnica encontrada" description="Crie fichas técnicas para suas pizzas com custos detalhados." actionLabel="Nova Ficha" onAction={() => setDialogOpen(true)} />
       ) : (
         <div className="table-premium fade-up fade-up-d1">
