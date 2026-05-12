@@ -158,61 +158,64 @@ export function FechamentoDiaForm({ taxas, onSelectDate }: Props) {
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+      <CardContent className="space-y-5">
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
           {FORMAS.map((f) => {
             const Icon = f.icon;
             const v = valores[f.forma];
             const taxa = taxas[f.forma] ?? 0;
             const liq = v * (1 - taxa / 100);
             return (
-              <div key={f.forma} className="space-y-1.5">
-                <Label className="flex items-center gap-1.5 text-xs">
-                  <span className={cn("w-5 h-5 rounded-md flex items-center justify-center", f.bgClass, f.colorClass)}>
-                    <Icon size={12} />
+              <div key={f.forma} className="space-y-2 p-3 rounded-lg border border-border/40 bg-muted/20 hover:border-border/70 transition-colors">
+                <Label className="flex items-center gap-1.5 text-xs font-semibold">
+                  <span className={cn("w-6 h-6 rounded-md flex items-center justify-center", f.bgClass, f.colorClass)}>
+                    <Icon size={13} />
                   </span>
                   {f.forma}
                 </Label>
                 <MoneyInput value={v} onChange={(nv) => setValores((s) => ({ ...s, [f.forma]: nv }))} />
-                <p className="text-[10px] text-muted-foreground tabular-nums min-h-[14px]">
-                  {taxa > 0
-                    ? v > 0
-                      ? <>Taxa {taxa}% · líq <span className="text-success font-semibold">{formatMoney(liq)}</span></>
-                      : <>Taxa {taxa}%</>
-                    : "Sem taxa"}
-                </p>
+                <div className="flex items-center justify-between text-xs tabular-nums min-h-[18px]">
+                  <span className="text-muted-foreground">
+                    {taxa > 0 ? `Taxa ${taxa}%` : "Sem taxa"}
+                  </span>
+                  {taxa > 0 && v > 0 && (
+                    <span className="text-success font-semibold">{formatMoney(liq)}</span>
+                  )}
+                </div>
               </div>
             );
           })}
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl bg-gradient-to-r from-primary/5 to-success/5 border border-border/40">
-          <div className="flex flex-wrap gap-6">
-            <div>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Total bruto</p>
-              <p className="text-lg font-extrabold text-money tabular-nums">{formatMoney(totalBruto)}</p>
+        <div className="rounded-xl bg-gradient-to-r from-primary/5 to-success/5 border border-border/40 overflow-hidden">
+          <div className="grid grid-cols-3 divide-x divide-border/40">
+            <div className="p-4 text-center">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">Total bruto</p>
+              <p className="text-xl font-extrabold text-money tabular-nums">{formatMoney(totalBruto)}</p>
             </div>
-            <div>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Taxas</p>
-              <p className="text-base font-bold text-destructive tabular-nums">- {formatMoney(totalTaxas)}</p>
+            <div className="p-4 text-center">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">Taxas</p>
+              <p className="text-lg font-bold text-destructive tabular-nums">- {formatMoney(totalTaxas)}</p>
             </div>
-            <div>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold flex items-center gap-1">
+            <div className="p-4 text-center">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1 flex items-center justify-center gap-1">
                 Líquido
-                <Link to="/financeiro/dre" className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-primary/10 text-primary text-[9px] font-bold hover:bg-primary/20 transition-colors">
+                <Link to="/financeiro/dre" className="inline-flex items-center px-1.5 py-0.5 rounded bg-primary/10 text-primary text-[9px] font-bold hover:bg-primary/20 transition-colors">
                   → DRE
                 </Link>
               </p>
-              <p className="text-lg font-extrabold text-success tabular-nums">{formatMoney(totalLiquido)}</p>
+              <p className="text-xl font-extrabold text-success tabular-nums">{formatMoney(totalLiquido)}</p>
             </div>
           </div>
-          <Button
-            onClick={() => mutation.mutate()}
-            disabled={totalBruto <= 0 || mutation.isPending || !range?.from}
-            className="btn-action-add gap-2"
-          >
-            {mutation.isPending ? "Salvando..." : <>Registrar vendas <ArrowRight size={14} /></>}
-          </Button>
+          <div className="border-t border-border/40 p-3 bg-background/50">
+            <Button
+              onClick={() => mutation.mutate()}
+              disabled={totalBruto <= 0 || mutation.isPending || !range?.from}
+              className="btn-action-add gap-2 w-full sm:w-auto sm:ml-auto sm:flex"
+            >
+              {mutation.isPending ? "Salvando..." : <>Registrar vendas <ArrowRight size={14} /></>}
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

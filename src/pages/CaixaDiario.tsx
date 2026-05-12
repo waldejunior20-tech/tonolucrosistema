@@ -104,56 +104,49 @@ export default function CaixaDiario() {
       {/* Formulário consolidado de fechamento */}
       <FechamentoDiaForm taxas={taxas} onSelectDate={setSelectedDate} />
 
-      {/* Date selector + status */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="gap-2 rounded-lg">
-                <CalendarIcon size={14} />
-                {dateLabel} — {format(selectedDate, "dd/MM/yyyy")}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={(d) => { if (d) { setSelectedDate(d); setCalendarOpen(false); } }}
-                locale={ptBR}
-              />
-            </PopoverContent>
-          </Popover>
-
-          {isClosed && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-success/10 text-success text-xs font-semibold border border-success/30">
-              <Lock size={12} /> Caixa fechado
-            </span>
-          )}
-        </div>
-
-        <div className="flex gap-2">
-          {isClosed ? (
-            <Button variant="outline" size="sm" onClick={() => setConfirmReabrir(true)} className="gap-2">
-              <Unlock size={14} /> Reabrir caixa
-            </Button>
-          ) : (
-            totalVendas > 0 && (
-              <Button onClick={() => setConfirmFechar(true)} variant="outline" className="gap-2 border-success/40 text-success hover:bg-success/10">
-                <CheckCircle2 size={14} /> Fechar caixa do dia
-              </Button>
-            )
-          )}
-        </div>
-      </div>
-
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* LEFT: Resumo do dia */}
         <Card className="xl:col-span-2 rounded-2xl border-border/60 shadow-sm">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base font-semibold">Resumo do dia</CardTitle>
-            <p className="text-xs text-muted-foreground">
-              Vendas lançadas em <strong>{format(selectedDate, "dd/MM/yyyy")}</strong> por forma de pagamento.
-            </p>
+          <CardHeader className="pb-3 border-b border-border/40">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3 flex-wrap">
+                <CardTitle className="text-base font-semibold">Resumo do dia</CardTitle>
+                <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="gap-2 rounded-lg h-8">
+                      <CalendarIcon size={13} />
+                      {dateLabel} · {format(selectedDate, "dd/MM/yyyy")}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={(d) => { if (d) { setSelectedDate(d); setCalendarOpen(false); } }}
+                      locale={ptBR}
+                    />
+                  </PopoverContent>
+                </Popover>
+                {isClosed && (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success/10 text-success text-xs font-semibold border border-success/30">
+                    <Lock size={11} /> Fechado
+                  </span>
+                )}
+              </div>
+              <div className="flex gap-2">
+                {isClosed ? (
+                  <Button variant="outline" size="sm" onClick={() => setConfirmReabrir(true)} className="gap-2 h-8">
+                    <Unlock size={13} /> Reabrir
+                  </Button>
+                ) : (
+                  totalVendas > 0 && (
+                    <Button onClick={() => setConfirmFechar(true)} variant="outline" size="sm" className="gap-2 h-8 border-success/40 text-success hover:bg-success/10">
+                      <CheckCircle2 size={13} /> Fechar caixa
+                    </Button>
+                  )
+                )}
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             {totalVendas > 0 ? (
