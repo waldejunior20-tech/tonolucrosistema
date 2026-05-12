@@ -1296,6 +1296,7 @@ export type Database = {
           id: string
           insumo_comprado_id: string | null
           insumo_proprio_id: string | null
+          nome_original: string | null
           quantidade: number
           unidade: string
           unidade_id: string | null
@@ -1305,6 +1306,7 @@ export type Database = {
           id?: string
           insumo_comprado_id?: string | null
           insumo_proprio_id?: string | null
+          nome_original?: string | null
           quantidade: number
           unidade: string
           unidade_id?: string | null
@@ -1314,6 +1316,7 @@ export type Database = {
           id?: string
           insumo_comprado_id?: string | null
           insumo_proprio_id?: string | null
+          nome_original?: string | null
           quantidade?: number
           unidade?: string
           unidade_id?: string | null
