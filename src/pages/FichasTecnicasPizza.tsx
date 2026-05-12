@@ -1251,8 +1251,9 @@ export default function FichasTecnicasPizza() {
 
       {/* Tabela */}
       {isLoading ? (
-        <p className="text-muted-foreground">Carregando...</p>
-      ) : filteredFichas.length === 0 ? (
+        <SkeletonTable rows={6} />
+      ) : false ? (
+        null
         <EmptyState icon={Pizza} title="Nenhuma ficha técnica encontrada" description="Crie fichas técnicas para suas pizzas com custos detalhados." actionLabel="Nova Ficha" onAction={() => setDialogOpen(true)} />
       ) : (
         <div className="table-premium fade-up fade-up-d1">
