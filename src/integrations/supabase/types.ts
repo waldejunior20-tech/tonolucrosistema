@@ -1164,6 +1164,7 @@ export type Database = {
           created_at: string
           id: string
           nome_canonico: string
+          palavras_chave: string[] | null
           unidade_padrao: string | null
         }
         Insert: {
@@ -1172,6 +1173,7 @@ export type Database = {
           created_at?: string
           id?: string
           nome_canonico: string
+          palavras_chave?: string[] | null
           unidade_padrao?: string | null
         }
         Update: {
@@ -1180,6 +1182,7 @@ export type Database = {
           created_at?: string
           id?: string
           nome_canonico?: string
+          palavras_chave?: string[] | null
           unidade_padrao?: string | null
         }
         Relationships: []
@@ -1993,6 +1996,10 @@ export type Database = {
           unidade_rendimento: string
         }[]
       }
+      classificar_insumo: {
+        Args: { p_nome: string; p_unidade_id?: string }
+        Returns: string
+      }
       classificar_por_palavra_chave: {
         Args: { texto_input: string }
         Returns: {
@@ -2048,11 +2055,13 @@ export type Database = {
         Returns: Json
       }
       normalizar_nome_fornecedor: { Args: { p_nome: string }; Returns: string }
+      normalizar_nome_insumo: { Args: { p: string }; Returns: string }
       pode_editar_negocio: {
         Args: { _unidade_id: string; _user_id: string }
         Returns: boolean
       }
       primeira_unidade_do_user: { Args: { _user_id: string }; Returns: string }
+      unaccent: { Args: { "": string }; Returns: string }
       validar_ficha_pizza_completa: {
         Args: { p_ficha_id: string }
         Returns: boolean
