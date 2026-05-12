@@ -158,29 +158,30 @@ export function FechamentoDiaForm({ taxas, onSelectDate }: Props) {
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+      <CardContent className="space-y-5">
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
           {FORMAS.map((f) => {
             const Icon = f.icon;
             const v = valores[f.forma];
             const taxa = taxas[f.forma] ?? 0;
             const liq = v * (1 - taxa / 100);
             return (
-              <div key={f.forma} className="space-y-1.5">
-                <Label className="flex items-center gap-1.5 text-xs">
-                  <span className={cn("w-5 h-5 rounded-md flex items-center justify-center", f.bgClass, f.colorClass)}>
-                    <Icon size={12} />
+              <div key={f.forma} className="space-y-2 p-3 rounded-lg border border-border/40 bg-muted/20 hover:border-border/70 transition-colors">
+                <Label className="flex items-center gap-1.5 text-xs font-semibold">
+                  <span className={cn("w-6 h-6 rounded-md flex items-center justify-center", f.bgClass, f.colorClass)}>
+                    <Icon size={13} />
                   </span>
                   {f.forma}
                 </Label>
                 <MoneyInput value={v} onChange={(nv) => setValores((s) => ({ ...s, [f.forma]: nv }))} />
-                <p className="text-[10px] text-muted-foreground tabular-nums min-h-[14px]">
-                  {taxa > 0
-                    ? v > 0
-                      ? <>Taxa {taxa}% · líq <span className="text-success font-semibold">{formatMoney(liq)}</span></>
-                      : <>Taxa {taxa}%</>
-                    : "Sem taxa"}
-                </p>
+                <div className="flex items-center justify-between text-xs tabular-nums min-h-[18px]">
+                  <span className="text-muted-foreground">
+                    {taxa > 0 ? `Taxa ${taxa}%` : "Sem taxa"}
+                  </span>
+                  {taxa > 0 && v > 0 && (
+                    <span className="text-success font-semibold">{formatMoney(liq)}</span>
+                  )}
+                </div>
               </div>
             );
           })}
