@@ -1,5 +1,7 @@
 import { useState, useMemo, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { SkeletonCard } from "@/components/SkeletonCard";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -70,6 +72,7 @@ interface InsumoProprioIngrediente {
 // ─── Component ───────────────────────────────────────────────────────
 export default function PrecificacaoPizzas() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [configOpen, setConfigOpen] = useState(false);
   const [localPrices, setLocalPrices] = useState<Record<string, { p: string; m: string; g: string }>>({});
   const [configForm, setConfigForm] = useState<ConfigPrecificacao | null>(null);
@@ -94,7 +97,7 @@ export default function PrecificacaoPizzas() {
     },
   });
 
-  const { data: fichas = [] } = useQuery({
+  const { data: fichas = [], isLoading: loadingFichas } = useQuery({
     queryKey: ["fichas_tecnicas_pizza"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -517,14 +520,18 @@ export default function PrecificacaoPizzas() {
 
         {/* ═══ Pizza Cards — Summary + Expand ═══ */}
         <div className="space-y-4">
-          {fichas.length === 0 ? (
+          {loadingFichas ? (
+            <div className="space-y-3">
+              {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
+            </div>
+          ) : fichas.length === 0 ? (
             <div className="card-premium flex flex-col items-center gap-5 py-20">
               <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center">
                 <Activity className="h-7 w-7 text-muted-foreground" />
               </div>
               <p className="text-muted-foreground text-sm font-semibold">Nenhuma pizza cadastrada ainda.</p>
               <Button
-                onClick={() => window.location.href = '/fichas/pizzas?tipo=tradicional'}
+                onClick={() => navigate('/fichas/pizzas?tipo=tradicional')}
                 className="btn-micro gap-2"
               >
                 <span className="text-lg leading-none">+</span> Cadastrar Primeira Pizza
