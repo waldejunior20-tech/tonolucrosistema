@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useScrollToTop } from "@/hooks/useScrollToTop";
 
 import { UnifiedSidebar } from "./UnifiedSidebar";
 import { MobileSidebar } from "./MobileSidebar";
@@ -11,6 +12,7 @@ export function AppLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const isMobile = useIsMobile();
+  useScrollToTop();
 
   return (
     <div className="flex min-h-screen w-full bg-background">
