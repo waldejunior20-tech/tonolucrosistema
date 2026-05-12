@@ -98,6 +98,50 @@ Veja `.env.example` para o template completo. **Nunca commite o arquivo `.env`**
 
 ---
 
+## Arquitetura de Automação (n8n)
+
+```
+WhatsApp (Evolution API)
+    │
+    ▼
+n8n Webhook (nf-whatsapp-v3)
+    │
+    ├─► Google Vision OCR ──► Gemini 2.5 Flash (parse)
+    │                              │
+    │                              ▼
+    │                     Edge Function: ingest-nota-fiscal
+    │                         │
+    │                         ├─► classificar_e_upsert_insumo (SQL 6 camadas)
+    │                         ├─► classificar-insumo-ia (Gemini, se confiança < 0.7)
+    │                         ├─► insumos_comprados (live row)
+    │                         ├─► insumos_compras_historico (evento imutável)
+    │                         └─► notas_fiscais_pendentes (se confiança < 0.85)
+    │
+    └─► WhatsApp: resposta formatada
+```
+
+### Estrutura de Pastas
+
+```
+tonolucro-sistema/
+├── src/                           # Frontend React
+│   ├── components/                # Componentes reutilizáveis
+│   ├── hooks/                     # Custom hooks (queries, mutations)
+│   ├── lib/                       # Utilidades e helpers
+│   └── pages/                     # Páginas do app
+├── supabase/
+│   ├── functions/                 # Edge Functions (Deno)
+│   │   ├── ingest-nota-fiscal/    # Ingestão de NF (principal)
+│   │   ├── classificar-insumo-ia/ # Classificação IA (Gemini)
+│   │   ├── cascata-preco-cmv/     # Cascata de preços
+│   │   └── n8n-helpers/           # Módulos compartilhados
+│   └── migrations/                # Migrações SQL
+├── .env.example                   # Template de variáveis
+└── package.json
+```
+
+---
+
 ## Principais Funcionalidades
 
 - **Controle de Insumos** — Catálogo canônico com classificação inteligente e aprendizado contínuo.
