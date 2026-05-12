@@ -1,8 +1,10 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatMoney, formatQty, parseFormattedNumber } from "@/components/MoneyInput";
+
+const DEBOUNCE_MS = 500;
 
 type FormatType = "money" | "qty" | "none";
 
@@ -60,26 +62,47 @@ export function AutoSaveInput({
     setLocalValue(String(value ?? ""));
   }, [value]);
 
-  const handleBlur = useCallback(async () => {
-    setFocused(false);
-    const currentValue = localValue ?? String(value);
-    if (currentValue === lastSavedRef.current) {
-      setLocalValue(null);
-      return;
-    }
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const persist = useCallback(async (raw: string) => {
+    if (raw === lastSavedRef.current) return;
     try {
-      await onSave(currentValue);
-      lastSavedRef.current = currentValue;
-      setLocalValue(null);
-
+      await onSave(raw);
+      lastSavedRef.current = raw;
       setShowCheck(true);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       timeoutRef.current = setTimeout(() => setShowCheck(false), 2000);
     } catch {
       // error handled by caller
     }
-  }, [localValue, value, onSave]);
+  }, [onSave]);
+
+  const handleChange = useCallback((raw: string) => {
+    setLocalValue(raw);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      void persist(raw);
+    }, DEBOUNCE_MS);
+  }, [persist]);
+
+  const handleBlur = useCallback(async () => {
+    setFocused(false);
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+      debounceRef.current = null;
+    }
+    const currentValue = localValue ?? String(value);
+    await persist(currentValue);
+    setLocalValue(null);
+  }, [localValue, value, persist]);
+
+  // Cleanup debounce on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
 
   const inputType = focused ? type : (format !== "none" ? "text" : type);
 
@@ -92,7 +115,7 @@ export function AutoSaveInput({
         placeholder={placeholder}
         className={cn(className)}
         value={getDisplayValue()}
-        onChange={(e) => setLocalValue(e.target.value)}
+        onChange={(e) => handleChange(e.target.value)}
         onFocus={handleFocus}
         onBlur={handleBlur}
         disabled={disabled}
