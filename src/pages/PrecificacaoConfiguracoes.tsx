@@ -1,3 +1,4 @@
+import { SkeletonCard } from "@/components/SkeletonCard";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PercentInput } from "@/components/SmartInputs";

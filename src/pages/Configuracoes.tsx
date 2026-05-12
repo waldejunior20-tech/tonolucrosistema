@@ -1,3 +1,4 @@
+import { SkeletonCard } from "@/components/SkeletonCard";
 import { useState, useEffect, useMemo } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";

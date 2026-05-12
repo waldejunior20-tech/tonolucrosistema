@@ -1,3 +1,4 @@
+import { SkeletonGrid } from "@/components/SkeletonCard";
 import { useState, useMemo, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
