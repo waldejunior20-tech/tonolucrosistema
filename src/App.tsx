@@ -67,26 +67,32 @@ function AppRoutes() {
     );
   }
 
-  if (!session) {
-    return (
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/recovery" element={<PasswordRecovery />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
-    );
-  }
+  // Bypass de login temporario para analise de layout
+  // if (!session) {
+  //   return (
+  //     <Routes>
+  //       <Route path="/login" element={<Login />} />
+  //       <Route path="/signup" element={<Signup />} />
+  //       <Route path="/recovery" element={<PasswordRecovery />} />
+  //       <Route path="/reset-password" element={<ResetPassword />} />
+  //       <Route path="*" element={<Navigate to="/login" replace />} />
+  //     </Routes>
+  //   );
+  // }
 
-  if (needsOnboarding) {
-    return (
-      <Routes>
-        <Route path="/onboarding" element={<Onboarding />} />
-        <Route path="*" element={<Navigate to="/onboarding" replace />} />
-      </Routes>
-    );
-  }
+  // if (needsOnboarding) {
+  //   return (
+  //     <Routes>
+  //       <Route path="/onboarding" element={<Onboarding />} />
+  //       <Route path="*" element={<Navigate to="/onboarding" replace />} />
+  //     </Routes>
+  //   );
+  // }
+
+  // Comentado: sessao = null para bypass
+  const _sessionBypass = session; // evita unused var
+  void _sessionBypass;
+  void needsOnboarding;
 
   return (
     <Routes>
