@@ -156,8 +156,8 @@ export default function Dashboard() {
     },
   });
 
-  const points: any[] = (chartData as any).points || [];
-  const insumos: string[] = (chartData as any).insumos || [];
+  const points = chartData.points;
+  const insumos = chartData.insumos;
   const lineColors = ["hsl(var(--primary))", "hsl(var(--warning))", "hsl(var(--success))"];
 
   // Últimos lançamentos
