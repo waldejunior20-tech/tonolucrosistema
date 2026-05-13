@@ -25,7 +25,6 @@ type SizeMap = Record<string, number>;
 interface FormState {
   nome: string;
   precos: SizeMap;
-  custos: SizeMap;
 }
 
 const fmt = (v: number) =>
@@ -59,7 +58,6 @@ export function BordasSection() {
     () => ({
       nome: "",
       precos: Object.fromEntries(sizes.map((s) => [s, 0])),
-      custos: Object.fromEntries(sizes.map((s) => [s, 0])),
     }),
     [sizes],
   );
@@ -75,6 +73,21 @@ export function BordasSection() {
     },
   });
 
+  const { data: ingredientesCount = {} } = useQuery({
+    queryKey: ["bordas_ingredientes_counts"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("bordas_ingredientes")
+        .select("borda_id");
+      if (error) throw error;
+      const map: Record<string, number> = {};
+      (data ?? []).forEach((r: { borda_id: string }) => {
+        map[r.borda_id] = (map[r.borda_id] ?? 0) + 1;
+      });
+      return map;
+    },
+  });
+
   const reset = () => {
     setForm(emptyForm);
     setEditingId(null);
@@ -87,21 +100,28 @@ export function BordasSection() {
       const payload = {
         nome: form.nome.trim(),
         precos_por_tamanho: form.precos,
-        custos_por_tamanho: form.custos,
       };
       if (editingId) {
         const { error } = await supabase.from("bordas").update(payload).eq("id", editingId);
         if (error) throw error;
+        return null;
       } else {
         const unidade_id = requireActiveUnidadeId();
-        const { error } = await supabase.from("bordas").insert({ ...payload, unidade_id } as never);
+        const { data, error } = await supabase
+          .from("bordas")
+          .insert({ ...payload, unidade_id } as never)
+          .select()
+          .single();
         if (error) throw error;
+        return data as Borda;
       }
     },
-    onSuccess: () => {
+    onSuccess: (created) => {
       qc.invalidateQueries({ queryKey: ["bordas"] });
-      toast.success(editingId ? "Borda atualizada!" : "Borda cadastrada!");
+      const wasNew = !editingId;
+      toast.success(wasNew ? "Borda cadastrada! Adicione os ingredientes." : "Borda atualizada!");
       reset();
+      if (wasNew && created) setIngDialog(created);
     },
     onError: (e: Error) => toast.error(e.message ?? "Erro ao salvar borda"),
   });
@@ -122,7 +142,6 @@ export function BordasSection() {
     setForm({
       nome: b.nome,
       precos: toMap(b.precos_por_tamanho, sizes),
-      custos: toMap(b.custos_por_tamanho, sizes),
     });
     setEditingId(b.id);
     setOpen(true);
@@ -183,24 +202,10 @@ export function BordasSection() {
                 </div>
               </div>
 
-              <div>
-                <Label className="text-sm font-semibold">Custo (opcional)</Label>
-                <div
-                  className="grid gap-3 mt-1.5"
-                  style={{ gridTemplateColumns: `repeat(${sizes.length}, minmax(0, 1fr))` }}
-                >
-                  {sizes.map((s) => (
-                    <div key={`custo-${s}`}>
-                      <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">
-                        {s}
-                      </Label>
-                      <MoneyInput
-                        value={form.custos[s] ?? 0}
-                        onChange={(v) => setForm({ ...form, custos: { ...form.custos, [s]: v } })}
-                      />
-                    </div>
-                  ))}
-                </div>
+              <div className="rounded-md border border-dashed bg-muted/30 p-3 text-xs text-muted-foreground">
+                O <strong>custo</strong> é calculado automaticamente a partir dos ingredientes da borda
+                (insumos comprados + insumos próprios) e da quantidade em gramas/ml por tamanho.
+                {!editingId && " Após cadastrar, você poderá adicionar os ingredientes."}
               </div>
             </div>
             <DialogFooter>
@@ -242,9 +247,19 @@ export function BordasSection() {
               {bordas.map((b) => {
                 const precos = toMap(b.precos_por_tamanho, sizes);
                 const custos = toMap(b.custos_por_tamanho, sizes);
+                const semIngredientes = !ingredientesCount[b.id];
                 return (
                   <TableRow key={b.id}>
-                    <TableCell className="font-medium">{b.nome}</TableCell>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        <span>{b.nome}</span>
+                        {semIngredientes && (
+                          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+                            Sem ingredientes
+                          </span>
+                        )}
+                      </div>
+                    </TableCell>
                     {sizes.map((s) => (
                       <TableCell key={`p-${b.id}-${s}`} className="text-right">
                         R$ {fmt(precos[s])}
@@ -252,16 +267,17 @@ export function BordasSection() {
                     ))}
                     {sizes.map((s) => (
                       <TableCell key={`c-${b.id}-${s}`} className="text-right text-muted-foreground">
-                        R$ {fmt(custos[s])}
+                        {semIngredientes ? "—" : `R$ ${fmt(custos[s])}`}
                       </TableCell>
                     ))}
                     <TableCell>
                       <div className="flex gap-1">
                         <Button
-                          variant="ghost" size="icon"
+                          variant={semIngredientes ? "default" : "ghost"}
+                          size="icon"
                           onClick={() => setIngDialog(b)}
                           title="Ingredientes"
-                          className="text-muted-foreground hover:text-foreground hover:bg-muted"
+                          className={semIngredientes ? "" : "text-muted-foreground hover:text-foreground hover:bg-muted"}
                         >
                           <ListTree className="h-4 w-4" />
                         </Button>
