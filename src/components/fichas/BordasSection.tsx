@@ -247,9 +247,19 @@ export function BordasSection() {
               {bordas.map((b) => {
                 const precos = toMap(b.precos_por_tamanho, sizes);
                 const custos = toMap(b.custos_por_tamanho, sizes);
+                const semIngredientes = !ingredientesCount[b.id];
                 return (
                   <TableRow key={b.id}>
-                    <TableCell className="font-medium">{b.nome}</TableCell>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        <span>{b.nome}</span>
+                        {semIngredientes && (
+                          <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+                            Sem ingredientes
+                          </span>
+                        )}
+                      </div>
+                    </TableCell>
                     {sizes.map((s) => (
                       <TableCell key={`p-${b.id}-${s}`} className="text-right">
                         R$ {fmt(precos[s])}
@@ -257,16 +267,17 @@ export function BordasSection() {
                     ))}
                     {sizes.map((s) => (
                       <TableCell key={`c-${b.id}-${s}`} className="text-right text-muted-foreground">
-                        R$ {fmt(custos[s])}
+                        {semIngredientes ? "—" : `R$ ${fmt(custos[s])}`}
                       </TableCell>
                     ))}
                     <TableCell>
                       <div className="flex gap-1">
                         <Button
-                          variant="ghost" size="icon"
+                          variant={semIngredientes ? "default" : "ghost"}
+                          size="icon"
                           onClick={() => setIngDialog(b)}
                           title="Ingredientes"
-                          className="text-muted-foreground hover:text-foreground hover:bg-muted"
+                          className={semIngredientes ? "" : "text-muted-foreground hover:text-foreground hover:bg-muted"}
                         >
                           <ListTree className="h-4 w-4" />
                         </Button>
