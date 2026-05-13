@@ -112,11 +112,11 @@ export default function Dashboard() {
     queryFn: async () => {
       const { data } = await supabase
         .from("fichas_tecnicas_pizza")
-        .select("nome, custo_total, preco_venda_tradicional")
-        .order("preco_venda_tradicional", { ascending: false, nullsFirst: false })
+        .select("nome, custo_total, preco_sugerido")
+        .order("preco_sugerido", { ascending: false, nullsFirst: false })
         .limit(5);
       return (data ?? []).map((p: any) => {
-        const preco = Number(p.preco_venda_tradicional || 0);
+        const preco = Number(p.preco_sugerido || 0);
         const custo = Number(p.custo_total || 0);
         const lucro = preco - custo;
         const margem = preco > 0 ? (lucro / preco) * 100 : 0;
@@ -131,22 +131,26 @@ export default function Dashboard() {
   const topAlerta = priceAlerts[0];
 
   // Evolução de custos — últimos 30 dias (3 insumos top)
-  const { data: chartData = [] } = useQuery({
+  const { data: chartData = { points: [], insumos: [] } } = useQuery({
     queryKey: ["dash-evolucao-custos"],
     queryFn: async () => {
-      const inicio = format(subDays(today, 29), "yyyy-MM-dd");
+      const inicio = subDays(today, 29).toISOString();
       const { data } = await supabase
         .from("historico_precos_insumos")
-        .select("nome_insumo, preco, data")
-        .gte("data", inicio)
-        .order("data");
+        .select("nome_insumo, preco_novo, created_at")
+        .gte("created_at", inicio)
+        .order("created_at");
       const rows = data ?? [];
-      const insumos = Array.from(new Set(rows.map((r: any) => r.nome_insumo))).slice(0, 3);
+      // pega 3 insumos com mais variações
+      const counts: Record<string, number> = {};
+      rows.forEach((r: any) => { counts[r.nome_insumo] = (counts[r.nome_insumo] || 0) + 1; });
+      const insumos = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([n]) => n);
       const byDate: Record<string, any> = {};
       rows.forEach((r: any) => {
-        const d = r.data;
-        if (!byDate[d]) byDate[d] = { data: format(new Date(d + "T00:00:00"), "dd/MM") };
-        byDate[d][r.nome_insumo] = Number(r.preco);
+        if (!insumos.includes(r.nome_insumo)) return;
+        const d = format(new Date(r.created_at), "dd/MM");
+        if (!byDate[d]) byDate[d] = { data: d };
+        byDate[d][r.nome_insumo] = Number(r.preco_novo);
       });
       return { points: Object.values(byDate), insumos };
     },
