@@ -1073,6 +1073,42 @@ export type Database = {
           },
         ]
       }
+      fornecedor_cache: {
+        Row: {
+          categoria_detectada: string | null
+          confianca: number | null
+          created_at: string | null
+          id: string
+          nome_normalizado: string
+          nome_original: string
+          subcategoria: string | null
+          ultimo_uso: string | null
+          vezes_visto: number | null
+        }
+        Insert: {
+          categoria_detectada?: string | null
+          confianca?: number | null
+          created_at?: string | null
+          id?: string
+          nome_normalizado: string
+          nome_original: string
+          subcategoria?: string | null
+          ultimo_uso?: string | null
+          vezes_visto?: number | null
+        }
+        Update: {
+          categoria_detectada?: string | null
+          confianca?: number | null
+          created_at?: string | null
+          id?: string
+          nome_normalizado?: string
+          nome_original?: string
+          subcategoria?: string | null
+          ultimo_uso?: string | null
+          vezes_visto?: number | null
+        }
+        Relationships: []
+      }
       fornecedores_subcategoria: {
         Row: {
           aprendido_automaticamente: boolean
@@ -1157,32 +1193,83 @@ export type Database = {
         }
         Relationships: []
       }
+      insumo_canonicos: {
+        Row: {
+          aliases: string[] | null
+          categoria: string | null
+          created_at: string | null
+          id: string
+          nome_canonico: string
+          nome_display: string
+          unidade_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          aliases?: string[] | null
+          categoria?: string | null
+          created_at?: string | null
+          id?: string
+          nome_canonico: string
+          nome_display: string
+          unidade_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          aliases?: string[] | null
+          categoria?: string | null
+          created_at?: string | null
+          id?: string
+          nome_canonico?: string
+          nome_display?: string
+          unidade_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       insumos_catalog: {
         Row: {
           aliases: string[]
+          aprendido_por_ia: boolean | null
           categoria: string | null
+          confianca: number | null
+          corrigido_por_humano: boolean | null
           created_at: string
           id: string
           nome_canonico: string
+          nome_normalizado: string | null
           palavras_chave: string[] | null
+          subcategoria: string | null
+          unidade_medida_padrao: string | null
           unidade_padrao: string | null
         }
         Insert: {
           aliases?: string[]
+          aprendido_por_ia?: boolean | null
           categoria?: string | null
+          confianca?: number | null
+          corrigido_por_humano?: boolean | null
           created_at?: string
           id?: string
           nome_canonico: string
+          nome_normalizado?: string | null
           palavras_chave?: string[] | null
+          subcategoria?: string | null
+          unidade_medida_padrao?: string | null
           unidade_padrao?: string | null
         }
         Update: {
           aliases?: string[]
+          aprendido_por_ia?: boolean | null
           categoria?: string | null
+          confianca?: number | null
+          corrigido_por_humano?: boolean | null
           created_at?: string
           id?: string
           nome_canonico?: string
+          nome_normalizado?: string | null
           palavras_chave?: string[] | null
+          subcategoria?: string | null
+          unidade_medida_padrao?: string | null
           unidade_padrao?: string | null
         }
         Relationships: []
@@ -1197,8 +1284,13 @@ export type Database = {
           id: string
           insumo_catalog_id: string | null
           nome: string
+          nome_canonico: string | null
+          preco_maximo: number | null
+          preco_medio: number | null
+          preco_minimo: number | null
           preco_pago: number
           quantidade: number
+          total_compras: number | null
           unidade: string
           unidade_id: string | null
           updated_at: string | null
@@ -1213,8 +1305,13 @@ export type Database = {
           id?: string
           insumo_catalog_id?: string | null
           nome: string
+          nome_canonico?: string | null
+          preco_maximo?: number | null
+          preco_medio?: number | null
+          preco_minimo?: number | null
           preco_pago: number
           quantidade: number
+          total_compras?: number | null
           unidade: string
           unidade_id?: string | null
           updated_at?: string | null
@@ -1229,8 +1326,13 @@ export type Database = {
           id?: string
           insumo_catalog_id?: string | null
           nome?: string
+          nome_canonico?: string | null
+          preco_maximo?: number | null
+          preco_medio?: number | null
+          preco_minimo?: number | null
           preco_pago?: number
           quantidade?: number
+          total_compras?: number | null
           unidade?: string
           unidade_id?: string | null
           updated_at?: string | null
@@ -1253,9 +1355,67 @@ export type Database = {
           },
         ]
       }
+      insumos_compras_historico: {
+        Row: {
+          created_at: string | null
+          data_compra: string
+          fornecedor: string | null
+          id: string
+          insumo_id: string
+          nome_original: string
+          nota_fiscal_id: string | null
+          preco_total: number | null
+          preco_unitario: number
+          quantidade: number
+          unidade_id: string
+          unidade_medida: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          data_compra?: string
+          fornecedor?: string | null
+          id?: string
+          insumo_id: string
+          nome_original: string
+          nota_fiscal_id?: string | null
+          preco_total?: number | null
+          preco_unitario: number
+          quantidade: number
+          unidade_id: string
+          unidade_medida: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          data_compra?: string
+          fornecedor?: string | null
+          id?: string
+          insumo_id?: string
+          nome_original?: string
+          nota_fiscal_id?: string | null
+          preco_total?: number | null
+          preco_unitario?: number
+          quantidade?: number
+          unidade_id?: string
+          unidade_medida?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_historico_insumo"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "insumos_comprados"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       insumos_proprios: {
         Row: {
           created_at: string | null
+          custo_kg: number | null
+          custo_total: number | null
           id: string
           nome: string
           rendimento: number
@@ -1266,6 +1426,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          custo_kg?: number | null
+          custo_total?: number | null
           id?: string
           nome: string
           rendimento: number
@@ -1276,6 +1438,8 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          custo_kg?: number | null
+          custo_total?: number | null
           id?: string
           nome?: string
           rendimento?: number
@@ -1532,6 +1696,60 @@ export type Database = {
         }
         Relationships: []
       }
+      notas_fiscais_pendentes: {
+        Row: {
+          confianca_media: number | null
+          created_at: string | null
+          data_emissao: string | null
+          fornecedor: string | null
+          id: string
+          items_classificados: Json | null
+          items_raw: Json
+          motivo: string[] | null
+          nota_fiscal_id: string | null
+          revisado_em: string | null
+          revisado_por: string | null
+          status: Database["public"]["Enums"]["status_pendente"] | null
+          unidade_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          confianca_media?: number | null
+          created_at?: string | null
+          data_emissao?: string | null
+          fornecedor?: string | null
+          id?: string
+          items_classificados?: Json | null
+          items_raw: Json
+          motivo?: string[] | null
+          nota_fiscal_id?: string | null
+          revisado_em?: string | null
+          revisado_por?: string | null
+          status?: Database["public"]["Enums"]["status_pendente"] | null
+          unidade_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          confianca_media?: number | null
+          created_at?: string | null
+          data_emissao?: string | null
+          fornecedor?: string | null
+          id?: string
+          items_classificados?: Json | null
+          items_raw?: Json
+          motivo?: string[] | null
+          nota_fiscal_id?: string | null
+          revisado_em?: string | null
+          revisado_por?: string | null
+          status?: Database["public"]["Enums"]["status_pendente"] | null
+          unidade_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       precificacao_bebidas: {
         Row: {
           created_at: string
@@ -1646,6 +1864,48 @@ export type Database = {
         }
         Relationships: []
       }
+      processing_logs: {
+        Row: {
+          created_at: string | null
+          detail: Json | null
+          duration_ms: number | null
+          id: number
+          msg_id: string | null
+          node_name: string
+          remote_jid: string | null
+          status: string
+          unidade_id: string | null
+          user_id: string | null
+          workflow_name: string
+        }
+        Insert: {
+          created_at?: string | null
+          detail?: Json | null
+          duration_ms?: number | null
+          id?: number
+          msg_id?: string | null
+          node_name: string
+          remote_jid?: string | null
+          status: string
+          unidade_id?: string | null
+          user_id?: string | null
+          workflow_name: string
+        }
+        Update: {
+          created_at?: string | null
+          detail?: Json | null
+          duration_ms?: number | null
+          id?: number
+          msg_id?: string | null
+          node_name?: string
+          remote_jid?: string | null
+          status?: string
+          unidade_id?: string | null
+          user_id?: string | null
+          workflow_name?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -1755,6 +2015,75 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      rate_limit_log: {
+        Row: {
+          created_at: string | null
+          endpoint: string | null
+          id: number
+          identifier: string
+        }
+        Insert: {
+          created_at?: string | null
+          endpoint?: string | null
+          id?: number
+          identifier: string
+        }
+        Update: {
+          created_at?: string | null
+          endpoint?: string | null
+          id?: number
+          identifier?: string
+        }
+        Relationships: []
+      }
+      retry_queue: {
+        Row: {
+          created_at: string | null
+          error_message: string | null
+          error_type: string | null
+          id: string
+          max_retries: number | null
+          payload: Json
+          retry_at: string
+          retry_count: number | null
+          status: string | null
+          unidade_id: string | null
+          updated_at: string | null
+          user_id: string | null
+          workflow_name: string
+        }
+        Insert: {
+          created_at?: string | null
+          error_message?: string | null
+          error_type?: string | null
+          id?: string
+          max_retries?: number | null
+          payload: Json
+          retry_at: string
+          retry_count?: number | null
+          status?: string | null
+          unidade_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          workflow_name: string
+        }
+        Update: {
+          created_at?: string | null
+          error_message?: string | null
+          error_type?: string | null
+          id?: string
+          max_retries?: number | null
+          payload?: Json
+          retry_at?: string
+          retry_count?: number | null
+          status?: string | null
+          unidade_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          workflow_name?: string
+        }
+        Relationships: []
       }
       unidade_membros: {
         Row: {
@@ -1944,6 +2273,29 @@ export type Database = {
       }
     }
     Views: {
+      processing_errors_24h: {
+        Row: {
+          erros_recentes: Json | null
+          node_name: string | null
+          status: string | null
+          total: number | null
+          ultimo_erro: string | null
+          workflow_name: string | null
+        }
+        Relationships: []
+      }
+      processing_health_24h: {
+        Row: {
+          avg_duration_ms: number | null
+          error_count: number | null
+          last_activity: string | null
+          retry_count: number | null
+          success_count: number | null
+          success_rate_pct: number | null
+          workflow_name: string | null
+        }
+        Relationships: []
+      }
       v_resumo_contas_pagar: {
         Row: {
           qtd_atrasadas: number | null
@@ -1980,6 +2332,10 @@ export type Database = {
       }
     }
     Functions: {
+      add_alias_to_catalog: {
+        Args: { p_alias: string; p_nome_normalizado: string }
+        Returns: undefined
+      }
       aplicar_base_em_ficha: {
         Args: { p_base_id: string; p_ficha_id: string; p_tipo_ficha: string }
         Returns: number
@@ -1996,6 +2352,37 @@ export type Database = {
           unidade_rendimento: string
         }[]
       }
+      avaliar_nf_pendente: {
+        Args: { p_confianca_media: number; p_items_classificados: Json }
+        Returns: boolean
+      }
+      check_rate_limit: {
+        Args: {
+          p_identifier: string
+          p_max_requests?: number
+          p_window_seconds?: number
+        }
+        Returns: boolean
+      }
+      classificar_e_upsert_insumo: {
+        Args: {
+          p_fornecedor: string
+          p_nome_original: string
+          p_nota_fiscal_id?: string
+          p_preco_total: number
+          p_preco_unitario: number
+          p_quantidade: number
+          p_unidade_id: string
+          p_unidade_medida: string
+          p_user_id: string
+        }
+        Returns: {
+          confianca: number
+          insumo_id: string
+          is_new: boolean
+          nome_canonico: string
+        }[]
+      }
       classificar_insumo: {
         Args: { p_nome: string; p_unidade_id?: string }
         Returns: string
@@ -2009,6 +2396,19 @@ export type Database = {
           subcategoria: string
           tipo: string
         }[]
+      }
+      cleanup_rate_limit_log: { Args: never; Returns: undefined }
+      enqueue_retry: {
+        Args: {
+          p_delay_minutes?: number
+          p_error_message: string
+          p_error_type?: string
+          p_payload: Json
+          p_unidade_id?: string
+          p_user_id?: string
+          p_workflow_name: string
+        }
+        Returns: string
       }
       extrair_fornecedor_da_descricao: {
         Args: { p_descricao: string }
@@ -2041,6 +2441,15 @@ export type Database = {
         Args: { _unidade_id: string; _user_id: string }
         Returns: boolean
       }
+      lookup_fornecedor_cache: {
+        Args: { p_min_confianca?: number; p_nome: string }
+        Returns: {
+          cached: boolean
+          categoria: string
+          confianca: number
+          subcategoria: string
+        }[]
+      }
       map_categoria_insumo_subcategoria: {
         Args: { p_cat: string }
         Returns: string
@@ -2054,13 +2463,40 @@ export type Database = {
         }
         Returns: Json
       }
+      match_insumo_fuzzy: {
+        Args: {
+          p_nome_ingrediente: string
+          p_similarity_threshold?: number
+          p_unidade_id: string
+          p_user_id: string
+        }
+        Returns: {
+          insumo_id: string
+          nome_match: string
+          similarity_score: number
+        }[]
+      }
       normalizar_nome_fornecedor: { Args: { p_nome: string }; Returns: string }
-      normalizar_nome_insumo: { Args: { p: string }; Returns: string }
+      normalizar_nome_insumo: { Args: { nome: string }; Returns: string }
       pode_editar_negocio: {
         Args: { _unidade_id: string; _user_id: string }
         Returns: boolean
       }
       primeira_unidade_do_user: { Args: { _user_id: string }; Returns: string }
+      recalcular_custo_insumo_proprio: {
+        Args: { p_insumo_proprio_id: string }
+        Returns: number
+      }
+      resolve_insumo_ingrediente: {
+        Args: {
+          p_nome_ingrediente: string
+          p_unidade_id: string
+          p_user_id: string
+        }
+        Returns: string
+      }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
       unaccent: { Args: { "": string }; Returns: string }
       validar_ficha_pizza_completa: {
         Args: { p_ficha_id: string }
@@ -2078,6 +2514,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "gerente" | "caixa"
+      status_pendente: "aguardando_revisao" | "aprovada" | "rejeitada"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2206,6 +2643,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "gerente", "caixa"],
+      status_pendente: ["aguardando_revisao", "aprovada", "rejeitada"],
     },
   },
 } as const
