@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -10,21 +10,35 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { Pencil, Trash2, Plus, Sparkles, ListTree } from "lucide-react";
 import { EmptyState } from "@/components/EmptyState";
 import { MoneyInput } from "@/components/MoneyInput";
 import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
 import { getOrCreateConfiguracoesNegocio } from "@/lib/config-helpers";
+import { converterQuantidade } from "@/lib/pricing-helpers";
 import { BordaIngredientesDialog } from "@/components/fichas/BordaIngredientesDialog";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Borda = Tables<"bordas">;
 type SizeMap = Record<string, number>;
 
+interface Linha {
+  id?: string;
+  tipo_insumo: "comprado" | "proprio";
+  insumo_comprado_id: string | null;
+  insumo_proprio_id: string | null;
+  unidade: string;
+  qtds: SizeMap;
+}
+
 interface FormState {
   nome: string;
   precos: SizeMap;
+  linhas: Linha[];
 }
 
 const fmt = (v: number) =>
@@ -37,11 +51,18 @@ const toMap = (raw: unknown, sizes: string[]): SizeMap => {
   return out;
 };
 
+const novaLinha = (sizes: string[]): Linha => ({
+  tipo_insumo: "comprado",
+  insumo_comprado_id: null,
+  insumo_proprio_id: null,
+  unidade: "g",
+  qtds: Object.fromEntries(sizes.map((s) => [s, 0])),
+});
+
 export function BordasSection() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-
   const [ingDialog, setIngDialog] = useState<Borda | null>(null);
 
   const { data: config } = useQuery({
@@ -58,6 +79,7 @@ export function BordasSection() {
     () => ({
       nome: "",
       precos: Object.fromEntries(sizes.map((s) => [s, 0])),
+      linhas: [novaLinha(sizes)],
     }),
     [sizes],
   );
@@ -88,6 +110,97 @@ export function BordasSection() {
     },
   });
 
+  const { data: comprados = [] } = useQuery({
+    queryKey: ["insumos_comprados"],
+    queryFn: async () => {
+      const { data } = await supabase.from("insumos_comprados").select("*").order("nome");
+      return data ?? [];
+    },
+  });
+
+  const { data: proprios = [] } = useQuery({
+    queryKey: ["insumos_proprios"],
+    queryFn: async () => {
+      const { data } = await supabase.from("insumos_proprios").select("*").order("nome");
+      return data ?? [];
+    },
+  });
+
+  const { data: propriosIngs = [] } = useQuery({
+    queryKey: ["insumos_proprios_ingredientes"],
+    queryFn: async () => {
+      const { data } = await supabase.from("insumos_proprios_ingredientes").select("*");
+      return data ?? [];
+    },
+  });
+
+  const { data: existentes = [] } = useQuery({
+    queryKey: ["bordas_ingredientes", editingId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("bordas_ingredientes")
+        .select("*")
+        .eq("borda_id", editingId!);
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: !!editingId && open,
+  });
+
+  useEffect(() => {
+    if (!open || !editingId) return;
+    if (existentes.length === 0) {
+      setForm((prev) => ({ ...prev, linhas: [novaLinha(sizes)] }));
+    } else {
+      setForm((prev) => ({
+        ...prev,
+        linhas: existentes.map((i: any) => ({
+          id: i.id,
+          tipo_insumo: i.tipo_insumo as "comprado" | "proprio",
+          insumo_comprado_id: i.insumo_comprado_id,
+          insumo_proprio_id: i.insumo_proprio_id,
+          unidade: i.unidade,
+          qtds: toMap(i.qtds_por_tamanho, sizes),
+        })),
+      }));
+    }
+  }, [open, editingId, existentes, sizes]);
+
+  const custoCompradoMap = useMemo(() => {
+    const m = new Map<string, number>();
+    comprados.forEach((ic: any) => {
+      const q = Number(ic.quantidade);
+      m.set(ic.id, q > 0 ? Number(ic.preco_pago) / q : 0);
+    });
+    return m;
+  }, [comprados]);
+
+  const custoProprioMap = useMemo(() => {
+    const m = new Map<string, number>();
+    proprios.forEach((ip: any) => {
+      const ings = propriosIngs.filter((i: any) => i.insumo_proprio_id === ip.id);
+      const total = ings.reduce((acc: number, ing: any) => {
+        const cu = custoCompradoMap.get(ing.insumo_comprado_id ?? "") ?? 0;
+        return acc + cu * converterQuantidade(Number(ing.quantidade), ing.unidade);
+      }, 0);
+      m.set(ip.id, Number(ip.rendimento) > 0 ? total / Number(ip.rendimento) : 0);
+    });
+    return m;
+  }, [proprios, propriosIngs, custoCompradoMap]);
+
+  const custosCalculados = useMemo<SizeMap>(() => {
+    const out: SizeMap = Object.fromEntries(sizes.map((s) => [s, 0]));
+    form.linhas.forEach((l) => {
+      const cu = l.tipo_insumo === "comprado"
+        ? custoCompradoMap.get(l.insumo_comprado_id ?? "") ?? 0
+        : custoProprioMap.get(l.insumo_proprio_id ?? "") ?? 0;
+      sizes.forEach((s) => {
+        out[s] += cu * converterQuantidade(Number(l.qtds[s] ?? 0), l.unidade);
+      });
+    });
+    return out;
+  }, [form.linhas, sizes, custoCompradoMap, custoProprioMap]);
+
   const reset = () => {
     setForm(emptyForm);
     setEditingId(null);
@@ -97,14 +210,27 @@ export function BordasSection() {
   const upsertMut = useMutation({
     mutationFn: async () => {
       if (!form.nome.trim()) throw new Error("Informe o nome da borda");
+
+      for (const l of form.linhas) {
+        if (l.tipo_insumo === "comprado" && !l.insumo_comprado_id) {
+          throw new Error("Selecione o insumo comprado em todas as linhas de ingredientes");
+        }
+        if (l.tipo_insumo === "proprio" && !l.insumo_proprio_id) {
+          throw new Error("Selecione o insumo próprio em todas as linhas de ingredientes");
+        }
+      }
+
       const payload = {
         nome: form.nome.trim(),
         precos_por_tamanho: form.precos,
+        custos_por_tamanho: custosCalculados,
       };
+
+      let bordaId = editingId;
+
       if (editingId) {
         const { error } = await supabase.from("bordas").update(payload).eq("id", editingId);
         if (error) throw error;
-        return null;
       } else {
         const unidade_id = requireActiveUnidadeId();
         const { data, error } = await supabase
@@ -113,17 +239,43 @@ export function BordasSection() {
           .select()
           .single();
         if (error) throw error;
-        return data as Borda;
+        bordaId = data.id;
       }
+
+      if (!bordaId) throw new Error("Erro ao identificar borda");
+
+      const { error: delErr } = await supabase
+        .from("bordas_ingredientes")
+        .delete()
+        .eq("borda_id", bordaId);
+      if (delErr) throw delErr;
+
+      if (form.linhas.length > 0) {
+        const unidade_id = requireActiveUnidadeId();
+        const payloadIng = form.linhas.map((l) => ({
+          borda_id: bordaId,
+          tipo_insumo: l.tipo_insumo,
+          insumo_comprado_id: l.tipo_insumo === "comprado" ? l.insumo_comprado_id : null,
+          insumo_proprio_id: l.tipo_insumo === "proprio" ? l.insumo_proprio_id : null,
+          unidade: l.unidade,
+          qtds_por_tamanho: l.qtds,
+          unidade_id,
+        }));
+        const { error: insErr } = await supabase
+          .from("bordas_ingredientes")
+          .insert(payloadIng as never);
+        if (insErr) throw insErr;
+      }
+
+      return bordaId;
     },
-    onSuccess: (created) => {
+    onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["bordas"] });
-      const wasNew = !editingId;
-      toast.success(wasNew ? "Borda cadastrada! Adicione os ingredientes." : "Borda atualizada!");
+      qc.invalidateQueries({ queryKey: ["bordas_ingredientes_counts"] });
+      toast.success(editingId ? "Borda e ingredientes atualizados!" : "Borda e ingredientes cadastrados!");
       reset();
-      if (wasNew && created) setIngDialog(created);
     },
-    onError: (e: Error) => toast.error(e.message ?? "Erro ao salvar borda"),
+    onError: (e: Error) => toast.error(e.message ?? "Erro ao salvar"),
   });
 
   const deleteMut = useMutation({
@@ -142,9 +294,17 @@ export function BordasSection() {
     setForm({
       nome: b.nome,
       precos: toMap(b.precos_por_tamanho, sizes),
+      linhas: [novaLinha(sizes)],
     });
     setEditingId(b.id);
     setOpen(true);
+  };
+
+  const updateLinha = (idx: number, patch: Partial<Linha>) => {
+    setForm((prev) => ({
+      ...prev,
+      linhas: prev.linhas.map((l, i) => (i === idx ? { ...l, ...patch } : l)),
+    }));
   };
 
   const sizesLabel = sizes.join(" · ");
@@ -164,16 +324,18 @@ export function BordasSection() {
               <Plus className="h-4 w-4" /> Nova Borda
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-2xl">
+          <DialogContent className="sm:max-w-5xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4" />
-                {editingId ? "Editar borda" : "Nova borda"}
+                {editingId ? "Editar borda e ingredientes" : "Nova borda + ingredientes"}
               </DialogTitle>
             </DialogHeader>
-            <div className="space-y-4">
+
+            <div className="space-y-6">
+              {/* Nome */}
               <div>
-                <Label htmlFor="borda-nome">Nome</Label>
+                <Label htmlFor="borda-nome">Nome da borda</Label>
                 <Input
                   id="borda-nome"
                   placeholder="Ex.: Catupiry, Cheddar, Chocolate"
@@ -182,6 +344,7 @@ export function BordasSection() {
                 />
               </div>
 
+              {/* Preços */}
               <div>
                 <Label className="text-sm font-semibold">Preço de venda (R$)</Label>
                 <div
@@ -202,16 +365,172 @@ export function BordasSection() {
                 </div>
               </div>
 
-              <div className="rounded-md border border-dashed bg-muted/30 p-3 text-xs text-muted-foreground">
-                O <strong>custo</strong> é calculado automaticamente a partir dos ingredientes da borda
-                (insumos comprados + insumos próprios) e da quantidade em gramas/ml por tamanho.
-                {!editingId && " Após cadastrar, você poderá adicionar os ingredientes."}
+              {/* Ingredientes */}
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold">Ingredientes da borda</Label>
+                <p className="text-xs text-muted-foreground">
+                  Selecione os insumos (comprados ou produzidos) e a quantidade por tamanho.
+                </p>
+
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="min-w-[120px]">Tipo</TableHead>
+                        <TableHead className="min-w-[220px]">Insumo</TableHead>
+                        <TableHead className="w-[90px]">Unid.</TableHead>
+                        {sizes.map((s) => (
+                          <TableHead key={`h-${s}`} className="w-[90px] text-right">{s}</TableHead>
+                        ))}
+                        <TableHead className="w-[60px]" />
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {form.linhas.map((l, idx) => (
+                        <TableRow key={idx}>
+                          <TableCell>
+                            <Select
+                              value={l.tipo_insumo}
+                              onValueChange={(v) =>
+                                updateLinha(idx, {
+                                  tipo_insumo: v as "comprado" | "proprio",
+                                  insumo_comprado_id: null,
+                                  insumo_proprio_id: null,
+                                })
+                              }
+                            >
+                              <SelectTrigger><SelectValue /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="comprado">Comprado</SelectItem>
+                                <SelectItem value="proprio">Próprio</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                          <TableCell>
+                            {l.tipo_insumo === "comprado" ? (
+                              <Select
+                                value={l.insumo_comprado_id ?? ""}
+                                onValueChange={(v) => {
+                                  const ic = comprados.find((c: any) => c.id === v);
+                                  updateLinha(idx, {
+                                    insumo_comprado_id: v,
+                                    unidade: ic?.unidade === "kg" ? "g" : ic?.unidade === "L" ? "ml" : (ic?.unidade ?? l.unidade),
+                                  });
+                                }}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger>
+                                <SelectContent>
+                                  {comprados.map((c: any) => (
+                                    <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <Select
+                                value={l.insumo_proprio_id ?? ""}
+                                onValueChange={(v) => {
+                                  const ip = proprios.find((c: any) => c.id === v);
+                                  updateLinha(idx, {
+                                    insumo_proprio_id: v,
+                                    unidade: ip?.unidade_rendimento === "kg" ? "g" : ip?.unidade_rendimento === "L" ? "ml" : (ip?.unidade_rendimento ?? l.unidade),
+                                  });
+                                }}
+                              >
+                                <SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger>
+                                <SelectContent>
+                                  {proprios.map((c: any) => (
+                                    <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <Select
+                              value={l.unidade}
+                              onValueChange={(v) => updateLinha(idx, { unidade: v })}
+                            >
+                              <SelectTrigger><SelectValue /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="g">g</SelectItem>
+                                <SelectItem value="ml">ml</SelectItem>
+                                <SelectItem value="un">un</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                          {sizes.map((s) => (
+                            <TableCell key={`q-${idx}-${s}`}>
+                              <Input
+                                type="number"
+                                inputMode="decimal"
+                                min={0}
+                                value={l.qtds[s] ?? 0}
+                                onChange={(e) =>
+                                  updateLinha(idx, {
+                                    qtds: { ...l.qtds, [s]: Number(e.target.value) || 0 },
+                                  })
+                                }
+                                className="text-right"
+                              />
+                            </TableCell>
+                          ))}
+                          <TableCell>
+                            <Button
+                              variant="ghost" size="icon"
+                              onClick={() => setForm((prev) => ({
+                                ...prev,
+                                linhas: prev.linhas.filter((_, i) => i !== idx),
+                              }))}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setForm((prev) => ({
+                    ...prev,
+                    linhas: [...prev.linhas, novaLinha(sizes)],
+                  }))}
+                  className="gap-2"
+                >
+                  <Plus className="h-4 w-4" /> Adicionar ingrediente
+                </Button>
+
+                {/* Custo calculado */}
+                <div className="rounded-md border bg-muted/40 p-3">
+                  <Label className="text-xs uppercase tracking-wider text-muted-foreground">
+                    Custo calculado da borda
+                  </Label>
+                  <div
+                    className="mt-2 grid gap-2"
+                    style={{ gridTemplateColumns: `repeat(${sizes.length}, minmax(0, 1fr))` }}
+                  >
+                    {sizes.map((s) => (
+                      <div key={`c-${s}`} className="rounded bg-background p-2 text-center">
+                        <div className="text-[10px] uppercase text-muted-foreground">{s}</div>
+                        <div className="font-mono text-sm">
+                          R$ {custosCalculados[s].toLocaleString("pt-BR", {
+                            minimumFractionDigits: 2, maximumFractionDigits: 2,
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
+
             <DialogFooter>
               <Button variant="outline" onClick={reset}>Cancelar</Button>
               <Button onClick={() => upsertMut.mutate()} disabled={upsertMut.isPending}>
-                {editingId ? "Salvar" : "Cadastrar"}
+                {editingId ? "Salvar alterações" : "Cadastrar borda + ingredientes"}
               </Button>
             </DialogFooter>
           </DialogContent>
