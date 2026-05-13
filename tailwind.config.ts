@@ -14,10 +14,10 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-inter)", "Inter", "system-ui", "sans-serif"],
-        heading: ["var(--font-inter)", "Inter", "system-ui", "sans-serif"],
-        display: ["var(--font-inter)", "Inter", "system-ui", "sans-serif"],
-        mono: ["var(--font-inter)", "Inter", "system-ui", "sans-serif"],
+        sans: ["Inter", "system-ui", "sans-serif"],
+        heading: ["'Plus Jakarta Sans'", "Inter", "system-ui", "sans-serif"],
+        display: ["'Plus Jakarta Sans'", "Inter", "system-ui", "sans-serif"],
+        mono: ["'JetBrains Mono'", "Inter", "monospace"],
       },
       colors: {
         border: "hsl(var(--border))",

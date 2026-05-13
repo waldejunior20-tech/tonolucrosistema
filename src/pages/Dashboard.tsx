@@ -1,22 +1,22 @@
-import { useState, useEffect } from "react";
-import {
-  XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area, CartesianGrid,
-} from "recharts";
-import { format } from "date-fns";
-import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDashboardData } from "@/hooks/useDashboardData";
+import { useQuery } from "@tanstack/react-query";
+import { format, subDays, startOfDay, endOfDay } from "date-fns";
 import {
-  TrendingUp, TrendingDown, Bell, Clock,
-  Wallet, Receipt, PiggyBank, AlertTriangle, ArrowUp, ArrowDown, Minus,
+  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend,
+} from "recharts";
+import {
+  Wallet, Pizza, AlertTriangle, Clock, Plus, FileText, Receipt,
+  TrendingUp, TrendingDown,
 } from "lucide-react";
-import { AnimatedNumber } from "@/components/AnimatedNumber";
-import { OnboardingChecklist } from "@/components/dashboard/OnboardingChecklist";
+import { supabase } from "@/integrations/supabase/client";
+import { useDashboardData } from "@/hooks/useDashboardData";
 import { usePriceAlerts } from "@/hooks/usePriceAlerts";
 
-function formatBRL(v: number) {
-  return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-}
+const formatBRL = (v: number) =>
+  v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+const formatPct = (v: number) => `${v >= 0 ? "+" : ""}${v.toFixed(1)}%`;
 
 function getGreeting() {
   const h = new Date().getHours();
@@ -25,288 +25,54 @@ function getGreeting() {
   return "Boa noite";
 }
 
-// ─── Minimal KPI Card ────────────────────────────────────────────────
-type KpiVariant = "faturamento" | "gastos" | "lucro_pos" | "lucro_neg" | "cmv_ok" | "cmv_bad";
-
-function MoMBadge({ variacao, higherIsBetter, dark }: {
-  variacao: number | null;
-  higherIsBetter: boolean;
-  dark: boolean;
+// ─── KPI Card ────────────────────────────────────────────────
+function KpiCard({
+  label, icon: Icon, children, accent = "primary",
+}: {
+  label: string;
+  icon: React.ElementType;
+  children: React.ReactNode;
+  accent?: "primary" | "success" | "warning" | "danger" | "muted";
 }) {
-  if (variacao === null) {
-    return (
-      <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-md inline-flex items-center gap-1 ${
-        dark ? "bg-white/15 text-white/80" : "bg-muted text-muted-foreground"
-      }`}>
-        <Minus size={10} /> sem base
-      </span>
-    );
-  }
-
-  const isFlat = Math.abs(variacao) < 0.5;
-  const isUp = variacao > 0;
-  const isGood = isFlat ? true : isUp === higherIsBetter;
-  const Icon = isFlat ? Minus : isUp ? ArrowUp : ArrowDown;
-  const arrow = isFlat ? "" : isUp ? "+" : "";
-
-  if (dark) {
-    return (
-      <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md inline-flex items-center gap-1 backdrop-blur ${
-        isGood ? "bg-white/25 text-white" : "bg-black/30 text-white"
-      }`}>
-        <Icon size={10} strokeWidth={3} />
-        {arrow}{Math.abs(variacao).toFixed(1)}%
-      </span>
-    );
-  }
-
-  return (
-    <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md inline-flex items-center gap-1 ${
-      isGood ? "text-success bg-success/10" : "text-destructive bg-destructive/10"
-    }`}>
-      <Icon size={10} strokeWidth={3} />
-      {arrow}{Math.abs(variacao).toFixed(1)}%
-    </span>
-  );
-}
-
-function MiniKPI({ label, value, numericValue, formatter, icon: Icon, trendLabel, kpiType, momVariation, higherIsBetter }: {
-  label: string; value: string; icon: any;
-  numericValue?: number; formatter?: (v: number) => string;
-  trendLabel?: string;
-  kpiType: KpiVariant;
-  momVariation?: number | null;
-  higherIsBetter?: boolean;
-}) {
-  const gradients: Partial<Record<KpiVariant, { bg: string; shadow: string }>> = {
-    faturamento: { bg: "linear-gradient(135deg, hsl(var(--grad-faturamento-from)), hsl(var(--grad-faturamento-to)))", shadow: "0 8px 24px hsl(var(--grad-faturamento-from) / 0.2)" },
-    gastos: { bg: "linear-gradient(135deg, hsl(var(--grad-gastos-from)), hsl(var(--grad-gastos-to)))", shadow: "0 8px 24px hsl(var(--grad-gastos-from) / 0.2)" },
-    lucro_pos: { bg: "linear-gradient(135deg, hsl(var(--grad-lucro-pos-from)), hsl(var(--grad-lucro-pos-to)))", shadow: "0 8px 24px hsl(var(--grad-lucro-pos-to) / 0.3)" },
-    lucro_neg: { bg: "linear-gradient(135deg, hsl(var(--grad-lucro-neg-from)), hsl(var(--grad-lucro-neg-to)))", shadow: "0 8px 24px hsl(var(--grad-lucro-neg-from) / 0.2)" },
-    cmv_ok: { bg: "linear-gradient(135deg, hsl(var(--grad-cmv-ok-from)), hsl(var(--grad-cmv-ok-to)))", shadow: "0 8px 24px hsl(var(--grad-cmv-ok-to) / 0.2)" },
-    cmv_bad: { bg: "linear-gradient(135deg, hsl(var(--grad-lucro-neg-from)), hsl(var(--grad-lucro-neg-to)))", shadow: "0 8px 24px hsl(var(--grad-lucro-neg-from) / 0.2)" },
+  const accentMap = {
+    primary: "text-primary bg-primary/10",
+    success: "text-success bg-success/10",
+    warning: "text-warning bg-warning/10",
+    danger: "text-destructive bg-destructive/10",
+    muted: "text-muted-foreground bg-muted",
   };
-
-  const grad = gradients[kpiType];
-  const showMoM = momVariation !== undefined && higherIsBetter !== undefined;
-
-  const renderValue = (textClass: string) => (
-    numericValue !== undefined && formatter ? (
-      <AnimatedNumber value={numericValue} formatter={formatter} className={`text-[28px] font-extrabold tracking-tight leading-none ${textClass}`} duration={1000} />
-    ) : (
-      <span className={`text-[28px] font-extrabold tracking-tight leading-none ${textClass}`}>{value}</span>
-    )
-  );
-
-  // Colored gradient card
-  if (grad) {
-    return (
-      <div
-        style={{ background: grad.bg, boxShadow: grad.shadow }}
-        className="group rounded-2xl px-6 py-5 border border-white/10 transition-all duration-300 hover:scale-[1.02] hover:brightness-110"
-      >
-        <div className="flex items-center justify-between mb-1.5">
-          <span className="text-[13px] font-bold text-white/80 uppercase tracking-wider">{label}</span>
-          <Icon size={20} className="text-white/70" />
-        </div>
-        <div className="flex items-baseline gap-2 flex-wrap">
-          {renderValue("text-white drop-shadow-sm")}
-           {trendLabel && trendLabel !== "—" && (
-             <span className="text-[12px] font-bold px-2 py-1 rounded-md bg-white/20 text-white">{trendLabel}</span>
-           )}
-        </div>
-        {showMoM && (
-          <div className="mt-2 flex items-center gap-1.5">
-            <MoMBadge variacao={momVariation} higherIsBetter={higherIsBetter} dark />
-            <span className="text-[10px] text-white/60 font-medium">vs mês anterior</span>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // Clean white card (CMV)
-  const iconColor = kpiType === "cmv_ok" ? "text-success" : "text-destructive";
   return (
-    <div className="group bg-card rounded-2xl px-6 py-5 border border-border/60 transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)] hover:-translate-y-0.5">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-[13px] font-bold text-muted-foreground/70 uppercase tracking-wider">{label}</span>
-        <Icon size={20} className={iconColor} />
-      </div>
-      <div className="flex items-baseline gap-2 flex-wrap">
-        {renderValue("text-foreground")}
-        {trendLabel && trendLabel !== "—" && (
-          <span className={`text-[12px] font-bold px-2 py-1 rounded-md ${
-            kpiType === "cmv_bad"
-              ? "text-destructive bg-destructive/8"
-              : "text-success bg-success/8"
-          }`}>
-            {trendLabel}
-          </span>
-        )}
-      </div>
-      {showMoM && (
-        <div className="mt-2 flex items-center gap-1.5">
-          <MoMBadge variacao={momVariation} higherIsBetter={higherIsBetter} dark={false} />
-          <span className="text-[10px] text-muted-foreground font-medium">vs mês anterior</span>
+    <div className="bg-card border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</span>
+        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${accentMap[accent]}`}>
+          <Icon size={16} />
         </div>
-      )}
-    </div>
-  );
-}
-
-// ─── Alert Item ──────────────────────────────────────────────────────
-function AlertItem({ severity, title, detail, value, onClick }: {
-  severity: "warning" | "critical"; title: string; detail: string; value?: string;
-  onClick?: () => void;
-}) {
-  const isCritical = severity === "critical";
-  const isClickable = !!onClick;
-  const Wrapper: any = isClickable ? "button" : "div";
-  return (
-    <Wrapper
-      onClick={onClick}
-      className={`w-full text-left flex items-start gap-3 p-3.5 rounded-xl border transition-all duration-200 ${
-        isCritical
-          ? "bg-destructive/5 border-destructive/15"
-          : "bg-muted border-muted-foreground/15"
-      } ${isClickable ? "hover:scale-[1.01] hover:shadow-md cursor-pointer" : ""}`}
-    >
-      <div className={`mt-1 w-2 h-2 rounded-full flex-shrink-0 ${isCritical ? "bg-destructive" : "bg-warning"}`} />
-      <div className="flex-1 min-w-0">
-        <p className={`text-[13px] font-bold flex items-center gap-1.5 ${
-          isCritical ? "text-destructive" : "text-muted-foreground"
-        }`}>
-          {isCritical && <AlertTriangle size={14} />}
-          {title}
-        </p>
-        <p className="text-[12px] text-muted-foreground mt-0.5">{detail}</p>
-      </div>
-      {value && (
-        <span className={`text-[13px] font-bold whitespace-nowrap font-mono ${
-          isCritical ? "text-destructive" : "text-muted-foreground"
-        }`}>{value}</span>
-      )}
-    </Wrapper>
-  );
-}
-
-// ─── Chart Card wrapper ──────────────────────────────────────────────
-function ChartCard({ title, hint, action, children, className = "" }: {
-  title: string; hint?: string; action?: React.ReactNode; children: React.ReactNode; className?: string;
-}) {
-  return (
-    <div className={`bg-card border border-border/60 rounded-2xl p-7 transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)] ${className}`}>
-      <div className="flex items-start justify-between mb-5">
-        <div>
-          <h3 className="text-[16px] font-bold text-foreground">{title}</h3>
-          {hint && <p className="text-[12px] text-muted-foreground/60 mt-0.5">{hint}</p>}
-        </div>
-        {action}
       </div>
       {children}
     </div>
   );
 }
 
-// ─── Donut center label ─────────────────────────────────────────────
-function DonutCenterLabel({ viewBox, value }: any) {
-  const { cx, cy } = viewBox;
+// ─── Quick Action Button ────────────────────────────────────
+function QuickAction({ icon: Icon, label, onClick }: { icon: React.ElementType; label: string; onClick: () => void }) {
   return (
-    <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central">
-      <tspan x={cx} dy="-6" fontSize="20" fontWeight="700" fill="hsl(var(--text-heading))">
-        {value}
-      </tspan>
-      <tspan x={cx} dy="18" fontSize="10" fill="hsl(var(--text-muted))">
-        total
-      </tspan>
-    </text>
-  );
-}
-
-// ─── Dashboard Alerts (com alertas de preço acionáveis) ─────────────
-function DashboardAlerts({ contasVencendo, cmvPct, cmvMeta, faturamentoMes, onNavigate }: {
-  contasVencendo: any[];
-  cmvPct: number;
-  cmvMeta: number;
-  faturamentoMes: number;
-  onNavigate: (path: string) => void;
-}) {
-  const { data: priceAlerts = [] } = usePriceAlerts();
-
-  const hasAny =
-    contasVencendo.length > 0 ||
-    (cmvPct > cmvMeta && faturamentoMes > 0) ||
-    priceAlerts.length > 0;
-
-  return (
-    <div className="fade-up fade-up-d3">
-      <div className="bg-sidebar border border-border rounded-2xl px-5 py-4">
-        <h3 className="text-[13px] font-semibold text-white mb-2.5 flex items-center gap-2">
-          <Bell size={14} className="text-white/50" />
-          Alertas
-          {hasAny && (
-            <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-white/15 text-white/90 font-bold">
-              {contasVencendo.length + priceAlerts.length + (cmvPct > cmvMeta && faturamentoMes > 0 ? 1 : 0)}
-            </span>
-          )}
-        </h3>
-        {hasAny ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-            {priceAlerts.map((a, i) => (
-              <AlertItem
-                key={`price-${i}`}
-                severity="critical"
-                title={`${a.nome} +${a.variacaoPct.toFixed(1)}%`}
-                detail={`R$ ${a.precoAnterior.toFixed(2)} → R$ ${a.precoAtual.toFixed(2)} / ${a.unidade} — clique para revisar`}
-                onClick={() => onNavigate("/precificacao/pizzas")}
-              />
-            ))}
-            {contasVencendo.map((c, i) => (
-              <AlertItem
-                key={`conta-${i}`}
-                severity="warning"
-                title={c.descricao}
-                detail={`Vence ${format(new Date(c.data_lancamento + "T00:00:00"), "dd/MM")} — clique para ver`}
-                value={formatBRL(Number(c.valor))}
-                onClick={() => onNavigate("/financeiro/contas-a-pagar")}
-              />
-            ))}
-            {cmvPct > cmvMeta && faturamentoMes > 0 && (
-              <AlertItem
-                severity="critical"
-                title="CMV acima da meta"
-                detail={`${cmvPct.toFixed(1)}% vs meta de ${cmvMeta}% — clique para ajustar`}
-                onClick={() => onNavigate("/financeiro/dre")}
-              />
-            )}
-          </div>
-        ) : (
-          <div className="flex items-center gap-2 py-1">
-            <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">
-              <Clock size={12} className="text-white/60" />
-            </div>
-            <p className="text-[11px] text-white/50">Nenhum alerta no momento.</p>
-          </div>
-        )}
-      </div>
-    </div>
+    <button
+      onClick={onClick}
+      className="flex items-center gap-2 px-4 h-11 rounded-lg bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary-light transition-colors shadow-sm"
+      style={{ background: "hsl(var(--primary))" }}
+    >
+      <Icon size={16} />
+      {label}
+    </button>
   );
 }
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [businessName, setBusinessName] = useState("");
-  const [period, setPeriod] = useState("6m");
-
-  const {
-    totalFichas, totalInsumos, promocoesAtivas, faturamentoMes,
-    despesasMes, cmvPct, cmvMeta, graficoMensal, contasVencendo,
-    comparativos,
-  } = useDashboardData();
-
-  const cmvDisplayPct = cmvPct;
-  const cmvIsReal = false;
+  const { faturamentoMes, despesasMes, comparativos } = useDashboardData();
+  const { data: priceAlerts = [] } = usePriceAlerts();
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -317,148 +83,303 @@ export default function Dashboard() {
     });
   }, []);
 
-  const lucroMes = faturamentoMes - despesasMes;
-  const hasChartData = graficoMensal.some((m) => m.receita > 0 || m.despesa > 0);
+  // Caixa hoje
+  const today = new Date();
+  const yest = subDays(today, 1);
+  const { data: caixaHoje = { hoje: 0, ontem: 0 } } = useQuery({
+    queryKey: ["dash-caixa-hoje"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("lancamentos_financeiros")
+        .select("tipo, valor, data_lancamento")
+        .gte("data_lancamento", format(startOfDay(yest), "yyyy-MM-dd"))
+        .lte("data_lancamento", format(endOfDay(today), "yyyy-MM-dd"));
+      const hoje = (data ?? []).filter((l) => l.tipo === "receita" && l.data_lancamento === format(today, "yyyy-MM-dd"))
+        .reduce((s, l) => s + Number(l.valor), 0);
+      const ontem = (data ?? []).filter((l) => l.tipo === "receita" && l.data_lancamento === format(yest, "yyyy-MM-dd"))
+        .reduce((s, l) => s + Number(l.valor), 0);
+      return { hoje, ontem };
+    },
+  });
 
-  const tooltipStyle = {
-    backgroundColor: "hsl(var(--card))",
-    border: "1px solid hsl(var(--border))",
-    borderRadius: "10px",
-    color: "hsl(var(--foreground))",
-    fontSize: "12px",
-    boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
-  };
+  const caixaVar = caixaHoje.ontem > 0
+    ? ((caixaHoje.hoje - caixaHoje.ontem) / caixaHoje.ontem) * 100
+    : null;
+
+  // Top pizza (mais lucrativa)
+  const { data: topPizzas = [] } = useQuery({
+    queryKey: ["dash-top-pizzas"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("fichas_tecnicas_pizza")
+        .select("nome, custo_total, preco_sugerido")
+        .order("preco_sugerido", { ascending: false, nullsFirst: false })
+        .limit(5);
+      return (data ?? []).map((p: any) => {
+        const preco = Number(p.preco_sugerido || 0);
+        const custo = Number(p.custo_total || 0);
+        const lucro = preco - custo;
+        const margem = preco > 0 ? (lucro / preco) * 100 : 0;
+        return { nome: p.nome, lucro, margem, preco };
+      }).sort((a, b) => b.lucro - a.lucro);
+    },
+  });
+
+  const topPizza = topPizzas[0];
+
+  // Alerta de custo (top 1)
+  const topAlerta = priceAlerts[0];
+
+  // Evolução de custos — últimos 30 dias (3 insumos top)
+  const { data: chartData = { points: [], insumos: [] } } = useQuery({
+    queryKey: ["dash-evolucao-custos"],
+    queryFn: async () => {
+      const inicio = subDays(today, 29).toISOString();
+      const { data } = await supabase
+        .from("historico_precos_insumos")
+        .select("nome_insumo, preco_novo, created_at")
+        .gte("created_at", inicio)
+        .order("created_at");
+      const rows = data ?? [];
+      // pega 3 insumos com mais variações
+      const counts: Record<string, number> = {};
+      rows.forEach((r: any) => { counts[r.nome_insumo] = (counts[r.nome_insumo] || 0) + 1; });
+      const insumos = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([n]) => n);
+      const byDate: Record<string, any> = {};
+      rows.forEach((r: any) => {
+        if (!insumos.includes(r.nome_insumo)) return;
+        const d = format(new Date(r.created_at), "dd/MM");
+        if (!byDate[d]) byDate[d] = { data: d };
+        byDate[d][r.nome_insumo] = Number(r.preco_novo);
+      });
+      return { points: Object.values(byDate), insumos };
+    },
+  });
+
+  const points = chartData.points;
+  const insumos = chartData.insumos;
+  const lineColors = ["hsl(var(--primary))", "hsl(var(--warning))", "hsl(var(--success))"];
+
+  // Últimos lançamentos
+  const { data: ultimosLanc = [] } = useQuery({
+    queryKey: ["dash-ultimos-lancamentos"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("lancamentos_financeiros")
+        .select("descricao, valor, tipo, data_lancamento, pago, created_at")
+        .order("created_at", { ascending: false })
+        .limit(5);
+      return data ?? [];
+    },
+  });
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-8rem)] page-enter">
-      <div className="space-y-6 flex-1">
-      {/* ─── HEADER ─── */}
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 fade-up">
-        <div>
-          <h1 className="text-2xl font-extrabold text-text-heading tracking-tight leading-tight">
-            {getGreeting()}{businessName ? `, ${businessName}` : ""}
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1 font-medium">Visão geral do seu negócio</p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="flex gap-1 bg-muted/40 p-0.5 rounded-full border border-border/30">
-            {(["1m", "3m", "6m"] as const).map((p) => (
-              <button
-                key={p}
-                onClick={() => setPeriod(p)}
-                className={`px-3 py-1 rounded-full text-[11px] font-medium transition-all duration-200 ${
-                  period === p
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {p === "1m" ? "1 Mês" : p === "3m" ? "3 Meses" : "6 Meses"}
-              </button>
-            ))}
-          </div>
-
-        </div>
+    <div className="page-enter space-y-6">
+      {/* HEADER */}
+      <div className="fade-up">
+        <h1 className="font-display">{getGreeting()}{businessName ? `, ${businessName}` : ""} 👋</h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          Hoje é {format(today, "dd 'de' MMMM 'de' yyyy")}.
+          {caixaHoje.hoje > 0 && <> Seu caixa está <span className="text-success font-semibold">{formatBRL(caixaHoje.hoje)}</span> positivo.</>}
+        </p>
       </div>
 
-      {/* ─── ONBOARDING CHECKLIST ─── */}
-      <OnboardingChecklist />
-
-      {/* ─── MINI KPI CARDS ─── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 stagger-fade-in">
-        <MiniKPI label="Faturamento" value={formatBRL(faturamentoMes)} numericValue={faturamentoMes} formatter={formatBRL} icon={Wallet} kpiType="faturamento" momVariation={comparativos.faturamento} higherIsBetter={true} />
-        <MiniKPI label="Gastos" value={formatBRL(despesasMes)} numericValue={despesasMes} formatter={formatBRL} icon={Receipt} kpiType="gastos" momVariation={comparativos.despesas} higherIsBetter={false} />
-        <MiniKPI label="Lucro" value={formatBRL(lucroMes)} numericValue={lucroMes} formatter={formatBRL} icon={PiggyBank} kpiType={lucroMes >= 0 ? "lucro_pos" : "lucro_neg"} momVariation={comparativos.lucro} higherIsBetter={true} />
-        <MiniKPI label="CMV" value={faturamentoMes > 0 || cmvIsReal ? `${cmvDisplayPct.toFixed(1)}%` : "Sem dados"} numericValue={(faturamentoMes > 0 || cmvIsReal) ? cmvDisplayPct : undefined} formatter={(v) => `${v.toFixed(1)}%`} icon={TrendingDown} trendLabel={(faturamentoMes > 0 || cmvIsReal) ? `Meta ${cmvMeta}%` : undefined} kpiType={cmvDisplayPct <= cmvMeta ? "cmv_ok" : "cmv_bad"} />
-      </div>
-
-      {/* ─── CHART: Revenue ─── */}
-      <div className="fade-up fade-up-d2">
-        <div className="bg-card border border-border rounded-2xl p-7 transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)]">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h3 className="text-[16px] font-bold text-foreground">Faturamento vs. Despesas</h3>
-              <p className="text-[12px] text-muted-foreground/50 mt-0.5">Evolução mensal do seu negócio</p>
-            </div>
-            <div className="hidden sm:flex items-center gap-3">
-              <div className="flex items-center gap-1.5">
-                <div className="w-3 h-[3px] rounded-full bg-success" />
-                <span className="text-[10px] text-muted-foreground">Receita</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-3 h-[3px] rounded-full bg-warning" />
-                <span className="text-[10px] text-muted-foreground">Despesa</span>
-              </div>
-            </div>
+      {/* KPI ROW */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 stagger-fade-in">
+        <KpiCard label="Caixa Hoje" icon={Wallet} accent="primary">
+          <div className="font-display text-2xl font-bold tabular text-foreground">
+            {formatBRL(caixaHoje.hoje)}
           </div>
+          <div className="mt-1.5 text-xs text-muted-foreground flex items-center gap-1.5">
+            {caixaVar !== null ? (
+              <>
+                <span className={`inline-flex items-center gap-1 font-semibold ${caixaVar >= 0 ? "text-success" : "text-destructive"}`}>
+                  {caixaVar >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+                  {formatPct(caixaVar)}
+                </span>
+                <span>vs ontem</span>
+              </>
+            ) : (
+              <span>sem base de comparação</span>
+            )}
+          </div>
+        </KpiCard>
 
-          {hasChartData ? (
-            <ResponsiveContainer width="100%" height={260}>
-              <AreaChart data={graficoMensal} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="gradReceita" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="hsl(var(--success))" stopOpacity={0.25} />
-                    <stop offset="50%" stopColor="hsl(var(--success))" stopOpacity={0.08} />
-                    <stop offset="100%" stopColor="hsl(var(--success))" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="gradDespesa" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="hsl(var(--warning))" stopOpacity={0.15} />
-                    <stop offset="50%" stopColor="hsl(var(--warning))" stopOpacity={0.05} />
-                    <stop offset="100%" stopColor="hsl(var(--warning))" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" strokeOpacity={0.4} vertical={false} />
-                <XAxis
-                  dataKey="mes"
-                  tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11, fontWeight: 700 }}
-                  axisLine={false}
-                  tickLine={false}
-                  dy={8}
-                />
-                <YAxis
-                  tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10, fontWeight: 700 }}
-                  tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`}
-                  axisLine={false}
-                  tickLine={false}
-                  width={55}
-                />
-                <Tooltip
-                  contentStyle={{ ...tooltipStyle, padding: "10px 14px", fontWeight: 700 }}
-                  formatter={(value: number) => formatBRL(value)}
-                  cursor={{ stroke: "hsl(var(--border))", strokeWidth: 1 }}
-                />
-                <Area type="monotone" dataKey="receita" name="Receita" stroke="hsl(var(--success))" fill="url(#gradReceita)" strokeWidth={2.5} dot={false} activeDot={{ r: 5, fill: "hsl(var(--success))", stroke: "#fff", strokeWidth: 2 }} />
-                <Area type="monotone" dataKey="despesa" name="Despesa" stroke="hsl(var(--warning))" fill="url(#gradDespesa)" strokeWidth={2} strokeDasharray="6 3" dot={false} activeDot={{ r: 4, fill: "hsl(var(--warning))", stroke: "#fff", strokeWidth: 2 }} />
-              </AreaChart>
-            </ResponsiveContainer>
+        <KpiCard label="Top Pizza" icon={Pizza} accent="success">
+          <div className="font-display text-lg font-bold text-foreground truncate">
+            {topPizza?.nome ?? "—"}
+          </div>
+          <div className="mt-1.5 flex items-center gap-2 flex-wrap">
+            <span className="text-xs text-muted-foreground">
+              lucro <span className="text-foreground font-semibold tabular">{topPizza ? formatBRL(topPizza.lucro) : "R$ 0,00"}</span>
+            </span>
+            {topPizza && (
+              <span className="status-profit text-[11px]">{topPizza.margem.toFixed(0)}% margem</span>
+            )}
+          </div>
+        </KpiCard>
+
+        <KpiCard label="Alerta de Custo" icon={AlertTriangle} accent="warning">
+          {topAlerta ? (
+            <>
+              <div className="font-display text-lg font-bold text-foreground truncate">{topAlerta.nome}</div>
+              <div className="mt-1.5 text-xs flex items-center gap-1.5">
+                <span className="text-warning font-semibold inline-flex items-center gap-1">
+                  <TrendingUp size={12} /> +{topAlerta.variacaoPct.toFixed(1)}%
+                </span>
+                <span className="text-muted-foreground">recente</span>
+              </div>
+            </>
           ) : (
-            <div className="flex flex-col items-center justify-center h-[260px] text-muted-foreground gap-3">
-              <div className="w-12 h-12 rounded-full bg-muted/60 flex items-center justify-center">
-                <TrendingUp size={20} className="text-muted-foreground/40" />
-              </div>
-              <p className="text-[12px] text-center max-w-[220px]">Registre receitas e despesas no módulo Financeiro para ver a evolução aqui.</p>
+            <>
+              <div className="font-display text-lg font-bold text-muted-foreground">Sem alertas</div>
+              <div className="mt-1.5 text-xs text-muted-foreground">Custos estáveis</div>
+            </>
+          )}
+        </KpiCard>
+
+        <KpiCard label="Hora do Fechamento" icon={Clock} accent="muted">
+          <div className="font-display text-2xl font-bold tabular text-foreground">23:00</div>
+          <div className="mt-1.5 text-xs text-muted-foreground">caixa aberto</div>
+        </KpiCard>
+      </div>
+
+      {/* QUICK ACTIONS */}
+      <div className="fade-up fade-up-d2">
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-3">Ações rápidas</p>
+        <div className="flex flex-wrap gap-3">
+          <QuickAction icon={Plus} label="Registrar Venda" onClick={() => navigate("/financeiro/caixa-diario")} />
+          <QuickAction icon={FileText} label="Nova Ficha Técnica" onClick={() => navigate("/fichas/pizzas")} />
+          <QuickAction icon={Receipt} label="Lançar Despesa" onClick={() => navigate("/financeiro/contas-a-pagar")} />
+        </div>
+      </div>
+
+      {/* MIDDLE ROW */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 fade-up fade-up-d3">
+        {/* Top pizzas ranking */}
+        <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-display">Pizzas mais lucrativas</h3>
+            <span className="text-xs text-muted-foreground">este mês</span>
+          </div>
+          {topPizzas.length === 0 ? (
+            <p className="text-sm text-muted-foreground py-8 text-center">Nenhuma ficha cadastrada ainda.</p>
+          ) : (
+            <div className="space-y-3">
+              {topPizzas.map((p, i) => {
+                const max = topPizzas[0].lucro || 1;
+                const pct = (p.lucro / max) * 100;
+                const medal = ["🥇", "🥈", "🥉"][i];
+                return (
+                  <div key={p.nome} className="flex items-center gap-3">
+                    <div className="w-6 text-center text-sm font-semibold text-muted-foreground">
+                      {medal ?? i + 1}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-baseline justify-between gap-2 mb-1">
+                        <span className="text-sm font-medium text-foreground truncate">{p.nome}</span>
+                        <span className="text-sm font-semibold tabular text-foreground shrink-0">{formatBRL(p.lucro)}</span>
+                      </div>
+                      <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                        <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${pct}%` }} />
+                      </div>
+                    </div>
+                    <span className="text-xs text-muted-foreground tabular w-10 text-right">
+                      {p.margem.toFixed(0)}%
+                    </span>
+                  </div>
+                );
+              })}
             </div>
+          )}
+        </div>
+
+        {/* Evolução de custos */}
+        <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-display">Evolução de custos</h3>
+            <span className="text-xs text-muted-foreground">últimos 30 dias</span>
+          </div>
+          {points.length === 0 ? (
+            <p className="text-sm text-muted-foreground py-12 text-center">Sem histórico de preços ainda.</p>
+          ) : (
+            <ResponsiveContainer width="100%" height={220}>
+              <LineChart data={points} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                <XAxis dataKey="data" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} width={40} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "hsl(var(--card))",
+                    border: "1px solid hsl(var(--border))",
+                    borderRadius: 8, fontSize: 12,
+                  }}
+                  formatter={(v: any) => formatBRL(Number(v))}
+                />
+                <Legend wrapperStyle={{ fontSize: 11 }} />
+                {insumos.map((nome, i) => (
+                  <Line
+                    key={nome}
+                    type="monotone"
+                    dataKey={nome}
+                    stroke={lineColors[i % lineColors.length]}
+                    strokeWidth={2}
+                    dot={false}
+                    connectNulls
+                  />
+                ))}
+              </LineChart>
+            </ResponsiveContainer>
           )}
         </div>
       </div>
 
-      {/* ─── ALERTAS ACIONÁVEIS ─── */}
-      <DashboardAlerts
-        contasVencendo={contasVencendo}
-        cmvPct={cmvDisplayPct}
-        cmvMeta={cmvMeta}
-        faturamentoMes={faturamentoMes}
-        onNavigate={navigate}
-      />
-
-
-      </div>
-
-      {/* ─── FOOTER ─── */}
-      <div className="border-t border-border/40 pt-4 pb-2 mt-8 text-center fade-up">
-        <p className="text-[10px] text-muted-foreground/50">
-          {businessName || "TôNoLucro"} © {new Date().getFullYear()} — Sistema Profissional de Gestão
-        </p>
+      {/* ÚLTIMOS LANÇAMENTOS */}
+      <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden fade-up fade-up-d4">
+        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
+          <h3 className="font-display">Últimos lançamentos</h3>
+          <button
+            onClick={() => navigate("/financeiro/caixa-diario")}
+            className="text-xs font-semibold text-primary hover:text-primary-light"
+          >
+            Ver tudo →
+          </button>
+        </div>
+        {ultimosLanc.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-10 text-center">Nenhum lançamento ainda.</p>
+        ) : (
+          <table className="w-full">
+            <thead>
+              <tr>
+                <th className="text-left">Data</th>
+                <th className="text-left">Descrição</th>
+                <th className="text-right">Valor</th>
+                <th className="text-right">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ultimosLanc.map((l: any, i: number) => {
+                const isReceita = l.tipo === "receita";
+                return (
+                  <tr key={i}>
+                    <td className="text-muted-foreground tabular text-xs">
+                      {format(new Date(l.data_lancamento + "T00:00:00"), "dd/MM")}
+                    </td>
+                    <td className="font-medium text-foreground">{l.descricao || "—"}</td>
+                    <td className={`text-right tabular font-semibold ${isReceita ? "text-success" : "text-foreground"}`}>
+                      {isReceita ? "+" : "−"} {formatBRL(Number(l.valor))}
+                    </td>
+                    <td className="text-right">
+                      <span className={l.pago || isReceita ? "status-profit" : "status-warning"}>
+                        {l.pago || isReceita ? "✓ Pago" : "⏳ Pendente"}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );
