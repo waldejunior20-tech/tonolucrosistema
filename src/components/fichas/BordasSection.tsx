@@ -25,7 +25,6 @@ type SizeMap = Record<string, number>;
 interface FormState {
   nome: string;
   precos: SizeMap;
-  custos: SizeMap;
 }
 
 const fmt = (v: number) =>
@@ -59,7 +58,6 @@ export function BordasSection() {
     () => ({
       nome: "",
       precos: Object.fromEntries(sizes.map((s) => [s, 0])),
-      custos: Object.fromEntries(sizes.map((s) => [s, 0])),
     }),
     [sizes],
   );
@@ -75,6 +73,21 @@ export function BordasSection() {
     },
   });
 
+  const { data: ingredientesCount = {} } = useQuery({
+    queryKey: ["bordas_ingredientes_counts"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("bordas_ingredientes")
+        .select("borda_id");
+      if (error) throw error;
+      const map: Record<string, number> = {};
+      (data ?? []).forEach((r: { borda_id: string }) => {
+        map[r.borda_id] = (map[r.borda_id] ?? 0) + 1;
+      });
+      return map;
+    },
+  });
+
   const reset = () => {
     setForm(emptyForm);
     setEditingId(null);
@@ -87,21 +100,28 @@ export function BordasSection() {
       const payload = {
         nome: form.nome.trim(),
         precos_por_tamanho: form.precos,
-        custos_por_tamanho: form.custos,
       };
       if (editingId) {
         const { error } = await supabase.from("bordas").update(payload).eq("id", editingId);
         if (error) throw error;
+        return null;
       } else {
         const unidade_id = requireActiveUnidadeId();
-        const { error } = await supabase.from("bordas").insert({ ...payload, unidade_id } as never);
+        const { data, error } = await supabase
+          .from("bordas")
+          .insert({ ...payload, unidade_id } as never)
+          .select()
+          .single();
         if (error) throw error;
+        return data as Borda;
       }
     },
-    onSuccess: () => {
+    onSuccess: (created) => {
       qc.invalidateQueries({ queryKey: ["bordas"] });
-      toast.success(editingId ? "Borda atualizada!" : "Borda cadastrada!");
+      const wasNew = !editingId;
+      toast.success(wasNew ? "Borda cadastrada! Adicione os ingredientes." : "Borda atualizada!");
       reset();
+      if (wasNew && created) setIngDialog(created);
     },
     onError: (e: Error) => toast.error(e.message ?? "Erro ao salvar borda"),
   });
@@ -122,7 +142,6 @@ export function BordasSection() {
     setForm({
       nome: b.nome,
       precos: toMap(b.precos_por_tamanho, sizes),
-      custos: toMap(b.custos_por_tamanho, sizes),
     });
     setEditingId(b.id);
     setOpen(true);
