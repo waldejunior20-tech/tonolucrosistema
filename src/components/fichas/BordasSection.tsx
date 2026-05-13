@@ -202,24 +202,10 @@ export function BordasSection() {
                 </div>
               </div>
 
-              <div>
-                <Label className="text-sm font-semibold">Custo (opcional)</Label>
-                <div
-                  className="grid gap-3 mt-1.5"
-                  style={{ gridTemplateColumns: `repeat(${sizes.length}, minmax(0, 1fr))` }}
-                >
-                  {sizes.map((s) => (
-                    <div key={`custo-${s}`}>
-                      <Label className="text-[11px] uppercase tracking-wider text-muted-foreground">
-                        {s}
-                      </Label>
-                      <MoneyInput
-                        value={form.custos[s] ?? 0}
-                        onChange={(v) => setForm({ ...form, custos: { ...form.custos, [s]: v } })}
-                      />
-                    </div>
-                  ))}
-                </div>
+              <div className="rounded-md border border-dashed bg-muted/30 p-3 text-xs text-muted-foreground">
+                O <strong>custo</strong> é calculado automaticamente a partir dos ingredientes da borda
+                (insumos comprados + insumos próprios) e da quantidade em gramas/ml por tamanho.
+                {!editingId && " Após cadastrar, você poderá adicionar os ingredientes."}
               </div>
             </div>
             <DialogFooter>
