@@ -321,7 +321,7 @@ export default function FichasTecnicasPizza() {
     },
     onSuccess: () => {
       invalidateAll();
-      toast.success("Ficha técnica cadastrada!");
+      toast.success(`🍕 ${data.nome || "Pizza"} no forno! Ficha cadastrada.`);
       resetForm();
     },
     onError: (e) => appError("ERR-FTP-001", e),
