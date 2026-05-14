@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { History, Search, TrendingUp } from "lucide-react";
+import { History, Search, TrendingUp, ShieldAlert } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { formatMoney, formatQuantidade } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
