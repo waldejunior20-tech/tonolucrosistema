@@ -136,11 +136,11 @@ function CTA({
     <button
       onClick={onClick}
       className={cn(
-        "inline-flex items-center gap-2 h-10 px-4 rounded-xl border transition-all text-[13.5px]",
+        "inline-flex items-center gap-2 h-10 px-4 rounded-xl border transition-all duration-200 text-[13.5px] active:scale-[0.98]",
         T.accent,
         variant === "primary"
-          ? "bg-[#2563EB] text-white border-[#2563EB] hover:bg-[#1D4ED8]"
-          : "bg-white text-[#0F172A] border-[#E2E8F0] hover:border-[#94A3B8] hover:bg-[#F8FAFC]",
+          ? "text-white border-transparent bg-[linear-gradient(180deg,#3B82F6_0%,#2563EB_100%)] shadow-[0_1px_0_rgba(255,255,255,0.25)_inset,0_6px_16px_-6px_rgba(37,99,235,0.55),0_2px_4px_rgba(15,23,42,0.08)] hover:shadow-[0_1px_0_rgba(255,255,255,0.3)_inset,0_10px_22px_-8px_rgba(37,99,235,0.65),0_3px_6px_rgba(15,23,42,0.10)] hover:brightness-[1.03]"
+          : "bg-white/80 backdrop-blur text-[#0F172A] border-[#E2E8F0] hover:border-[#94A3B8] hover:bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]",
       )}
     >
       {Icon && <Icon size={15} strokeWidth={2.4} />}
