@@ -428,7 +428,7 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
       <PageHeader title={`Fichas Técnicas — ${label}`} description="Gerencie receitas e custos dos seus produtos.">
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) resetForm(); setDialogOpen(open); }}>
           <DialogTrigger asChild>
-            <Button onClick={() => { resetForm(); setDialogOpen(true); }} className="btn-action-add gap-2">
+            <Button onClick={() => { resetForm(); setDialogOpen(true); }} className="btn-hot-cta gap-2 px-4">
               <Plus className="mr-1 h-4 w-4" /> Nova Ficha
             </Button>
           </DialogTrigger>
