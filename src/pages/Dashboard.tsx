@@ -973,6 +973,7 @@ export default function Dashboard() {
         </Bento>
 
       </div>
+      </div>
     </div>
   );
 }
