@@ -298,6 +298,7 @@ function DashboardAlerts({ contasVencendo, cmvPct, cmvMeta, faturamentoMes, onNa
 export default function Dashboard() {
   const navigate = useNavigate();
   const [businessName, setBusinessName] = useState("");
+  const [userName, setUserName] = useState("");
   const [period, setPeriod] = useState("6m");
 
   const {
@@ -312,6 +313,10 @@ export default function Dashboard() {
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
+        const meta: any = user.user_metadata || {};
+        const fullName = meta.full_name || meta.name || meta.nome || "";
+        const first = fullName.trim().split(/\s+/)[0] || (user.email ? user.email.split("@")[0] : "");
+        if (first) setUserName(first.charAt(0).toUpperCase() + first.slice(1));
         supabase.from("profiles").select("business_name").eq("id", user.id).single()
           .then(({ data }) => { if (data?.business_name) setBusinessName(data.business_name); });
       }
