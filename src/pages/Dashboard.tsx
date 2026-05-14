@@ -355,11 +355,24 @@ export default function Dashboard() {
       tone: "danger",
     });
   }
+  const humanizeMotivo = (raw: string | null | undefined, tipo: string | null | undefined): { title: string; message: string } => {
+    const r = (raw || "").toLowerCase();
+    const ficha = tipo === "pizza" ? "Ficha de pizza" : "Ficha";
+    if (r.includes("embalagem") && r.includes("insumo")) {
+      return { title: `${ficha} sem embalagem ou insumo`, message: "Complete a ficha para calcular a margem correta." };
+    }
+    if (r.includes("embalagem")) return { title: `${ficha} sem embalagem`, message: "Adicione a embalagem para fechar o custo." };
+    if (r.includes("insumo")) return { title: `${ficha} sem insumo`, message: "Cadastre os ingredientes para calcular o CMV." };
+    if (r.includes("preco") || r.includes("preço")) return { title: `${ficha} sem preço de venda`, message: "Defina o preço para liberar a análise de margem." };
+    if (r.includes("cmv")) return { title: `${ficha} com CMV alto`, message: "Revise custos ou ajuste o preço de venda." };
+    return { title: `${ficha} precisa de atenção`, message: raw || "Revisar ficha técnica." };
+  };
   for (const w of warnings.slice(0, 2) as any[]) {
+    const h = humanizeMotivo(w.motivo, w.tipo_ficha);
     centralAlertas.push({
       id: `warn-${w.id}`, icon: AlertTriangle,
-      title: w.tipo_ficha === "pizza" ? "Ficha de pizza precisa atenção" : "Ficha precisa atenção",
-      message: w.motivo || "Revisar ficha técnica",
+      title: h.title,
+      message: h.message,
       tone: "warning",
       time: w.created_at ? formatDistanceToNow(new Date(w.created_at), { locale: ptBR, addSuffix: true }) : undefined,
     });
