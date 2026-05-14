@@ -76,17 +76,12 @@ interface Props {
 export function FichaWizard({ open, onOpenChange, initialType = "pizza", editingFicha }: Props) {
   const qc = useQueryClient();
   const { activeUnidadeId } = useActiveUnidade();
-  const [step, setStep] = useState(1);
   const [state, setState] = useState<WizardState>(emptyState(initialType));
 
   // Reset on open (only for create mode)
   useEffect(() => {
     if (open && !editingFicha) {
       setState(emptyState(initialType));
-      setStep(1);
-    }
-    if (open && editingFicha) {
-      setStep(1);
     }
   }, [open, initialType, editingFicha]);
 
