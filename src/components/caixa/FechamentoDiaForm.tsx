@@ -110,7 +110,7 @@ export function FechamentoDiaForm({ taxas, onSelectDate }: Props) {
       return { dataLanc, count: rows.length };
     },
     onSuccess: ({ dataLanc, count }) => {
-      toast.success(`${count} lançamento${count > 1 ? "s" : ""} registrado${count > 1 ? "s" : ""} em ${format(new Date(dataLanc + "T00:00:00"), "dd/MM/yyyy")}`);
+      toast.success(`🍕 ${count} venda${count > 1 ? "s" : ""} no forno — ${format(new Date(dataLanc + "T00:00:00"), "dd/MM/yyyy")}`);
       setValores({ "Dinheiro/PIX": 0, "Débito": 0, "Crédito": 0, "iFood": 0, "Outros Apps": 0 });
       onSelectDate?.(new Date(dataLanc + "T00:00:00"));
       queryClient.invalidateQueries({ queryKey: ["caixa-diario"] });
