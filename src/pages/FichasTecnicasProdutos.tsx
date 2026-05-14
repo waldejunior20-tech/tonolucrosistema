@@ -640,24 +640,29 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
                 const custo = calcularCustoFicha(ficha.id);
                 return (
                   <TableRow key={ficha.id}>
-                    <TableCell className="font-medium">{ficha.nome}</TableCell>
-                    <TableCell className="text-right font-mono">
+                    <TableCell
+                      className="font-semibold text-primary hover:underline cursor-pointer"
+                      onClick={() => handleEdit(ficha)}
+                    >
+                      {ficha.nome}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums cursor-pointer" onClick={() => handleEdit(ficha)}>
                       {custo > 0 ? formatMoney(custo) : "—"}
                     </TableCell>
                     <TableCell className="text-center">
-                      <div className="flex justify-center gap-1">
-                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(ficha)}>
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-destructive"
-                          onClick={() => deleteMutation.mutate(ficha.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-destructive"
+                        title="Excluir ficha"
+                        onClick={() => {
+                          if (confirm(`🗑️ Excluir "${ficha.nome}"? Essa ação não pode ser desfeita.`)) {
+                            deleteMutation.mutate(ficha.id);
+                          }
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 );
