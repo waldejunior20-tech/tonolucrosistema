@@ -422,7 +422,17 @@ export default function Dashboard() {
   }
 
   return (
-    <div className={cn("page-enter -m-4 md:-m-6 lg:-m-8 p-4 md:p-6 lg:p-8 pb-12 min-h-[calc(100vh-4rem)]", C.bg)}>
+    <div className={cn("page-enter relative -m-4 md:-m-6 lg:-m-8 p-4 md:p-6 lg:p-8 pb-12 min-h-[calc(100vh-4rem)] overflow-hidden", C.bg)}>
+      {/* Page-level aurora wash — extremely subtle */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-[420px] -z-0"
+        style={{
+          background:
+            "radial-gradient(40% 60% at 15% 0%, rgba(37,99,235,0.07) 0%, transparent 70%), radial-gradient(35% 60% at 85% 0%, rgba(139,92,246,0.06) 0%, transparent 70%)",
+        }}
+      />
+      <div className="relative z-[1]">
 
       {/* ─── GREETING + QUICK ACTIONS ─────────────────────────── */}
       <header className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5 mb-6">
