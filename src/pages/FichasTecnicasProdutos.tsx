@@ -20,6 +20,7 @@ import { Pencil, Trash2, Plus, Search, X, Check, BookOpen } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 import { formatMoney, formatQty } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { FichasCategoryTabs } from "@/components/fichas/FichasCategoryTabs";
 import { EmptyState } from "@/components/EmptyState";
 import { SkeletonTable } from "@/components/SkeletonCard";
 import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
