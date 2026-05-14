@@ -241,7 +241,7 @@ export default function Dashboard() {
     queryKey: ["dashboard-fichas-warnings-list"],
     queryFn: async () => {
       const { data } = await supabase.from("fichas_tecnicas_warnings")
-        .select("id, mensagem, tipo, created_at, resolvido")
+        .select("id, motivo, tipo_ficha, created_at, resolvido")
         .eq("resolvido", false)
         .order("created_at", { ascending: false })
         .limit(5);
