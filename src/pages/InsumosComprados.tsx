@@ -396,6 +396,47 @@ export default function InsumosComprados() {
         </Dialog>
       </PageHeader>
 
+      {/* Modal: Foto da Nota Fiscal (placeholder OCR) */}
+      <Dialog open={notaDialogOpen} onOpenChange={setNotaDialogOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Camera className="h-5 w-5 text-primary" /> Lançar compra por foto
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Aponte para a nota fiscal. O sistema extrai os dados automaticamente.
+            </p>
+            <label
+              htmlFor="nf-upload"
+              className="flex flex-col items-center justify-center gap-3 h-48 border-2 border-dashed border-primary/30 rounded-xl bg-primary/5 hover:bg-primary/10 transition-colors cursor-pointer"
+            >
+              <div className="w-14 h-14 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                <Upload className="h-6 w-6 text-primary" />
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-semibold text-foreground">Toque para enviar ou arraste a foto</p>
+                <p className="text-xs text-muted-foreground mt-0.5">JPG, PNG ou PDF — até 10 MB</p>
+              </div>
+              <input id="nf-upload" type="file" accept="image/*,application/pdf" className="hidden" />
+            </label>
+            <div className="rounded-lg border border-warning/30 bg-warning/5 px-3 py-2 text-xs text-warning-foreground">
+              <span className="font-semibold text-warning">Em breve:</span>{" "}
+              <span className="text-muted-foreground">o reconhecimento automático (OCR) está sendo finalizado.</span>
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button type="button" variant="outline" onClick={() => setNotaDialogOpen(false)}>
+                Cancelar
+              </Button>
+              <Button type="button" disabled>
+                Processar
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Filtro + Toggle de visualização */}
       <div className="flex items-center gap-3 flex-wrap">
         <Filter className="h-4 w-4 text-muted-foreground" />
