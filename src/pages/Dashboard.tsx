@@ -472,6 +472,9 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* ─── ALERTA DE LUCRO (impacto na margem) ─── */}
+      <ProfitAlertWidget />
+
       {/* ─── ALERTAS ACIONÁVEIS ─── */}
       <DashboardAlerts
         contasVencendo={contasVencendo}
