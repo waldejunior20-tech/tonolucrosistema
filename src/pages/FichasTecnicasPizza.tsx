@@ -652,7 +652,7 @@ export default function FichasTecnicasPizza() {
       <PageHeader title="Fichas Técnicas de Pizza" description="Gerencie suas receitas de pizza com custos por tamanho.">
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) resetForm(); setDialogOpen(open); }}>
           <DialogTrigger asChild>
-            <Button className="btn-action-add gap-2">
+            <Button className="btn-hot-cta gap-2 px-4">
               <Plus className="h-4 w-4" /> Nova Ficha
             </Button>
           </DialogTrigger>
