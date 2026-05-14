@@ -9,6 +9,7 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import {
   TrendingUp, TrendingDown, Bell, Clock,
   Wallet, Receipt, PiggyBank, AlertTriangle, ArrowUp, ArrowDown, Minus,
+  Plus, Pizza, ShoppingCart,
 } from "lucide-react";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { OnboardingChecklist } from "@/components/dashboard/OnboardingChecklist";
