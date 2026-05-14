@@ -19,11 +19,11 @@ export type ProfitAlert = {
 };
 
 export function useProfitAlerts(limit = 5) {
-  const { unidadeId } = useActiveUnidade();
+  const { activeUnidadeId } = useActiveUnidade();
 
   return useQuery({
-    queryKey: ["profit-alerts", unidadeId],
-    enabled: !!unidadeId,
+    queryKey: ["profit-alerts", activeUnidadeId],
+    enabled: !!activeUnidadeId,
     staleTime: 30_000,
     queryFn: async (): Promise<ProfitAlert[]> => {
       const { data, error } = await supabase
