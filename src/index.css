@@ -6,32 +6,36 @@
 
 @layer base {
   :root {
-    /* ═══ Core Palette ═══ */
-    --background: 0 0% 100%;
-    --foreground: 220 13% 18%;
+    /* ═══ Core Palette — TôNoLucro Pizzaria Refresh ═══ */
+    --background: 33 100% 97%;             /* #FFF8F0 warm cream */
+    --foreground: 222 47% 11%;
     --card: 0 0% 100%;
-    --card-foreground: 220 13% 18%;
+    --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 13% 18%;
-    --primary: 153 85% 22%;
+    --popover-foreground: 222 47% 11%;
+    /* Primary action (Salvar / Calcular) → blue #2563EB */
+    --primary: 221 83% 53%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 153 70% 30%;
-    --accent: 153 85% 22%;
+    --primary-light: 217 91% 60%;
+    /* Hot CTA (Nova venda / Nova ficha / Fechar caixa) → orange #E85D04 */
+    --accent: 22 96% 46%;
     --accent-foreground: 0 0% 100%;
-    --orange-accent: 24 95% 53%;
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 220 13% 18%;
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 9% 46%;
+    --orange-accent: 22 96% 46%;
+    --secondary: 33 50% 94%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 33 50% 94%;
+    --muted-foreground: 215 16% 47%;
+    /* Alert/loss → #DC2626 */
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    --success: 160 84% 39%;
+    /* Success/profit → #059669 */
+    --success: 160 84% 30%;
     --warning: 38 92% 50%;
-    --info: 217 91% 60%;
-    --orange: 24 95% 53%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 153 85% 22%;
+    --info: 221 83% 53%;
+    --orange: 22 96% 46%;
+    --border: 214 19% 88%;                 /* #E2E8F0 */
+    --input: 214 19% 88%;
+    --ring: 221 83% 53%;
     --radius: 0.5rem;
 
     /* ═══ Border Radius Tokens ═══
