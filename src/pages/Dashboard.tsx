@@ -395,7 +395,7 @@ export default function Dashboard() {
       <OnboardingChecklist />
 
       {/* ─── MINI KPI CARDS ─── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 stagger-fade-in">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 stagger-fade-in">
         <MiniKPI label="Faturamento" value={formatBRL(faturamentoMes)} numericValue={faturamentoMes} formatter={formatBRL} icon={Wallet} kpiType="faturamento" momVariation={comparativos.faturamento} higherIsBetter={true} />
         <MiniKPI label="Gastos" value={formatBRL(despesasMes)} numericValue={despesasMes} formatter={formatBRL} icon={Receipt} kpiType="gastos" momVariation={comparativos.despesas} higherIsBetter={false} />
         <MiniKPI label="Lucro" value={formatBRL(lucroMes)} numericValue={lucroMes} formatter={formatBRL} icon={PiggyBank} kpiType={lucroMes >= 0 ? "lucro_pos" : "lucro_neg"} momVariation={comparativos.lucro} higherIsBetter={true} />

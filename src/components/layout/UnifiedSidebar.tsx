@@ -153,7 +153,15 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
   }, [location.pathname, location.search]);
 
   const toggleExpand = (key: string) => {
-    setExpandedItems(prev => ({ ...prev, [key]: !prev[key] }));
+    setExpandedItems(prev => {
+      const isOpen = !!prev[key];
+      // Accordion: close others when opening a new group
+      if (isOpen) return { ...prev, [key]: false };
+      const next: Record<string, boolean> = {};
+      sidebarItems.forEach(it => { next[it.key] = false; });
+      next[key] = true;
+      return next;
+    });
   };
 
   const toggleSubExpand = (label: string) => {
@@ -194,7 +202,7 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
     <aside 
       className={cn(
         "h-full bg-sidebar flex flex-col border-r border-sidebar-border relative z-50",
-        collapsed ? "w-16" : "w-[260px]"
+        collapsed ? "w-16" : "w-[288px]"
       )}
     >
       {/* Logo */}
@@ -297,12 +305,15 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
                               if (hasNestedItems) toggleSubExpand(sub.label);
                             }}
                             className={cn(
-                              "h-9 px-3 flex items-center justify-between text-[13px] transition-all duration-200 rounded-lg",
+                              "relative h-8 px-3 flex items-center justify-between text-[13px] transition-all duration-200 rounded-lg",
                               isSubActive 
-                                ? "text-sidebar-primary font-bold bg-sidebar-accent/50" 
+                                ? "text-primary font-bold bg-primary/10" 
                                 : "text-sidebar-foreground/80 hover:text-sidebar-accent-foreground hover:bg-sidebar-accent/40 font-medium"
                             )}
                           >
+                            {isSubActive && (
+                              <span className="absolute -left-[13px] top-1.5 bottom-1.5 w-[2px] rounded-r-full bg-primary" />
+                            )}
                             <span className="truncate">{sub.label}</span>
                             {hasNestedItems && (
                               <ChevronDown size={13} className={cn("transition-transform duration-200 shrink-0", isNestedExpanded ? "rotate-180" : "")} />
@@ -318,9 +329,9 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
                                     key={`${nested.path}-${nIdx}`}
                                     onClick={() => { navigate(nested.path); onNavigate?.(); }}
                                     className={cn(
-                                      "h-8 px-3 flex items-center text-xs transition-all duration-200 rounded-lg",
+                                      "h-7 px-3 flex items-center text-[12.5px] transition-all duration-200 rounded-lg",
                                       isNestedActive 
-                                        ? "text-sidebar-primary font-bold" 
+                                        ? "text-primary font-bold bg-primary/10" 
                                         : "text-sidebar-foreground/70 hover:text-sidebar-accent-foreground hover:bg-sidebar-accent/30 font-medium"
                                     )}
                                   >
