@@ -94,8 +94,8 @@ function CardHeader({
           </div>
         )}
         <div className="min-w-0">
-          <h3 className={cn(T.headline, C.text, "truncate")}>{title}</h3>
-          {subtitle && <p className={cn(T.body, C.muted, "mt-0.5 text-[12.5px]")}>{subtitle}</p>}
+          <h3 className={cn("font-heading font-semibold text-[19px] md:text-[20px] leading-tight tracking-tight truncate", C.text)}>{title}</h3>
+          {subtitle && <p className={cn(T.body, C.muted, "mt-1 text-[13px]")}>{subtitle}</p>}
         </div>
       </div>
       {action}
