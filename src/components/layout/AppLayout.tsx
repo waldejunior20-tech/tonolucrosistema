@@ -20,8 +20,8 @@ export function AppLayout() {
       {!isMobile && (
         <aside
           className={cn(
-            "fixed top-0 left-0 h-screen z-40 transition-all duration-300",
-            sidebarCollapsed ? "w-16" : "w-[288px]"
+            "fixed top-3 left-3 bottom-3 z-40 transition-all duration-300",
+            sidebarCollapsed ? "w-16" : "w-[280px]"
           )}
         >
           <UnifiedSidebar
