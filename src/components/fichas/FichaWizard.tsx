@@ -387,49 +387,60 @@ export function FichaWizard({ open, onOpenChange, initialType = "pizza", editing
     onError: (e: any) => toast.error(e.message ?? "Erro ao salvar"),
   });
 
-  const stepTitles = ["Tipo de produto", "Ingredientes", "Embalagens e Extras", "Precificação"];
-  const headerTitle = `${editingFicha ? "Editar" : "Passo"} ${editingFicha ? "—" : step + " de 4 —"} ${stepTitles[step - 1]}`;
+  const canSave = !!state.nome.trim() && (isBebidaInd ? !!state.bebida_insumo_id : state.ingredientes.length > 0);
+  const headerTitle = `${editingFicha ? "Editar" : "Nova"} Ficha Técnica`;
+
+  const updateIng = (idx: number, field: string, value: number) => {
+    setState((s) => {
+      const ings = [...s.ingredientes];
+      ings[idx] = { ...ings[idx], [field]: value };
+      return { ...s, ingredientes: ings };
+    });
+  };
+  const removeIng = (idx: number) =>
+    setState((s) => ({ ...s, ingredientes: s.ingredientes.filter((_, i) => i !== idx) }));
+  const addIng = (ing: IngredientForm) =>
+    setState((s) => ({ ...s, ingredientes: [...s.ingredientes, ing] }));
+
+  const SectionTitle = ({ children }: { children: React.ReactNode }) => (
+    <h3 className="font-display text-sm font-bold uppercase tracking-wide text-muted-foreground mt-4 mb-2 first:mt-0">
+      {children}
+    </h3>
+  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[92vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[92vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-display">{headerTitle}</DialogTitle>
-          <div className="flex gap-1 mt-2">
-            {[1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className={`h-1.5 flex-1 rounded-full ${i <= step ? "bg-primary" : "bg-muted"}`}
-              />
-            ))}
-          </div>
         </DialogHeader>
 
-        {/* Step 1 */}
-        {step === 1 && (
-          <div className="space-y-4 py-2">
-            <div>
-              <Label className="mb-2 block">O que você vai cadastrar?</Label>
-              <div className="grid grid-cols-3 gap-2">
-                {PRODUCT_TYPES.map((t) => (
-                  <button
-                    key={t.key}
-                    type="button"
-                    onClick={() => setState((s) => ({ ...s, tipo: t.key }))}
-                    disabled={!!editingFicha}
-                    className={`border rounded-lg p-3 text-left transition-all ${
-                      state.tipo === t.key
-                        ? "border-primary bg-primary/5 ring-2 ring-primary/20"
-                        : "border-border hover:border-primary/50"
-                    } disabled:opacity-50`}
-                  >
-                    <div className="text-2xl mb-1">{t.emoji}</div>
-                    <div className="text-sm font-semibold">{t.label}</div>
-                  </button>
-                ))}
-              </div>
+        <div className="space-y-2 py-2">
+          {/* ── Identificação ─────────────────────────────────────── */}
+          <SectionTitle>Identificação</SectionTitle>
+          <div>
+            <Label className="mb-2 block">Tipo de produto</Label>
+            <div className="grid grid-cols-5 gap-2">
+              {PRODUCT_TYPES.map((t) => (
+                <button
+                  key={t.key}
+                  type="button"
+                  onClick={() => setState((s) => ({ ...s, tipo: t.key }))}
+                  disabled={!!editingFicha}
+                  className={`border rounded-lg p-2 text-center transition-all ${
+                    state.tipo === t.key
+                      ? "border-primary bg-primary/5 ring-2 ring-primary/20"
+                      : "border-border hover:border-primary/50"
+                  } disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                  <div className="text-xl mb-0.5">{t.emoji}</div>
+                  <div className="text-xs font-semibold">{t.label}</div>
+                </button>
+              ))}
             </div>
-            <div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="md:col-span-2">
               <Label>Nome do produto *</Label>
               <Input
                 value={state.nome}
@@ -437,154 +448,148 @@ export function FichaWizard({ open, onOpenChange, initialType = "pizza", editing
                 placeholder="Ex: Pizza Calabresa"
               />
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label>Categoria</Label>
-                <Input
-                  value={state.categoria}
-                  onChange={(e) => setState((s) => ({ ...s, categoria: e.target.value }))}
-                  placeholder={isPizza ? "tradicional, especial..." : "(opcional)"}
-                />
-              </div>
-              <div>
-                <Label>Código</Label>
-                <Input
-                  value={state.codigo}
-                  onChange={(e) => setState((s) => ({ ...s, codigo: e.target.value }))}
-                  placeholder="Auto-gerado"
-                />
-              </div>
+            <div>
+              <Label>Código</Label>
+              <Input
+                value={state.codigo}
+                onChange={(e) => setState((s) => ({ ...s, codigo: e.target.value }))}
+                placeholder="Auto"
+              />
             </div>
           </div>
-        )}
-
-        {/* Step 2 */}
-        {step === 2 && (
-          <div className="space-y-3 py-2">
-            {isBebidaInd ? (
-              <BebidaIndustrialForm
-                insumos={insumosComprados as any}
-                value={state.bebida_insumo_id}
-                onChange={(id, custo) => setState((s) => ({ ...s, bebida_insumo_id: id, bebida_custo: custo }))}
+          {isPizza && (
+            <div>
+              <Label>Categoria</Label>
+              <Input
+                value={state.categoria}
+                onChange={(e) => setState((s) => ({ ...s, categoria: e.target.value }))}
+                placeholder="tradicional, especial, doce..."
               />
-            ) : isPizza ? (
-              <PizzaIngredientes state={state} setState={setState} custoMap={custoMap} insumosComprados={insumosComprados} insumosProprios={insumosProprios} calcIngCost={calcIngCost} custoP={custoP} custoM={custoM} custoG={custoG} />
-            ) : (
-              <SimpleIngredientes state={state} setState={setState} custoMap={custoMap} insumosComprados={insumosComprados} insumosProprios={insumosProprios} calcIngCost={calcIngCost} custoTotal={custoSingle} />
-            )}
-          </div>
-        )}
+            </div>
+          )}
 
-        {/* Step 3 */}
-        {step === 3 && (
-          <div className="space-y-3 py-2">
-            <p className="text-sm text-muted-foreground">Opcional. Pule se não for necessário.</p>
-            <Collapsible defaultOpen>
-              <CollapsibleTrigger className="flex items-center gap-2 text-sm font-semibold w-full hover:bg-muted/50 p-2 rounded-md">
-                <ChevronDown size={16} /> Modo de preparo
-              </CollapsibleTrigger>
-              <CollapsibleContent className="pt-2">
-                <Textarea
-                  value={state.modo_preparo}
-                  onChange={(e) => setState((s) => ({ ...s, modo_preparo: e.target.value }))}
-                  placeholder="Descreva o modo de preparo..."
-                  rows={4}
-                />
-              </CollapsibleContent>
-            </Collapsible>
+          {/* ── Ingredientes ──────────────────────────────────────── */}
+          <SectionTitle>
+            {isBebidaInd ? "Bebida" : isPizza ? "Ingredientes (P / M / G)" : "Ingredientes"}
+          </SectionTitle>
+          {isBebidaInd ? (
+            <BebidaIndustrialForm
+              insumos={insumosComprados as any}
+              value={state.bebida_insumo_id}
+              onChange={(id: string, custo: number) =>
+                setState((s) => ({ ...s, bebida_insumo_id: id, bebida_custo: custo }))
+              }
+            />
+          ) : isPizza ? (
+            <PizzaIngredientesTable
+              ingredientes={state.ingredientes}
+              onChange={updateIng}
+              onRemove={removeIng}
+              calcIngCost={calcIngCost}
+              custoP={custoP}
+              custoM={custoM}
+              custoG={custoG}
+            />
+          ) : (
+            <SimpleIngredientesTable
+              ingredientes={state.ingredientes}
+              onChange={updateIng}
+              onRemove={removeIng}
+              calcIngCost={calcIngCost}
+              custoTotal={custoSingle}
+            />
+          )}
+          {!isBebidaInd && (
+            <IngredientPicker
+              insumosComprados={insumosComprados}
+              insumosProprios={insumosProprios}
+              custoMap={custoMap}
+              onAdd={addIng}
+            />
+          )}
+          {!isBebidaInd && (
             <p className="text-xs text-muted-foreground">
-              💡 Embalagens podem ser adicionadas depois nos ingredientes da ficha.
+              💡 Embalagens (caixa, copo, sacola) também são insumos — adicione aqui como ingredientes.
             </p>
-          </div>
-        )}
+          )}
 
-        {/* Step 4 */}
-        {step === 4 && (
-          <div className="space-y-4 py-2">
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label>Taxa iFood</Label>
-                <Select value={String(state.taxa_ifood)} onValueChange={(v) => setState((s) => ({ ...s, taxa_ifood: Number(v) }))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {[0, 12, 14, 23, 27].map((v) => (
-                      <SelectItem key={v} value={String(v)}>{v}%</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label>Taxa cartão</Label>
-                <Select value={String(state.taxa_cartao)} onValueChange={(v) => setState((s) => ({ ...s, taxa_cartao: Number(v) }))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {[0, 1.35, 2.5, 3.5, 4.5].map((v) => (
-                      <SelectItem key={v} value={String(v)}>{v}%</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+          {/* ── Modo de preparo ───────────────────────────────────── */}
+          <SectionTitle>Modo de preparo (opcional)</SectionTitle>
+          <Textarea
+            value={state.modo_preparo}
+            onChange={(e) => setState((s) => ({ ...s, modo_preparo: e.target.value }))}
+            placeholder="Descreva o modo de preparo..."
+            rows={3}
+          />
+
+          {/* ── Precificação ──────────────────────────────────────── */}
+          <SectionTitle>Precificação</SectionTitle>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label>Taxa iFood</Label>
+              <Select value={String(state.taxa_ifood)} onValueChange={(v) => setState((s) => ({ ...s, taxa_ifood: Number(v) }))}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {[0, 12, 14, 23, 27].map((v) => (
+                    <SelectItem key={v} value={String(v)}>{v}%</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
-              <div className="flex justify-between text-sm font-semibold mb-2">
-                <span>Markup desejado</span>
-                <span className="text-primary">{state.markup}%</span>
-              </div>
-              <Slider
-                value={[state.markup]}
-                onValueChange={([v]) => setState((s) => ({ ...s, markup: v }))}
-                min={0}
-                max={200}
-                step={5}
-              />
+              <Label>Taxa cartão</Label>
+              <Select value={String(state.taxa_cartao)} onValueChange={(v) => setState((s) => ({ ...s, taxa_cartao: Number(v) }))}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {[0, 1.35, 2.5, 3.5, 4.5].map((v) => (
+                    <SelectItem key={v} value={String(v)}>{v}%</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-
-            {isPizza ? (
-              <div className="grid grid-cols-3 gap-2">
-                {(["P", "M", "G"] as const).map((sz) => {
-                  const c = sz === "P" ? custoP : sz === "M" ? custoM : custoG;
-                  const p = calcPreco(c);
-                  const m = calcMargem(p, c);
-                  return (
-                    <PrecoCard key={sz} title={sz} custo={c} preco={p} margem={m} badgeClass={margemBadge(m)} />
-                  );
-                })}
-              </div>
-            ) : (
-              (() => {
-                const c = custoSingle;
+          </div>
+          <div className="pt-1">
+            <div className="flex justify-between text-sm font-semibold mb-2">
+              <span>Markup desejado</span>
+              <span className="text-primary">{state.markup}%</span>
+            </div>
+            <Slider
+              value={[state.markup]}
+              onValueChange={([v]) => setState((s) => ({ ...s, markup: v }))}
+              min={0}
+              max={200}
+              step={5}
+            />
+          </div>
+          {isPizza ? (
+            <div className="grid grid-cols-3 gap-2 pt-2">
+              {(["P", "M", "G"] as const).map((sz) => {
+                const c = sz === "P" ? custoP : sz === "M" ? custoM : custoG;
                 const p = calcPreco(c);
                 const m = calcMargem(p, c);
-                return <PrecoCard large custo={c} preco={p} margem={m} badgeClass={margemBadge(m)} />;
-              })()
-            )}
-          </div>
-        )}
-
-        {/* Footer */}
-        <div className="flex justify-between pt-4 border-t">
-          <Button
-            variant="ghost"
-            onClick={() => (step > 1 ? setStep(step - 1) : onOpenChange(false))}
-            disabled={saveMutation.isPending}
-          >
-            <ChevronLeft size={16} /> {step === 1 ? "Cancelar" : "Voltar"}
-          </Button>
-
-          {step < 4 ? (
-            <div className="flex gap-2">
-              {step === 3 && (
-                <Button variant="outline" onClick={() => setStep(4)}>Pular</Button>
-              )}
-              <Button onClick={() => canNext() && setStep(step + 1)} disabled={!canNext()}>
-                Próximo <ChevronRight size={16} />
-              </Button>
+                return (
+                  <PrecoCard key={sz} title={sz} custo={c} preco={p} margem={m} badgeClass={margemBadge(m)} />
+                );
+              })}
             </div>
           ) : (
-            <Button onClick={() => saveMutation.mutate()} disabled={saveMutation.isPending}>
-              <Save size={16} /> {saveMutation.isPending ? "Salvando..." : "Salvar Ficha"}
-            </Button>
+            (() => {
+              const c = custoSingle;
+              const p = calcPreco(c);
+              const m = calcMargem(p, c);
+              return <PrecoCard large custo={c} preco={p} margem={m} badgeClass={margemBadge(m)} />;
+            })()
           )}
+        </div>
+
+        {/* Footer */}
+        <div className="flex justify-between pt-4 border-t sticky bottom-0 bg-background">
+          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={saveMutation.isPending}>
+            <ChevronLeft size={16} /> Cancelar
+          </Button>
+          <Button onClick={() => saveMutation.mutate()} disabled={!canSave || saveMutation.isPending}>
+            <Save size={16} /> {saveMutation.isPending ? "Salvando..." : "Salvar Ficha"}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
