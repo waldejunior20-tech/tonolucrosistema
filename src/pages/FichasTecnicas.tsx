@@ -193,7 +193,12 @@ export default function FichasTecnicas() {
         ))}
       </Tabs>
 
-      <FichaWizard open={wizardOpen} onOpenChange={setWizardOpen} initialType={tab} />
+      <FichaWizard
+        open={wizardOpen}
+        onOpenChange={(o) => { setWizardOpen(o); if (!o) setEditingFicha(null); }}
+        initialType={tab}
+        editingFicha={editingFicha}
+      />
     </div>
   );
 }
