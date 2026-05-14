@@ -29,7 +29,7 @@ export function useProfitAlerts(limit = 5) {
       const { data, error } = await supabase
         .from("alertas_cmv")
         .select("id, nome_produto, tipo_ficha, ficha_tecnica_id, cmv_anterior, cmv_atual, preco_sugerido, preco_sugerido_p, preco_sugerido_m, preco_sugerido_g, created_at")
-        .eq("unidade_id", unidadeId!)
+        .eq("unidade_id", activeUnidadeId!)
         .eq("status", "pendente")
         .order("created_at", { ascending: false })
         .limit(50);
