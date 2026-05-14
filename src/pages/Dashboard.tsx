@@ -714,12 +714,27 @@ export default function Dashboard() {
               ))}
             </div>
           ) : (
-            <EmptyState
-              icon={CheckCircle2}
-              title="Nenhum produto em risco"
-              hint="Margens estão saudáveis. Continue acompanhando custos e fichas."
-              tone="success"
-            />
+            <div className="flex-1 flex flex-col justify-center gap-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-lg bg-[#ECFDF5] text-[#059669] flex items-center justify-center shrink-0">
+                  <CheckCircle2 size={16} strokeWidth={2.4} />
+                </div>
+                <div className="min-w-0">
+                  <p className={cn(T.accent, "text-[14px]", C.text)}>Nenhum produto em risco</p>
+                  <p className={cn(T.body, "text-[12px]", C.muted)}>Margens saudáveis no momento.</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] px-2.5 py-2">
+                  <p className={cn(T.mono, "text-[16px] font-bold text-[#059669] leading-none")}>0</p>
+                  <p className={cn(T.body, "text-[10.5px] mt-1", C.muted)}>com CMV alto</p>
+                </div>
+                <div className="rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] px-2.5 py-2">
+                  <p className={cn(T.mono, "text-[16px] font-bold text-[#059669] leading-none")}>0</p>
+                  <p className={cn(T.body, "text-[10.5px] mt-1", C.muted)}>abaixo da margem mínima</p>
+                </div>
+              </div>
+            </div>
           )}
         </Bento>
 
