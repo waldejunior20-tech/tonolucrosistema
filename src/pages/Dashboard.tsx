@@ -449,14 +449,36 @@ export default function Dashboard() {
 
         {/* ROW 1 — RADAR DE LUCRO (hero, col-span-7) */}
         <Bento hero className="lg:col-span-7 relative overflow-hidden">
+          {/* Aurora layer — blue/violet/green, very low opacity */}
+          <div
+            aria-hidden
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(60% 50% at 8% 0%, rgba(37,99,235,0.10) 0%, transparent 60%), radial-gradient(50% 60% at 100% 10%, rgba(139,92,246,0.09) 0%, transparent 65%), radial-gradient(70% 60% at 90% 100%, rgba(5,150,105,0.08) 0%, transparent 65%), linear-gradient(135deg,#FFFFFF 0%,#FAFCFF 100%)",
+            }}
+          />
+          {/* Tone-aware accent wash */}
           <div
             aria-hidden
             className={cn(
-              "absolute inset-0 opacity-[0.7] pointer-events-none",
-              radarTone === "danger" && "bg-[radial-gradient(120%_80%_at_0%_0%,#FEF2F2_0%,transparent_55%),linear-gradient(135deg,#FFFFFF_0%,#F8FAFC_100%)]",
-              radarTone === "warning" && "bg-[radial-gradient(120%_80%_at_0%_0%,#FFFBEB_0%,transparent_55%),linear-gradient(135deg,#FFFFFF_0%,#F8FAFC_100%)]",
-              radarTone === "success" && "bg-[radial-gradient(120%_80%_at_0%_0%,#ECFDF5_0%,transparent_55%),linear-gradient(135deg,#FFFFFF_0%,#F8FAFC_100%)]",
+              "absolute inset-0 pointer-events-none opacity-70",
+              radarTone === "danger" && "bg-[radial-gradient(80%_50%_at_0%_0%,rgba(220,38,38,0.06)_0%,transparent_55%)]",
+              radarTone === "warning" && "bg-[radial-gradient(80%_50%_at_0%_0%,rgba(217,119,6,0.06)_0%,transparent_55%)]",
+              radarTone === "success" && "bg-[radial-gradient(80%_50%_at_0%_0%,rgba(5,150,105,0.06)_0%,transparent_55%)]",
             )}
+          />
+          {/* Subtle grid texture, masked to top-right */}
+          <div
+            aria-hidden
+            className="absolute inset-0 pointer-events-none opacity-[0.35]"
+            style={{
+              backgroundImage:
+                "linear-gradient(to right, rgba(15,23,42,0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(15,23,42,0.04) 1px, transparent 1px)",
+              backgroundSize: "28px 28px",
+              maskImage: "radial-gradient(60% 60% at 90% 0%, black, transparent 70%)",
+              WebkitMaskImage: "radial-gradient(60% 60% at 90% 0%, black, transparent 70%)",
+            }}
           />
           <div className="relative flex flex-col h-full">
             <CardHeader
