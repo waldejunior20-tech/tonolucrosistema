@@ -68,7 +68,7 @@ export default function InsumosDuplicados() {
         .select("insumo_a_id, insumo_b_id")
         .eq("unidade_id", unidadeId!);
       if (error) throw error;
-      return (data ?? []) as { insumo_a_id: string; insumo_b_id: string }[];
+      return (data ?? []) as unknown as { insumo_a_id: string; insumo_b_id: string }[];
     },
   });
 
