@@ -640,7 +640,7 @@ export default function Dashboard() {
         {/* ROW 2 — PRONTOS PARA PROMOÇÃO (col-span-4) */}
         <Bento className="lg:col-span-4">
           <CardHeader
-            title="Prontos para Promoção"
+            title="Oportunidades de Promoção"
             subtitle="Produtos com margem segura para campanha."
             icon={Sparkles}
             tint="success"
