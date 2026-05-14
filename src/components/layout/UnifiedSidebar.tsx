@@ -29,7 +29,7 @@ interface SidebarItem {
 const sidebarItems: SidebarItem[] = [
   { key: "dashboard",    label: "Dashboard",         emoji: "📊", icon: LayoutDashboard, path: "/" },
   { key: "caixa",        label: "Caixa Diário",      emoji: "💰", icon: Wallet,          path: "/financeiro/caixa-diario" },
-  { key: "fichas",       label: "Fichas Técnicas",   emoji: "🍕", icon: Pizza,           path: "/fichas/pizzas",          match: ["/fichas/"] },
+  { key: "fichas",       label: "Fichas Técnicas",   emoji: "🍕", icon: Pizza,           path: "/fichas",                 match: ["/fichas"] },
   { key: "insumos",      label: "Insumos & Estoque", emoji: "🧺", icon: Package,         path: "/insumos/comprados",      match: ["/insumos/"] },
   { key: "contas",       label: "Contas a Pagar",    emoji: "💵", icon: Receipt,         path: "/financeiro/contas-a-pagar" },
   { key: "relatorios",   label: "Relatórios",        emoji: "📈", icon: BarChart3,       path: "/financeiro/dre",         match: ["/financeiro/dre", "/financeiro/ponto-de-equilibrio"] },
