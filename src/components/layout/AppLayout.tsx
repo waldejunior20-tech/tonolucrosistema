@@ -21,7 +21,7 @@ export function AppLayout() {
         <aside
           className={cn(
             "fixed top-0 left-0 h-screen z-40 transition-all duration-300",
-            sidebarCollapsed ? "w-16" : "w-[260px]"
+            sidebarCollapsed ? "w-16" : "w-[288px]"
           )}
         >
           <UnifiedSidebar
@@ -38,16 +38,16 @@ export function AppLayout() {
       <div
         className={cn(
           "flex-1 flex flex-col min-h-screen min-w-0 transition-all duration-300",
-          !isMobile && (sidebarCollapsed ? "ml-16" : "ml-[260px]")
+          !isMobile && (sidebarCollapsed ? "ml-16" : "ml-[288px]")
         )}
       >
         <Header
           showMenuButton={isMobile}
           onMenuClick={() => setMobileOpen(true)}
-          sidebarWidth={!isMobile ? (sidebarCollapsed ? "4rem" : "260px") : "0px"}
+          sidebarWidth={!isMobile ? (sidebarCollapsed ? "4rem" : "288px") : "0px"}
         />
-        <main className={cn("flex-1 p-4 lg:p-8 overflow-auto relative mt-16", isMobile && "pb-24")}>
-          <div className="max-w-[1280px] mx-auto relative z-10 w-full">
+        <main className={cn("flex-1 p-4 lg:p-6 overflow-auto relative mt-16", isMobile && "pb-24")}>
+          <div className="max-w-[1440px] mx-auto relative z-10 w-full">
             <Outlet />
           </div>
         </main>
