@@ -5,6 +5,7 @@ import { useScrollToTop } from "@/hooks/useScrollToTop";
 
 import { UnifiedSidebar } from "./UnifiedSidebar";
 import { MobileSidebar } from "./MobileSidebar";
+import { MobileBottomNav } from "./MobileBottomNav";
 import { Header } from "./Header";
 import { cn } from "@/lib/utils";
 
@@ -16,7 +17,6 @@ export function AppLayout() {
 
   return (
     <div className="flex min-h-screen w-full bg-background">
-      {/* Desktop Sidebar — fixed */}
       {!isMobile && (
         <aside
           className={cn(
@@ -31,12 +31,10 @@ export function AppLayout() {
         </aside>
       )}
 
-      {/* Mobile Sidebar (Sheet/Drawer) */}
       {isMobile && (
         <MobileSidebar open={mobileOpen} onOpenChange={setMobileOpen} />
       )}
 
-      {/* Main — offset by sidebar width on desktop */}
       <div
         className={cn(
           "flex-1 flex flex-col min-h-screen min-w-0 transition-all duration-300",
@@ -48,12 +46,14 @@ export function AppLayout() {
           onMenuClick={() => setMobileOpen(true)}
           sidebarWidth={!isMobile ? (sidebarCollapsed ? "4rem" : "260px") : "0px"}
         />
-        <main className="flex-1 p-4 lg:p-8 overflow-auto relative mt-16">
+        <main className={cn("flex-1 p-4 lg:p-8 overflow-auto relative mt-16", isMobile && "pb-24")}>
           <div className="max-w-[1280px] mx-auto relative z-10 w-full">
             <Outlet />
           </div>
         </main>
       </div>
+
+      {isMobile && <MobileBottomNav onMenuClick={() => setMobileOpen(true)} />}
     </div>
   );
 }
