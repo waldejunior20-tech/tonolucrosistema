@@ -14,8 +14,7 @@ import Dashboard from "@/pages/Dashboard";
 import SectionPage from "@/pages/SectionPage";
 import InsumosComprados from "@/pages/InsumosComprados";
 import InsumosProduzidos from "@/pages/InsumosProduzidos";
-import FichasTecnicasPizza from "@/pages/FichasTecnicasPizza";
-import FichasTecnicasProdutos from "@/pages/FichasTecnicasProdutos";
+import FichasTecnicas from "@/pages/FichasTecnicas";
 import PrecificacaoPizzas from "@/pages/PrecificacaoPizzas";
 import PrecificacaoBebidas from "@/pages/PrecificacaoBebidas";
 import PrecificacaoProdutos from "@/pages/PrecificacaoProdutos";
@@ -104,11 +103,12 @@ function AppRoutes() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/insumos/comprados" element={<InsumosComprados />} />
         <Route path="/insumos/produzidos" element={<InsumosProduzidos />} />
-        <Route path="/fichas/pizzas" element={<FichasTecnicasPizza />} />
-        <Route path="/fichas/sanduiches" element={<FichasTecnicasProdutos categoria="sanduiche" />} />
-        <Route path="/fichas/pratos" element={<FichasTecnicasProdutos categoria="prato" />} />
-        <Route path="/fichas/sobremesas" element={<FichasTecnicasProdutos categoria="sobremesa" />} />
-        <Route path="/fichas/bebidas" element={<FichasTecnicasProdutos categoria="bebida" />} />
+        <Route path="/fichas" element={<FichasTecnicas />} />
+        <Route path="/fichas/pizzas" element={<Navigate to="/fichas?tab=pizza" replace />} />
+        <Route path="/fichas/sanduiches" element={<Navigate to="/fichas?tab=hamburguer" replace />} />
+        <Route path="/fichas/pratos" element={<Navigate to="/fichas?tab=pastel" replace />} />
+        <Route path="/fichas/sobremesas" element={<Navigate to="/fichas?tab=pastel" replace />} />
+        <Route path="/fichas/bebidas" element={<Navigate to="/fichas?tab=bebida_industrial" replace />} />
         <Route path="/precificacao/pizzas" element={<PrecificacaoPizzas />} />
         <Route path="/precificacao/produtos" element={<PrecificacaoProdutos />} />
         <Route path="/precificacao/bebidas" element={<PrecificacaoBebidas />} />
