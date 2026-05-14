@@ -4,9 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
-  Wallet, Trophy, AlertTriangle, Clock, TrendingUp, TrendingDown,
-  Plus, ChefHat, Receipt, FileUp, Sparkles, Bell, ArrowRight,
-  CheckCircle2, Activity,
+  TrendingUp, TrendingDown, AlertTriangle, Sparkles, ChefHat,
+  Plus, Receipt, FileUp, Tag, ArrowRight, CheckCircle2,
+  Flame, ShieldAlert, ClipboardList, Zap,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDashboardData } from "@/hooks/useDashboardData";
@@ -19,8 +19,6 @@ import { cn } from "@/lib/utils";
 const fmtBRL = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-const fmtPct = (v: number) => `${v.toFixed(1)}%`;
-
 const greeting = () => {
   const h = new Date().getHours();
   if (h < 12) return "Bom dia";
@@ -28,7 +26,6 @@ const greeting = () => {
   return "Boa noite";
 };
 
-// ─── Typography classes (Plus Jakarta + Inter + JetBrains Mono) ──────
 const T = {
   display: "font-heading font-bold text-[24px] md:text-[32px] leading-tight tracking-tight",
   headline: "font-heading font-semibold text-[20px] leading-tight",
@@ -38,85 +35,39 @@ const T = {
   accent: "font-heading font-semibold text-[16px]",
 };
 
-// ─── KPI Card ────────────────────────────────────────────────────────
-function KpiCard({
-  icon: Icon,
-  iconTone,
-  label,
-  value,
-  hint,
-  badge,
-  badgeTone = "neutral",
-  onClick,
-}: {
-  icon: any;
-  iconTone: "primary" | "success" | "destructive" | "warning";
-  label: string;
-  value: string;
-  hint?: string;
-  badge?: string;
-  badgeTone?: "neutral" | "success" | "destructive" | "warning";
-  onClick?: () => void;
+// ─── Building blocks ─────────────────────────────────────────────────
+function Section({ title, description, icon: Icon, tone = "primary", children, action }: {
+  title: string; description?: string; icon?: any;
+  tone?: "primary" | "success" | "destructive" | "warning";
+  children: React.ReactNode; action?: React.ReactNode;
 }) {
-  const iconBg: Record<string, string> = {
+  const toneCls: Record<string, string> = {
     primary: "bg-primary/10 text-primary",
     success: "bg-success/10 text-success",
     destructive: "bg-destructive/10 text-destructive",
     warning: "bg-warning/10 text-warning",
   };
-  const badgeCls: Record<string, string> = {
-    neutral: "bg-muted text-muted-foreground",
-    success: "bg-success/10 text-success",
-    destructive: "bg-destructive/10 text-destructive",
-    warning: "bg-warning/10 text-warning",
-  };
-
   return (
-    <div
-      onClick={onClick}
-      className={cn(
-        "bg-card border border-border rounded-xl p-6 shadow-sm transition-all duration-200",
-        "hover:shadow-md hover:-translate-y-0.5",
-        onClick && "cursor-pointer",
-      )}
-    >
-      <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center mb-4", iconBg[iconTone])}>
-        <Icon size={20} strokeWidth={2.2} />
+    <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+      <div className="flex items-start justify-between mb-5 gap-3">
+        <div className="flex items-start gap-3 min-w-0">
+          {Icon && (
+            <div className={cn("w-9 h-9 rounded-lg flex items-center justify-center shrink-0", toneCls[tone])}>
+              <Icon size={18} strokeWidth={2.2} />
+            </div>
+          )}
+          <div className="min-w-0">
+            <h3 className={cn(T.headline, "text-foreground")}>{title}</h3>
+            {description && <p className={cn(T.body, "text-muted-foreground mt-0.5 text-[13px]")}>{description}</p>}
+          </div>
+        </div>
+        {action}
       </div>
-      <p className={cn(T.label, "text-muted-foreground mb-2")}>{label}</p>
-      <p className={cn(T.mono, "text-[24px] font-bold text-foreground leading-none mb-2")}>{value}</p>
-      {hint && <p className={cn(T.body, "text-muted-foreground text-[13px]")}>{hint}</p>}
-      {badge && (
-        <span className={cn("inline-flex mt-3 items-center gap-1 px-2 py-0.5 rounded-md", T.label, "text-[11px]", badgeCls[badgeTone])}>
-          {badge}
-        </span>
-      )}
+      {children}
     </div>
   );
 }
 
-// ─── Quick Action ────────────────────────────────────────────────────
-function QuickAction({ icon: Icon, label, onClick, primary = false }: {
-  icon: any; label: string; onClick: () => void; primary?: boolean;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={cn(
-        "flex items-center gap-2 h-11 px-4 rounded-lg border transition-all",
-        T.accent,
-        primary
-          ? "bg-primary text-primary-foreground border-primary hover:bg-primary/90 shadow-sm"
-          : "bg-card text-foreground border-border hover:bg-muted hover:border-primary/40",
-      )}
-    >
-      <Icon size={16} strokeWidth={2.4} />
-      <span>{label}</span>
-    </button>
-  );
-}
-
-// ─── Insight List Item ───────────────────────────────────────────────
 function InsightRow({ icon: Icon, tone, title, detail, value, onClick }: {
   icon: any; tone: "success" | "destructive" | "warning" | "primary";
   title: string; detail?: string; value?: string; onClick?: () => void;
@@ -149,7 +100,6 @@ function InsightRow({ icon: Icon, tone, title, detail, value, onClick }: {
   );
 }
 
-// ─── Empty State ─────────────────────────────────────────────────────
 function EmptyHint({ icon: Icon, message }: { icon: any; message: string }) {
   return (
     <div className="flex flex-col items-center justify-center py-8 px-4 text-center gap-2">
@@ -161,55 +111,83 @@ function EmptyHint({ icon: Icon, message }: { icon: any; message: string }) {
   );
 }
 
-// ─── Section Card ────────────────────────────────────────────────────
-function Section({ title, description, icon: Icon, children, action }: {
-  title: string; description?: string; icon?: any;
-  children: React.ReactNode; action?: React.ReactNode;
+function QuickAction({ icon: Icon, label, onClick, primary = false }: {
+  icon: any; label: string; onClick: () => void; primary?: boolean;
 }) {
   return (
-    <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-      <div className="flex items-start justify-between mb-5 gap-3">
-        <div className="flex items-start gap-3 min-w-0">
-          {Icon && (
-            <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-              <Icon size={18} strokeWidth={2.2} />
-            </div>
-          )}
-          <div className="min-w-0">
-            <h3 className={cn(T.headline, "text-foreground")}>{title}</h3>
-            {description && <p className={cn(T.body, "text-muted-foreground mt-0.5 text-[13px]")}>{description}</p>}
-          </div>
-        </div>
-        {action}
-      </div>
-      {children}
+    <button
+      onClick={onClick}
+      className={cn(
+        "flex items-center gap-2 h-11 px-4 rounded-lg border transition-all",
+        T.accent,
+        primary
+          ? "bg-primary text-primary-foreground border-primary hover:bg-primary/90 shadow-sm"
+          : "bg-card text-foreground border-border hover:bg-muted hover:border-primary/40",
+      )}
+    >
+      <Icon size={16} strokeWidth={2.4} />
+      <span>{label}</span>
+    </button>
+  );
+}
+
+function MiniStat({ label, value, tone = "primary" }: {
+  label: string; value: string | number;
+  tone?: "primary" | "success" | "destructive" | "warning";
+}) {
+  const toneCls: Record<string, string> = {
+    primary: "text-primary",
+    success: "text-success",
+    destructive: "text-destructive",
+    warning: "text-warning",
+  };
+  return (
+    <div className="bg-muted/30 border border-border rounded-lg p-4">
+      <p className={cn(T.label, "text-muted-foreground mb-1.5")}>{label}</p>
+      <p className={cn(T.mono, "text-[22px] font-bold leading-none", toneCls[tone])}>{value}</p>
     </div>
   );
 }
 
-// ─── Main Component ──────────────────────────────────────────────────
+// ─── Main ────────────────────────────────────────────────────────────
 export default function Dashboard() {
   const navigate = useNavigate();
   const [userName, setUserName] = useState("");
   const [businessName, setBusinessName] = useState("");
 
-  const {
-    faturamentoMes, despesasMes, cmvPct, cmvMeta, contasVencendo, comparativos,
-  } = useDashboardData();
-
+  const { faturamentoMes, despesasMes, cmvPct, cmvMeta } = useDashboardData();
   const { data: priceAlerts = [] } = usePriceAlerts();
-  const { data: profitAlerts = [] } = useProfitAlerts(5);
+  const { data: profitAlerts = [] } = useProfitAlerts(20);
 
-  // Últimos lançamentos (read-only sobre tabela existente)
-  const { data: ultimosLancamentos = [] } = useQuery({
-    queryKey: ["dashboard-ultimos-lancamentos"],
+  // Fichas com preço — base para "prontos para promoção" e "engenharia"
+  const { data: fichasPizza = [] } = useQuery({
+    queryKey: ["dashboard-fichas-pizza-list"],
     queryFn: async () => {
       const { data } = await supabase
-        .from("lancamentos_financeiros")
-        .select("id, descricao, valor, tipo, categoria, data_lancamento, created_at")
-        .order("created_at", { ascending: false })
-        .limit(5);
+        .from("fichas_tecnicas_pizza")
+        .select("id, nome, preco_venda_p, preco_venda_m, preco_venda_g");
       return data ?? [];
+    },
+  });
+
+  const { data: fichasProdutos = [] } = useQuery({
+    queryKey: ["dashboard-fichas-produtos-list"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("fichas_tecnicas_produtos")
+        .select("id, nome, categoria, preco_venda");
+      return data ?? [];
+    },
+  });
+
+  const { data: warningsCount = 0 } = useQuery({
+    queryKey: ["dashboard-fichas-warnings"],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("fichas_tecnicas_warnings")
+        .select("*", { count: "exact", head: true })
+        .eq("resolvido", false);
+      return count ?? 0;
     },
   });
 
@@ -227,280 +205,338 @@ export default function Dashboard() {
 
   const lucroMes = faturamentoMes - despesasMes;
   const dataHoje = format(new Date(), "EEEE, d 'de' MMMM", { locale: ptBR });
-  const caixaStatus = lucroMes > 0 ? "positivo" : lucroMes < 0 ? "negativo" : "zerado";
-  const caixaColor = lucroMes > 0 ? "text-success" : lucroMes < 0 ? "text-destructive" : "text-muted-foreground";
-
-  const cmvOk = cmvPct <= cmvMeta;
+  const caixaPositivo = lucroMes > 0;
+  const caixaNegativo = lucroMes < 0;
   const hasFaturamento = faturamentoMes > 0;
+  const cmvOk = cmvPct <= cmvMeta;
 
-  const topProfitAlert = profitAlerts[0];
-  const topPriceAlert = priceAlerts[0];
+  // Produtos que perderam margem (alertas com aumento de CMV)
+  const perderamMargem = profitAlerts.filter((p) => p.delta_abs > 0);
+  const produtosImpactadosPorAlerta = perderamMargem.slice(0, 3);
+
+  // Saudação operacional
+  const saudacao = (() => {
+    const partes: string[] = [];
+    if (hasFaturamento) {
+      if (caixaPositivo) partes.push(`Seu caixa do mês está positivo em ${fmtBRL(lucroMes)}`);
+      else if (caixaNegativo) partes.push(`Seu caixa do mês está negativo em ${fmtBRL(Math.abs(lucroMes))}`);
+      else partes.push("Seu caixa do mês está zerado");
+    } else {
+      partes.push("Registre suas vendas para acompanhar o caixa");
+    }
+    if (perderamMargem.length > 0) {
+      partes.push(`${perderamMargem.length} produto${perderamMargem.length > 1 ? "s" : ""} perde${perderamMargem.length > 1 ? "ram" : "u"} margem esta semana`);
+    } else if (priceAlerts.length > 0) {
+      partes.push(`${priceAlerts.length} insumo${priceAlerts.length > 1 ? "s" : ""} subiu de preço`);
+    }
+    return partes.join(", mas ");
+  })();
+
+  // Engenharia do cardápio — métricas
+  const fichasPizzaSemPreco = fichasPizza.filter((f: any) =>
+    !f.preco_venda_p && !f.preco_venda_m && !f.preco_venda_g
+  ).length;
+  const fichasProdutosSemPreco = fichasProdutos.filter((f: any) => !f.preco_venda).length;
+  const fichasIncompletas = fichasPizzaSemPreco + fichasProdutosSemPreco;
+  const totalFichas = fichasPizza.length + fichasProdutos.length;
+  const fichasMargemOk = Math.max(0, totalFichas - perderamMargem.length - fichasIncompletas);
+
+  // Prontos para promoção — fichas com preço definido E sem alerta de margem
+  const idsComAlerta = new Set(profitAlerts.map((p) => p.ficha_tecnica_id).filter(Boolean));
+
+  const prontosPromocao = (() => {
+    const items: { id: string; nome: string; categoria: string; preco: number }[] = [];
+    for (const f of fichasPizza as any[]) {
+      const preco = Number(f.preco_venda_m || f.preco_venda_g || f.preco_venda_p || 0);
+      if (preco > 0 && !idsComAlerta.has(f.id)) {
+        items.push({ id: f.id, nome: f.nome, categoria: "Pizza", preco });
+      }
+    }
+    for (const f of fichasProdutos as any[]) {
+      const preco = Number(f.preco_venda || 0);
+      if (preco > 0 && !idsComAlerta.has(f.id)) {
+        items.push({ id: f.id, nome: f.nome, categoria: f.categoria || "Produto", preco });
+      }
+    }
+    return items.slice(0, 6);
+  })();
+
+  // Insumo mais crítico para o card "Radar de Lucro"
+  const insumoCritico = priceAlerts[0];
 
   return (
     <div className="page-enter space-y-8 pb-12">
 
-      {/* ─── WELCOME ─────────────────────────────────────────────── */}
+      {/* ─── 1. SAUDAÇÃO OPERACIONAL ─────────────────────────────── */}
       <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
-        <div>
+        <div className="min-w-0">
           <h1 className={cn(T.display, "text-foreground")}>
-            {greeting()}{userName ? `, ${userName}` : ""} <span className="inline-block">👋</span>
+            {greeting()}{userName ? `, ${userName}` : ""}.
           </h1>
           <p className={cn(T.body, "text-muted-foreground mt-2 capitalize")}>
-            Hoje é {dataHoje}.{" "}
-            {hasFaturamento ? (
-              <>Seu caixa do mês está <span className={cn(caixaColor, "font-semibold")}>{fmtBRL(Math.abs(lucroMes))} {caixaStatus}</span>.</>
-            ) : (
-              <>Registre suas vendas para acompanhar o caixa em tempo real.</>
-            )}
+            <span className="lowercase">{dataHoje}</span>
+            <span className="mx-2">·</span>
+            <span className={cn(
+              "font-semibold",
+              caixaPositivo && "text-success",
+              caixaNegativo && "text-destructive",
+              perderamMargem.length > 0 && !caixaNegativo && "text-warning",
+            )}>
+              {saudacao}.
+            </span>
           </p>
         </div>
         {businessName && (
-          <span className={cn(T.label, "px-3 py-1.5 rounded-md bg-muted text-muted-foreground")}>
+          <span className={cn(T.label, "px-3 py-1.5 rounded-md bg-muted text-muted-foreground shrink-0")}>
             {businessName}
           </span>
         )}
       </header>
 
-      {/* ─── ONBOARDING ──────────────────────────────────────────── */}
       <OnboardingChecklist />
 
-      {/* ─── KPI CARDS ───────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
-        <KpiCard
-          icon={Wallet}
-          iconTone={lucroMes >= 0 ? "success" : "destructive"}
-          label="Caixa do Mês"
-          value={hasFaturamento ? fmtBRL(lucroMes) : "—"}
-          hint={hasFaturamento
-            ? `Faturamento ${fmtBRL(faturamentoMes)} · Despesas ${fmtBRL(despesasMes)}`
-            : "Sem lançamentos este mês"}
-          badge={comparativos.lucro !== null
-            ? `${comparativos.lucro > 0 ? "+" : ""}${comparativos.lucro.toFixed(1)}% vs mês anterior`
-            : "Sem base de comparação"}
-          badgeTone={comparativos.lucro && comparativos.lucro > 0 ? "success" : comparativos.lucro && comparativos.lucro < 0 ? "destructive" : "neutral"}
-          onClick={() => navigate("/financeiro/dre")}
-        />
-
-        <KpiCard
-          icon={Trophy}
-          iconTone="primary"
-          label="Top Produto"
-          value={topProfitAlert ? topProfitAlert.nome : "—"}
-          hint={topProfitAlert
-            ? `Sugestão de preço ${fmtBRL(topProfitAlert.preco_sugerido)} · CMV ${fmtBRL(topProfitAlert.cmv_atual)}`
-            : "Cadastre fichas técnicas para ver os mais rentáveis"}
-          badge={topProfitAlert ? topProfitAlert.tipo_ficha : undefined}
-          badgeTone="neutral"
-          onClick={() => navigate("/precificacao/pizzas")}
-        />
-
-        <KpiCard
-          icon={AlertTriangle}
-          iconTone={topPriceAlert ? "destructive" : "success"}
-          label="Alerta de Custo"
-          value={topPriceAlert
-            ? `${topPriceAlert.nome} +${topPriceAlert.variacaoPct.toFixed(1)}%`
-            : "Tudo estável"}
-          hint={topPriceAlert
-            ? `${fmtBRL(topPriceAlert.precoAnterior)} → ${fmtBRL(topPriceAlert.precoAtual)} / ${topPriceAlert.unidade}`
-            : "Nenhum insumo subiu acima do limite"}
-          badge={topPriceAlert ? `${priceAlerts.length} insumo${priceAlerts.length > 1 ? "s" : ""} afetado${priceAlerts.length > 1 ? "s" : ""}` : undefined}
-          badgeTone="destructive"
-          onClick={() => navigate("/insumos/comprados")}
-        />
-
-        <KpiCard
-          icon={Clock}
-          iconTone={cmvOk ? "success" : "warning"}
-          label="Saúde do CMV"
-          value={hasFaturamento ? fmtPct(cmvPct) : "—"}
-          hint={hasFaturamento
-            ? cmvOk ? `Dentro da meta de ${cmvMeta}%` : `Acima da meta de ${cmvMeta}% — revise preços`
-            : "Sem dados suficientes ainda"}
-          badge={hasFaturamento ? (cmvOk ? "Saudável" : "Atenção") : undefined}
-          badgeTone={cmvOk ? "success" : "warning"}
-          onClick={() => navigate("/automacao/saude")}
-        />
-      </div>
-
-      {/* ─── QUICK ACTIONS ───────────────────────────────────────── */}
+      {/* ─── 6. AÇÕES RÁPIDAS (próximas da saudação para acesso rápido) */}
       <div className="flex flex-wrap items-center gap-3">
-        <span className={cn(T.label, "text-muted-foreground mr-1")}>Ações Rápidas</span>
+        <span className={cn(T.label, "text-muted-foreground mr-1 flex items-center gap-1.5")}>
+          <Zap size={14} /> Ações Rápidas
+        </span>
         <QuickAction icon={Plus} label="Registrar Venda" primary onClick={() => navigate("/financeiro/caixa-diario")} />
-        <QuickAction icon={ChefHat} label="Nova Ficha Técnica" onClick={() => navigate("/fichas/pizzas")} />
-        <QuickAction icon={Receipt} label="Lançar Despesa" onClick={() => navigate("/financeiro/contas-a-pagar")} />
+        <QuickAction icon={ChefHat} label="Nova Ficha" onClick={() => navigate("/fichas/pizzas")} />
+        <QuickAction icon={Tag} label="Atualizar Preço" onClick={() => navigate("/precificacao/pizzas")} />
+        <QuickAction icon={Sparkles} label="Criar Promoção" onClick={() => navigate("/promocoes")} />
         <QuickAction icon={FileUp} label="Importar Nota Fiscal" onClick={() => navigate("/insumos/comprados")} />
       </div>
 
-      {/* ─── INSIGHT GRID ────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* ─── 2. RADAR DE LUCRO ───────────────────────────────────── */}
+      <Section
+        title="Radar de Lucro"
+        description="O que mexeu no seu lucro nesta semana."
+        icon={Flame}
+        tone="destructive"
+      >
+        {insumoCritico ? (
+          <div className="space-y-5">
+            {/* Card principal vivo */}
+            <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-5">
+              <div className="flex items-start gap-4">
+                <div className="w-11 h-11 rounded-lg bg-destructive/15 text-destructive flex items-center justify-center shrink-0">
+                  <TrendingUp size={20} strokeWidth={2.4} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className={cn(T.label, "text-destructive mb-1")}>Insumo em alta</p>
+                  <h4 className={cn(T.headline, "text-foreground mb-1")}>
+                    {insumoCritico.nome} subiu {insumoCritico.variacaoPct.toFixed(1)}%
+                  </h4>
+                  <p className={cn(T.body, "text-muted-foreground")}>
+                    De <span className={cn(T.mono, "font-semibold")}>{fmtBRL(insumoCritico.precoAnterior)}</span>
+                    {" → "}
+                    <span className={cn(T.mono, "font-semibold text-destructive")}>{fmtBRL(insumoCritico.precoAtual)}</span>
+                    {" "}por {insumoCritico.unidade}
+                  </p>
+                </div>
+              </div>
 
-        {/* Radar de Lucro — large */}
-        <div className="lg:col-span-2">
-          <Section
-            title="Radar de Lucro"
-            description="Insights gerados a partir das suas fichas, vendas e compras."
-            icon={Sparkles}
-          >
-            {profitAlerts.length || priceAlerts.length ? (
-              <div className="space-y-2.5">
-                {priceAlerts.slice(0, 3).map((a, i) => (
+              {produtosImpactadosPorAlerta.length > 0 && (
+                <div className="mt-5 pt-5 border-t border-destructive/20">
+                  <p className={cn(T.label, "text-muted-foreground mb-3")}>
+                    Produtos impactados ({produtosImpactadosPorAlerta.length})
+                  </p>
+                  <div className="space-y-2">
+                    {produtosImpactadosPorAlerta.map((p) => (
+                      <div key={p.id} className="flex items-center justify-between gap-3 px-3 py-2 rounded-md bg-card border border-border">
+                        <div className="min-w-0">
+                          <p className={cn(T.accent, "text-[14px] truncate")}>{p.nome}</p>
+                          <p className={cn(T.body, "text-[12px] text-muted-foreground")}>
+                            CMV +{fmtBRL(p.delta_abs)}
+                          </p>
+                        </div>
+                        <span className={cn(T.mono, "text-[13px] font-bold text-warning whitespace-nowrap")}>
+                          Sugerido {fmtBRL(p.preco_sugerido)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-5 flex flex-wrap gap-2">
+                <button
+                  onClick={() => navigate("/precificacao/pizzas")}
+                  className={cn(T.accent, "h-10 px-4 rounded-lg bg-primary text-primary-foreground text-[14px] hover:bg-primary/90 transition-colors")}
+                >
+                  Ajustar preços agora
+                </button>
+                <button
+                  onClick={() => navigate("/insumos/comprados")}
+                  className={cn(T.accent, "h-10 px-4 rounded-lg border border-border text-[14px] hover:bg-muted transition-colors")}
+                >
+                  Ver histórico do insumo
+                </button>
+              </div>
+            </div>
+
+            {priceAlerts.length > 1 && (
+              <div className="space-y-2">
+                {priceAlerts.slice(1, 4).map((a, i) => (
                   <InsightRow
-                    key={`pa-${i}`}
+                    key={i}
                     icon={TrendingUp}
-                    tone="destructive"
-                    title={`${a.nome} subiu ${a.variacaoPct.toFixed(1)}%`}
-                    detail={`Custo unitário ${fmtBRL(a.precoAnterior)} → ${fmtBRL(a.precoAtual)} / ${a.unidade}`}
+                    tone="warning"
+                    title={`${a.nome} +${a.variacaoPct.toFixed(1)}%`}
+                    detail={`${fmtBRL(a.precoAnterior)} → ${fmtBRL(a.precoAtual)} / ${a.unidade}`}
                     onClick={() => navigate("/insumos/comprados")}
                   />
                 ))}
-                {profitAlerts.slice(0, 3).map((p) => (
-                  <InsightRow
-                    key={`pf-${p.id}`}
-                    icon={TrendingDown}
-                    tone="warning"
-                    title={`${p.nome} perdeu margem`}
-                    detail={`CMV passou de ${fmtBRL(p.cmv_anterior)} para ${fmtBRL(p.cmv_atual)} · Preço sugerido ${fmtBRL(p.preco_sugerido)}`}
-                    onClick={() => navigate("/automacao/alertas")}
-                  />
-                ))}
               </div>
-            ) : (
-              <EmptyHint
-                icon={Sparkles}
-                message="Cadastre fichas técnicas, vendas e compras para ativar insights inteligentes."
-              />
             )}
-          </Section>
-        </div>
+          </div>
+        ) : (
+          <EmptyHint
+            icon={CheckCircle2}
+            message="Nenhum insumo subiu acima do limite. Seu lucro está protegido por enquanto."
+          />
+        )}
+      </Section>
 
-        {/* Central de Alertas */}
+      {/* ─── 3 & 4. PROMOÇÃO + RISCO (lado a lado) ──────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        {/* 3. Prontos para Promoção */}
         <Section
-          title="Central de Alertas"
-          icon={Bell}
-          description={`${priceAlerts.length + contasVencendo.length} pendência${priceAlerts.length + contasVencendo.length === 1 ? "" : "s"}`}
+          title="Prontos para Promoção"
+          description="Produtos com margem suficiente para campanha."
+          icon={Sparkles}
+          tone="success"
+          action={prontosPromocao.length > 0 && (
+            <button
+              onClick={() => navigate("/promocoes")}
+              className={cn(T.label, "text-primary hover:text-primary/80 transition-colors")}
+            >
+              Criar →
+            </button>
+          )}
         >
-          {priceAlerts.length || contasVencendo.length || (hasFaturamento && !cmvOk) ? (
-            <div className="space-y-2.5">
-              {!cmvOk && hasFaturamento && (
+          {prontosPromocao.length ? (
+            <div className="space-y-2">
+              {prontosPromocao.map((p) => (
                 <InsightRow
-                  icon={AlertTriangle}
-                  tone="destructive"
-                  title="CMV acima da meta"
-                  detail={`${fmtPct(cmvPct)} vs meta ${cmvMeta}%`}
-                  onClick={() => navigate("/financeiro/dre")}
-                />
-              )}
-              {priceAlerts.slice(0, 2).map((a, i) => (
-                <InsightRow
-                  key={`alert-price-${i}`}
-                  icon={TrendingUp}
-                  tone="warning"
-                  title={`${a.nome} subiu`}
-                  detail={`+${a.variacaoPct.toFixed(1)}% no custo`}
-                  onClick={() => navigate("/insumos/comprados")}
-                />
-              ))}
-              {contasVencendo.slice(0, 2).map((c, i) => (
-                <InsightRow
-                  key={`alert-conta-${i}`}
-                  icon={Receipt}
-                  tone="warning"
-                  title={c.descricao}
-                  detail={`Vence ${format(new Date(c.data_lancamento + "T00:00:00"), "dd/MM")}`}
-                  value={fmtBRL(Number(c.valor))}
-                  onClick={() => navigate("/financeiro/contas-a-pagar")}
+                  key={p.id}
+                  icon={Sparkles}
+                  tone="success"
+                  title={p.nome}
+                  detail={p.categoria}
+                  value={fmtBRL(p.preco)}
+                  onClick={() => navigate("/promocoes")}
                 />
               ))}
             </div>
           ) : (
-            <EmptyHint icon={CheckCircle2} message="Tudo em dia. Nenhum alerta no momento." />
+            <EmptyHint
+              icon={Sparkles}
+              message="Defina preços nas suas fichas técnicas para liberar produtos prontos para promoção."
+            />
           )}
         </Section>
-      </div>
 
-      {/* ─── PROMOTIONS / RISK ───────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Section
-          title="Prontos para Promoção"
-          description="Produtos com margem suficiente para uma campanha."
-          icon={Sparkles}
-        >
-          <EmptyHint
-            icon={Sparkles}
-            message="Em breve: sugestões automáticas de promoção a partir das suas fichas técnicas com maior margem."
-          />
-        </Section>
-
+        {/* 4. Produtos em Risco */}
         <Section
           title="Produtos em Risco"
-          description="Itens com margem baixa, CMV alto ou preço desatualizado."
-          icon={AlertTriangle}
+          description="Não devem entrar em promoção — precisam reajuste."
+          icon={ShieldAlert}
+          tone="destructive"
         >
-          {profitAlerts.length ? (
-            <div className="space-y-2.5">
-              {profitAlerts.slice(0, 4).map((p) => (
+          {perderamMargem.length ? (
+            <div className="space-y-2">
+              {perderamMargem.slice(0, 6).map((p) => (
                 <InsightRow
-                  key={`risk-${p.id}`}
+                  key={p.id}
                   icon={TrendingDown}
                   tone="destructive"
                   title={p.nome}
-                  detail={`CMV +${fmtBRL(p.delta_abs)} · Preço sugerido ${fmtBRL(p.preco_sugerido)}`}
+                  detail={`CMV ${fmtBRL(p.cmv_anterior)} → ${fmtBRL(p.cmv_atual)}`}
+                  value={fmtBRL(p.preco_sugerido)}
                   onClick={() => navigate("/automacao/alertas")}
                 />
               ))}
             </div>
           ) : (
-            <EmptyHint icon={CheckCircle2} message="Nenhum produto em risco identificado." />
+            <EmptyHint icon={CheckCircle2} message="Nenhum produto em risco. Margens estão saudáveis." />
           )}
         </Section>
       </div>
 
-      {/* ─── ÚLTIMOS LANÇAMENTOS ────────────────────────────────── */}
+      {/* ─── 5. ENGENHARIA DO CARDÁPIO ───────────────────────────── */}
       <Section
-        title="Últimos Lançamentos"
-        description="Movimentações recentes do caixa."
-        icon={Activity}
+        title="Engenharia do Cardápio"
+        description="Saúde geral das suas fichas técnicas."
+        icon={ClipboardList}
+        tone="primary"
         action={
           <button
-            onClick={() => navigate("/financeiro/caixa-diario")}
+            onClick={() => navigate("/fichas/pizzas")}
             className={cn(T.label, "text-primary hover:text-primary/80 transition-colors")}
           >
-            Ver tudo →
+            Abrir fichas →
           </button>
         }
       >
-        {ultimosLancamentos.length ? (
-          <div className="divide-y divide-border">
-            {ultimosLancamentos.map((l: any) => {
-              const isReceita = l.tipo === "receita";
-              return (
-                <div key={l.id} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
-                  <div className={cn(
-                    "w-9 h-9 rounded-lg flex items-center justify-center shrink-0",
-                    isReceita ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive",
-                  )}>
-                    {isReceita ? <TrendingUp size={15} /> : <TrendingDown size={15} />}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className={cn(T.accent, "text-[14px] text-foreground truncate")}>{l.descricao || "Sem descrição"}</p>
-                    <p className={cn(T.body, "text-[12px] text-muted-foreground")}>
-                      {format(new Date(l.data_lancamento + "T00:00:00"), "dd/MM/yyyy")}
-                      {l.categoria && <span className="ml-2 px-1.5 py-0.5 rounded bg-muted text-[11px] uppercase tracking-wider">{l.categoria}</span>}
-                    </p>
-                  </div>
-                  <span className={cn(
-                    T.mono, "text-[14px] font-bold whitespace-nowrap",
-                    isReceita ? "text-success" : "text-destructive",
-                  )}>
-                    {isReceita ? "+" : "−"} {fmtBRL(Math.abs(Number(l.valor)))}
-                  </span>
+        {totalFichas > 0 ? (
+          <>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              <MiniStat
+                label="Fichas Incompletas"
+                value={fichasIncompletas}
+                tone={fichasIncompletas > 0 ? "warning" : "success"}
+              />
+              <MiniStat
+                label="Preços Desatualizados"
+                value={warningsCount}
+                tone={warningsCount > 0 ? "warning" : "success"}
+              />
+              <MiniStat
+                label="CMV Alto"
+                value={perderamMargem.length}
+                tone={perderamMargem.length > 0 ? "destructive" : "success"}
+              />
+              <MiniStat
+                label="Margem Saudável"
+                value={fichasMargemOk}
+                tone="success"
+              />
+            </div>
+
+            {hasFaturamento && (
+              <div className="mt-5 flex items-center gap-3 p-4 rounded-lg border border-border bg-muted/30">
+                <div className={cn(
+                  "w-9 h-9 rounded-lg flex items-center justify-center shrink-0",
+                  cmvOk ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive",
+                )}>
+                  {cmvOk ? <CheckCircle2 size={18} /> : <AlertTriangle size={18} />}
                 </div>
-              );
-            })}
-          </div>
+                <div className="flex-1 min-w-0">
+                  <p className={cn(T.accent, "text-[14px] text-foreground")}>
+                    CMV operacional: {cmvPct.toFixed(1)}%
+                  </p>
+                  <p className={cn(T.body, "text-[12.5px] text-muted-foreground")}>
+                    {cmvOk
+                      ? `Dentro da meta de ${cmvMeta}%.`
+                      : `Acima da meta de ${cmvMeta}% — revise os produtos em risco.`}
+                  </p>
+                </div>
+                <button
+                  onClick={() => navigate("/automacao/saude")}
+                  className={cn(T.label, "text-primary hover:text-primary/80 transition-colors whitespace-nowrap")}
+                >
+                  Ver detalhes →
+                </button>
+              </div>
+            )}
+          </>
         ) : (
-          <EmptyHint icon={Activity} message="Nenhum lançamento ainda. Registre uma venda ou despesa para começar." />
+          <EmptyHint
+            icon={ChefHat}
+            message="Cadastre suas fichas técnicas para ver a saúde do cardápio."
+          />
         )}
       </Section>
 
