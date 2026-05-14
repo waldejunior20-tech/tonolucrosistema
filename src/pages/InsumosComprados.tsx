@@ -258,69 +258,109 @@ export default function InsumosComprados() {
 
   const showErr = (field: keyof typeof errors) => submitted && errors[field];
 
-  const renderRow = (insumo: Insumo, idx: number) => (
-    <TableRow
-      key={insumo.id}
-      className={cn(
-        "border-b border-border/40 transition-colors hover:bg-primary/5",
-        idx % 2 === 0 ? "bg-card" : "bg-muted/20",
-        highlightId === insumo.id && "bg-primary/15 animate-pulse",
-      )}
-    >
-      <TableCell className="font-bold text-foreground">
-        <div className="flex items-center gap-2">
-          <span>{insumo.nome}</span>
-          {isDup(insumo.nome) && (
-            <span
-              className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30"
-              title="Existe outro insumo com o mesmo nome — considere mesclar"
-            >
-              ⚠ DUPLICADO
+  const renderRow = (insumo: Insumo, idx: number) => {
+    const c = canonMap.get(insumo.id);
+    const variacao = c?.variacao_pct ?? null;
+    const usado = c?.usado_em_fichas ?? 0;
+    return (
+      <TableRow
+        key={insumo.id}
+        className={cn(
+          "border-b border-border/40 transition-colors hover:bg-primary/5",
+          idx % 2 === 0 ? "bg-card" : "bg-muted/20",
+          highlightId === insumo.id && "bg-primary/15 animate-pulse",
+        )}
+      >
+        <TableCell className="font-bold text-foreground">
+          <div className="flex items-center gap-2">
+            <span>{insumo.nome}</span>
+            {isDup(insumo.nome) && (
+              <span
+                className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30"
+                title="Existe outro insumo com o mesmo nome — considere mesclar"
+              >
+                ⚠ DUPLICADO
+              </span>
+            )}
+          </div>
+        </TableCell>
+        {viewMode === "list" && (
+          <TableCell>
+            <CategoryBadge categoria={insumo.categoria} />
+          </TableCell>
+        )}
+        <TableCell className="text-right tabular-nums font-bold text-foreground">
+          {formatMoney(Number(insumo.preco_pago))}
+        </TableCell>
+        <TableCell className="text-right tabular-nums text-foreground">
+          {formatQuantidade(Number(insumo.quantidade), insumo.unidade)}
+        </TableCell>
+        <TableCell className="text-right tabular-nums">
+          {variacao === null ? (
+            <span className="text-muted-foreground text-xs">—</span>
+          ) : Math.abs(variacao) < 0.5 ? (
+            <span className="inline-flex items-center gap-1 text-muted-foreground text-xs">
+              <Minus className="h-3 w-3" /> estável
+            </span>
+          ) : variacao > 0 ? (
+            <span className="inline-flex items-center gap-1 text-rose-600 dark:text-rose-400 text-xs font-bold">
+              <TrendingUp className="h-3 w-3" /> +{variacao.toFixed(1)}%
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 text-xs font-bold">
+              <TrendingDown className="h-3 w-3" /> {variacao.toFixed(1)}%
             </span>
           )}
-        </div>
-      </TableCell>
-      {viewMode === "list" && (
-        <TableCell>
-          <CategoryBadge categoria={insumo.categoria} />
         </TableCell>
-      )}
-      <TableCell className="text-right tabular-nums font-bold text-foreground">
-        {formatMoney(Number(insumo.preco_pago))}
-      </TableCell>
-      <TableCell className="text-right tabular-nums text-foreground" colSpan={2}>
-        {formatQuantidade(Number(insumo.quantidade), insumo.unidade)}
-      </TableCell>
-      <TableCell className="text-muted-foreground">{insumo.fornecedor ?? "—"}</TableCell>
-      <TableCell className="text-muted-foreground tabular-nums">
-        {insumo.data_compra
-          ? new Date(insumo.data_compra + "T00:00:00").toLocaleDateString("pt-BR")
-          : "—"}
-      </TableCell>
-      <TableCell>
-        <div className="flex gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
-            onClick={() => handleEdit(insumo)}
-            aria-label="Editar"
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive"
-            onClick={() => deleteMutation.mutate(insumo.id)}
-            aria-label="Excluir"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-      </TableCell>
-    </TableRow>
-  );
+        <TableCell className="text-muted-foreground">{insumo.fornecedor ?? "—"}</TableCell>
+        <TableCell className="text-muted-foreground tabular-nums">
+          {insumo.data_compra
+            ? new Date(insumo.data_compra + "T00:00:00").toLocaleDateString("pt-BR")
+            : "—"}
+        </TableCell>
+        <TableCell className="text-center tabular-nums">
+          {usado > 0 ? (
+            <span className="text-emerald-600 dark:text-emerald-400 font-bold">{usado}</span>
+          ) : (
+            <span className="text-muted-foreground text-xs">—</span>
+          )}
+        </TableCell>
+        <TableCell>
+          <div className="flex gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
+              onClick={() => handleEdit(insumo)}
+              aria-label="Editar"
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+            <Button
+              asChild
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
+              aria-label="Ver histórico"
+            >
+              <Link to={`/insumos/comprados/historico?insumo=${encodeURIComponent(insumo.nome)}`}>
+                <History className="h-4 w-4" />
+              </Link>
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive"
+              onClick={() => deleteMutation.mutate(insumo.id)}
+              aria-label="Excluir"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        </TableCell>
+      </TableRow>
+    );
+  };
 
   const headerCells = (
     <TableRow className="bg-muted/40 hover:bg-muted/40 border-b border-border/60">
@@ -328,11 +368,13 @@ export default function InsumosComprados() {
       {viewMode === "list" && (
         <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Categoria</TableHead>
       )}
-      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider text-right">Preço (R$)</TableHead>
-      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider text-right" colSpan={2}>Quantidade</TableHead>
-      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Fornecedor</TableHead>
-      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Data Compra</TableHead>
-      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider w-[100px]">Ações</TableHead>
+      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider text-right">Preço atual</TableHead>
+      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider text-right">Quantidade</TableHead>
+      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider text-right">Variação</TableHead>
+      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Último fornecedor</TableHead>
+      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Última compra</TableHead>
+      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider text-center">Em fichas</TableHead>
+      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider w-[120px]">Ações</TableHead>
     </TableRow>
   );
 
