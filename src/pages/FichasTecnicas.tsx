@@ -96,7 +96,7 @@ export default function FichasTecnicas() {
   return (
     <div className="space-y-6 page-enter">
       <PageHeader title="Fichas Técnicas" description="Cadastre receitas e calcule lucro por produto.">
-        <Button onClick={() => { setEditingFicha(null); setWizardOpen(true); }} className="gap-2">
+        <Button onClick={() => navigate(`/fichas/${tab}/new`)} className="gap-2">
           <Plus size={16} /> Nova Ficha
         </Button>
       </PageHeader>
@@ -123,7 +123,7 @@ export default function FichasTecnicas() {
                   <p className="text-sm text-muted-foreground max-w-sm mb-4">
                     Crie sua primeira ficha técnica de {t.label.toLowerCase()} para calcular lucro e margem.
                   </p>
-                  <Button onClick={() => { setEditingFicha(null); setWizardOpen(true); }} className="gap-2">
+                  <Button onClick={() => navigate(`/fichas/${tab}/new`)} className="gap-2">
                     <Plus size={16} /> Criar primeira ficha
                   </Button>
                 </div>
@@ -137,7 +137,7 @@ export default function FichasTecnicas() {
                       <TableHead className="text-right">PREÇO VENDA</TableHead>
                       <TableHead className="text-right">LUCRO</TableHead>
                       <TableHead>MARGEM</TableHead>
-                      <TableHead className="text-right">AÇÕES</TableHead>
+                      <TableHead className="text-right w-16">AÇÕES</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -145,8 +145,12 @@ export default function FichasTecnicas() {
                       const lucro = r.precoVenda - r.custo;
                       const margem = r.precoVenda > 0 ? (lucro / r.precoVenda) * 100 : 0;
                       return (
-                        <TableRow key={r.id}>
-                          <TableCell className="font-semibold">{r.nome}</TableCell>
+                        <TableRow
+                          key={r.id}
+                          className="cursor-pointer"
+                          onClick={() => navigate(`/fichas/${r.tipo}/${r.id}`)}
+                        >
+                          <TableCell className="font-semibold text-primary hover:underline">{r.nome}</TableCell>
                           <TableCell className="text-muted-foreground text-sm">
                             {currentTypeMeta.emoji} {currentTypeMeta.label}
                             {r.tipo === "pizza" && <span className="text-xs ml-1">(M)</span>}
@@ -163,20 +167,11 @@ export default function FichasTecnicas() {
                             <Button
                               size="icon"
                               variant="ghost"
-                              onClick={() => {
-                                setEditingFicha({ id: r.id, tipo: r.tipo });
-                                setWizardOpen(true);
-                              }}
-                              title="Editar ficha"
-                            >
-                              <Pencil size={14} />
-                            </Button>
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 if (confirm(`Excluir ficha "${r.nome}"?`)) deleteMutation.mutate(r);
                               }}
+                              title="Excluir"
                             >
                               <Trash2 size={14} />
                             </Button>
@@ -191,13 +186,6 @@ export default function FichasTecnicas() {
           </TabsContent>
         ))}
       </Tabs>
-
-      <FichaWizard
-        open={wizardOpen}
-        onOpenChange={(o) => { setWizardOpen(o); if (!o) setEditingFicha(null); }}
-        initialType={tab}
-        editingFicha={editingFicha}
-      />
     </div>
   );
 }
