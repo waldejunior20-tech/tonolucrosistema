@@ -27,6 +27,7 @@ export default function FichasTecnicas() {
   const initialTab = (params.get("tab") as ProductType) || "pizza";
   const [tab, setTab] = useState<ProductType>(initialTab);
   const [wizardOpen, setWizardOpen] = useState(false);
+  const [editingFicha, setEditingFicha] = useState<{ id: string; tipo: ProductType } | null>(null);
 
   const { allProducts } = useProductCosts();
 
