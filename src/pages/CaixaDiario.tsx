@@ -85,7 +85,7 @@ export default function CaixaDiario() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Caixa reaberto");
+      toast.success("🔥 Forno reaceso. Bora vender mais!");
       setConfirmReabrir(false);
       queryClient.invalidateQueries({ queryKey: ["caixa-diario"] });
       queryClient.invalidateQueries({ queryKey: ["caixa-historico"] });
