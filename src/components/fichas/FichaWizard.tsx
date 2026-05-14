@@ -733,87 +733,120 @@ function IngredientPicker({ insumosComprados, insumosProprios, custoMap, onAdd }
   );
 }
 
-function PizzaIngredientes({ state, setState, custoMap, insumosComprados, insumosProprios, calcIngCost, custoP, custoM, custoG }: any) {
-  const [tab, setTab] = useState<"P" | "M" | "G">("M");
-  const sizeKey = tab.toLowerCase() as "p" | "m" | "g";
-  const total = tab === "P" ? custoP : tab === "M" ? custoM : custoG;
-
-  const updateIng = (idx: number, field: string, value: number) => {
-    const ings = [...state.ingredientes];
-    ings[idx] = { ...ings[idx], [field]: value };
-    setState({ ...state, ingredientes: ings });
-  };
-  const remove = (idx: number) => setState({ ...state, ingredientes: state.ingredientes.filter((_: any, i: number) => i !== idx) });
-  const add = (ing: any) => setState({ ...state, ingredientes: [...state.ingredientes, ing] });
-
+function PizzaIngredientesTable({ ingredientes, onChange, onRemove, calcIngCost, custoP, custoM, custoG }: any) {
+  if (ingredientes.length === 0) {
+    return (
+      <div className="rounded-lg border border-dashed bg-muted/20 p-6 text-center text-sm text-muted-foreground">
+        Nenhum ingrediente. Adicione abaixo.
+      </div>
+    );
+  }
   return (
-    <div className="space-y-3">
-      <Tabs value={tab} onValueChange={(v) => setTab(v as any)}>
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="P">Tamanho P</TabsTrigger>
-          <TabsTrigger value="M">Tamanho M</TabsTrigger>
-          <TabsTrigger value="G">Tamanho G</TabsTrigger>
-        </TabsList>
-      </Tabs>
-      <div className="space-y-2">
-        {state.ingredientes.map((ing: any, i: number) => (
-          <IngredientCard
-            key={i}
-            ing={ing}
-            idx={i}
-            size={sizeKey}
-            onChange={updateIng}
-            onRemove={remove}
-            custo={calcIngCost(ing, sizeKey)}
-          />
-        ))}
-        <IngredientPicker
-          insumosComprados={insumosComprados}
-          insumosProprios={insumosProprios}
-          custoMap={custoMap}
-          onAdd={add}
-        />
-      </div>
-      <div className="flex justify-between items-center bg-primary/5 rounded-lg p-3 border border-primary/20">
-        <span className="text-sm font-semibold">Custo acumulado ({tab})</span>
-        <span className="font-display font-bold text-lg text-primary tabular-nums">{formatCurrency(total)}</span>
-      </div>
+    <div className="rounded-lg border bg-card overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead className="bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
+          <tr>
+            <th className="text-left px-3 py-2 font-semibold">Ingrediente</th>
+            <th className="text-center px-2 py-2 font-semibold">Qtd P</th>
+            <th className="text-center px-2 py-2 font-semibold">Qtd M</th>
+            <th className="text-center px-2 py-2 font-semibold">Qtd G</th>
+            <th className="text-left px-2 py-2 font-semibold">Un</th>
+            <th className="text-right px-2 py-2 font-semibold">Custo P/M/G</th>
+            <th className="px-2 py-2"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {ingredientes.map((ing: any, i: number) => (
+            <tr key={i} className="border-t">
+              <td className="px-3 py-2 font-semibold">{ing.nome}</td>
+              {(["qtd_p", "qtd_m", "qtd_g"] as const).map((k) => (
+                <td key={k} className="px-1 py-1">
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={ing[k] || ""}
+                    onChange={(e) => onChange(i, k, parseFloat(e.target.value) || 0)}
+                    className="w-20 h-9 text-center"
+                  />
+                </td>
+              ))}
+              <td className="px-2 py-2 text-xs text-muted-foreground">{ing.unidade}</td>
+              <td className="px-2 py-2 text-right font-mono text-xs tabular-nums whitespace-nowrap">
+                {formatCurrency(calcIngCost(ing, "p"))} / {formatCurrency(calcIngCost(ing, "m"))} / {formatCurrency(calcIngCost(ing, "g"))}
+              </td>
+              <td className="px-2 py-2">
+                <Button size="icon" variant="ghost" onClick={() => onRemove(i)} className="h-7 w-7">
+                  <Trash2 size={14} />
+                </Button>
+              </td>
+            </tr>
+          ))}
+          <tr className="border-t bg-primary/5 font-semibold">
+            <td className="px-3 py-2 text-right" colSpan={5}>Custo total por tamanho</td>
+            <td className="px-2 py-2 text-right font-mono tabular-nums text-primary whitespace-nowrap">
+              {formatCurrency(custoP)} / {formatCurrency(custoM)} / {formatCurrency(custoG)}
+            </td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 }
 
-function SimpleIngredientes({ state, setState, custoMap, insumosComprados, insumosProprios, calcIngCost, custoTotal }: any) {
-  const updateIng = (idx: number, field: string, value: number) => {
-    const ings = [...state.ingredientes];
-    ings[idx] = { ...ings[idx], [field]: value };
-    setState({ ...state, ingredientes: ings });
-  };
-  const remove = (idx: number) => setState({ ...state, ingredientes: state.ingredientes.filter((_: any, i: number) => i !== idx) });
-  const add = (ing: any) => setState({ ...state, ingredientes: [...state.ingredientes, ing] });
-
-  return (
-    <div className="space-y-3">
-      {state.ingredientes.map((ing: any, i: number) => (
-        <IngredientCard
-          key={i}
-          ing={ing}
-          idx={i}
-          size="single"
-          onChange={updateIng}
-          onRemove={remove}
-          custo={calcIngCost(ing, "single")}
-        />
-      ))}
-      <IngredientPicker
-        insumosComprados={insumosComprados}
-        insumosProprios={insumosProprios}
-        custoMap={custoMap}
-        onAdd={add}
-      />
-      <div className="flex justify-between items-center bg-primary/5 rounded-lg p-3 border border-primary/20">
-        <span className="text-sm font-semibold">Custo acumulado</span>
-        <span className="font-display font-bold text-lg text-primary tabular-nums">{formatCurrency(custoTotal)}</span>
+function SimpleIngredientesTable({ ingredientes, onChange, onRemove, calcIngCost, custoTotal }: any) {
+  if (ingredientes.length === 0) {
+    return (
+      <div className="rounded-lg border border-dashed bg-muted/20 p-6 text-center text-sm text-muted-foreground">
+        Nenhum ingrediente. Adicione abaixo.
       </div>
+    );
+  }
+  return (
+    <div className="rounded-lg border bg-card overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead className="bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
+          <tr>
+            <th className="text-left px-3 py-2 font-semibold">Ingrediente</th>
+            <th className="text-center px-2 py-2 font-semibold">Quantidade</th>
+            <th className="text-left px-2 py-2 font-semibold">Un</th>
+            <th className="text-right px-2 py-2 font-semibold">Custo</th>
+            <th className="px-2 py-2"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {ingredientes.map((ing: any, i: number) => (
+            <tr key={i} className="border-t">
+              <td className="px-3 py-2 font-semibold">{ing.nome}</td>
+              <td className="px-1 py-1">
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={ing.qtd_m || ""}
+                  onChange={(e) => onChange(i, "qtd_m", parseFloat(e.target.value) || 0)}
+                  className="w-24 h-9 text-center mx-auto"
+                />
+              </td>
+              <td className="px-2 py-2 text-xs text-muted-foreground">{ing.unidade}</td>
+              <td className="px-2 py-2 text-right font-mono text-xs tabular-nums">
+                {formatCurrency(calcIngCost(ing, "single"))}
+              </td>
+              <td className="px-2 py-2">
+                <Button size="icon" variant="ghost" onClick={() => onRemove(i)} className="h-7 w-7">
+                  <Trash2 size={14} />
+                </Button>
+              </td>
+            </tr>
+          ))}
+          <tr className="border-t bg-primary/5 font-semibold">
+            <td className="px-3 py-2 text-right" colSpan={3}>Custo total</td>
+            <td className="px-2 py-2 text-right font-mono tabular-nums text-primary">
+              {formatCurrency(custoTotal)}
+            </td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 }
