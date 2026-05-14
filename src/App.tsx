@@ -14,6 +14,8 @@ import Dashboard from "@/pages/Dashboard";
 import SectionPage from "@/pages/SectionPage";
 import InsumosComprados from "@/pages/InsumosComprados";
 import InsumosProduzidos from "@/pages/InsumosProduzidos";
+import InsumosHistoricoCompras from "@/pages/InsumosHistoricoCompras";
+import InsumosDuplicados from "@/pages/InsumosDuplicados";
 import FichasTecnicasPizza from "@/pages/FichasTecnicasPizza";
 import FichasTecnicasProdutos from "@/pages/FichasTecnicasProdutos";
 import PrecificacaoPizzas from "@/pages/PrecificacaoPizzas";
