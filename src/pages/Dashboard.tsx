@@ -438,7 +438,7 @@ export default function Dashboard() {
               radarTone === "success" && "bg-gradient-to-br from-[#ECFDF5] via-white to-white",
             )}
           />
-          <div className="relative">
+          <div className="relative flex flex-col h-full">
             <CardHeader
               title="Radar de Lucro"
               subtitle="O que mexeu no seu lucro nesta semana."
@@ -447,76 +447,102 @@ export default function Dashboard() {
               action={<StatusBadge tone={radarTone} glow>{radarLabel}</StatusBadge>}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6 items-center">
+            <div className="grid grid-cols-1 md:grid-cols-[1.4fr_auto] gap-6 items-start">
               <div className="space-y-4 min-w-0">
                 {insumoCritico ? (
-                  <>
-                    <div>
-                      <p className={cn(T.label, C.muted, "mb-1.5")}>Insumo em alta</p>
-                      <h2 className={cn("font-heading font-bold text-[28px] md:text-[32px] leading-tight", C.text)}>
-                        {insumoCritico.nome} subiu{" "}
-                        <span className="text-[#DC2626]">{insumoCritico.variacaoPct.toFixed(1)}%</span>
-                      </h2>
-                      <p className={cn(T.body, C.muted, "mt-2")}>
-                        <span className={cn(T.mono, "font-semibold")}>{fmtBRL(insumoCritico.precoAnterior)}</span>
-                        {" → "}
-                        <span className={cn(T.mono, "font-semibold text-[#DC2626]")}>
-                          {fmtBRL(insumoCritico.precoAtual)}
-                        </span>
-                        {" "}/ {insumoCritico.unidade}
-                      </p>
-                    </div>
+                  <div>
+                    <p className={cn(T.label, C.muted, "mb-1.5")}>Insumo em destaque</p>
+                    <h2 className={cn("font-heading font-bold text-[24px] md:text-[28px] leading-tight", C.text)}>
+                      {insumoCritico.nome} subiu{" "}
+                      <span className="text-[#DC2626]">{insumoCritico.variacaoPct.toFixed(1)}%</span>
+                    </h2>
+                    <p className={cn(T.body, C.muted, "mt-1.5 text-[13px]")}>
+                      {perderamMargem.length > 0
+                        ? `${perderamMargem.length} produto${perderamMargem.length > 1 ? "s foram" : " foi"} impactado${perderamMargem.length > 1 ? "s" : ""} por aumento de custo.`
+                        : "Acompanhe o impacto antes de virar problema na margem."}
+                    </p>
+                    <p className={cn(T.body, C.muted, "mt-1 text-[12.5px]")}>
+                      <span className={cn(T.mono, "font-semibold", C.text)}>{fmtBRL(insumoCritico.precoAnterior)}</span>
+                      {" → "}
+                      <span className={cn(T.mono, "font-semibold text-[#DC2626]")}>{fmtBRL(insumoCritico.precoAtual)}</span>
+                      {" "}/ {insumoCritico.unidade}
+                    </p>
+                  </div>
+                ) : (
+                  <div>
+                    <p className={cn(T.label, C.muted, "mb-1.5")}>Tudo certo</p>
+                    <h2 className={cn("font-heading font-bold text-[22px] md:text-[26px] leading-tight", C.text)}>
+                      Seu cardápio está protegido.
+                    </h2>
+                    <p className={cn(T.body, C.muted, "mt-1.5 text-[13px]")}>
+                      Nenhum insumo passou do limite crítico esta semana.
+                    </p>
+                  </div>
+                )}
 
-                    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px]">
-                      <div className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#D97706]" />
-                        <span className={C.muted}>
-                          <span className={cn(T.mono, "font-bold", C.text)}>{perderamMargem.length}</span> produtos impactados
-                        </span>
-                      </div>
-                      {priceAlerts.length > 1 && (
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#DC2626]" />
-                          <span className={C.muted}>
-                            <span className={cn(T.mono, "font-bold", C.text)}>{priceAlerts.length}</span> insumos em alta
-                          </span>
-                        </div>
-                      )}
-                    </div>
+                <div className="grid grid-cols-2 gap-2.5">
+                  <MiniTile
+                    icon={TrendingUp}
+                    label="Insumos em alta"
+                    value={priceAlerts.length}
+                    tone={priceAlerts.length > 0 ? "warning" : "success"}
+                  />
+                  <MiniTile
+                    icon={TrendingDown}
+                    label="Produtos impactados"
+                    value={perderamMargem.length}
+                    tone={perderamMargem.length > 0 ? "danger" : "success"}
+                  />
+                  <MiniTile
+                    icon={CheckCircle2}
+                    label="Margem saudável"
+                    value={fichasMargemOk}
+                    tone="success"
+                  />
+                  <MiniTile
+                    icon={Tag}
+                    label="Preços p/ revisar"
+                    value={fichasIncompletas + warnings.length}
+                    tone={(fichasIncompletas + warnings.length) > 0 ? "warning" : "success"}
+                  />
+                </div>
 
-                    <div className="flex flex-wrap gap-2 pt-2">
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {insumoCritico ? (
+                    <>
                       <CTA variant="primary" onClick={() => navigate("/precificacao/pizzas")}>
-                        Ver impacto
+                        Ver impacto nos preços
                       </CTA>
                       <CTA variant="ghost" onClick={() => navigate("/insumos/comprados")}>
                         Histórico do insumo
                       </CTA>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div>
-                      <p className={cn(T.label, C.muted, "mb-1.5")}>Tudo certo</p>
-                      <h2 className={cn("font-heading font-bold text-[26px] md:text-[30px] leading-tight", C.text)}>
-                        Seu lucro está protegido.
-                      </h2>
-                      <p className={cn(T.body, C.muted, "mt-2")}>
-                        Nenhum insumo subiu acima do limite nesta semana.
-                      </p>
-                    </div>
+                    </>
+                  ) : (
                     <CTA variant="primary" onClick={() => navigate("/automacao/saude")}>
                       Ver saúde do cardápio
                     </CTA>
-                  </>
-                )}
+                  )}
+                </div>
               </div>
 
-              <div className="hidden md:flex items-center justify-center">
-                <ProgressRing
-                  value={insumoCritico ? Math.min(100, insumoCritico.variacaoPct * 5) : (cmvOk ? 100 - cmvPct : cmvPct)}
-                  tone={radarTone}
-                />
-              </div>
+              {/* Right: only show ring when we have a clear, explainable metric */}
+              {totalFichas > 0 && (
+                <div className="hidden md:flex flex-col items-center justify-center gap-2 pt-1">
+                  <ProgressRing
+                    value={totalFichas > 0 ? (fichasMargemOk / totalFichas) * 100 : 0}
+                    tone={
+                      totalFichas === 0 ? "primary"
+                      : (fichasMargemOk / totalFichas) >= 0.7 ? "success"
+                      : (fichasMargemOk / totalFichas) >= 0.4 ? "warning"
+                      : "danger"
+                    }
+                  />
+                  <p className={cn(T.label, C.muted, "text-center")}>Saúde do cardápio</p>
+                  <p className={cn(T.body, C.muted, "text-[11.5px] text-center -mt-1")}>
+                    {fichasMargemOk} de {totalFichas} fichas saudáveis
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </Bento>
