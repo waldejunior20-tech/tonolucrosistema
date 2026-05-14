@@ -388,7 +388,7 @@ export function FichaWizard({ open, onOpenChange, initialType = "pizza", editing
   });
 
   const stepTitles = ["Tipo de produto", "Ingredientes", "Embalagens e Extras", "Precificação"];
-  const headerTitle = `Passo ${step} de 4 — ${stepTitles[step - 1]}`;
+  const headerTitle = `${editingFicha ? "Editar" : "Passo"} ${editingFicha ? "—" : step + " de 4 —"} ${stepTitles[step - 1]}`;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
