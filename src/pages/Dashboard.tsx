@@ -329,7 +329,23 @@ export default function Dashboard() {
             <span className="text-xs text-muted-foreground">últimos 30 dias</span>
           </div>
           {points.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-12 text-center">Sem histórico de preços ainda.</p>
+            <div className="py-10 flex flex-col items-center justify-center text-center gap-3">
+              <div className="w-14 h-14 rounded-full bg-warning/10 border border-warning/20 flex items-center justify-center">
+                <TrendingUp size={26} className="text-warning" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">Sem histórico de preços ainda</p>
+                <p className="text-xs text-muted-foreground mt-1 max-w-[300px]">
+                  Registre compras de insumos para acompanhar a evolução de preços.
+                </p>
+              </div>
+              <button
+                onClick={() => navigate("/insumos/comprados")}
+                className="inline-flex items-center gap-1.5 h-9 px-4 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary-light transition-colors"
+              >
+                <Plus size={14} /> Registrar Compra
+              </button>
+            </div>
           ) : (
             <ResponsiveContainer width="100%" height={220}>
               <LineChart data={points} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
