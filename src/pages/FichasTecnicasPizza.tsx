@@ -656,7 +656,7 @@ export default function FichasTecnicasPizza() {
               <Plus className="h-4 w-4" /> Nova Ficha
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-5xl max-h-[92vh] p-0 gap-0 flex flex-col overflow-hidden ">
+          <DialogContent className="!max-w-none w-screen h-screen sm:rounded-none p-0 gap-0 flex flex-col overflow-hidden border-0">
             {/* HEADER UNIFICADO: Nome · Nº ficha · Tipo */}
             <DialogHeader className="px-8 pt-6 pb-4 shrink-0">
               <DialogTitle asChild>
