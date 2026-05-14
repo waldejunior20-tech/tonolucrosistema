@@ -92,12 +92,12 @@
     /* ═══ Sidebar ═══ */
     --sidebar-background: 220 17% 14%;
     --sidebar-foreground: 220 9% 60%;
-    --sidebar-primary: 153 85% 22%;
+    --sidebar-primary: 22 96% 46%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 220 15% 20%;
     --sidebar-accent-foreground: 220 14% 96%;
     --sidebar-border: 220 15% 20%;
-    --sidebar-ring: 153 85% 22%;
+    --sidebar-ring: 22 96% 46%;
   }
 
   .dark {
