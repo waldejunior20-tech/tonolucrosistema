@@ -115,16 +115,18 @@ export default function FichasTecnicas() {
           <TabsContent key={t.key} value={t.key} className="mt-4">
             <div className="rounded-lg border bg-card overflow-hidden">
               {rows.length === 0 ? (
-                <EmptyState
-                  icon={<span className="text-4xl">{t.emoji}</span>}
-                  title={`Nenhuma ficha de ${t.label} cadastrada`}
-                  description={`Crie sua primeira ficha técnica de ${t.label.toLowerCase()} para calcular lucro e margem.`}
-                  action={
-                    <Button onClick={() => setWizardOpen(true)} className="gap-2">
-                      <Plus size={16} /> Criar primeira ficha
-                    </Button>
-                  }
-                />
+                <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
+                  <div className="text-5xl mb-3">{t.emoji}</div>
+                  <h3 className="text-base font-semibold text-foreground mb-1">
+                    Nenhuma ficha de {t.label} cadastrada
+                  </h3>
+                  <p className="text-sm text-muted-foreground max-w-sm mb-4">
+                    Crie sua primeira ficha técnica de {t.label.toLowerCase()} para calcular lucro e margem.
+                  </p>
+                  <Button onClick={() => setWizardOpen(true)} className="gap-2">
+                    <Plus size={16} /> Criar primeira ficha
+                  </Button>
+                </div>
               ) : (
                 <Table>
                   <TableHeader>
