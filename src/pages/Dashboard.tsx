@@ -358,8 +358,8 @@ export default function Dashboard() {
   for (const w of warnings.slice(0, 2) as any[]) {
     centralAlertas.push({
       id: `warn-${w.id}`, icon: AlertTriangle,
-      title: w.tipo === "preco_desatualizado" ? "Preço desatualizado" : "Ficha precisa atenção",
-      message: w.mensagem || "Revisar ficha técnica",
+      title: w.tipo_ficha === "pizza" ? "Ficha de pizza precisa atenção" : "Ficha precisa atenção",
+      message: w.motivo || "Revisar ficha técnica",
       tone: "warning",
       time: w.created_at ? formatDistanceToNow(new Date(w.created_at), { locale: ptBR, addSuffix: true }) : undefined,
     });
