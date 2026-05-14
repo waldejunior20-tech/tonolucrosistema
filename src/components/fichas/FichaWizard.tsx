@@ -125,6 +125,102 @@ export function FichaWizard({ open, onOpenChange, initialType = "pizza", editing
     return m;
   }, [insumosComprados, insumosProprios]);
 
+  // Load existing ficha when editing
+  useEffect(() => {
+    if (!open || !editingFicha || custoMap.size === 0) return;
+    (async () => {
+      if (editingFicha.tipo === "pizza") {
+        const { data: ficha } = await supabase
+          .from("fichas_tecnicas_pizza")
+          .select("*")
+          .eq("id", editingFicha.id)
+          .single();
+        const { data: ings } = await supabase
+          .from("fichas_tecnicas_pizza_ingredientes")
+          .select("*")
+          .eq("ficha_id", editingFicha.id);
+        if (!ficha) return;
+        const ingredientes: IngredientForm[] = (ings ?? []).map((r: any) => {
+          const tipo = r.tipo_insumo as "comprado" | "proprio";
+          const insumo_id = tipo === "comprado" ? r.insumo_comprado_id : r.insumo_proprio_id;
+          const meta = custoMap.get(`${tipo}:${insumo_id}`);
+          return {
+            insumo_id,
+            tipo_insumo: tipo,
+            nome: meta?.nome ?? "(insumo removido)",
+            unidade: meta?.unidade ?? r.unidade,
+            custo_unit: meta?.custo ?? 0,
+            qtd_p: Number(r.qtd_p ?? 0),
+            qtd_m: Number(r.qtd_m ?? 0),
+            qtd_g: Number(r.qtd_g ?? 0),
+          };
+        });
+        setState({
+          tipo: "pizza",
+          nome: ficha.nome ?? "",
+          categoria: ficha.tipo ?? "",
+          codigo: ficha.numero_ficha ?? "",
+          ingredientes,
+          modo_preparo: ficha.modo_preparo ?? "",
+          bebida_insumo_id: "",
+          bebida_custo: 0,
+          markup: 80,
+          taxa_ifood: 14,
+          taxa_cartao: 3.5,
+        });
+      } else {
+        const { data: ficha } = await supabase
+          .from("fichas_tecnicas_produtos")
+          .select("*")
+          .eq("id", editingFicha.id)
+          .single();
+        const { data: ings } = await supabase
+          .from("fichas_tecnicas_produtos_ingredientes")
+          .select("*")
+          .eq("ficha_id", editingFicha.id);
+        if (!ficha) return;
+        const tipo = (ficha.categoria as ProductType) ?? editingFicha.tipo;
+        const isBI = tipo === "bebida_industrial";
+        let bebidaId = "";
+        let bebidaCusto = 0;
+        const ingredientes: IngredientForm[] = [];
+        (ings ?? []).forEach((r: any) => {
+          const ti = r.tipo_insumo as "comprado" | "proprio";
+          const insumo_id = ti === "comprado" ? r.insumo_comprado_id : r.insumo_proprio_id;
+          const meta = custoMap.get(`${ti}:${insumo_id}`);
+          if (isBI) {
+            bebidaId = insumo_id;
+            bebidaCusto = meta?.custo ?? 0;
+          } else {
+            ingredientes.push({
+              insumo_id,
+              tipo_insumo: ti,
+              nome: meta?.nome ?? "(insumo removido)",
+              unidade: meta?.unidade ?? r.unidade,
+              custo_unit: meta?.custo ?? 0,
+              qtd_p: 0,
+              qtd_m: Number(r.quantidade ?? 0),
+              qtd_g: 0,
+            });
+          }
+        });
+        setState({
+          tipo,
+          nome: ficha.nome ?? "",
+          categoria: "",
+          codigo: ficha.numero_ficha ?? "",
+          ingredientes,
+          modo_preparo: ficha.modo_preparo ?? "",
+          bebida_insumo_id: bebidaId,
+          bebida_custo: bebidaCusto,
+          markup: 80,
+          taxa_ifood: 14,
+          taxa_cartao: 3.5,
+        });
+      }
+    })();
+  }, [open, editingFicha, custoMap]);
+
   // Auto-generate code on type change (when not editing)
   useEffect(() => {
     if (editingFicha) return;
