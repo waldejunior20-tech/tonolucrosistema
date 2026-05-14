@@ -170,21 +170,41 @@ function EmptyState({
 }
 
 function ProgressRing({ value, tone }: { value: number; tone: "success" | "warning" | "danger" | "primary" }) {
-  const color = ({ success: C.success, warning: C.warning, danger: C.danger, primary: C.primary } as any)[tone];
+  const stops: Record<string, [string, string]> = {
+    success: ["#10B981", "#059669"],
+    warning: ["#FBBF24", "#D97706"],
+    danger: ["#F87171", "#DC2626"],
+    primary: ["#60A5FA", "#2563EB"],
+  };
+  const [from, to] = stops[tone];
   const r = 40;
   const c = 2 * Math.PI * r;
   const v = Math.min(100, Math.max(0, value));
+  const gid = `pr-${tone}`;
   return (
-    <div className="relative w-[112px] h-[112px] shrink-0">
-      <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+    <div className="relative w-[120px] h-[120px] shrink-0">
+      <div
+        aria-hidden
+        className="absolute inset-2 rounded-full"
+        style={{ background: `radial-gradient(closest-side, ${from}22, transparent 70%)` }}
+      />
+      <svg viewBox="0 0 100 100" className="relative w-full h-full -rotate-90">
+        <defs>
+          <linearGradient id={gid} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor={from} />
+            <stop offset="100%" stopColor={to} />
+          </linearGradient>
+        </defs>
         <circle cx="50" cy="50" r={r} fill="none" stroke="#E2E8F0" strokeWidth="8" />
         <circle
-          cx="50" cy="50" r={r} fill="none" stroke={color} strokeWidth="8" strokeLinecap="round"
+          cx="50" cy="50" r={r} fill="none" stroke={`url(#${gid})`} strokeWidth="8" strokeLinecap="round"
           strokeDasharray={`${(v / 100) * c} ${c}`}
+          style={{ transition: "stroke-dasharray 600ms cubic-bezier(.2,.7,.2,1)" }}
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className={cn(T.mono, "text-[22px] font-bold", C.text)}>{value.toFixed(0)}%</span>
+        <span className={cn(T.mono, "text-[24px] font-bold leading-none", C.text)}>{value.toFixed(0)}%</span>
+        <span className={cn(T.label, C.muted, "text-[9.5px] mt-1")}>saúde</span>
       </div>
     </div>
   );
