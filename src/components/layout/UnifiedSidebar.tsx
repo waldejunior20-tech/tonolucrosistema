@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { 
-  LayoutDashboard, Package, BookOpen, DollarSign, 
-  TrendingUp, Tag, ChevronDown, Warehouse, Bot,
-  PanelLeftClose, PanelLeft, Pizza, Cog, LogOut, ChevronUp
+import {
+  LayoutDashboard, ChefHat, Wallet, ChevronDown,
+  PanelLeftClose, PanelLeft, Pizza, Cog, LogOut, ChevronUp, Activity
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,7 +13,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-export type ModuleKey = "dashboard" | "insumos" | "fichas" | "precificacao" | "financeiro" | "promocoes" | "automacao" | "configuracoes";
+
+export type ModuleKey = "dashboard" | "operacional" | "menu" | "financeiro" | "configuracoes";
 
 interface SubItem {
   label: string;
@@ -31,57 +31,78 @@ interface SidebarItem {
 }
 
 const sidebarItems: SidebarItem[] = [
-  { key: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/" },
   {
-    key: "insumos", label: "Insumos", icon: Package,
+    key: "dashboard", label: "Dashboard", icon: LayoutDashboard,
     subItems: [
-      { label: "Comprados", path: "/insumos/comprados" },
-      { label: "Produzidos", path: "/insumos/produzidos" },
+      { label: "Visão Geral", path: "/" },
+      { label: "Saúde do CMV", path: "/automacao/saude" },
     ],
   },
   {
-    key: "fichas", label: "Fichas Técnicas", icon: BookOpen,
+    key: "operacional", label: "Operacional", icon: Activity,
     subItems: [
-      { label: "Pizzas", path: "/fichas/pizzas" },
-      { label: "Sanduíches", path: "/fichas/sanduiches" },
-      { label: "Pratos", path: "/fichas/pratos" },
-      { label: "Sobremesas", path: "/fichas/sobremesas" },
-      { label: "Bebidas", path: "/fichas/bebidas" },
+      { label: "Caixa Diário", path: "/financeiro/caixa-diario" },
     ],
   },
   {
-    key: "precificacao", label: "Precificação", icon: DollarSign,
+    key: "menu", label: "Engenharia de Menu", icon: ChefHat,
     subItems: [
-      { label: "Pizzas", path: "/precificacao/pizzas" },
-      { label: "Produtos", path: "/precificacao/produtos" },
-      { label: "Bebidas", path: "/precificacao/bebidas" },
+      {
+        label: "Insumos",
+        subItems: [
+          { label: "Comprados", path: "/insumos/comprados" },
+          { label: "Produzidos", path: "/insumos/produzidos" },
+        ],
+      },
+      {
+        label: "Fichas Técnicas",
+        subItems: [
+          { label: "Pizzas", path: "/fichas/pizzas" },
+          { label: "Sanduíches", path: "/fichas/sanduiches" },
+          { label: "Pratos", path: "/fichas/pratos" },
+          { label: "Sobremesas", path: "/fichas/sobremesas" },
+          { label: "Bebidas", path: "/fichas/bebidas" },
+        ],
+      },
+      {
+        label: "Precificação",
+        subItems: [
+          { label: "Pizzas", path: "/precificacao/pizzas" },
+          { label: "Produtos", path: "/precificacao/produtos" },
+          { label: "Bebidas", path: "/precificacao/bebidas" },
+        ],
+      },
+      {
+        label: "Promoções",
+        subItems: [
+          { label: "Promoções Ativas", path: "/promocoes/ativas" },
+          { label: "Combos Fixos", path: "/promocoes/combos" },
+        ],
+      },
     ],
   },
   {
-    key: "promocoes", label: "Promoções", icon: Tag,
+    key: "financeiro", label: "Financeiro", icon: Wallet,
     subItems: [
-      { label: "Promoções Ativas", path: "/promocoes/ativas" },
-      { label: "Combos Fixos", path: "/promocoes/combos" },
-    ],
-  },
-  {
-    key: "financeiro", label: "Financeiro", icon: TrendingUp,
-    subItems: [
-      { label: "Caixa", path: "/financeiro/caixa-diario" },
       { label: "Contas a Pagar", path: "/financeiro/contas-a-pagar" },
-      { label: "Resumo do Mês", path: "/financeiro/dre" },
+      { label: "DRE Simples", path: "/financeiro/dre" },
+      { label: "Ponto de Equilíbrio", path: "/financeiro/ponto-de-equilibrio" },
     ],
   },
   {
-    key: "automacao", label: "Automação", icon: Bot,
+    key: "configuracoes", label: "Configurações", icon: Cog,
     subItems: [
-      { label: "Alertas de CMV", path: "/automacao/alertas" },
-      { label: "Histórico de Preços", path: "/automacao/historico-precos" },
-      { label: "Fichas Incompletas", path: "/automacao/fichas-warnings" },
-      { label: "Saúde do Sistema", path: "/automacao/saude" },
+      { label: "Geral / Unidades / Usuários", path: "/configuracoes" },
+      {
+        label: "Automação",
+        subItems: [
+          { label: "Alertas de CMV", path: "/automacao/alertas" },
+          { label: "Histórico de Preços", path: "/automacao/historico-precos" },
+          { label: "Fichas Incompletas", path: "/automacao/fichas-warnings" },
+        ],
+      },
     ],
   },
-  { key: "configuracoes", label: "Configurações", icon: Cog, path: "/configuracoes" },
 ];
 
 interface UnifiedSidebarProps {
