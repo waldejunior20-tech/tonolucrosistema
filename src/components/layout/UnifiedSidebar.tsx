@@ -31,27 +31,15 @@ interface SidebarItem {
   subItems?: SubItem[];
 }
 
-const sidebarItems: SidebarItem[] = [
-  {
-    key: "dashboard", label: "Dashboard", icon: LayoutDashboard,
-    path: "/",
-  },
-  {
-    key: "insumos", label: "Insumos", icon: Package,
-    path: "/insumos/comprados",
-  },
-  {
-    key: "fichas", label: "Fichas Técnicas", icon: ChefHat,
-    path: "/fichas/pizzas",
-  },
-  {
-    key: "precificacao", label: "Precificação & Promoções", icon: Tag,
-    path: "/precificacao/pizzas",
-  },
-  {
-    key: "financeiro", label: "Financeiro", icon: Wallet,
-    path: "/financeiro/caixa-diario",
-  },
+const navigationItems: SidebarItem[] = [
+  { key: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/" },
+  { key: "insumos", label: "Insumos", icon: Package, path: "/insumos/comprados" },
+  { key: "fichas", label: "Fichas Técnicas", icon: ChefHat, path: "/fichas/pizzas" },
+  { key: "precificacao", label: "Precificação & Promos", icon: Tag, path: "/precificacao/pizzas" },
+  { key: "financeiro", label: "Financeiro", icon: Wallet, path: "/financeiro/caixa-diario" },
+];
+
+const managementItems: SidebarItem[] = [
   {
     key: "configuracoes", label: "Configurações", icon: Cog,
     subItems: [
@@ -69,6 +57,8 @@ const sidebarItems: SidebarItem[] = [
     ],
   },
 ];
+
+const sidebarItems: SidebarItem[] = [...navigationItems, ...managementItems];
 
 interface UnifiedSidebarProps {
   collapsed: boolean;
