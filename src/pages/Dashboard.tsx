@@ -54,13 +54,16 @@ function Bento({
   return (
     <div
       className={cn(
-        "relative rounded-2xl border p-5 md:p-6 flex flex-col min-w-0 transition-all duration-200",
-        C.card, C.border,
+        "group/bento relative rounded-[20px] border p-5 md:p-6 flex flex-col min-w-0",
+        "transition-[transform,box-shadow,border-color] duration-300 ease-out will-change-transform",
+        C.card, "border-[#E6EAF0]",
         hero
-          ? "shadow-[0_1px_0_rgba(255,255,255,0.8)_inset,0_2px_4px_rgba(15,23,42,0.04),0_12px_32px_-12px_rgba(15,23,42,0.12)]"
-          : "shadow-[0_1px_0_rgba(255,255,255,0.6)_inset,0_1px_2px_rgba(15,23,42,0.04),0_6px_20px_-8px_rgba(15,23,42,0.08)]",
-        "hover:shadow-[0_1px_0_rgba(255,255,255,0.8)_inset,0_2px_4px_rgba(15,23,42,0.05),0_14px_36px_-14px_rgba(15,23,42,0.14)]",
-        "before:absolute before:inset-x-6 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-white/90 before:to-transparent before:pointer-events-none",
+          ? "shadow-[0_1px_0_rgba(255,255,255,0.9)_inset,0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_-10px_rgba(15,23,42,0.10),0_24px_60px_-30px_rgba(15,23,42,0.18)]"
+          : "shadow-[0_1px_0_rgba(255,255,255,0.7)_inset,0_1px_2px_rgba(15,23,42,0.03),0_6px_18px_-10px_rgba(15,23,42,0.10)]",
+        "hover:-translate-y-[2px] hover:border-[#D8DFE8]",
+        "hover:shadow-[0_1px_0_rgba(255,255,255,0.9)_inset,0_2px_4px_rgba(15,23,42,0.05),0_14px_30px_-14px_rgba(15,23,42,0.14),0_28px_70px_-30px_rgba(37,99,235,0.10)]",
+        "before:absolute before:inset-x-8 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-white before:to-transparent before:pointer-events-none",
+        "after:pointer-events-none after:absolute after:inset-0 after:rounded-[20px] after:ring-1 after:ring-inset after:ring-white/40",
         className,
       )}
     >
@@ -91,8 +94,8 @@ function CardHeader({
           </div>
         )}
         <div className="min-w-0">
-          <h3 className={cn(T.headline, C.text, "truncate")}>{title}</h3>
-          {subtitle && <p className={cn(T.body, C.muted, "mt-0.5 text-[12.5px]")}>{subtitle}</p>}
+          <h3 className={cn("font-heading font-semibold text-[19px] md:text-[20px] leading-tight tracking-tight truncate", C.text)}>{title}</h3>
+          {subtitle && <p className={cn(T.body, C.muted, "mt-1 text-[13px]")}>{subtitle}</p>}
         </div>
       </div>
       {action}
@@ -133,11 +136,11 @@ function CTA({
     <button
       onClick={onClick}
       className={cn(
-        "inline-flex items-center gap-2 h-10 px-4 rounded-xl border transition-all text-[13.5px]",
+        "inline-flex items-center gap-2 h-10 px-4 rounded-xl border transition-all duration-200 text-[13.5px] active:scale-[0.98]",
         T.accent,
         variant === "primary"
-          ? "bg-[#2563EB] text-white border-[#2563EB] hover:bg-[#1D4ED8]"
-          : "bg-white text-[#0F172A] border-[#E2E8F0] hover:border-[#94A3B8] hover:bg-[#F8FAFC]",
+          ? "text-white border-transparent bg-[linear-gradient(180deg,#3B82F6_0%,#2563EB_100%)] shadow-[0_1px_0_rgba(255,255,255,0.25)_inset,0_6px_16px_-6px_rgba(37,99,235,0.55),0_2px_4px_rgba(15,23,42,0.08)] hover:shadow-[0_1px_0_rgba(255,255,255,0.3)_inset,0_10px_22px_-8px_rgba(37,99,235,0.65),0_3px_6px_rgba(15,23,42,0.10)] hover:brightness-[1.03]"
+          : "bg-white/80 backdrop-blur text-[#0F172A] border-[#E2E8F0] hover:border-[#94A3B8] hover:bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]",
       )}
     >
       {Icon && <Icon size={15} strokeWidth={2.4} />}
@@ -167,21 +170,41 @@ function EmptyState({
 }
 
 function ProgressRing({ value, tone }: { value: number; tone: "success" | "warning" | "danger" | "primary" }) {
-  const color = ({ success: C.success, warning: C.warning, danger: C.danger, primary: C.primary } as any)[tone];
+  const stops: Record<string, [string, string]> = {
+    success: ["#10B981", "#059669"],
+    warning: ["#FBBF24", "#D97706"],
+    danger: ["#F87171", "#DC2626"],
+    primary: ["#60A5FA", "#2563EB"],
+  };
+  const [from, to] = stops[tone];
   const r = 40;
   const c = 2 * Math.PI * r;
   const v = Math.min(100, Math.max(0, value));
+  const gid = `pr-${tone}`;
   return (
-    <div className="relative w-[112px] h-[112px] shrink-0">
-      <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+    <div className="relative w-[120px] h-[120px] shrink-0">
+      <div
+        aria-hidden
+        className="absolute inset-2 rounded-full"
+        style={{ background: `radial-gradient(closest-side, ${from}22, transparent 70%)` }}
+      />
+      <svg viewBox="0 0 100 100" className="relative w-full h-full -rotate-90">
+        <defs>
+          <linearGradient id={gid} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor={from} />
+            <stop offset="100%" stopColor={to} />
+          </linearGradient>
+        </defs>
         <circle cx="50" cy="50" r={r} fill="none" stroke="#E2E8F0" strokeWidth="8" />
         <circle
-          cx="50" cy="50" r={r} fill="none" stroke={color} strokeWidth="8" strokeLinecap="round"
+          cx="50" cy="50" r={r} fill="none" stroke={`url(#${gid})`} strokeWidth="8" strokeLinecap="round"
           strokeDasharray={`${(v / 100) * c} ${c}`}
+          style={{ transition: "stroke-dasharray 600ms cubic-bezier(.2,.7,.2,1)" }}
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className={cn(T.mono, "text-[22px] font-bold", C.text)}>{value.toFixed(0)}%</span>
+        <span className={cn(T.mono, "text-[24px] font-bold leading-none", C.text)}>{value.toFixed(0)}%</span>
+        <span className={cn(T.label, C.muted, "text-[9.5px] mt-1")}>saúde</span>
       </div>
     </div>
   );
@@ -201,13 +224,13 @@ function MiniTile({
     danger: "text-[#DC2626]", primary: "text-[#2563EB]",
   };
   return (
-    <div className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3.5">
+    <div className="group/tile relative rounded-xl border border-[#E6EAF0] bg-gradient-to-b from-white to-[#F8FAFC] p-3.5 transition-all duration-200 hover:border-[#D8DFE8] hover:shadow-[0_6px_18px_-10px_rgba(15,23,42,0.10)]">
       <div className="flex items-center justify-between mb-2">
-        <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center", tintBg[tone])}>
+        <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center ring-1 ring-inset ring-white/60", tintBg[tone])}>
           <Icon size={14} strokeWidth={2.4} />
         </div>
       </div>
-      <p className={cn(T.mono, "text-[24px] font-bold leading-none mb-1", valColor[tone])}>{value}</p>
+      <p className={cn(T.mono, "text-[26px] font-bold leading-none mb-1.5 tracking-tight", valColor[tone])}>{value}</p>
       <p className={cn(T.body, "text-[11.5px] font-medium", C.muted)}>{label}</p>
     </div>
   );
@@ -399,7 +422,17 @@ export default function Dashboard() {
   }
 
   return (
-    <div className={cn("page-enter -m-4 md:-m-6 lg:-m-8 p-4 md:p-6 lg:p-8 pb-12 min-h-[calc(100vh-4rem)]", C.bg)}>
+    <div className={cn("page-enter relative -m-4 md:-m-6 lg:-m-8 p-4 md:p-6 lg:p-8 pb-12 min-h-[calc(100vh-4rem)] overflow-hidden", C.bg)}>
+      {/* Page-level aurora wash — extremely subtle */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-[420px] -z-0"
+        style={{
+          background:
+            "radial-gradient(40% 60% at 15% 0%, rgba(37,99,235,0.07) 0%, transparent 70%), radial-gradient(35% 60% at 85% 0%, rgba(139,92,246,0.06) 0%, transparent 70%)",
+        }}
+      />
+      <div className="relative z-[1]">
 
       {/* ─── GREETING + QUICK ACTIONS ─────────────────────────── */}
       <header className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5 mb-6">
@@ -446,14 +479,36 @@ export default function Dashboard() {
 
         {/* ROW 1 — RADAR DE LUCRO (hero, col-span-7) */}
         <Bento hero className="lg:col-span-7 relative overflow-hidden">
+          {/* Aurora layer — blue/violet/green, very low opacity */}
+          <div
+            aria-hidden
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(60% 50% at 8% 0%, rgba(37,99,235,0.10) 0%, transparent 60%), radial-gradient(50% 60% at 100% 10%, rgba(139,92,246,0.09) 0%, transparent 65%), radial-gradient(70% 60% at 90% 100%, rgba(5,150,105,0.08) 0%, transparent 65%), linear-gradient(135deg,#FFFFFF 0%,#FAFCFF 100%)",
+            }}
+          />
+          {/* Tone-aware accent wash */}
           <div
             aria-hidden
             className={cn(
-              "absolute inset-0 opacity-[0.7] pointer-events-none",
-              radarTone === "danger" && "bg-[radial-gradient(120%_80%_at_0%_0%,#FEF2F2_0%,transparent_55%),linear-gradient(135deg,#FFFFFF_0%,#F8FAFC_100%)]",
-              radarTone === "warning" && "bg-[radial-gradient(120%_80%_at_0%_0%,#FFFBEB_0%,transparent_55%),linear-gradient(135deg,#FFFFFF_0%,#F8FAFC_100%)]",
-              radarTone === "success" && "bg-[radial-gradient(120%_80%_at_0%_0%,#ECFDF5_0%,transparent_55%),linear-gradient(135deg,#FFFFFF_0%,#F8FAFC_100%)]",
+              "absolute inset-0 pointer-events-none opacity-70",
+              radarTone === "danger" && "bg-[radial-gradient(80%_50%_at_0%_0%,rgba(220,38,38,0.06)_0%,transparent_55%)]",
+              radarTone === "warning" && "bg-[radial-gradient(80%_50%_at_0%_0%,rgba(217,119,6,0.06)_0%,transparent_55%)]",
+              radarTone === "success" && "bg-[radial-gradient(80%_50%_at_0%_0%,rgba(5,150,105,0.06)_0%,transparent_55%)]",
             )}
+          />
+          {/* Subtle grid texture, masked to top-right */}
+          <div
+            aria-hidden
+            className="absolute inset-0 pointer-events-none opacity-[0.35]"
+            style={{
+              backgroundImage:
+                "linear-gradient(to right, rgba(15,23,42,0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(15,23,42,0.04) 1px, transparent 1px)",
+              backgroundSize: "28px 28px",
+              maskImage: "radial-gradient(60% 60% at 90% 0%, black, transparent 70%)",
+              WebkitMaskImage: "radial-gradient(60% 60% at 90% 0%, black, transparent 70%)",
+            }}
           />
           <div className="relative flex flex-col h-full">
             <CardHeader
@@ -917,6 +972,7 @@ export default function Dashboard() {
           )}
         </Bento>
 
+      </div>
       </div>
     </div>
   );
