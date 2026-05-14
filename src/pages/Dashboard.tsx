@@ -49,14 +49,18 @@ const T = {
 
 // ─── Building blocks ─────────────────────────────────────────────────
 function Bento({
-  className, children,
-}: { className?: string; children: React.ReactNode }) {
+  className, children, hero = false,
+}: { className?: string; children: React.ReactNode; hero?: boolean }) {
   return (
     <div
       className={cn(
-        "rounded-2xl border p-5 md:p-6 flex flex-col min-w-0",
+        "relative rounded-2xl border p-5 md:p-6 flex flex-col min-w-0 transition-all duration-200",
         C.card, C.border,
-        "shadow-[0_1px_2px_rgba(15,23,42,0.04),0_4px_16px_-4px_rgba(15,23,42,0.06)]",
+        hero
+          ? "shadow-[0_1px_0_rgba(255,255,255,0.8)_inset,0_2px_4px_rgba(15,23,42,0.04),0_12px_32px_-12px_rgba(15,23,42,0.12)]"
+          : "shadow-[0_1px_0_rgba(255,255,255,0.6)_inset,0_1px_2px_rgba(15,23,42,0.04),0_6px_20px_-8px_rgba(15,23,42,0.08)]",
+        "hover:shadow-[0_1px_0_rgba(255,255,255,0.8)_inset,0_2px_4px_rgba(15,23,42,0.05),0_14px_36px_-14px_rgba(15,23,42,0.14)]",
+        "before:absolute before:inset-x-6 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-white/90 before:to-transparent before:pointer-events-none",
         className,
       )}
     >
