@@ -161,7 +161,15 @@ export default function FichasTecnicas() {
                             </span>
                           </TableCell>
                           <TableCell className="text-right">
-                            <Button size="icon" variant="ghost" disabled title="Edição em breve">
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => {
+                                setEditingFicha({ id: r.id, tipo: r.tipo });
+                                setWizardOpen(true);
+                              }}
+                              title="Editar ficha"
+                            >
                               <Pencil size={14} />
                             </Button>
                             <Button
