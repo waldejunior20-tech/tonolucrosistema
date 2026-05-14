@@ -426,6 +426,7 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
 
   return (
     <div className="space-y-6 page-enter">
+      <FichasCategoryTabs />
       <PageHeader title={`Fichas Técnicas — ${label}`} description="Gerencie receitas e custos dos seus produtos.">
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) resetForm(); setDialogOpen(open); }}>
           <DialogTrigger asChild>
