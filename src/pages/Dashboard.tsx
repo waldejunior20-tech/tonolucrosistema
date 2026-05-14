@@ -355,11 +355,24 @@ export default function Dashboard() {
       tone: "danger",
     });
   }
+  const humanizeMotivo = (raw: string | null | undefined, tipo: string | null | undefined): { title: string; message: string } => {
+    const r = (raw || "").toLowerCase();
+    const ficha = tipo === "pizza" ? "Ficha de pizza" : "Ficha";
+    if (r.includes("embalagem") && r.includes("insumo")) {
+      return { title: `${ficha} sem embalagem ou insumo`, message: "Complete a ficha para calcular a margem correta." };
+    }
+    if (r.includes("embalagem")) return { title: `${ficha} sem embalagem`, message: "Adicione a embalagem para fechar o custo." };
+    if (r.includes("insumo")) return { title: `${ficha} sem insumo`, message: "Cadastre os ingredientes para calcular o CMV." };
+    if (r.includes("preco") || r.includes("preço")) return { title: `${ficha} sem preço de venda`, message: "Defina o preço para liberar a análise de margem." };
+    if (r.includes("cmv")) return { title: `${ficha} com CMV alto`, message: "Revise custos ou ajuste o preço de venda." };
+    return { title: `${ficha} precisa de atenção`, message: raw || "Revisar ficha técnica." };
+  };
   for (const w of warnings.slice(0, 2) as any[]) {
+    const h = humanizeMotivo(w.motivo, w.tipo_ficha);
     centralAlertas.push({
       id: `warn-${w.id}`, icon: AlertTriangle,
-      title: w.tipo_ficha === "pizza" ? "Ficha de pizza precisa atenção" : "Ficha precisa atenção",
-      message: w.motivo || "Revisar ficha técnica",
+      title: h.title,
+      message: h.message,
       tone: "warning",
       time: w.created_at ? formatDistanceToNow(new Date(w.created_at), { locale: ptBR, addSuffix: true }) : undefined,
     });
@@ -438,7 +451,7 @@ export default function Dashboard() {
               radarTone === "success" && "bg-gradient-to-br from-[#ECFDF5] via-white to-white",
             )}
           />
-          <div className="relative">
+          <div className="relative flex flex-col h-full">
             <CardHeader
               title="Radar de Lucro"
               subtitle="O que mexeu no seu lucro nesta semana."
@@ -447,76 +460,102 @@ export default function Dashboard() {
               action={<StatusBadge tone={radarTone} glow>{radarLabel}</StatusBadge>}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6 items-center">
+            <div className="grid grid-cols-1 md:grid-cols-[1.4fr_auto] gap-6 items-start">
               <div className="space-y-4 min-w-0">
                 {insumoCritico ? (
-                  <>
-                    <div>
-                      <p className={cn(T.label, C.muted, "mb-1.5")}>Insumo em alta</p>
-                      <h2 className={cn("font-heading font-bold text-[28px] md:text-[32px] leading-tight", C.text)}>
-                        {insumoCritico.nome} subiu{" "}
-                        <span className="text-[#DC2626]">{insumoCritico.variacaoPct.toFixed(1)}%</span>
-                      </h2>
-                      <p className={cn(T.body, C.muted, "mt-2")}>
-                        <span className={cn(T.mono, "font-semibold")}>{fmtBRL(insumoCritico.precoAnterior)}</span>
-                        {" → "}
-                        <span className={cn(T.mono, "font-semibold text-[#DC2626]")}>
-                          {fmtBRL(insumoCritico.precoAtual)}
-                        </span>
-                        {" "}/ {insumoCritico.unidade}
-                      </p>
-                    </div>
+                  <div>
+                    <p className={cn(T.label, C.muted, "mb-1.5")}>Insumo em destaque</p>
+                    <h2 className={cn("font-heading font-bold text-[24px] md:text-[28px] leading-tight", C.text)}>
+                      {insumoCritico.nome} subiu{" "}
+                      <span className="text-[#DC2626]">{insumoCritico.variacaoPct.toFixed(1)}%</span>
+                    </h2>
+                    <p className={cn(T.body, C.muted, "mt-1.5 text-[13px]")}>
+                      {perderamMargem.length > 0
+                        ? `${perderamMargem.length} produto${perderamMargem.length > 1 ? "s foram" : " foi"} impactado${perderamMargem.length > 1 ? "s" : ""} por aumento de custo.`
+                        : "Acompanhe o impacto antes de virar problema na margem."}
+                    </p>
+                    <p className={cn(T.body, C.muted, "mt-1 text-[12.5px]")}>
+                      <span className={cn(T.mono, "font-semibold", C.text)}>{fmtBRL(insumoCritico.precoAnterior)}</span>
+                      {" → "}
+                      <span className={cn(T.mono, "font-semibold text-[#DC2626]")}>{fmtBRL(insumoCritico.precoAtual)}</span>
+                      {" "}/ {insumoCritico.unidade}
+                    </p>
+                  </div>
+                ) : (
+                  <div>
+                    <p className={cn(T.label, C.muted, "mb-1.5")}>Tudo certo</p>
+                    <h2 className={cn("font-heading font-bold text-[22px] md:text-[26px] leading-tight", C.text)}>
+                      Seu cardápio está protegido.
+                    </h2>
+                    <p className={cn(T.body, C.muted, "mt-1.5 text-[13px]")}>
+                      Nenhum insumo passou do limite crítico esta semana.
+                    </p>
+                  </div>
+                )}
 
-                    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px]">
-                      <div className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#D97706]" />
-                        <span className={C.muted}>
-                          <span className={cn(T.mono, "font-bold", C.text)}>{perderamMargem.length}</span> produtos impactados
-                        </span>
-                      </div>
-                      {priceAlerts.length > 1 && (
-                        <div className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#DC2626]" />
-                          <span className={C.muted}>
-                            <span className={cn(T.mono, "font-bold", C.text)}>{priceAlerts.length}</span> insumos em alta
-                          </span>
-                        </div>
-                      )}
-                    </div>
+                <div className="grid grid-cols-2 gap-2.5">
+                  <MiniTile
+                    icon={TrendingUp}
+                    label="Insumos em alta"
+                    value={priceAlerts.length}
+                    tone={priceAlerts.length > 0 ? "warning" : "success"}
+                  />
+                  <MiniTile
+                    icon={TrendingDown}
+                    label="Produtos impactados"
+                    value={perderamMargem.length}
+                    tone={perderamMargem.length > 0 ? "danger" : "success"}
+                  />
+                  <MiniTile
+                    icon={CheckCircle2}
+                    label="Margem saudável"
+                    value={fichasMargemOk}
+                    tone="success"
+                  />
+                  <MiniTile
+                    icon={Tag}
+                    label="Preços p/ revisar"
+                    value={fichasIncompletas + warnings.length}
+                    tone={(fichasIncompletas + warnings.length) > 0 ? "warning" : "success"}
+                  />
+                </div>
 
-                    <div className="flex flex-wrap gap-2 pt-2">
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {insumoCritico ? (
+                    <>
                       <CTA variant="primary" onClick={() => navigate("/precificacao/pizzas")}>
-                        Ver impacto
+                        Ver impacto nos preços
                       </CTA>
                       <CTA variant="ghost" onClick={() => navigate("/insumos/comprados")}>
                         Histórico do insumo
                       </CTA>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div>
-                      <p className={cn(T.label, C.muted, "mb-1.5")}>Tudo certo</p>
-                      <h2 className={cn("font-heading font-bold text-[26px] md:text-[30px] leading-tight", C.text)}>
-                        Seu lucro está protegido.
-                      </h2>
-                      <p className={cn(T.body, C.muted, "mt-2")}>
-                        Nenhum insumo subiu acima do limite nesta semana.
-                      </p>
-                    </div>
+                    </>
+                  ) : (
                     <CTA variant="primary" onClick={() => navigate("/automacao/saude")}>
                       Ver saúde do cardápio
                     </CTA>
-                  </>
-                )}
+                  )}
+                </div>
               </div>
 
-              <div className="hidden md:flex items-center justify-center">
-                <ProgressRing
-                  value={insumoCritico ? Math.min(100, insumoCritico.variacaoPct * 5) : (cmvOk ? 100 - cmvPct : cmvPct)}
-                  tone={radarTone}
-                />
-              </div>
+              {/* Right: only show ring when we have a clear, explainable metric */}
+              {totalFichas > 0 && (
+                <div className="hidden md:flex flex-col items-center justify-center gap-2 pt-1">
+                  <ProgressRing
+                    value={totalFichas > 0 ? (fichasMargemOk / totalFichas) * 100 : 0}
+                    tone={
+                      totalFichas === 0 ? "primary"
+                      : (fichasMargemOk / totalFichas) >= 0.7 ? "success"
+                      : (fichasMargemOk / totalFichas) >= 0.4 ? "warning"
+                      : "danger"
+                    }
+                  />
+                  <p className={cn(T.label, C.muted, "text-center")}>Saúde do cardápio</p>
+                  <p className={cn(T.body, C.muted, "text-[11.5px] text-center -mt-1")}>
+                    {fichasMargemOk} de {totalFichas} fichas saudáveis
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </Bento>
@@ -625,17 +664,26 @@ export default function Dashboard() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className={cn(T.accent, "text-[13.5px] truncate", C.text)}>{p.nome}</p>
-                    <span className={cn(
-                      T.label, "text-[10px] inline-block mt-0.5 px-1.5 py-0.5 rounded-md bg-[#F1F5F9]",
-                      C.muted,
-                    )}>{p.categoria}</span>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className={cn(T.label, "text-[10px] px-1.5 py-0.5 rounded-md bg-[#F1F5F9]", C.muted)}>
+                        {p.categoria}
+                      </span>
+                      <span className={cn(T.label, "text-[10px] px-1.5 py-0.5 rounded-md bg-[#FEF3C7] text-[#92400E]")}>
+                        Margem: dados insuficientes
+                      </span>
+                    </div>
                   </div>
-                  <span className={cn(T.mono, "text-[13px] font-bold text-[#059669] whitespace-nowrap")}>
-                    {fmtBRL(p.preco)}
-                  </span>
-                  <ArrowRight size={13} className="text-[#94A3B8] opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="flex flex-col items-end gap-0.5">
+                    <span className={cn(T.mono, "text-[13px] font-bold text-[#059669] whitespace-nowrap")}>
+                      {fmtBRL(p.preco)}
+                    </span>
+                    <span className={cn(T.label, "text-[9.5px] text-[#2563EB]")}>Combo →</span>
+                  </div>
                 </button>
               ))}
+              <p className={cn(T.body, C.muted, "text-[11px] mt-2 px-1")}>
+                Cadastre o custo das fichas para liberar margem real por produto.
+              </p>
             </div>
           ) : (
             <EmptyState
@@ -679,12 +727,27 @@ export default function Dashboard() {
               ))}
             </div>
           ) : (
-            <EmptyState
-              icon={CheckCircle2}
-              title="Nenhum produto em risco"
-              hint="Margens estão saudáveis. Continue acompanhando custos e fichas."
-              tone="success"
-            />
+            <div className="flex-1 flex flex-col justify-center gap-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-lg bg-[#ECFDF5] text-[#059669] flex items-center justify-center shrink-0">
+                  <CheckCircle2 size={16} strokeWidth={2.4} />
+                </div>
+                <div className="min-w-0">
+                  <p className={cn(T.accent, "text-[14px]", C.text)}>Nenhum produto em risco</p>
+                  <p className={cn(T.body, "text-[12px]", C.muted)}>Margens saudáveis no momento.</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] px-2.5 py-2">
+                  <p className={cn(T.mono, "text-[16px] font-bold text-[#059669] leading-none")}>0</p>
+                  <p className={cn(T.body, "text-[10.5px] mt-1", C.muted)}>com CMV alto</p>
+                </div>
+                <div className="rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] px-2.5 py-2">
+                  <p className={cn(T.mono, "text-[16px] font-bold text-[#059669] leading-none")}>0</p>
+                  <p className={cn(T.body, "text-[10.5px] mt-1", C.muted)}>abaixo da margem mínima</p>
+                </div>
+              </div>
+            </div>
           )}
         </Bento>
 
