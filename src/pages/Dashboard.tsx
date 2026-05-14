@@ -275,7 +275,23 @@ export default function Dashboard() {
             <span className="text-xs text-muted-foreground">este mês</span>
           </div>
           {topPizzas.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-8 text-center">Nenhuma ficha cadastrada ainda.</p>
+            <div className="py-10 flex flex-col items-center justify-center text-center gap-3">
+              <div className="w-14 h-14 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                <Pizza size={26} className="text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">Nenhuma ficha cadastrada ainda</p>
+                <p className="text-xs text-muted-foreground mt-1 max-w-[280px]">
+                  Crie sua primeira ficha técnica e descubra o lucro real de cada pizza.
+                </p>
+              </div>
+              <button
+                onClick={() => navigate("/fichas/pizzas")}
+                className="inline-flex items-center gap-1.5 h-9 px-4 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary-light transition-colors"
+              >
+                <Plus size={14} /> Criar Ficha Técnica
+              </button>
+            </div>
           ) : (
             <div className="space-y-3">
               {topPizzas.map((p, i) => {
