@@ -242,9 +242,9 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
         if (ingError) throw ingError;
       }
     },
-    onSuccess: () => {
+    onSuccess: (_d, variables) => {
       invalidateAll();
-      toast.success("Ficha técnica cadastrada!");
+      toast.success(`🍕 ${variables.nome || "Item"} no forno! Ficha cadastrada.`);
       resetForm();
     },
     onError: (e) => appError("ERR-FTP-010", e),
