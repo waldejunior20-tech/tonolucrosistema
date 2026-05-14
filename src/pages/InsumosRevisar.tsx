@@ -73,6 +73,7 @@ export default function InsumosRevisar() {
   const queryClient = useQueryClient();
   const { activeUnidadeId: unidadeId } = useActiveUnidade();
   const [busca, setBusca] = useState("");
+  const [tab, setTab] = useState<"classificacao" | "preco">("classificacao");
   const [editing, setEditing] = useState<Item | null>(null);
   const [destino, setDestino] = useState<string>("insumo");
   const [categoria, setCategoria] = useState<string>("");
