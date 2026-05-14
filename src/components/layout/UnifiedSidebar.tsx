@@ -34,10 +34,7 @@ interface SidebarItem {
 const sidebarItems: SidebarItem[] = [
   {
     key: "dashboard", label: "Dashboard", icon: LayoutDashboard,
-    subItems: [
-      { label: "Visão Geral", path: "/" },
-      { label: "Saúde do CMV", path: "/automacao/saude" },
-    ],
+    path: "/",
   },
   {
     key: "menu", label: "Engenharia", icon: ChefHat,
@@ -59,6 +56,7 @@ const sidebarItems: SidebarItem[] = [
         label: "Parâmetros & Automação",
         subItems: [
           { label: "Configurações de Preço", path: "/precificacao/configuracoes" },
+          { label: "Saúde do CMV", path: "/automacao/saude" },
           { label: "Alertas de CMV", path: "/automacao/alertas" },
           { label: "Histórico de Preços", path: "/automacao/historico-precos" },
           { label: "Fichas Incompletas", path: "/automacao/fichas-warnings" },
