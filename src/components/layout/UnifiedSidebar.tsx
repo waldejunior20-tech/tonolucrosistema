@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, ChefHat, Wallet, ChevronDown,
-  PanelLeftClose, PanelLeft, Pizza, Cog, LogOut, ChevronUp, Activity
+  PanelLeftClose, PanelLeft, Pizza, Cog, LogOut, ChevronUp, Activity,
+  Package, DollarSign, Tag, FileBarChart, Receipt, Heart, Home
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,13 +40,13 @@ const sidebarItems: SidebarItem[] = [
     ],
   },
   {
-    key: "operacional", label: "Operacional", icon: Activity,
+    key: "operacional", label: "Operação", icon: Activity,
     subItems: [
       { label: "Caixa Diário", path: "/financeiro/caixa-diario" },
     ],
   },
   {
-    key: "menu", label: "Engenharia de Menu", icon: ChefHat,
+    key: "menu", label: "Engenharia", icon: ChefHat,
     subItems: [
       {
         label: "Insumos",
@@ -65,16 +66,11 @@ const sidebarItems: SidebarItem[] = [
         ],
       },
       {
-        label: "Precificação",
+        label: "Precificação & Promoções",
         subItems: [
-          { label: "Pizzas", path: "/precificacao/pizzas" },
-          { label: "Produtos", path: "/precificacao/produtos" },
-          { label: "Bebidas", path: "/precificacao/bebidas" },
-        ],
-      },
-      {
-        label: "Promoções",
-        subItems: [
+          { label: "Precificar Pizzas", path: "/precificacao/pizzas" },
+          { label: "Precificar Produtos", path: "/precificacao/produtos" },
+          { label: "Precificar Bebidas", path: "/precificacao/bebidas" },
           { label: "Promoções Ativas", path: "/promocoes/ativas" },
           { label: "Combos Fixos", path: "/promocoes/combos" },
         ],
@@ -85,17 +81,23 @@ const sidebarItems: SidebarItem[] = [
     key: "financeiro", label: "Financeiro", icon: Wallet,
     subItems: [
       { label: "Contas a Pagar", path: "/financeiro/contas-a-pagar" },
-      { label: "DRE Simples", path: "/financeiro/dre" },
-      { label: "Ponto de Equilíbrio", path: "/financeiro/ponto-de-equilibrio" },
+      {
+        label: "Relatórios",
+        subItems: [
+          { label: "DRE Simples", path: "/financeiro/dre" },
+          { label: "Ponto de Equilíbrio", path: "/financeiro/ponto-de-equilibrio" },
+        ],
+      },
     ],
   },
   {
     key: "configuracoes", label: "Configurações", icon: Cog,
     subItems: [
-      { label: "Geral / Unidades / Usuários", path: "/configuracoes" },
+      { label: "Meu Negócio", path: "/configuracoes" },
       {
-        label: "Automação",
+        label: "Parâmetros & Automação",
         subItems: [
+          { label: "Configurações de Preço", path: "/precificacao/configuracoes" },
           { label: "Alertas de CMV", path: "/automacao/alertas" },
           { label: "Histórico de Preços", path: "/automacao/historico-precos" },
           { label: "Fichas Incompletas", path: "/automacao/fichas-warnings" },
