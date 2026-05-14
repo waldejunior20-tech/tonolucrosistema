@@ -138,7 +138,7 @@ export default function InsumosHistoricoCompras() {
         r.fornecedor?.toLowerCase().includes(q)
       );
     });
-  }, [rows, busca, fornecedorFiltro, destinoFiltro, periodo]);
+  }, [rows, busca, fornecedorFiltro, destinoFiltro, origemFiltro, periodo]);
 
   const kpis = useMemo(() => {
     const total = filtered.reduce((acc, r) => acc + Number(r.preco_total ?? r.preco_unitario * r.quantidade), 0);
