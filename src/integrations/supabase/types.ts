@@ -175,6 +175,42 @@ export type Database = {
         }
         Relationships: []
       }
+      auditoria_correcoes_precos: {
+        Row: {
+          created_at: string
+          detalhes: Json
+          executado_por: string | null
+          id: string
+          insumo_id: string | null
+          motivo: string
+          snapshot_canonico: Json | null
+          snapshot_historico: Json | null
+          unidade_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          detalhes?: Json
+          executado_por?: string | null
+          id?: string
+          insumo_id?: string | null
+          motivo: string
+          snapshot_canonico?: Json | null
+          snapshot_historico?: Json | null
+          unidade_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          detalhes?: Json
+          executado_por?: string | null
+          id?: string
+          insumo_id?: string | null
+          motivo?: string
+          snapshot_canonico?: Json | null
+          snapshot_historico?: Json | null
+          unidade_id?: string | null
+        }
+        Relationships: []
+      }
       auditoria_importacao: {
         Row: {
           created_at: string
