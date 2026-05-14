@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { EmptyState } from "@/components/EmptyState";
+
 import { formatCurrency } from "@/lib/format";
 import { useProductCosts } from "@/hooks/useProductCosts";
 import { FichaWizard, PRODUCT_TYPES, type ProductType } from "@/components/fichas/FichaWizard";
