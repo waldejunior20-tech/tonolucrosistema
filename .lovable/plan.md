@@ -1,79 +1,122 @@
-## Objetivo
-Transformar **Insumos Comprados** no cadastro **canônico** dos ingredientes (1 linha por insumo) e mover toda compra individual para **Histórico de Compras**. Sem quebrar Supabase, RLS, fichas técnicas, cálculos de CMV, edge functions ou n8n.
+# Arquitetura de Classificação, Histórico e Revisão de Destino
 
-## Conceito (estado final)
+Objetivo: separar com clareza **insumo canônico**, **histórico de compras**, **despesa financeira** e **fila de revisão** — sem apagar dados, sem mesclar automaticamente, sem quebrar fichas técnicas.
 
-```text
-insumos_comprados        → cadastro canônico (1 linha por ingrediente)
-                          preço atual = última compra (default)
-                          último fornecedor + data
-insumos_compras_historico → toda compra individual (memória)
-fichas_tecnicas_*_ingredientes → continuam apontando p/ insumos_comprados.id
-```
+---
 
-Hoje `insumos_comprados` já tem campos canônicos (`preco_medio`, `preco_minimo`, `preco_maximo`, `total_compras`, `nome_canonico`, `insumo_catalog_id`). A lógica para alimentar isso vem da edge `ingest-nota-fiscal`. Para entradas manuais e BRISA, o histórico não estava sendo populado — vamos consertar.
+## Princípio central
 
-## O que NÃO muda
-- Schemas existentes, RLS, foreign keys, edge functions de classificação/cascata.
-- IDs de `insumos_comprados` referenciados pelas fichas técnicas.
-- Cálculos de CMV / precificação.
-- `insumos_proprios` (aba "Produzidos") fica intacta.
+`insumos_comprados` = **registro canônico** (1 linha por ingrediente real).
+`insumos_compras_historico` = **memória completa** (1 linha por compra).
+`lancamentos_financeiros` / `contas_a_pagar` = **despesas que não montam ficha**.
+`notas_fiscais_pendentes` (estendida) = **fila de revisão** quando o destino é incerto.
 
-## O que muda
+Tomate no Brisa R$15 + Tomate no Zago R$2 → **1** insumo "TOMATE", 2 linhas no histórico, preço atual = R$2 (Zago, mais recente).
 
-### 1. Banco (migração leve)
-- Trigger em `insumos_compras_historico` que **upserta** o `insumos_comprados` correspondente: atualiza `preco_pago` (preço atual), `fornecedor`, `data_compra`, recalcula `preco_medio/min/max/total_compras`. Já existe parcialmente — vamos garantir consistência.
-- Trigger em `insumos_comprados` (INSERT/UPDATE manual) que **espelha** uma linha em `insumos_compras_historico` quando vier com `data_compra`/`fornecedor` (para entradas manuais virarem histórico automaticamente).
-- View `vw_insumos_canonicos` que agrega: insumo + última compra + variação vs anterior + contagem de fichas que usam.
+---
 
-### 2. UI — `src/pages/Insumos*.tsx`
+## 1. Banco de dados (migração única, não-destrutiva)
 
-Substituir a aba única atual por 3 sub-tabs dentro de "Comprados" (mantém a tab "Produzidos" do `InsumosCategoryTabs` no topo):
+### 1.1 Tabela nova `regras_classificacao`
+Regras aprendidas por fornecedor/item para próximas importações.
 
-```text
-/insumos/comprados           → Tab "Insumos Comprados"   (canônico)
-/insumos/comprados/historico → Tab "Histórico de Compras"
-/insumos/comprados/duplicados→ Tab "Revisar Duplicados"
-/insumos/produzidos          → (existente, intocado)
-```
+Campos: `unidade_id`, `escopo` (`fornecedor` | `item` | `fornecedor+item`), `chave_normalizada`, `destino` (`insumo` | `embalagem` | `financeiro` | `conta_pagar`), `categoria`, `subcategoria`, `confianca` (0–1), `criado_por` (`usuario` | `sistema`), `aprovada` (bool), `vezes_aplicada`, timestamps. RLS por unidade.
 
-#### Tab 1 — Insumos Comprados (canônico)
-Refatora `InsumosComprados.tsx`. Colunas:
-Nome · Categoria · Unidade · **Preço atual** · **Último fornecedor** · **Última compra** · **Variação** (vs penúltima compra, com seta ↑↓ colorida) · **Usado em N fichas** · Status (Normal/Atenção/Alta forte baseado em `usePriceAlerts`).
-Ações: Editar · Ver histórico (abre tab 2 filtrada) · Ver fichas que usam (dialog) · Revisar duplicados.
+### 1.2 Tabela nova `auditoria_importacao`
+Trilha do que aconteceu em cada NF/cupom: `nota_fiscal_id`, `itens_lidos`, `enviados_insumos`, `enviados_financeiro`, `pendentes_revisao`, `regras_aplicadas` (jsonb), `duplicados_sugeridos`, `fichas_impactadas`. Append-only.
 
-#### Tab 2 — Histórico de Compras
-Nova página. Lê `insumos_compras_historico` JOIN `insumos_comprados`. Colunas:
-Data · Insumo (nome canônico) · **Nome original na nota** · Fornecedor · Qtd · Unidade · Preço unit. · Preço total · NF (link p/ `notas_fiscais` se houver) · Origem (manual/whatsapp/importação).
-Filtros: insumo, fornecedor, período. Sem ações destrutivas (histórico imutável).
+### 1.3 Coluna `destino` em `insumos_compras_historico`
+Enum textual: `insumo` | `embalagem` | `financeiro` | `conta_pagar` | `revisar`. Default `insumo`. Permite o histórico mostrar tudo, mesmo o que virou despesa.
 
-#### Tab 3 — Revisar Duplicados
-Nova página. Agrupa `insumos_comprados` por similaridade de nome (já temos lógica `dupCount` por nome lowercased; estendemos com matching simples: remove prefixos `FLV `, `V `, sufixos ` KG`, `SALADA`, e usa Levenshtein leve client-side). Para cada grupo:
-- Card mostra os candidatos lado a lado (preço, fornecedor, fichas que usam).
-- Ação **Mesclar**: usuário escolhe insumo principal → remap em `fichas_tecnicas_*_ingredientes`, `bordas_ingredientes`, `bases_ficha_ingredientes`, `insumos_proprios_ingredientes`, `insumos_compras_historico` → delete dos secundários. Tudo numa edge function `mesclar-insumos` (transacional).
-- Ação **Ignorar** (cria registro `duplicados_ignorados` p/ não reaparecer).
+### 1.4 View `vw_historico_compras_completo`
+Junta `insumos_compras_historico` + `notas_fiscais` + `lancamentos_financeiros` + `insumos_comprados` (canônico) + categoria/destino. Base da nova tela de Histórico.
 
-### 3. Componentes novos
-- `src/components/insumos/InsumosSubTabs.tsx` (Comprados | Histórico | Duplicados).
-- `src/pages/InsumosHistoricoCompras.tsx`.
-- `src/pages/InsumosDuplicados.tsx`.
-- `src/components/insumos/MesclarDuplicadosDialog.tsx`.
-- `src/components/insumos/FichasQueUsamDialog.tsx`.
-- Edge function `supabase/functions/mesclar-insumos/index.ts`.
+### 1.5 View `vw_revisar_classificacoes`
+Itens em `notas_fiscais_pendentes` com `status = aguardando_revisao` + itens do histórico com `destino = revisar` ou confiança < 0.7.
 
-### 4. Roteamento
-Adiciona rotas em `App.tsx` e atualiza `InsumosCategoryTabs` para preservar a hierarquia (Comprados/Produzidos no topo; sub-tabs só dentro de Comprados).
+### 1.6 Trigger `tr_aplicar_regra_classificacao`
+Em INSERT em `insumos_compras_historico`: consulta `regras_classificacao` aprovadas; se houver match → aplica destino/categoria, incrementa `vezes_aplicada`. Se não houver e confiança < 0.7 → marca `destino = revisar`.
 
-## Garantias de não-quebra
-- Fichas continuam usando `insumos_comprados.id` — nada muda nesse contrato.
-- Edge `ingest-nota-fiscal` já produz histórico → nada muda lá.
-- Cálculos `useProductCosts`, `usePriceAlerts`, cascata de CMV continuam lendo `insumos_comprados.preco_pago` — só passa a ser **mais fresco**.
-- `insumos_proprios` intocado.
-- Mesclagem feita por edge function com `service_role` em transação, preservando todos os FKs lógicos.
+### 1.7 Função `aprovar_classificacao(item_id, destino, categoria, criar_regra)`
+SECURITY DEFINER. Atualiza o item, opcionalmente insere regra aprovada, registra na auditoria. Não toca em fichas técnicas.
 
-## Entregáveis (ordem de execução)
-1. Migração: triggers + view + tabela `duplicados_ignorados`.
-2. Edge function `mesclar-insumos`.
-3. UI: SubTabs + 3 páginas + dialogs.
-4. Roteamento.
-5. QA: abrir cada tab, conferir BRISA aparecendo no histórico, simular merge com dry-run logging.
+**Preservação garantida**: nada é deletado. `deduplicar_insumo_comprado` (trigger existente) continua intacto. Mesclagem manual segue via edge function `mesclar-insumos` já existente.
+
+---
+
+## 2. Edge Functions
+
+### 2.1 `ingest-nota-fiscal` (existente — ajuste leve)
+Após classificar item: se destino sugerido = `financeiro` → cria `lancamentos_financeiros` em vez de `insumos_comprados`. Sempre grava em `insumos_compras_historico` com `destino` correto. Sempre registra `auditoria_importacao`.
+
+### 2.2 `revisar-classificacao` (nova)
+POST `{ item_id, destino, categoria, subcategoria, criar_regra }`. Move o item entre tabelas se destino mudou (insumo↔financeiro), preserva histórico original, opcionalmente cria regra aprovada.
+
+### 2.3 `mesclar-insumos` (existente — sem mudança)
+
+---
+
+## 3. Frontend — 4 abas em `/insumos/comprados/*`
+
+Reaproveita `InsumosSubTabs.tsx` já criado. Nova ordem:
+
+1. **Insumos Comprados** (`/insumos/comprados`) — já implementado, sem mudança visual
+2. **Histórico de Compras** (`/insumos/comprados/historico`) — estender o existente com filtros novos
+3. **Revisar Classificações** (`/insumos/comprados/revisar`) — **nova página**
+4. **Revisar Duplicados** (`/insumos/comprados/duplicados`) — já implementado
+
+### 3.1 Histórico de Compras — filtros adicionais
+Períodos (7/30/90d, este mês, mês passado, custom) · fornecedor · categoria · item canônico · destino · origem (WhatsApp/manual/import). KPIs no topo: total gasto, top fornecedor, item que mais subiu.
+
+### 3.2 Revisar Classificações (nova `InsumosRevisar.tsx`)
+Tabela: item · fornecedor · nome original · sugestão (destino + categoria) · confiança (badge) · data · origem.
+Linha expansível com 4 ações: **Confirmar** · **Corrigir** (dialog com select de destino/categoria) · **Ignorar** · **Aprovar e aprender** (cria regra).
+
+### 3.3 Copy (PT-BR simples)
+"Para onde isso vai?" · "Isso monta ficha técnica?" · "Isso é despesa?" · "Aprovar e aprender" · "Ver fichas impactadas" · "Ver histórico". Sem termos técnicos.
+
+---
+
+## 4. Detalhes técnicos (referência)
+
+### Arquivos novos
+- `supabase/migrations/<ts>_classificacao_e_auditoria.sql` — tabelas, view, trigger, função
+- `supabase/functions/revisar-classificacao/index.ts`
+- `src/pages/InsumosRevisar.tsx`
+- `src/components/insumos/RevisarClassificacaoDialog.tsx`
+- `src/hooks/useRegrasClassificacao.ts`
+
+### Arquivos editados
+- `src/App.tsx` — rota `/insumos/comprados/revisar`
+- `src/components/insumos/InsumosSubTabs.tsx` — adicionar aba "Revisar Classificações"
+- `src/pages/InsumosHistoricoCompras.tsx` — filtros novos + KPIs
+- `supabase/functions/ingest-nota-fiscal/index.ts` — roteamento por destino + auditoria
+
+### Mantido intacto
+RLS · auth · `pode_editar_negocio` · cálculo de CMV · fichas técnicas · `MoneyInput` · `useActiveUnidade` · n8n · `cascata-preco-cmv` · `deduplicar_insumo_comprado` · `tr_historico_atualiza_insumo` · `vw_insumos_canonicos`.
+
+---
+
+## 5. Garantias de segurança
+
+- Nenhum DELETE em dados existentes
+- Nenhuma mesclagem automática (sempre exige clique humano)
+- Nenhum item movido entre tabelas sem registrar auditoria
+- Nome original sempre preservado em `insumos_compras_historico.nome_original`
+- Vínculos de fichas técnicas (`insumo_comprado_id`) nunca são alterados pela revisão de classificação — só pela mesclagem manual
+- Total da nota nunca é ajustado para "fechar conta"
+- Regras só são aplicadas se `aprovada = true`
+
+---
+
+## 6. Resultado esperado
+
+Consultas que o sistema passa a responder:
+- "Quanto gastei de muçarela este mês?" → Histórico filtrado por item canônico + período
+- "Quanto comprei do Zago em 90d?" → Histórico filtrado por fornecedor + período
+- "Quais itens subiram mais?" → Histórico ordenado por variação
+- "O que está mal classificado?" → aba Revisar Classificações
+- "O que não deveria estar em Insumos?" → itens com destino sugerido = financeiro
+- "Quais fornecedores viram despesa?" → regras com `destino = financeiro`
+
+Aprovação? Sigo com a migração e os arquivos listados.

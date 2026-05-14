@@ -16,6 +16,7 @@ import InsumosComprados from "@/pages/InsumosComprados";
 import InsumosProduzidos from "@/pages/InsumosProduzidos";
 import InsumosHistoricoCompras from "@/pages/InsumosHistoricoCompras";
 import InsumosDuplicados from "@/pages/InsumosDuplicados";
+import InsumosRevisar from "@/pages/InsumosRevisar";
 import FichasTecnicasPizza from "@/pages/FichasTecnicasPizza";
 import FichasTecnicasProdutos from "@/pages/FichasTecnicasProdutos";
 import PrecificacaoPizzas from "@/pages/PrecificacaoPizzas";
@@ -100,6 +101,7 @@ function AppRoutes() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/insumos/comprados" element={<InsumosComprados />} />
         <Route path="/insumos/comprados/historico" element={<InsumosHistoricoCompras />} />
+        <Route path="/insumos/comprados/revisar" element={<InsumosRevisar />} />
         <Route path="/insumos/comprados/duplicados" element={<InsumosDuplicados />} />
         <Route path="/insumos/produzidos" element={<InsumosProduzidos />} />
         <Route path="/fichas/pizzas" element={<FichasTecnicasPizza />} />
