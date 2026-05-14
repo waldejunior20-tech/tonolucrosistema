@@ -55,16 +55,7 @@ const sidebarItems: SidebarItem[] = [
           { label: "Produzidos", path: "/insumos/produzidos" },
         ],
       },
-      {
-        label: "Fichas Técnicas",
-        subItems: [
-          { label: "Pizzas", path: "/fichas/pizzas" },
-          { label: "Sanduíches", path: "/fichas/sanduiches" },
-          { label: "Pratos", path: "/fichas/pratos" },
-          { label: "Sobremesas", path: "/fichas/sobremesas" },
-          { label: "Bebidas", path: "/fichas/bebidas" },
-        ],
-      },
+      { label: "Fichas Técnicas", path: "/fichas/pizzas" },
       {
         label: "Precificação & Promoções",
         subItems: [
