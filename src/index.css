@@ -198,23 +198,26 @@
     font-variant-numeric: tabular-nums;
   }
 
-  /* ═══ Card — glass effect ═══ */
+  /* ═══ Card — solid white ═══ */
   .card-premium {
-    background: rgba(211, 211, 211, 0.2);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: var(--radius-md);
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: 12px;
     padding: 24px;
   }
 
   .dre-card {
-    background: rgba(211, 211, 211, 0.2);
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: 12px;
   }
 
-  /* ═══ Money values — bold #595959 ═══ */
+  /* ═══ Money values ═══ */
   .text-money {
-    color: #595959;
-    font-weight: 700;
+    color: hsl(var(--text-heading));
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
   }
 
   /* ═══ Pricing Inputs ═══ */
