@@ -6,102 +6,72 @@
 
 @layer base {
   :root {
-    /* ═══ Core Palette — TôNoLucro Pizzaria Refresh ═══ */
-    --background: 33 100% 97%;             /* #FFF8F0 warm cream */
-    --foreground: 222 47% 11%;
+    /* ═══ Core Palette — Light Slate Theme ═══ */
+    --background: 210 40% 98%;             /* #F8FAFC */
+    --foreground: 222 47% 11%;             /* #0F172A */
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    /* Primary action (Salvar / Calcular) → blue #2563EB */
+    /* Primary → blue #2563EB */
     --primary: 221 83% 53%;
     --primary-foreground: 0 0% 100%;
     --primary-light: 217 91% 60%;
-    /* Hot CTA (Nova venda / Nova ficha / Fechar caixa) → orange #E85D04 */
-    --accent: 22 96% 46%;
+    /* Accent reused as primary blue */
+    --accent: 221 83% 53%;
     --accent-foreground: 0 0% 100%;
-    --orange-accent: 22 96% 46%;
-    --secondary: 33 50% 94%;
+    --orange-accent: 221 83% 53%;
+    --secondary: 210 40% 96%;
     --secondary-foreground: 222 47% 11%;
-    --muted: 33 50% 94%;
-    --muted-foreground: 215 16% 47%;
-    /* Alert/loss → #DC2626 */
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 20% 35%;       /* #475569 */
+    /* Danger → #DC2626 */
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    /* Success/profit → #059669 */
-    --success: 160 84% 30%;
-    --warning: 38 92% 50%;
+    /* Success → #059669 */
+    --success: 160 94% 30%;
+    /* Warning → #D97706 */
+    --warning: 32 94% 44%;
     --info: 221 83% 53%;
-    --orange: 22 96% 46%;
-    --border: 214 19% 88%;                 /* #E2E8F0 */
-    --input: 214 19% 88%;
+    --orange: 221 83% 53%;
+    --border: 214 32% 91%;                 /* #E2E8F0 */
+    --input: 214 32% 91%;
     --ring: 221 83% 53%;
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    /* ═══ Border Radius Tokens ═══
-     * Sistema centralizado de border-radius.
-     * Todos os componentes DEVEM usar estas variáveis.
-     *
-     * --radius-xs   (2px)  → badges pequenos, trend pills
-     * --radius-sm   (4px)  → botões, inputs, trend badges
-     * --radius-md   (6px)  → cards, modais, status pills
-     * --radius-lg   (8px)  → containers, tabelas
-     * --radius-xl   (12px) → cards premium, elementos destaque
-     * --radius-pill          → tags, avatares (totalmente arredondado)
-     *
-     * Regras de uso:
-     *   Cards        → var(--radius-md)  = 0.375rem = 6px
-     *   Botões       → var(--radius-sm)  = 0.125rem = 2px  (equivalente a rounded-sm padrão)
-     *   Inputs       → var(--radius-sm)
-     *   Status pills → var(--radius-md)
-     *   Trend badges → var(--radius-xs)
-     *   Tabelas      → var(--radius-lg)
-     *   Avatares     → var(--radius-pill)
-     * ═══════════════════════════════════════════ */
-    --radius-xs: 0.125rem;   /* 2px  */
-    --radius-sm: 0.25rem;    /* 4px  */
-    --radius-md: 0.375rem;   /* 6px  */
-    --radius-lg: 0.5rem;     /* 8px  */
-    --radius-xl: 0.75rem;    /* 12px */
+    /* Border Radius Tokens */
+    --radius-xs: 0.25rem;     /* 4px  */
+    --radius-sm: 0.375rem;    /* 6px  */
+    --radius-md: 0.5rem;      /* 8px  */
+    --radius-lg: 0.75rem;     /* 12px — cards */
+    --radius-xl: 1rem;        /* 16px */
     --radius-pill: 9999px;
 
-    /* ═══ Semantic Surface Tokens ═══ */
-    --surface-page: 33 100% 97%;
+    /* Surfaces */
+    --surface-page: 210 40% 98%;
     --surface-card: 0 0% 100%;
-    --surface-muted: 33 50% 96%;
-    --surface-stripe: 33 50% 94%;
+    --surface-muted: 210 40% 96%;
+    --surface-stripe: 214 32% 95%;
 
-    /* ═══ Semantic Text Tokens ═══ */
+    /* Text */
     --text-heading: 222 47% 11%;
-    --text-secondary: 215 25% 27%;
+    --text-secondary: 215 20% 35%;         /* #475569 */
     --text-muted: 215 16% 47%;
-    --text-money: 222 47% 18%;
+    --text-money: 222 47% 11%;
 
-    /* ═══ Dashboard Gradient Stops ═══ */
-    --grad-faturamento-from: 142 76% 19%;
-    --grad-faturamento-to: 152 40% 33%;
-    --grad-gastos-from: 30 82% 31%;
-    --grad-gastos-to: 36 77% 49%;
-    --grad-lucro-pos-from: 142 64% 24%;
-    --grad-lucro-pos-to: 142 71% 45%;
-    --grad-lucro-neg-from: 0 63% 31%;
-    --grad-lucro-neg-to: 0 72% 42%;
-    --grad-cmv-ok-from: 210 51% 25%;
-    --grad-cmv-ok-to: 217 91% 60%;
-
-    /* ═══ Sidebar ═══ */
-    --sidebar-background: 220 17% 14%;
-    --sidebar-foreground: 220 9% 60%;
-    --sidebar-primary: 22 96% 46%;
+    /* Sidebar — light theme */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 215 20% 35%;
+    --sidebar-primary: 221 83% 53%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 15% 20%;
-    --sidebar-accent-foreground: 220 14% 96%;
-    --sidebar-border: 220 15% 20%;
-    --sidebar-ring: 22 96% 46%;
+    --sidebar-accent: 210 40% 96%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 221 83% 53%;
   }
 
   .dark {
-    --background: 33 100% 97%;
+    --background: 210 40% 98%;
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
@@ -110,30 +80,30 @@
     --primary: 221 83% 53%;
     --primary-foreground: 0 0% 100%;
     --primary-light: 217 91% 60%;
-    --accent: 22 96% 46%;
+    --accent: 221 83% 53%;
     --accent-foreground: 0 0% 100%;
-    --orange-accent: 22 96% 46%;
-    --secondary: 33 50% 94%;
+    --orange-accent: 221 83% 53%;
+    --secondary: 210 40% 96%;
     --secondary-foreground: 222 47% 11%;
-    --muted: 33 50% 94%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 20% 35%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    --success: 160 84% 30%;
-    --warning: 38 92% 50%;
+    --success: 160 94% 30%;
+    --warning: 32 94% 44%;
     --info: 221 83% 53%;
-    --border: 214 19% 88%;
-    --input: 214 19% 88%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
     --ring: 221 83% 53%;
 
-    --sidebar-background: 220 17% 14%;
-    --sidebar-foreground: 220 9% 60%;
-    --sidebar-primary: 22 96% 46%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 215 20% 35%;
+    --sidebar-primary: 221 83% 53%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 15% 20%;
-    --sidebar-accent-foreground: 220 14% 96%;
-    --sidebar-border: 220 15% 20%;
-    --sidebar-ring: 22 96% 46%;
+    --sidebar-accent: 210 40% 96%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 221 83% 53%;
   }
 }
 
