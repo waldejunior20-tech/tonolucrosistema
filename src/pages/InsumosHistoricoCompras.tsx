@@ -164,7 +164,7 @@ export default function InsumosHistoricoCompras() {
       />
 
       {/* KPIs */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 fade-up">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 fade-up">
         <div className="rounded-xl border border-border/60 bg-card p-4">
           <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Total no período</div>
           <div className="text-2xl font-bold tabular-nums text-foreground mt-1">{formatMoney(kpis.total)}</div>
@@ -179,6 +179,13 @@ export default function InsumosHistoricoCompras() {
           </div>
           <div className="text-sm font-bold text-foreground mt-1 truncate">{kpis.topFornecedor?.nome ?? "—"}</div>
           <div className="text-xs tabular-nums text-muted-foreground">{kpis.topFornecedor ? formatMoney(kpis.topFornecedor.valor) : ""}</div>
+        </div>
+        <div className="rounded-xl border border-border/60 bg-card p-4">
+          <div className="text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+            <ShieldAlert className="h-3 w-3" /> Preços bloqueados (30d)
+          </div>
+          <div className="text-2xl font-bold tabular-nums text-foreground mt-1">{precosBloqueados30d}</div>
+          <div className="text-xs text-muted-foreground">aumentos suspeitos travados</div>
         </div>
       </div>
 
