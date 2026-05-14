@@ -192,6 +192,21 @@ export default function InsumosRevisar() {
         description="Itens importados que precisam confirmação humana antes de virar insumo, despesa ou embalagem."
       />
 
+      <Tabs value={tab} onValueChange={(v) => setTab(v as any)}>
+        <TabsList>
+          <TabsTrigger value="classificacao" className="gap-2">
+            <AlertCircle className="h-3.5 w-3.5" />
+            Classificação
+            <Badge variant="secondary" className="ml-1">{counts.classif}</Badge>
+          </TabsTrigger>
+          <TabsTrigger value="preco" className="gap-2">
+            <ShieldAlert className="h-3.5 w-3.5" />
+            Preço suspeito
+            <Badge variant="secondary" className="ml-1">{counts.preco}</Badge>
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[260px] max-w-[420px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
