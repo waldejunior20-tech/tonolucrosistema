@@ -206,17 +206,29 @@ export default function Dashboard() {
         </KpiCard>
 
         <KpiCard label="Top Pizza" icon={Pizza} accent="success">
-          <div className="font-display text-lg font-bold text-foreground truncate">
-            {topPizza?.nome ?? "—"}
-          </div>
-          <div className="mt-1.5 flex items-center gap-2 flex-wrap">
-            <span className="text-xs text-muted-foreground">
-              lucro <span className="text-foreground font-semibold tabular">{topPizza ? formatBRL(topPizza.lucro) : "R$ 0,00"}</span>
-            </span>
-            {topPizza && (
-              <span className="status-profit text-[11px]">{topPizza.margem.toFixed(0)}% margem</span>
-            )}
-          </div>
+          {topPizza ? (
+            <>
+              <div className="font-display text-lg font-bold text-foreground truncate">{topPizza.nome}</div>
+              <div className="mt-1.5 flex items-center gap-2 flex-wrap">
+                <span className="text-xs text-muted-foreground">
+                  lucro <span className="text-foreground font-semibold tabular">{formatBRL(topPizza.lucro)}</span>
+                </span>
+                <span className="status-profit text-[11px]">{topPizza.margem.toFixed(0)}% margem</span>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="text-xs text-muted-foreground leading-snug">
+                Cadastre sua primeira ficha técnica para ver o lucro por pizza.
+              </p>
+              <button
+                onClick={() => navigate("/fichas/pizzas")}
+                className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:text-primary-light"
+              >
+                <Plus size={12} /> Criar Ficha
+              </button>
+            </>
+          )}
         </KpiCard>
 
         <KpiCard label="Alerta de Custo" icon={AlertTriangle} accent="warning">
@@ -263,7 +275,23 @@ export default function Dashboard() {
             <span className="text-xs text-muted-foreground">este mês</span>
           </div>
           {topPizzas.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-8 text-center">Nenhuma ficha cadastrada ainda.</p>
+            <div className="py-10 flex flex-col items-center justify-center text-center gap-3">
+              <div className="w-14 h-14 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                <Pizza size={26} className="text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">Nenhuma ficha cadastrada ainda</p>
+                <p className="text-xs text-muted-foreground mt-1 max-w-[280px]">
+                  Crie sua primeira ficha técnica e descubra o lucro real de cada pizza.
+                </p>
+              </div>
+              <button
+                onClick={() => navigate("/fichas/pizzas")}
+                className="inline-flex items-center gap-1.5 h-9 px-4 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary-light transition-colors"
+              >
+                <Plus size={14} /> Criar Ficha Técnica
+              </button>
+            </div>
           ) : (
             <div className="space-y-3">
               {topPizzas.map((p, i) => {
@@ -301,7 +329,23 @@ export default function Dashboard() {
             <span className="text-xs text-muted-foreground">últimos 30 dias</span>
           </div>
           {points.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-12 text-center">Sem histórico de preços ainda.</p>
+            <div className="py-10 flex flex-col items-center justify-center text-center gap-3">
+              <div className="w-14 h-14 rounded-full bg-warning/10 border border-warning/20 flex items-center justify-center">
+                <TrendingUp size={26} className="text-warning" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">Sem histórico de preços ainda</p>
+                <p className="text-xs text-muted-foreground mt-1 max-w-[300px]">
+                  Registre compras de insumos para acompanhar a evolução de preços.
+                </p>
+              </div>
+              <button
+                onClick={() => navigate("/insumos/comprados")}
+                className="inline-flex items-center gap-1.5 h-9 px-4 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary-light transition-colors"
+              >
+                <Plus size={14} /> Registrar Compra
+              </button>
+            </div>
           ) : (
             <ResponsiveContainer width="100%" height={220}>
               <LineChart data={points} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
