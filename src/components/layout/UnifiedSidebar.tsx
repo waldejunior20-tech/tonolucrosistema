@@ -40,12 +40,6 @@ const sidebarItems: SidebarItem[] = [
     ],
   },
   {
-    key: "operacional", label: "Operação", icon: Activity,
-    subItems: [
-      { label: "Caixa Diário", path: "/financeiro/caixa-diario" },
-    ],
-  },
-  {
     key: "menu", label: "Engenharia", icon: ChefHat,
     subItems: [
       { label: "Insumos", path: "/insumos/comprados" },
@@ -55,9 +49,7 @@ const sidebarItems: SidebarItem[] = [
   },
   {
     key: "financeiro", label: "Financeiro", icon: Wallet,
-    subItems: [
-      { label: "Caixa & Relatórios", path: "/financeiro/caixa-diario" },
-    ],
+    path: "/financeiro/caixa-diario",
   },
   {
     key: "configuracoes", label: "Configurações", icon: Cog,
