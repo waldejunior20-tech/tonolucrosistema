@@ -61,6 +61,7 @@ export default function InsumosComprados() {
   const [collapsedCats, setCollapsedCats] = useState<Set<string>>(new Set());
   const [highlightId, setHighlightId] = useState<string | null>(null);
   const lastCreatedCatRef = useRef<string | null>(null);
+  const [notaDialogOpen, setNotaDialogOpen] = useState(false);
 
   // Validation
   const errors = {
