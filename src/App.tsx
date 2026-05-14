@@ -15,6 +15,7 @@ import SectionPage from "@/pages/SectionPage";
 import InsumosComprados from "@/pages/InsumosComprados";
 import InsumosProduzidos from "@/pages/InsumosProduzidos";
 import FichasTecnicas from "@/pages/FichasTecnicas";
+import FichaTecnicaEditor from "@/pages/FichaTecnicaEditor";
 import PrecificacaoPizzas from "@/pages/PrecificacaoPizzas";
 import PrecificacaoBebidas from "@/pages/PrecificacaoBebidas";
 import PrecificacaoProdutos from "@/pages/PrecificacaoProdutos";
