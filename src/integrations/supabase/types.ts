@@ -175,6 +175,57 @@ export type Database = {
         }
         Relationships: []
       }
+      auditoria_importacao: {
+        Row: {
+          created_at: string
+          detalhes: Json
+          duplicados_sugeridos: Json
+          enviados_financeiro: number
+          enviados_insumos: number
+          fichas_impactadas: Json
+          id: string
+          itens_lidos: number
+          nota_fiscal_id: string | null
+          origem: string
+          pendentes_revisao: number
+          regras_aplicadas: Json
+          unidade_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          detalhes?: Json
+          duplicados_sugeridos?: Json
+          enviados_financeiro?: number
+          enviados_insumos?: number
+          fichas_impactadas?: Json
+          id?: string
+          itens_lidos?: number
+          nota_fiscal_id?: string | null
+          origem?: string
+          pendentes_revisao?: number
+          regras_aplicadas?: Json
+          unidade_id: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          detalhes?: Json
+          duplicados_sugeridos?: Json
+          enviados_financeiro?: number
+          enviados_insumos?: number
+          fichas_impactadas?: Json
+          id?: string
+          itens_lidos?: number
+          nota_fiscal_id?: string | null
+          origem?: string
+          pendentes_revisao?: number
+          regras_aplicadas?: Json
+          unidade_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       bases_ficha: {
         Row: {
           created_at: string
@@ -1412,46 +1463,58 @@ export type Database = {
       }
       insumos_compras_historico: {
         Row: {
+          confianca_classificacao: number | null
           created_at: string | null
           data_compra: string
+          destino: string
           fornecedor: string | null
           id: string
           insumo_id: string
           nome_original: string
           nota_fiscal_id: string | null
+          origem: string
           preco_total: number | null
           preco_unitario: number
           quantidade: number
+          regra_aplicada_id: string | null
           unidade_id: string
           unidade_medida: string
           user_id: string
         }
         Insert: {
+          confianca_classificacao?: number | null
           created_at?: string | null
           data_compra?: string
+          destino?: string
           fornecedor?: string | null
           id?: string
           insumo_id: string
           nome_original: string
           nota_fiscal_id?: string | null
+          origem?: string
           preco_total?: number | null
           preco_unitario: number
           quantidade: number
+          regra_aplicada_id?: string | null
           unidade_id: string
           unidade_medida: string
           user_id: string
         }
         Update: {
+          confianca_classificacao?: number | null
           created_at?: string | null
           data_compra?: string
+          destino?: string
           fornecedor?: string | null
           id?: string
           insumo_id?: string
           nome_original?: string
           nota_fiscal_id?: string | null
+          origem?: string
           preco_total?: number | null
           preco_unitario?: number
           quantidade?: number
+          regra_aplicada_id?: string | null
           unidade_id?: string
           unidade_medida?: string
           user_id?: string
@@ -2113,6 +2176,63 @@ export type Database = {
         }
         Relationships: []
       }
+      regras_classificacao: {
+        Row: {
+          aprovada: boolean
+          categoria: string | null
+          chave_normalizada: string
+          confianca: number
+          created_at: string
+          criado_por: string
+          destino: string
+          escopo: string
+          fornecedor_original: string | null
+          id: string
+          item_original: string | null
+          subcategoria: string | null
+          unidade_id: string
+          updated_at: string
+          user_id: string
+          vezes_aplicada: number
+        }
+        Insert: {
+          aprovada?: boolean
+          categoria?: string | null
+          chave_normalizada: string
+          confianca?: number
+          created_at?: string
+          criado_por?: string
+          destino: string
+          escopo: string
+          fornecedor_original?: string | null
+          id?: string
+          item_original?: string | null
+          subcategoria?: string | null
+          unidade_id: string
+          updated_at?: string
+          user_id?: string
+          vezes_aplicada?: number
+        }
+        Update: {
+          aprovada?: boolean
+          categoria?: string | null
+          chave_normalizada?: string
+          confianca?: number
+          created_at?: string
+          criado_por?: string
+          destino?: string
+          escopo?: string
+          fornecedor_original?: string | null
+          id?: string
+          item_original?: string | null
+          subcategoria?: string | null
+          unidade_id?: string
+          updated_at?: string
+          user_id?: string
+          vezes_aplicada?: number
+        }
+        Relationships: []
+      }
       retry_queue: {
         Row: {
           created_at: string | null
@@ -2406,6 +2526,47 @@ export type Database = {
           },
         ]
       }
+      vw_historico_compras_completo: {
+        Row: {
+          cnpj_fornecedor: string | null
+          confianca_classificacao: number | null
+          created_at: string | null
+          data_compra: string | null
+          destino: string | null
+          fornecedor: string | null
+          id: string | null
+          insumo_canonico_nome: string | null
+          insumo_categoria: string | null
+          insumo_id: string | null
+          nome_original: string | null
+          nota_fiscal_id: string | null
+          numero_nf: string | null
+          origem: string | null
+          preco_total: number | null
+          preco_unitario: number | null
+          quantidade: number | null
+          regra_aplicada_id: string | null
+          unidade_id: string | null
+          unidade_medida: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_historico_insumo"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "insumos_comprados"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_historico_insumo"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "vw_insumos_canonicos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vw_insumos_canonicos: {
         Row: {
           categoria: string | null
@@ -2439,6 +2600,43 @@ export type Database = {
           },
         ]
       }
+      vw_revisar_classificacoes: {
+        Row: {
+          categoria_atual: string | null
+          confianca_classificacao: number | null
+          data_compra: string | null
+          destino: string | null
+          fonte: string | null
+          fornecedor: string | null
+          id: string | null
+          insumo_id: string | null
+          nome_original: string | null
+          nota_fiscal_id: string | null
+          origem: string | null
+          preco_total: number | null
+          preco_unitario: number | null
+          quantidade: number | null
+          unidade_id: string | null
+          unidade_medida: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_historico_insumo"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "insumos_comprados"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_historico_insumo"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "vw_insumos_canonicos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       add_alias_to_catalog: {
@@ -2448,6 +2646,17 @@ export type Database = {
       aplicar_base_em_ficha: {
         Args: { p_base_id: string; p_ficha_id: string; p_tipo_ficha: string }
         Returns: number
+      }
+      aprovar_classificacao_item: {
+        Args: {
+          p_categoria?: string
+          p_criar_regra?: boolean
+          p_destino: string
+          p_escopo_regra?: string
+          p_historico_id: string
+          p_subcategoria?: string
+        }
+        Returns: Json
       }
       atualizar_contas_atrasadas: { Args: never; Returns: number }
       auditar_rendimentos_suspeitos: {
