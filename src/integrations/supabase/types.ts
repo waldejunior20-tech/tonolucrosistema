@@ -284,6 +284,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "bases_ficha_ingredientes_insumo_comprado_id_fkey"
+            columns: ["insumo_comprado_id"]
+            isOneToOne: false
+            referencedRelation: "vw_insumos_canonicos"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "bases_ficha_ingredientes_insumo_proprio_id_fkey"
             columns: ["insumo_proprio_id"]
             isOneToOne: false
@@ -406,6 +413,13 @@ export type Database = {
             columns: ["insumo_comprado_id"]
             isOneToOne: false
             referencedRelation: "insumos_comprados"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bordas_ingredientes_insumo_comprado_id_fkey"
+            columns: ["insumo_comprado_id"]
+            isOneToOne: false
+            referencedRelation: "vw_insumos_canonicos"
             referencedColumns: ["id"]
           },
           {
@@ -767,6 +781,33 @@ export type Database = {
           },
         ]
       }
+      duplicados_ignorados: {
+        Row: {
+          created_at: string
+          id: string
+          insumo_a_id: string
+          insumo_b_id: string
+          unidade_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          insumo_a_id: string
+          insumo_b_id: string
+          unidade_id: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          insumo_a_id?: string
+          insumo_b_id?: string
+          unidade_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       fichas_tecnicas_pizza: {
         Row: {
           base_origem_id: string | null
@@ -883,6 +924,13 @@ export type Database = {
             columns: ["insumo_comprado_id"]
             isOneToOne: false
             referencedRelation: "insumos_comprados"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fichas_tecnicas_pizza_ingredientes_insumo_comprado_id_fkey"
+            columns: ["insumo_comprado_id"]
+            isOneToOne: false
+            referencedRelation: "vw_insumos_canonicos"
             referencedColumns: ["id"]
           },
           {
@@ -1011,6 +1059,13 @@ export type Database = {
             columns: ["insumo_comprado_id"]
             isOneToOne: false
             referencedRelation: "insumos_comprados"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fichas_tecnicas_produtos_ingredientes_insumo_comprado_id_fkey"
+            columns: ["insumo_comprado_id"]
+            isOneToOne: false
+            referencedRelation: "vw_insumos_canonicos"
             referencedColumns: ["id"]
           },
           {
@@ -1409,6 +1464,13 @@ export type Database = {
             referencedRelation: "insumos_comprados"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "fk_historico_insumo"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "vw_insumos_canonicos"
+            referencedColumns: ["id"]
+          },
         ]
       }
       insumos_proprios: {
@@ -1495,6 +1557,13 @@ export type Database = {
             columns: ["insumo_comprado_id"]
             isOneToOne: false
             referencedRelation: "insumos_comprados"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "insumos_proprios_ingredientes_insumo_comprado_id_fkey"
+            columns: ["insumo_comprado_id"]
+            isOneToOne: false
+            referencedRelation: "vw_insumos_canonicos"
             referencedColumns: ["id"]
           },
           {
@@ -1784,6 +1853,13 @@ export type Database = {
             columns: ["insumo_comprado_id"]
             isOneToOne: true
             referencedRelation: "insumos_comprados"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "precificacao_bebidas_insumo_comprado_id_fkey"
+            columns: ["insumo_comprado_id"]
+            isOneToOne: true
+            referencedRelation: "vw_insumos_canonicos"
             referencedColumns: ["id"]
           },
           {
@@ -2323,6 +2399,39 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "lancamentos_financeiros_unidade_id_fkey"
+            columns: ["unidade_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vw_insumos_canonicos: {
+        Row: {
+          categoria: string | null
+          created_at: string | null
+          id: string | null
+          nome: string | null
+          nome_canonico: string | null
+          preco_anterior: number | null
+          preco_atual: number | null
+          preco_maximo: number | null
+          preco_medio: number | null
+          preco_minimo: number | null
+          quantidade: number | null
+          total_compras: number | null
+          ultima_compra: string | null
+          ultimo_fornecedor: string | null
+          unidade: string | null
+          unidade_id: string | null
+          updated_at: string | null
+          usado_em_fichas: number | null
+          user_id: string | null
+          variacao_pct: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insumos_comprados_unidade_id_fkey"
             columns: ["unidade_id"]
             isOneToOne: false
             referencedRelation: "unidades"
