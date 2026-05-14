@@ -15,6 +15,7 @@ import SectionPage from "@/pages/SectionPage";
 import InsumosComprados from "@/pages/InsumosComprados";
 import InsumosProduzidos from "@/pages/InsumosProduzidos";
 import FichasTecnicas from "@/pages/FichasTecnicas";
+import FichaTecnicaEditor from "@/pages/FichaTecnicaEditor";
 import PrecificacaoPizzas from "@/pages/PrecificacaoPizzas";
 import PrecificacaoBebidas from "@/pages/PrecificacaoBebidas";
 import PrecificacaoProdutos from "@/pages/PrecificacaoProdutos";
@@ -104,6 +105,7 @@ function AppRoutes() {
         <Route path="/insumos/comprados" element={<InsumosComprados />} />
         <Route path="/insumos/produzidos" element={<InsumosProduzidos />} />
         <Route path="/fichas" element={<FichasTecnicas />} />
+        <Route path="/fichas/:tipo/:id" element={<FichaTecnicaEditor />} />
         <Route path="/fichas/pizzas" element={<Navigate to="/fichas?tab=pizza" replace />} />
         <Route path="/fichas/sanduiches" element={<Navigate to="/fichas?tab=hamburguer" replace />} />
         <Route path="/fichas/pratos" element={<Navigate to="/fichas?tab=pastel" replace />} />
