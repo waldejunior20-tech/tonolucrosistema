@@ -651,17 +651,26 @@ export default function Dashboard() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className={cn(T.accent, "text-[13.5px] truncate", C.text)}>{p.nome}</p>
-                    <span className={cn(
-                      T.label, "text-[10px] inline-block mt-0.5 px-1.5 py-0.5 rounded-md bg-[#F1F5F9]",
-                      C.muted,
-                    )}>{p.categoria}</span>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className={cn(T.label, "text-[10px] px-1.5 py-0.5 rounded-md bg-[#F1F5F9]", C.muted)}>
+                        {p.categoria}
+                      </span>
+                      <span className={cn(T.label, "text-[10px] px-1.5 py-0.5 rounded-md bg-[#FEF3C7] text-[#92400E]")}>
+                        Margem: dados insuficientes
+                      </span>
+                    </div>
                   </div>
-                  <span className={cn(T.mono, "text-[13px] font-bold text-[#059669] whitespace-nowrap")}>
-                    {fmtBRL(p.preco)}
-                  </span>
-                  <ArrowRight size={13} className="text-[#94A3B8] opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="flex flex-col items-end gap-0.5">
+                    <span className={cn(T.mono, "text-[13px] font-bold text-[#059669] whitespace-nowrap")}>
+                      {fmtBRL(p.preco)}
+                    </span>
+                    <span className={cn(T.label, "text-[9.5px] text-[#2563EB]")}>Combo →</span>
+                  </div>
                 </button>
               ))}
+              <p className={cn(T.body, C.muted, "text-[11px] mt-2 px-1")}>
+                Cadastre o custo das fichas para liberar margem real por produto.
+              </p>
             </div>
           ) : (
             <EmptyState
