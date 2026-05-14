@@ -1272,21 +1272,30 @@ export default function FichasTecnicasPizza() {
               {filteredFichas.map((ficha) => {
                 const custos = calcularCustosFicha(ficha.id);
                 return (
-                  <TableRow key={ficha.id}>
-                    <TableCell className="font-medium">{ficha.nome}</TableCell>
-                    <TableCell className="capitalize">{ficha.tipo ?? "—"}</TableCell>
-                    <TableCell className="text-right">R$ {fmt(custos.custoP)}</TableCell>
-                    <TableCell className="text-right">R$ {fmt(custos.custoM)}</TableCell>
-                    <TableCell className="text-right">R$ {fmt(custos.custoG)}</TableCell>
-                    <TableCell>
-                      <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" onClick={() => handleEdit(ficha)} className="text-muted-foreground hover:text-foreground hover:bg-muted">
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={() => deleteMutation.mutate(ficha.id)}>
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </div>
+                  <TableRow key={ficha.id} className="cursor-pointer">
+                    <TableCell
+                      className="font-semibold text-primary hover:underline"
+                      onClick={() => handleEdit(ficha)}
+                    >
+                      {ficha.nome}
+                    </TableCell>
+                    <TableCell className="capitalize" onClick={() => handleEdit(ficha)}>{ficha.tipo ?? "—"}</TableCell>
+                    <TableCell className="text-right tabular-nums" onClick={() => handleEdit(ficha)}>R$ {fmt(custos.custoP)}</TableCell>
+                    <TableCell className="text-right tabular-nums" onClick={() => handleEdit(ficha)}>R$ {fmt(custos.custoM)}</TableCell>
+                    <TableCell className="text-right tabular-nums" onClick={() => handleEdit(ficha)}>R$ {fmt(custos.custoG)}</TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        title="Excluir ficha"
+                        onClick={() => {
+                          if (confirm(`🗑️ Excluir "${ficha.nome}"? Essa ação não pode ser desfeita.`)) {
+                            deleteMutation.mutate(ficha.id);
+                          }
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 );
