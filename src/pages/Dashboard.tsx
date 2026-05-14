@@ -14,6 +14,7 @@ import {
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { OnboardingChecklist } from "@/components/dashboard/OnboardingChecklist";
 import { usePriceAlerts } from "@/hooks/usePriceAlerts";
+import { ProfitAlertWidget } from "@/components/dashboard/ProfitAlertWidget";
 
 function formatBRL(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
