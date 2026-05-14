@@ -381,7 +381,7 @@ export function FichaWizard({ open, onOpenChange, initialType = "pizza", editing
       qc.invalidateQueries({ queryKey: ["fichas_tecnicas_pizza"] });
       qc.invalidateQueries({ queryKey: ["fichas_tecnicas_produtos"] });
       qc.invalidateQueries({ queryKey: ["fichas_unificadas"] });
-      toast.success("Ficha técnica salva!");
+      toast.success(editingFicha ? "Ficha atualizada!" : "Ficha técnica salva!");
       onOpenChange(false);
     },
     onError: (e: any) => toast.error(e.message ?? "Erro ao salvar"),
