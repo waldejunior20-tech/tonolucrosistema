@@ -648,6 +648,7 @@ export default function FichasTecnicasPizza() {
 
   return (
     <div className="space-y-6 page-enter">
+      <FichasCategoryTabs />
       {/* Header */}
       <PageHeader title="Fichas Técnicas de Pizza" description="Gerencie suas receitas de pizza com custos por tamanho.">
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) resetForm(); setDialogOpen(open); }}>
