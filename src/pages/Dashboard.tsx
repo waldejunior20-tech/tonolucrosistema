@@ -702,8 +702,8 @@ export default function Dashboard() {
         {/* ROW 2 — PRODUTOS EM RISCO (col-span-4) */}
         <Bento className="lg:col-span-4">
           <CardHeader
-            title="Produtos em Risco"
-            subtitle="Não devem entrar em promoção sem revisão."
+            title="Produtos em Atenção"
+            subtitle="Revisar antes de incluir em promoções."
             icon={ShieldAlert}
             tint="danger"
           />
