@@ -341,9 +341,6 @@ export default function Dashboard() {
       {/* ─── HEADER ─── */}
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 fade-up">
         <div>
-      {/* ─── HEADER ─── */}
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 fade-up">
-        <div>
           <h1 className="font-heading text-3xl font-medium text-text-heading tracking-tight leading-tight uppercase">
             {getGreeting()}{userName ? `, ${userName}` : ""}! 🍕
           </h1>
