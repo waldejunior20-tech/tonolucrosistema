@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { History, Search, TrendingUp } from "lucide-react";
+import { History, Search, TrendingUp, ShieldAlert } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { formatMoney, formatQuantidade } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -50,6 +50,14 @@ const DESTINOS = [
   { value: "revisar", label: "A revisar" },
 ];
 
+const ORIGENS = [
+  { value: "todos", label: "Todas as origens" },
+  { value: "manual", label: "Manual" },
+  { value: "whatsapp", label: "WhatsApp" },
+  { value: "n8n", label: "n8n / Importação" },
+  { value: "import", label: "Importação" },
+];
+
 function inPeriodo(dataStr: string, periodo: string): boolean {
   if (periodo === "tudo") return true;
   const d = new Date(dataStr + "T00:00:00");
@@ -75,7 +83,25 @@ export default function InsumosHistoricoCompras() {
   const [busca, setBusca] = useState(insumoFiltro);
   const [fornecedorFiltro, setFornecedorFiltro] = useState<string>("todos");
   const [destinoFiltro, setDestinoFiltro] = useState<string>("todos");
+  const [origemFiltro, setOrigemFiltro] = useState<string>("todos");
   const [periodo, setPeriodo] = useState<string>("30");
+
+  const { data: precosBloqueados30d = 0 } = useQuery({
+    queryKey: ["precos_bloqueados_30d", unidadeId],
+    enabled: !!unidadeId,
+    queryFn: async () => {
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - 30);
+      const { count, error } = await supabase
+        .from("auditoria_correcoes_precos")
+        .select("id", { count: "exact", head: true })
+        .eq("unidade_id", unidadeId!)
+        .eq("motivo", "preco_suspeito_bloqueado")
+        .gte("created_at", cutoff.toISOString());
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
 
   const { data: rows = [], isLoading } = useQuery({
     queryKey: ["insumos_historico_v2", unidadeId],
@@ -104,6 +130,7 @@ export default function InsumosHistoricoCompras() {
       if (!inPeriodo(r.data_compra, periodo)) return false;
       if (fornecedorFiltro !== "todos" && r.fornecedor !== fornecedorFiltro) return false;
       if (destinoFiltro !== "todos" && r.destino !== destinoFiltro) return false;
+      if (origemFiltro !== "todos" && r.origem !== origemFiltro) return false;
       if (!q) return true;
       return (
         r.nome_original?.toLowerCase().includes(q) ||
@@ -111,7 +138,7 @@ export default function InsumosHistoricoCompras() {
         r.fornecedor?.toLowerCase().includes(q)
       );
     });
-  }, [rows, busca, fornecedorFiltro, destinoFiltro, periodo]);
+  }, [rows, busca, fornecedorFiltro, destinoFiltro, origemFiltro, periodo]);
 
   const kpis = useMemo(() => {
     const total = filtered.reduce((acc, r) => acc + Number(r.preco_total ?? r.preco_unitario * r.quantidade), 0);
@@ -137,7 +164,7 @@ export default function InsumosHistoricoCompras() {
       />
 
       {/* KPIs */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 fade-up">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 fade-up">
         <div className="rounded-xl border border-border/60 bg-card p-4">
           <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Total no período</div>
           <div className="text-2xl font-bold tabular-nums text-foreground mt-1">{formatMoney(kpis.total)}</div>
@@ -152,6 +179,13 @@ export default function InsumosHistoricoCompras() {
           </div>
           <div className="text-sm font-bold text-foreground mt-1 truncate">{kpis.topFornecedor?.nome ?? "—"}</div>
           <div className="text-xs tabular-nums text-muted-foreground">{kpis.topFornecedor ? formatMoney(kpis.topFornecedor.valor) : ""}</div>
+        </div>
+        <div className="rounded-xl border border-border/60 bg-card p-4">
+          <div className="text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+            <ShieldAlert className="h-3 w-3" /> Preços bloqueados (30d)
+          </div>
+          <div className="text-2xl font-bold tabular-nums text-foreground mt-1">{precosBloqueados30d}</div>
+          <div className="text-xs text-muted-foreground">aumentos suspeitos travados</div>
         </div>
       </div>
 
@@ -183,6 +217,12 @@ export default function InsumosHistoricoCompras() {
           <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
           <SelectContent>
             {DESTINOS.map((d) => <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={origemFiltro} onValueChange={setOrigemFiltro}>
+          <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            {ORIGENS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
           </SelectContent>
         </Select>
       </div>

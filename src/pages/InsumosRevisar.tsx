@@ -15,8 +15,9 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { AlertCircle, Check, Pencil, X, Sparkles, Search } from "lucide-react";
+import { AlertCircle, Check, Pencil, X, Sparkles, Search, ShieldAlert } from "lucide-react";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { InsumosCategoryTabs } from "@/components/insumos/InsumosCategoryTabs";
 import { InsumosSubTabs } from "@/components/insumos/InsumosSubTabs";
@@ -39,6 +40,8 @@ type Item = {
   destino: string;
   origem: string;
   confianca_classificacao: number | null;
+  motivo_revisao: string | null;
+  preco_medio_canonico: number | null;
   categoria_atual: string | null;
 };
 
@@ -70,6 +73,7 @@ export default function InsumosRevisar() {
   const queryClient = useQueryClient();
   const { activeUnidadeId: unidadeId } = useActiveUnidade();
   const [busca, setBusca] = useState("");
+  const [tab, setTab] = useState<"classificacao" | "preco">("classificacao");
   const [editing, setEditing] = useState<Item | null>(null);
   const [destino, setDestino] = useState<string>("insumo");
   const [categoria, setCategoria] = useState<string>("");
@@ -91,15 +95,29 @@ export default function InsumosRevisar() {
     },
   });
 
+  const counts = useMemo(() => {
+    let preco = 0, classif = 0;
+    for (const i of items) {
+      if (i.motivo_revisao === "preco_suspeito") preco++;
+      else classif++;
+    }
+    return { preco, classif };
+  }, [items]);
+
   const filtered = useMemo(() => {
     const q = busca.trim().toLowerCase();
-    if (!q) return items;
-    return items.filter(
+    const byTab = items.filter((i) =>
+      tab === "preco"
+        ? i.motivo_revisao === "preco_suspeito"
+        : i.motivo_revisao !== "preco_suspeito",
+    );
+    if (!q) return byTab;
+    return byTab.filter(
       (i) =>
         i.nome_original?.toLowerCase().includes(q) ||
         i.fornecedor?.toLowerCase().includes(q),
     );
-  }, [items, busca]);
+  }, [items, busca, tab]);
 
   const aprovar = useMutation({
     mutationFn: async (vars: {
@@ -174,6 +192,21 @@ export default function InsumosRevisar() {
         description="Itens importados que precisam confirmação humana antes de virar insumo, despesa ou embalagem."
       />
 
+      <Tabs value={tab} onValueChange={(v) => setTab(v as any)}>
+        <TabsList>
+          <TabsTrigger value="classificacao" className="gap-2">
+            <AlertCircle className="h-3.5 w-3.5" />
+            Classificação
+            <Badge variant="secondary" className="ml-1">{counts.classif}</Badge>
+          </TabsTrigger>
+          <TabsTrigger value="preco" className="gap-2">
+            <ShieldAlert className="h-3.5 w-3.5" />
+            Preço suspeito
+            <Badge variant="secondary" className="ml-1">{counts.preco}</Badge>
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[260px] max-w-[420px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -227,11 +260,26 @@ export default function InsumosRevisar() {
                     {formatMoney(Number(item.preco_total ?? item.preco_unitario * item.quantidade))}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">
-                      {item.destino === "revisar" ? "insumo (sugestão)" : item.destino}
-                    </Badge>
-                    {item.categoria_atual && (
-                      <span className="ml-2 text-xs text-muted-foreground">{item.categoria_atual}</span>
+                    {item.motivo_revisao === "preco_suspeito" ? (
+                      <div className="space-y-0.5">
+                        <Badge variant="destructive" className="gap-1">
+                          <ShieldAlert className="h-3 w-3" /> preço suspeito
+                        </Badge>
+                        {item.preco_medio_canonico && (
+                          <div className="text-[11px] text-muted-foreground tabular-nums">
+                            tentou {formatMoney(Number(item.preco_unitario))} · média {formatMoney(Number(item.preco_medio_canonico))}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <>
+                        <Badge variant="outline">
+                          {item.destino === "revisar" ? "insumo (sugestão)" : item.destino}
+                        </Badge>
+                        {item.categoria_atual && (
+                          <span className="ml-2 text-xs text-muted-foreground">{item.categoria_atual}</span>
+                        )}
+                      </>
                     )}
                   </TableCell>
                   <TableCell><ConfiancaBadge valor={item.confianca_classificacao} /></TableCell>
