@@ -4,6 +4,16 @@ import {
   LayoutDashboard, ChefHat, Wallet, ChevronDown,
   PanelLeftClose, PanelLeft, Pizza, Cog, LogOut, ChevronUp, Activity
 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
 export type ModuleKey = "dashboard" | "operacional" | "menu" | "financeiro" | "configuracoes";
 
 interface SubItem {
