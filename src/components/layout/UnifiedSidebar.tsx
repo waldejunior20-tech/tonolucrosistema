@@ -31,27 +31,15 @@ interface SidebarItem {
   subItems?: SubItem[];
 }
 
-const sidebarItems: SidebarItem[] = [
-  {
-    key: "dashboard", label: "Dashboard", icon: LayoutDashboard,
-    path: "/",
-  },
-  {
-    key: "insumos", label: "Insumos", icon: Package,
-    path: "/insumos/comprados",
-  },
-  {
-    key: "fichas", label: "Fichas Técnicas", icon: ChefHat,
-    path: "/fichas/pizzas",
-  },
-  {
-    key: "precificacao", label: "Precificação & Promoções", icon: Tag,
-    path: "/precificacao/pizzas",
-  },
-  {
-    key: "financeiro", label: "Financeiro", icon: Wallet,
-    path: "/financeiro/caixa-diario",
-  },
+const navigationItems: SidebarItem[] = [
+  { key: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/" },
+  { key: "insumos", label: "Insumos", icon: Package, path: "/insumos/comprados" },
+  { key: "fichas", label: "Fichas Técnicas", icon: ChefHat, path: "/fichas/pizzas" },
+  { key: "precificacao", label: "Precificação & Promos", icon: Tag, path: "/precificacao/pizzas" },
+  { key: "financeiro", label: "Financeiro", icon: Wallet, path: "/financeiro/caixa-diario" },
+];
+
+const managementItems: SidebarItem[] = [
   {
     key: "configuracoes", label: "Configurações", icon: Cog,
     subItems: [
@@ -69,6 +57,8 @@ const sidebarItems: SidebarItem[] = [
     ],
   },
 ];
+
+const sidebarItems: SidebarItem[] = [...navigationItems, ...managementItems];
 
 interface UnifiedSidebarProps {
   collapsed: boolean;
@@ -163,25 +153,130 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
   const displayName = profile?.display_name || profile?.business_name || "Usuário";
   const displayEmail = user?.email || "";
 
+  const renderItem = (item: SidebarItem) => {
+    const Icon = item.icon;
+    const isExpanded = expandedItems[item.key];
+    const hasSubItems = !!item.subItems;
+    const isActive = (item.path === location.pathname) ||
+      (item.subItems?.some(sub =>
+        (sub.path && (location.pathname + location.search).includes(sub.path)) ||
+        sub.subItems?.some(nested => (location.pathname + location.search).includes(nested.path))
+      ));
+
+    return (
+      <div key={item.key} className="flex flex-col">
+        <button
+          onClick={() => handleItemClick(item)}
+          className={cn(
+            "group relative w-full h-10 flex items-center rounded-xl transition-all duration-200 overflow-hidden",
+            isActive
+              ? "bg-sidebar-accent text-sidebar-primary font-bold"
+              : "text-sidebar-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground"
+          )}
+        >
+          {isActive && !collapsed && (
+            <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full bg-sidebar-primary" />
+          )}
+          <div className={cn("flex items-center w-full px-3 gap-3", collapsed ? "justify-center" : "")}>
+            <div className="shrink-0">
+              <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
+            </div>
+            {!collapsed && (
+              <div className="flex-1 flex items-center justify-between min-w-0">
+                <span className={cn("text-[13.5px] truncate tracking-tight", isActive ? "font-bold" : "font-semibold")}>
+                  {item.label}
+                </span>
+                {hasSubItems && (
+                  <ChevronDown
+                    size={15}
+                    className={cn("text-sidebar-foreground/50 transition-transform duration-200 shrink-0", isExpanded ? "rotate-180" : "")}
+                  />
+                )}
+              </div>
+            )}
+          </div>
+        </button>
+
+        {!collapsed && hasSubItems && isExpanded && (
+          <div className="flex flex-col gap-0.5 mt-1 ml-5 pl-3 border-l-2 border-sidebar-border/30">
+            {item.subItems?.map((sub, idx) => {
+              const hasNestedItems = !!sub.subItems;
+              const isNestedExpanded = expandedSubItems[sub.label];
+              const currentPath = location.pathname + location.search;
+              const isSubActive = sub.path ? currentPath.includes(sub.path) : sub.subItems?.some(n => currentPath.includes(n.path));
+
+              return (
+                <div key={`${sub.label}-${idx}`} className="flex flex-col gap-0.5">
+                  <button
+                    onClick={() => {
+                      if (sub.path) { navigate(sub.path); onNavigate?.(); }
+                      if (hasNestedItems) toggleSubExpand(sub.label);
+                    }}
+                    className={cn(
+                      "relative h-8 px-3 flex items-center justify-between text-[13px] transition-all duration-200 rounded-lg",
+                      isSubActive
+                        ? "text-primary font-bold bg-primary/10"
+                        : "text-sidebar-foreground/80 hover:text-sidebar-accent-foreground hover:bg-sidebar-accent/40 font-medium"
+                    )}
+                  >
+                    {isSubActive && (
+                      <span className="absolute -left-[13px] top-1.5 bottom-1.5 w-[2px] rounded-r-full bg-primary" />
+                    )}
+                    <span className="truncate">{sub.label}</span>
+                    {hasNestedItems && (
+                      <ChevronDown size={13} className={cn("transition-transform duration-200 shrink-0", isNestedExpanded ? "rotate-180" : "")} />
+                    )}
+                  </button>
+
+                  {hasNestedItems && isNestedExpanded && (
+                    <div className="flex flex-col gap-0.5 ml-3 pl-2.5 border-l-2 border-sidebar-border/20">
+                      {sub.subItems?.map((nested, nIdx) => {
+                        const isNestedActive = (location.pathname + location.search).includes(nested.path);
+                        return (
+                          <button
+                            key={`${nested.path}-${nIdx}`}
+                            onClick={() => { navigate(nested.path); onNavigate?.(); }}
+                            className={cn(
+                              "h-7 px-3 flex items-center text-[12.5px] transition-all duration-200 rounded-lg",
+                              isNestedActive
+                                ? "text-primary font-bold bg-primary/10"
+                                : "text-sidebar-foreground/70 hover:text-sidebar-accent-foreground hover:bg-sidebar-accent/30 font-medium"
+                            )}
+                          >
+                            <span className="truncate">{nested.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
-    <aside 
+    <aside
       className={cn(
-        "h-full bg-sidebar flex flex-col border-r border-sidebar-border relative z-50",
-        collapsed ? "w-16" : "w-[288px]"
+        "h-full bg-sidebar flex flex-col rounded-2xl border border-sidebar-border/70 shadow-[0_8px_30px_-12px_rgba(15,23,42,0.12),0_2px_6px_-2px_rgba(15,23,42,0.06)] relative z-50 overflow-hidden",
+        collapsed ? "w-16" : "w-[280px]"
       )}
     >
       {/* Logo */}
-      <div className="h-16 flex items-center px-4 shrink-0 overflow-hidden border-b border-sidebar-border/40">
+      <div className="h-16 flex items-center px-4 shrink-0 overflow-hidden border-b border-sidebar-border/50">
         <div className={cn("flex items-center gap-3 transition-opacity duration-200", collapsed ? "opacity-0 w-0" : "opacity-100")}>
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-sidebar-primary to-sidebar-primary/80 flex items-center justify-center shrink-0 shadow-md">
-            <Pizza size={17} className="text-sidebar-primary-foreground" />
+            <span className="text-sidebar-primary-foreground font-extrabold text-[12px] tracking-tight">TL</span>
           </div>
           <div className="flex flex-col">
-            <span className="text-sidebar-accent-foreground font-sans font-extrabold text-base leading-tight whitespace-nowrap tracking-tight">TôNoLucro</span>
-            <span className="text-[10px] text-sidebar-foreground/50 font-semibold tracking-[0.15em] uppercase">Gestão Food</span>
+            <span className="text-sidebar-accent-foreground font-sans font-extrabold text-[15px] leading-tight whitespace-nowrap tracking-tight">TôNoLucro</span>
+            <span className="text-[10px] text-sidebar-foreground/55 font-bold tracking-[0.18em] uppercase">Gestão Food</span>
           </div>
         </div>
-        
+
         <button
           onClick={onToggle}
           className={cn(
@@ -194,126 +289,27 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto overflow-x-hidden py-3 px-3">
-        {!collapsed && (
-          <p className="text-[10px] font-bold text-sidebar-foreground/40 uppercase tracking-[0.2em] px-3 mb-3">Menu</p>
-        )}
-        <div className="flex flex-col gap-0.5">
-          {sidebarItems.map((item) => {
-            const Icon = item.icon;
-            const isExpanded = expandedItems[item.key];
-            const hasSubItems = !!item.subItems;
-            const isActive = (item.path === location.pathname) || 
-                            (item.subItems?.some(sub => 
-                              (sub.path && (location.pathname + location.search).includes(sub.path)) || 
-                              sub.subItems?.some(nested => (location.pathname + location.search).includes(nested.path))
-                            ));
+      <nav className="flex-1 overflow-y-auto overflow-x-hidden py-4 px-3 space-y-5">
+        <div>
+          {!collapsed && (
+            <p className="text-[10.5px] font-extrabold text-sidebar-foreground/60 uppercase tracking-[0.22em] px-3 mb-2.5">
+              Navegação
+            </p>
+          )}
+          <div className="flex flex-col gap-0.5">
+            {navigationItems.map(renderItem)}
+          </div>
+        </div>
 
-            return (
-              <div key={item.key} className="flex flex-col">
-                <button
-                  onClick={() => handleItemClick(item)}
-                  className={cn(
-                    "group relative w-full h-10 flex items-center rounded-xl transition-all duration-200 overflow-hidden",
-                    isActive 
-                      ? "bg-sidebar-accent text-sidebar-primary font-bold" 
-                      : "text-sidebar-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground"
-                  )}
-                >
-                  {isActive && !collapsed && (
-                    <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full bg-sidebar-primary" />
-                  )}
-                  
-                  <div className={cn(
-                    "flex items-center w-full px-3 gap-3 transition-transform duration-200",
-                    collapsed ? "justify-center" : ""
-                  )}>
-                    <div className="shrink-0">
-                      <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
-                    </div>
-                    
-                    {!collapsed && (
-                      <div className="flex-1 flex items-center justify-between min-w-0">
-                        <span className={cn(
-                          "text-sm truncate",
-                          isActive ? "font-bold" : "font-medium"
-                        )}>
-                          {item.label}
-                        </span>
-                        {hasSubItems && (
-                          <ChevronDown 
-                            size={15} 
-                            className={cn(
-                              "text-sidebar-foreground/50 transition-transform duration-200 shrink-0",
-                              isExpanded ? "rotate-180" : ""
-                            )} 
-                          />
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </button>
-
-                {!collapsed && hasSubItems && isExpanded && (
-                  <div className="flex flex-col gap-0.5 mt-1 ml-5 pl-3 border-l-2 border-sidebar-border/30">
-                    {item.subItems?.map((sub, idx) => {
-                      const hasNestedItems = !!sub.subItems;
-                      const isNestedExpanded = expandedSubItems[sub.label];
-                      const currentPath = location.pathname + location.search;
-                      const isSubActive = sub.path ? currentPath.includes(sub.path) : sub.subItems?.some(n => currentPath.includes(n.path));
-                      
-                      return (
-                        <div key={`${sub.label}-${idx}`} className="flex flex-col gap-0.5">
-                          <button
-                            onClick={() => {
-                              if (sub.path) { navigate(sub.path); onNavigate?.(); }
-                              if (hasNestedItems) toggleSubExpand(sub.label);
-                            }}
-                            className={cn(
-                              "relative h-8 px-3 flex items-center justify-between text-[13px] transition-all duration-200 rounded-lg",
-                              isSubActive 
-                                ? "text-primary font-bold bg-primary/10" 
-                                : "text-sidebar-foreground/80 hover:text-sidebar-accent-foreground hover:bg-sidebar-accent/40 font-medium"
-                            )}
-                          >
-                            {isSubActive && (
-                              <span className="absolute -left-[13px] top-1.5 bottom-1.5 w-[2px] rounded-r-full bg-primary" />
-                            )}
-                            <span className="truncate">{sub.label}</span>
-                            {hasNestedItems && (
-                              <ChevronDown size={13} className={cn("transition-transform duration-200 shrink-0", isNestedExpanded ? "rotate-180" : "")} />
-                            )}
-                          </button>
-
-                          {hasNestedItems && isNestedExpanded && (
-                            <div className="flex flex-col gap-0.5 ml-3 pl-2.5 border-l-2 border-sidebar-border/20">
-                              {sub.subItems?.map((nested, nIdx) => {
-                                const isNestedActive = currentPath.includes(nested.path);
-                                return (
-                                  <button
-                                    key={`${nested.path}-${nIdx}`}
-                                    onClick={() => { navigate(nested.path); onNavigate?.(); }}
-                                    className={cn(
-                                      "h-7 px-3 flex items-center text-[12.5px] transition-all duration-200 rounded-lg",
-                                      isNestedActive 
-                                        ? "text-primary font-bold bg-primary/10" 
-                                        : "text-sidebar-foreground/70 hover:text-sidebar-accent-foreground hover:bg-sidebar-accent/30 font-medium"
-                                    )}
-                                  >
-                                    <span className="truncate">{nested.label}</span>
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+        <div>
+          {!collapsed && (
+            <p className="text-[10.5px] font-extrabold text-sidebar-foreground/60 uppercase tracking-[0.22em] px-3 mb-2.5">
+              Gestão
+            </p>
+          )}
+          <div className="flex flex-col gap-0.5">
+            {managementItems.map(renderItem)}
+          </div>
         </div>
       </nav>
 
