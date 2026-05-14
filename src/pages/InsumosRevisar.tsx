@@ -260,11 +260,26 @@ export default function InsumosRevisar() {
                     {formatMoney(Number(item.preco_total ?? item.preco_unitario * item.quantidade))}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">
-                      {item.destino === "revisar" ? "insumo (sugestão)" : item.destino}
-                    </Badge>
-                    {item.categoria_atual && (
-                      <span className="ml-2 text-xs text-muted-foreground">{item.categoria_atual}</span>
+                    {item.motivo_revisao === "preco_suspeito" ? (
+                      <div className="space-y-0.5">
+                        <Badge variant="destructive" className="gap-1">
+                          <ShieldAlert className="h-3 w-3" /> preço suspeito
+                        </Badge>
+                        {item.preco_medio_canonico && (
+                          <div className="text-[11px] text-muted-foreground tabular-nums">
+                            tentou {formatMoney(Number(item.preco_unitario))} · média {formatMoney(Number(item.preco_medio_canonico))}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <>
+                        <Badge variant="outline">
+                          {item.destino === "revisar" ? "insumo (sugestão)" : item.destino}
+                        </Badge>
+                        {item.categoria_atual && (
+                          <span className="ml-2 text-xs text-muted-foreground">{item.categoria_atual}</span>
+                        )}
+                      </>
                     )}
                   </TableCell>
                   <TableCell><ConfiancaBadge valor={item.confianca_classificacao} /></TableCell>
