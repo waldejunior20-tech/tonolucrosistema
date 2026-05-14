@@ -280,25 +280,36 @@ export function FichaWizard({ open, onOpenChange, initialType = "pizza", editing
       const user_id = auth.user?.id;
 
       if (isPizza) {
-        const { data: inserted, error } = await supabase
-          .from("fichas_tecnicas_pizza")
-          .insert({
-            nome: state.nome,
-            tipo: state.categoria || "tradicional",
-            numero_ficha: state.codigo,
-            modo_preparo: state.modo_preparo || null,
-            preco_venda_p: calcPreco(custoP),
-            preco_venda_m: calcPreco(custoM),
-            preco_venda_g: calcPreco(custoG),
-            unidade_id: activeUnidadeId,
-            user_id,
-          })
-          .select()
-          .single();
-        if (error) throw error;
+        const payload = {
+          nome: state.nome,
+          tipo: state.categoria || "tradicional",
+          numero_ficha: state.codigo,
+          modo_preparo: state.modo_preparo || null,
+          preco_venda_p: calcPreco(custoP),
+          preco_venda_m: calcPreco(custoM),
+          preco_venda_g: calcPreco(custoG),
+        };
+        let fichaId: string;
+        if (editingFicha) {
+          const { error } = await supabase
+            .from("fichas_tecnicas_pizza")
+            .update(payload)
+            .eq("id", editingFicha.id);
+          if (error) throw error;
+          fichaId = editingFicha.id;
+          await supabase.from("fichas_tecnicas_pizza_ingredientes").delete().eq("ficha_id", fichaId);
+        } else {
+          const { data: inserted, error } = await supabase
+            .from("fichas_tecnicas_pizza")
+            .insert({ ...payload, unidade_id: activeUnidadeId, user_id })
+            .select()
+            .single();
+          if (error) throw error;
+          fichaId = inserted.id;
+        }
         if (state.ingredientes.length) {
           const rows = state.ingredientes.map((ing) => ({
-            ficha_id: inserted.id,
+            ficha_id: fichaId,
             tipo_insumo: ing.tipo_insumo,
             insumo_comprado_id: ing.tipo_insumo === "comprado" ? ing.insumo_id : null,
             insumo_proprio_id: ing.tipo_insumo === "proprio" ? ing.insumo_id : null,
@@ -314,24 +325,35 @@ export function FichaWizard({ open, onOpenChange, initialType = "pizza", editing
         }
       } else {
         const custo = isBebidaInd ? state.bebida_custo : custoSingle;
-        const { data: inserted, error } = await supabase
-          .from("fichas_tecnicas_produtos")
-          .insert({
-            nome: state.nome,
-            categoria: state.tipo,
-            numero_ficha: state.codigo,
-            modo_preparo: state.modo_preparo || null,
-            preco_venda: calcPreco(custo),
-            unidade_id: activeUnidadeId,
-            user_id,
-          })
-          .select()
-          .single();
-        if (error) throw error;
+        const payload = {
+          nome: state.nome,
+          categoria: state.tipo,
+          numero_ficha: state.codigo,
+          modo_preparo: state.modo_preparo || null,
+          preco_venda: calcPreco(custo),
+        };
+        let fichaId: string;
+        if (editingFicha) {
+          const { error } = await supabase
+            .from("fichas_tecnicas_produtos")
+            .update(payload)
+            .eq("id", editingFicha.id);
+          if (error) throw error;
+          fichaId = editingFicha.id;
+          await supabase.from("fichas_tecnicas_produtos_ingredientes").delete().eq("ficha_id", fichaId);
+        } else {
+          const { data: inserted, error } = await supabase
+            .from("fichas_tecnicas_produtos")
+            .insert({ ...payload, unidade_id: activeUnidadeId, user_id })
+            .select()
+            .single();
+          if (error) throw error;
+          fichaId = inserted.id;
+        }
 
         if (isBebidaInd && state.bebida_insumo_id) {
           await supabase.from("fichas_tecnicas_produtos_ingredientes").insert({
-            ficha_id: inserted.id,
+            ficha_id: fichaId,
             tipo_insumo: "comprado",
             insumo_comprado_id: state.bebida_insumo_id,
             quantidade: 1,
@@ -341,7 +363,7 @@ export function FichaWizard({ open, onOpenChange, initialType = "pizza", editing
           });
         } else if (state.ingredientes.length) {
           const rows = state.ingredientes.map((ing) => ({
-            ficha_id: inserted.id,
+            ficha_id: fichaId,
             tipo_insumo: ing.tipo_insumo,
             insumo_comprado_id: ing.tipo_insumo === "comprado" ? ing.insumo_id : null,
             insumo_proprio_id: ing.tipo_insumo === "proprio" ? ing.insumo_id : null,
