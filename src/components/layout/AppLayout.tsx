@@ -38,13 +38,13 @@ export function AppLayout() {
       <div
         className={cn(
           "flex-1 flex flex-col min-h-screen min-w-0 transition-all duration-300",
-          !isMobile && (sidebarCollapsed ? "ml-16" : "ml-[288px]")
+          !isMobile && (sidebarCollapsed ? "ml-[80px]" : "ml-[296px]")
         )}
       >
         <Header
           showMenuButton={isMobile}
           onMenuClick={() => setMobileOpen(true)}
-          sidebarWidth={!isMobile ? (sidebarCollapsed ? "4rem" : "288px") : "0px"}
+          sidebarWidth={!isMobile ? (sidebarCollapsed ? "80px" : "296px") : "0px"}
         />
         <main className={cn("flex-1 p-4 lg:p-6 overflow-auto relative mt-16", isMobile && "pb-24")}>
           <div className="max-w-[1440px] mx-auto relative z-10 w-full">
