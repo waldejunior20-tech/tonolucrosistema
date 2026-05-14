@@ -721,9 +721,18 @@ function IngredientPicker({ insumosComprados, insumosProprios, custoMap, onAdd }
                 setOpen(false);
                 setSearch("");
               }}
-              className="w-full text-left px-2 py-1.5 text-sm rounded hover:bg-primary/10"
+              className="w-full text-left px-2 py-1.5 text-sm rounded hover:bg-primary/10 flex items-center justify-between gap-2"
             >
-              {i.nome} <span className="text-muted-foreground text-xs">({i._tipo})</span>
+              <span className="truncate">{i.nome}</span>
+              <span
+                className={`text-[10px] font-semibold px-1.5 py-0.5 rounded border shrink-0 ${
+                  i._tipo === "proprio"
+                    ? "bg-amber-50 text-amber-700 border-amber-200"
+                    : "bg-slate-50 text-slate-600 border-slate-200"
+                }`}
+              >
+                {i._tipo === "proprio" ? "Produzido" : "Comprado"}
+              </span>
             </button>
           );
         })}
