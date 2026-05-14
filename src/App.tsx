@@ -14,8 +14,8 @@ import Dashboard from "@/pages/Dashboard";
 import SectionPage from "@/pages/SectionPage";
 import InsumosComprados from "@/pages/InsumosComprados";
 import InsumosProduzidos from "@/pages/InsumosProduzidos";
-import FichasTecnicas from "@/pages/FichasTecnicas";
-import FichaTecnicaEditor from "@/pages/FichaTecnicaEditor";
+import FichasTecnicasPizza from "@/pages/FichasTecnicasPizza";
+import FichasTecnicasProdutos from "@/pages/FichasTecnicasProdutos";
 import PrecificacaoPizzas from "@/pages/PrecificacaoPizzas";
 import PrecificacaoBebidas from "@/pages/PrecificacaoBebidas";
 import PrecificacaoProdutos from "@/pages/PrecificacaoProdutos";
@@ -67,32 +67,26 @@ function AppRoutes() {
     );
   }
 
-  // Bypass de login temporario para analise de layout
-  // if (!session) {
-  //   return (
-  //     <Routes>
-  //       <Route path="/login" element={<Login />} />
-  //       <Route path="/signup" element={<Signup />} />
-  //       <Route path="/recovery" element={<PasswordRecovery />} />
-  //       <Route path="/reset-password" element={<ResetPassword />} />
-  //       <Route path="*" element={<Navigate to="/login" replace />} />
-  //     </Routes>
-  //   );
-  // }
+  if (!session) {
+    return (
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/recovery" element={<PasswordRecovery />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    );
+  }
 
-  // if (needsOnboarding) {
-  //   return (
-  //     <Routes>
-  //       <Route path="/onboarding" element={<Onboarding />} />
-  //       <Route path="*" element={<Navigate to="/onboarding" replace />} />
-  //     </Routes>
-  //   );
-  // }
-
-  // Comentado: sessao = null para bypass
-  const _sessionBypass = session; // evita unused var
-  void _sessionBypass;
-  void needsOnboarding;
+  if (needsOnboarding) {
+    return (
+      <Routes>
+        <Route path="/onboarding" element={<Onboarding />} />
+        <Route path="*" element={<Navigate to="/onboarding" replace />} />
+      </Routes>
+    );
+  }
 
   return (
     <Routes>
@@ -104,13 +98,11 @@ function AppRoutes() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/insumos/comprados" element={<InsumosComprados />} />
         <Route path="/insumos/produzidos" element={<InsumosProduzidos />} />
-        <Route path="/fichas" element={<FichasTecnicas />} />
-        <Route path="/fichas/:tipo/:id" element={<FichaTecnicaEditor />} />
-        <Route path="/fichas/pizzas" element={<Navigate to="/fichas?tab=pizza" replace />} />
-        <Route path="/fichas/sanduiches" element={<Navigate to="/fichas?tab=hamburguer" replace />} />
-        <Route path="/fichas/pratos" element={<Navigate to="/fichas?tab=pastel" replace />} />
-        <Route path="/fichas/sobremesas" element={<Navigate to="/fichas?tab=pastel" replace />} />
-        <Route path="/fichas/bebidas" element={<Navigate to="/fichas?tab=bebida_industrial" replace />} />
+        <Route path="/fichas/pizzas" element={<FichasTecnicasPizza />} />
+        <Route path="/fichas/sanduiches" element={<FichasTecnicasProdutos categoria="sanduiche" />} />
+        <Route path="/fichas/pratos" element={<FichasTecnicasProdutos categoria="prato" />} />
+        <Route path="/fichas/sobremesas" element={<FichasTecnicasProdutos categoria="sobremesa" />} />
+        <Route path="/fichas/bebidas" element={<FichasTecnicasProdutos categoria="bebida" />} />
         <Route path="/precificacao/pizzas" element={<PrecificacaoPizzas />} />
         <Route path="/precificacao/produtos" element={<PrecificacaoProdutos />} />
         <Route path="/precificacao/bebidas" element={<PrecificacaoBebidas />} />

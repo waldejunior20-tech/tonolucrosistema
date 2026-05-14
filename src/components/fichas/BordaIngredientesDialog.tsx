@@ -190,7 +190,6 @@ export function BordaIngredientesDialog({ borda, sizes, open, onOpenChange }: Pr
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["bordas"] });
       qc.invalidateQueries({ queryKey: ["bordas_ingredientes", borda.id] });
-      qc.invalidateQueries({ queryKey: ["bordas_ingredientes_counts"] });
       toast.success("Ingredientes salvos!");
       onOpenChange(false);
     },
