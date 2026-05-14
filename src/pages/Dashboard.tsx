@@ -341,10 +341,15 @@ export default function Dashboard() {
       {/* ─── HEADER ─── */}
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 fade-up">
         <div>
-          <h1 className="text-2xl font-extrabold text-text-heading tracking-tight leading-tight">
-            {getGreeting()}{businessName ? `, ${businessName}` : ""}
+      {/* ─── HEADER ─── */}
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 fade-up">
+        <div>
+          <h1 className="font-heading text-3xl font-medium text-text-heading tracking-tight leading-tight uppercase">
+            {getGreeting()}{userName ? `, ${userName}` : ""}! 🍕
           </h1>
-          <p className="text-sm text-muted-foreground mt-1 font-medium">Visão geral do seu negócio</p>
+          <p className="text-sm text-muted-foreground mt-1 font-medium">
+            {businessName ? `${businessName} — ` : ""}Visão geral do seu negócio
+          </p>
         </div>
 
         <div className="flex items-center gap-3">
@@ -363,8 +368,29 @@ export default function Dashboard() {
               </button>
             ))}
           </div>
-
         </div>
+      </div>
+
+      {/* ─── QUICK ACTIONS ─── */}
+      <div className="flex flex-wrap gap-2 fade-up fade-up-d1">
+        <button
+          onClick={() => navigate("/caixa-diario")}
+          className="btn-hot-cta px-4 py-2.5 text-sm inline-flex items-center gap-2 hover:scale-[1.02] active:scale-95 transition-transform"
+        >
+          <Plus size={16} strokeWidth={3} /> Vender
+        </button>
+        <button
+          onClick={() => navigate("/fichas-tecnicas/pizza")}
+          className="btn-hot-cta px-4 py-2.5 text-sm inline-flex items-center gap-2 hover:scale-[1.02] active:scale-95 transition-transform"
+        >
+          <Pizza size={16} strokeWidth={2.5} /> Nova Ficha
+        </button>
+        <button
+          onClick={() => navigate("/financeiro/contas-a-pagar")}
+          className="px-4 py-2.5 text-sm inline-flex items-center gap-2 rounded-sm border border-border bg-card text-text-heading font-semibold hover:bg-muted transition-colors"
+        >
+          <Receipt size={16} /> + Despesa
+        </button>
       </div>
 
       {/* ─── ONBOARDING CHECKLIST ─── */}
