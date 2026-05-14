@@ -445,14 +445,14 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 md:gap-5">
 
         {/* ROW 1 — RADAR DE LUCRO (hero, col-span-7) */}
-        <Bento className="lg:col-span-7 relative overflow-hidden">
+        <Bento hero className="lg:col-span-7 relative overflow-hidden">
           <div
             aria-hidden
             className={cn(
-              "absolute inset-0 opacity-[0.55] pointer-events-none",
-              radarTone === "danger" && "bg-gradient-to-br from-[#FEF2F2] via-white to-white",
-              radarTone === "warning" && "bg-gradient-to-br from-[#FFFBEB] via-white to-white",
-              radarTone === "success" && "bg-gradient-to-br from-[#ECFDF5] via-white to-white",
+              "absolute inset-0 opacity-[0.7] pointer-events-none",
+              radarTone === "danger" && "bg-[radial-gradient(120%_80%_at_0%_0%,#FEF2F2_0%,transparent_55%),linear-gradient(135deg,#FFFFFF_0%,#F8FAFC_100%)]",
+              radarTone === "warning" && "bg-[radial-gradient(120%_80%_at_0%_0%,#FFFBEB_0%,transparent_55%),linear-gradient(135deg,#FFFFFF_0%,#F8FAFC_100%)]",
+              radarTone === "success" && "bg-[radial-gradient(120%_80%_at_0%_0%,#ECFDF5_0%,transparent_55%),linear-gradient(135deg,#FFFFFF_0%,#F8FAFC_100%)]",
             )}
           />
           <div className="relative flex flex-col h-full">
