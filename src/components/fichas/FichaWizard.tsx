@@ -678,7 +678,11 @@ function IngredientPicker({ insumosComprados, insumosProprios, custoMap, onAdd }
       ...insumosComprados.map((i: any) => ({ ...i, _tipo: "comprado" })),
       ...insumosProprios.map((i: any) => ({ ...i, _tipo: "proprio" })),
     ];
-    return all.filter((i) => matchesSearch(i.nome, search)).slice(0, 30);
+    const filtered = all.filter((i) =>
+      matchesSearch(i.nome, search) || (i.categoria && matchesSearch(i.categoria, search))
+    );
+    // Sem busca: limita a 50 pra performance. Com busca: mostra TODOS os resultados.
+    return search.trim().length === 0 ? filtered.slice(0, 50) : filtered;
   }, [insumosComprados, insumosProprios, search]);
 
   if (!open) {
