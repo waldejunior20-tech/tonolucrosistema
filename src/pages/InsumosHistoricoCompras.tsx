@@ -37,7 +37,7 @@ const ORIGENS = [
 ];
 
 export default function InsumosHistoricoCompras() {
-  const unidadeId = useActiveUnidadeId();
+  const { activeUnidadeId: unidadeId } = useActiveUnidade();
   const [params] = useSearchParams();
   const insumoFiltro = params.get("insumo") ?? "";
   const [busca, setBusca] = useState(insumoFiltro);
