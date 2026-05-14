@@ -224,6 +224,7 @@ export type Database = {
           nota_fiscal_id: string | null
           origem: string
           pendentes_revisao: number
+          precos_bloqueados: Json
           regras_aplicadas: Json
           unidade_id: string
           user_id: string
@@ -240,6 +241,7 @@ export type Database = {
           nota_fiscal_id?: string | null
           origem?: string
           pendentes_revisao?: number
+          precos_bloqueados?: Json
           regras_aplicadas?: Json
           unidade_id: string
           user_id?: string
@@ -256,6 +258,7 @@ export type Database = {
           nota_fiscal_id?: string | null
           origem?: string
           pendentes_revisao?: number
+          precos_bloqueados?: Json
           regras_aplicadas?: Json
           unidade_id?: string
           user_id?: string
@@ -1506,6 +1509,7 @@ export type Database = {
           fornecedor: string | null
           id: string
           insumo_id: string
+          motivo_revisao: string | null
           nome_original: string
           nota_fiscal_id: string | null
           origem: string
@@ -1525,6 +1529,7 @@ export type Database = {
           fornecedor?: string | null
           id?: string
           insumo_id: string
+          motivo_revisao?: string | null
           nome_original: string
           nota_fiscal_id?: string | null
           origem?: string
@@ -1544,6 +1549,7 @@ export type Database = {
           fornecedor?: string | null
           id?: string
           insumo_id?: string
+          motivo_revisao?: string | null
           nome_original?: string
           nota_fiscal_id?: string | null
           origem?: string
@@ -1809,6 +1815,7 @@ export type Database = {
           created_at: string
           data_emissao: string
           data_recebimento: string
+          documento_hash: string | null
           fornecedor: string
           id: string
           numero_nf: string | null
@@ -1829,6 +1836,7 @@ export type Database = {
           created_at?: string
           data_emissao: string
           data_recebimento?: string
+          documento_hash?: string | null
           fornecedor: string
           id?: string
           numero_nf?: string | null
@@ -1849,6 +1857,7 @@ export type Database = {
           created_at?: string
           data_emissao?: string
           data_recebimento?: string
+          documento_hash?: string | null
           fornecedor?: string
           id?: string
           numero_nf?: string | null
