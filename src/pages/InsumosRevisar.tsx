@@ -95,15 +95,29 @@ export default function InsumosRevisar() {
     },
   });
 
+  const counts = useMemo(() => {
+    let preco = 0, classif = 0;
+    for (const i of items) {
+      if (i.motivo_revisao === "preco_suspeito") preco++;
+      else classif++;
+    }
+    return { preco, classif };
+  }, [items]);
+
   const filtered = useMemo(() => {
     const q = busca.trim().toLowerCase();
-    if (!q) return items;
-    return items.filter(
+    const byTab = items.filter((i) =>
+      tab === "preco"
+        ? i.motivo_revisao === "preco_suspeito"
+        : i.motivo_revisao !== "preco_suspeito",
+    );
+    if (!q) return byTab;
+    return byTab.filter(
       (i) =>
         i.nome_original?.toLowerCase().includes(q) ||
         i.fornecedor?.toLowerCase().includes(q),
     );
-  }, [items, busca]);
+  }, [items, busca, tab]);
 
   const aprovar = useMutation({
     mutationFn: async (vars: {
