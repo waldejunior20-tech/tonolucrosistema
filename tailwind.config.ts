@@ -15,9 +15,9 @@ export default {
     extend: {
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
-        heading: ["Oswald", "Bebas Neue", "system-ui", "sans-serif"],
-        display: ["Bebas Neue", "Oswald", "system-ui", "sans-serif"],
-        mono: ["Inter", "system-ui", "sans-serif"],
+        heading: ["Plus Jakarta Sans", "Inter", "system-ui", "sans-serif"],
+        display: ["Plus Jakarta Sans", "Inter", "system-ui", "sans-serif"],
+        mono: ["JetBrains Mono", "ui-monospace", "monospace"],
       },
       colors: {
         border: "hsl(var(--border))",
