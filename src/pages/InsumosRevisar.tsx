@@ -15,8 +15,9 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { AlertCircle, Check, Pencil, X, Sparkles, Search } from "lucide-react";
+import { AlertCircle, Check, Pencil, X, Sparkles, Search, ShieldAlert } from "lucide-react";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { InsumosCategoryTabs } from "@/components/insumos/InsumosCategoryTabs";
 import { InsumosSubTabs } from "@/components/insumos/InsumosSubTabs";
