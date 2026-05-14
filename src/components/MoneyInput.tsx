@@ -164,7 +164,7 @@ export function MoneyInput({
         id={id}
         type="text"
         inputMode="numeric"
-        className={cn("pricing-input pl-9 text-[#1F2937]", className)}
+        className={cn("pricing-input pl-9 text-[#1F2937] font-mono tabular-nums", className)}
         value={shownValue.replace(/R\$\s?/, "")}
         onChange={handleChange}
         onFocus={handleFocus}

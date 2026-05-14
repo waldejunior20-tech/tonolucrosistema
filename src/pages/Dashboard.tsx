@@ -93,9 +93,9 @@ function MiniKPI({ label, value, numericValue, formatter, icon: Icon, trendLabel
 
   const renderValue = (textClass: string) => (
     numericValue !== undefined && formatter ? (
-      <AnimatedNumber value={numericValue} formatter={formatter} className={`text-[28px] font-extrabold tracking-tight leading-none ${textClass}`} duration={1000} />
+      <AnimatedNumber value={numericValue} formatter={formatter} className={`text-[28px] font-extrabold tracking-tight leading-none font-mono tabular-nums ${textClass}`} duration={1000} />
     ) : (
-      <span className={`text-[28px] font-extrabold tracking-tight leading-none ${textClass}`}>{value}</span>
+      <span className={`text-[28px] font-extrabold tracking-tight leading-none font-mono tabular-nums ${textClass}`}>{value}</span>
     )
   );
 
