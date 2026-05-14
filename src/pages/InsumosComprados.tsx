@@ -320,6 +320,13 @@ export default function InsumosComprados() {
   return (
     <div className="space-y-6 page-enter">
       <PageHeader title="Insumos Comprados" description="Gerencie seus insumos e matérias-primas.">
+        <Button
+          variant="outline"
+          className="gap-2 border-primary/40 text-primary hover:bg-primary/5 hover:text-primary"
+          onClick={() => setNotaDialogOpen(true)}
+        >
+          <Camera className="h-4 w-4" /> Foto da Nota Fiscal
+        </Button>
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) resetForm(); setDialogOpen(open); }}>
           <DialogTrigger asChild>
             <Button className="btn-action-add gap-2">
