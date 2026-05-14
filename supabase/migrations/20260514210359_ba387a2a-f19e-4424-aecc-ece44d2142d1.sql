@@ -1,0 +1,1 @@
+UPDATE public.insumos_comprados SET categoria = 'Laticínios', updated_at = now() WHERE id = '938e73f9-350f-4b92-928e-2424a8a52fdb';
