@@ -737,7 +737,7 @@ export default function Dashboard() {
                   <CheckCircle2 size={16} strokeWidth={2.4} />
                 </div>
                 <div className="min-w-0">
-                  <p className={cn(T.accent, "text-[14px]", C.text)}>Nenhum produto em risco</p>
+                  <p className={cn(T.accent, "text-[14px]", C.text)}>Nenhum produto crítico agora</p>
                   <p className={cn(T.body, "text-[12px]", C.muted)}>Margens saudáveis no momento.</p>
                 </div>
               </div>
