@@ -298,7 +298,7 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
     },
     onSuccess: () => {
       invalidateAll();
-      toast.success("Ficha técnica excluída!");
+      toast.success("🗑️ Ficha excluída do cardápio.");
     },
     onError: (e) => appError("ERR-FTP-012", e),
   });
