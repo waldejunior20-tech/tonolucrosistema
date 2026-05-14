@@ -206,17 +206,29 @@ export default function Dashboard() {
         </KpiCard>
 
         <KpiCard label="Top Pizza" icon={Pizza} accent="success">
-          <div className="font-display text-lg font-bold text-foreground truncate">
-            {topPizza?.nome ?? "—"}
-          </div>
-          <div className="mt-1.5 flex items-center gap-2 flex-wrap">
-            <span className="text-xs text-muted-foreground">
-              lucro <span className="text-foreground font-semibold tabular">{topPizza ? formatBRL(topPizza.lucro) : "R$ 0,00"}</span>
-            </span>
-            {topPizza && (
-              <span className="status-profit text-[11px]">{topPizza.margem.toFixed(0)}% margem</span>
-            )}
-          </div>
+          {topPizza ? (
+            <>
+              <div className="font-display text-lg font-bold text-foreground truncate">{topPizza.nome}</div>
+              <div className="mt-1.5 flex items-center gap-2 flex-wrap">
+                <span className="text-xs text-muted-foreground">
+                  lucro <span className="text-foreground font-semibold tabular">{formatBRL(topPizza.lucro)}</span>
+                </span>
+                <span className="status-profit text-[11px]">{topPizza.margem.toFixed(0)}% margem</span>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="text-xs text-muted-foreground leading-snug">
+                Cadastre sua primeira ficha técnica para ver o lucro por pizza.
+              </p>
+              <button
+                onClick={() => navigate("/fichas/pizzas")}
+                className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:text-primary-light"
+              >
+                <Plus size={12} /> Criar Ficha
+              </button>
+            </>
+          )}
         </KpiCard>
 
         <KpiCard label="Alerta de Custo" icon={AlertTriangle} accent="warning">
