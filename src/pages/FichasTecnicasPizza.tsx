@@ -319,9 +319,9 @@ export default function FichasTecnicasPizza() {
         if (ingError) throw ingError;
       }
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       invalidateAll();
-      toast.success("Ficha técnica cadastrada!");
+      toast.success(`🍕 ${variables.nome || "Pizza"} no forno! Ficha cadastrada.`);
       resetForm();
     },
     onError: (e) => appError("ERR-FTP-001", e),
@@ -354,9 +354,9 @@ export default function FichasTecnicasPizza() {
         if (ingError) throw ingError;
       }
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       invalidateAll();
-      toast.success("Ficha técnica atualizada!");
+      toast.success(`🍕 ${variables.nome || "Ficha"} atualizada com carinho!`);
       resetForm();
     },
     onError: (e) => appError("ERR-FTP-002", e),
@@ -371,7 +371,7 @@ export default function FichasTecnicasPizza() {
     },
     onSuccess: () => {
       invalidateAll();
-      toast.success("Ficha técnica excluída!");
+      toast.success("🗑️ Ficha excluída do cardápio.");
     },
     onError: (e) => appError("ERR-FTP-003", e),
   });
@@ -652,11 +652,11 @@ export default function FichasTecnicasPizza() {
       <PageHeader title="Fichas Técnicas de Pizza" description="Gerencie suas receitas de pizza com custos por tamanho.">
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) resetForm(); setDialogOpen(open); }}>
           <DialogTrigger asChild>
-            <Button className="btn-action-add gap-2">
+            <Button className="btn-hot-cta gap-2 px-4">
               <Plus className="h-4 w-4" /> Nova Ficha
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-5xl max-h-[92vh] p-0 gap-0 flex flex-col overflow-hidden ">
+          <DialogContent className="!max-w-none w-screen h-screen sm:rounded-none p-0 gap-0 flex flex-col overflow-hidden border-0">
             {/* HEADER UNIFICADO: Nome · Nº ficha · Tipo */}
             <DialogHeader className="px-8 pt-6 pb-4 shrink-0">
               <DialogTitle asChild>
@@ -1272,21 +1272,30 @@ export default function FichasTecnicasPizza() {
               {filteredFichas.map((ficha) => {
                 const custos = calcularCustosFicha(ficha.id);
                 return (
-                  <TableRow key={ficha.id}>
-                    <TableCell className="font-medium">{ficha.nome}</TableCell>
-                    <TableCell className="capitalize">{ficha.tipo ?? "—"}</TableCell>
-                    <TableCell className="text-right">R$ {fmt(custos.custoP)}</TableCell>
-                    <TableCell className="text-right">R$ {fmt(custos.custoM)}</TableCell>
-                    <TableCell className="text-right">R$ {fmt(custos.custoG)}</TableCell>
-                    <TableCell>
-                      <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" onClick={() => handleEdit(ficha)} className="text-muted-foreground hover:text-foreground hover:bg-muted">
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={() => deleteMutation.mutate(ficha.id)}>
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </div>
+                  <TableRow key={ficha.id} className="cursor-pointer">
+                    <TableCell
+                      className="font-semibold text-primary hover:underline"
+                      onClick={() => handleEdit(ficha)}
+                    >
+                      {ficha.nome}
+                    </TableCell>
+                    <TableCell className="capitalize" onClick={() => handleEdit(ficha)}>{ficha.tipo ?? "—"}</TableCell>
+                    <TableCell className="text-right tabular-nums" onClick={() => handleEdit(ficha)}>R$ {fmt(custos.custoP)}</TableCell>
+                    <TableCell className="text-right tabular-nums" onClick={() => handleEdit(ficha)}>R$ {fmt(custos.custoM)}</TableCell>
+                    <TableCell className="text-right tabular-nums" onClick={() => handleEdit(ficha)}>R$ {fmt(custos.custoG)}</TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        title="Excluir ficha"
+                        onClick={() => {
+                          if (confirm(`🗑️ Excluir "${ficha.nome}"? Essa ação não pode ser desfeita.`)) {
+                            deleteMutation.mutate(ficha.id);
+                          }
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 );

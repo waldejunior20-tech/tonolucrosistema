@@ -45,7 +45,7 @@ export default function CaixaDiario() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Venda removida");
+      toast.success("🗑️ Venda removida do caixa.");
       queryClient.invalidateQueries({ queryKey: ["caixa-diario"] });
       queryClient.invalidateQueries({ queryKey: ["caixa-historico"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
@@ -67,7 +67,7 @@ export default function CaixaDiario() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Caixa fechado!");
+      toast.success("🌙 Forno apagado. Descanso merecido.");
       setConfirmFechar(false);
       queryClient.invalidateQueries({ queryKey: ["caixa-diario"] });
       queryClient.invalidateQueries({ queryKey: ["caixa-historico"] });
@@ -85,7 +85,7 @@ export default function CaixaDiario() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Caixa reaberto");
+      toast.success("🔥 Forno reaceso. Bora vender mais!");
       setConfirmReabrir(false);
       queryClient.invalidateQueries({ queryKey: ["caixa-diario"] });
       queryClient.invalidateQueries({ queryKey: ["caixa-historico"] });

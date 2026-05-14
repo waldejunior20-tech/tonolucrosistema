@@ -242,9 +242,9 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
         if (ingError) throw ingError;
       }
     },
-    onSuccess: () => {
+    onSuccess: (_d, variables) => {
       invalidateAll();
-      toast.success("Ficha técnica cadastrada!");
+      toast.success(`🍕 ${variables.nome || "Item"} no forno! Ficha cadastrada.`);
       resetForm();
     },
     onError: (e) => appError("ERR-FTP-010", e),
@@ -282,9 +282,9 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
         if (ingError) throw ingError;
       }
     },
-    onSuccess: () => {
+    onSuccess: (_d, variables) => {
       invalidateAll();
-      toast.success("Ficha técnica atualizada!");
+      toast.success(`🍕 ${variables.nome || "Ficha"} atualizada com carinho!`);
       resetForm();
     },
     onError: (e) => appError("ERR-FTP-011", e),
@@ -298,7 +298,7 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
     },
     onSuccess: () => {
       invalidateAll();
-      toast.success("Ficha técnica excluída!");
+      toast.success("🗑️ Ficha excluída do cardápio.");
     },
     onError: (e) => appError("ERR-FTP-012", e),
   });
@@ -428,11 +428,11 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
       <PageHeader title={`Fichas Técnicas — ${label}`} description="Gerencie receitas e custos dos seus produtos.">
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) resetForm(); setDialogOpen(open); }}>
           <DialogTrigger asChild>
-            <Button onClick={() => { resetForm(); setDialogOpen(true); }} className="btn-action-add gap-2">
+            <Button onClick={() => { resetForm(); setDialogOpen(true); }} className="btn-hot-cta gap-2 px-4">
               <Plus className="mr-1 h-4 w-4" /> Nova Ficha
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="!max-w-none w-screen h-screen sm:rounded-none p-6 sm:p-10 flex flex-col overflow-y-auto border-0">
             <DialogHeader>
               <DialogTitle>{editingId ? "Editar Ficha Técnica" : "Nova Ficha Técnica"}</DialogTitle>
             </DialogHeader>
@@ -640,24 +640,29 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
                 const custo = calcularCustoFicha(ficha.id);
                 return (
                   <TableRow key={ficha.id}>
-                    <TableCell className="font-medium">{ficha.nome}</TableCell>
-                    <TableCell className="text-right font-mono">
+                    <TableCell
+                      className="font-semibold text-primary hover:underline cursor-pointer"
+                      onClick={() => handleEdit(ficha)}
+                    >
+                      {ficha.nome}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums cursor-pointer" onClick={() => handleEdit(ficha)}>
                       {custo > 0 ? formatMoney(custo) : "—"}
                     </TableCell>
                     <TableCell className="text-center">
-                      <div className="flex justify-center gap-1">
-                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(ficha)}>
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-destructive"
-                          onClick={() => deleteMutation.mutate(ficha.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-destructive"
+                        title="Excluir ficha"
+                        onClick={() => {
+                          if (confirm(`🗑️ Excluir "${ficha.nome}"? Essa ação não pode ser desfeita.`)) {
+                            deleteMutation.mutate(ficha.id);
+                          }
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 );
