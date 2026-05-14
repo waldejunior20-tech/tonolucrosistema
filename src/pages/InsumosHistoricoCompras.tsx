@@ -219,6 +219,12 @@ export default function InsumosHistoricoCompras() {
             {DESTINOS.map((d) => <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>)}
           </SelectContent>
         </Select>
+        <Select value={origemFiltro} onValueChange={setOrigemFiltro}>
+          <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            {ORIGENS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+          </SelectContent>
+        </Select>
       </div>
 
       {isLoading ? (
