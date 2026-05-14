@@ -19,14 +19,16 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
 import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
-import { Pencil, Trash2, Plus, Filter, Package, ChevronDown, LayoutGrid, List } from "lucide-react";
+import { Pencil, Trash2, Plus, Filter, Package, ChevronDown, LayoutGrid, List, History, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 import { MoneyInput, QuantityInput, formatMoney, formatQuantidade } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { InsumosCategoryTabs } from "@/components/insumos/InsumosCategoryTabs";
+import { InsumosSubTabs } from "@/components/insumos/InsumosSubTabs";
 import { EmptyState } from "@/components/EmptyState";
 import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
 import { CategoryBadge } from "@/components/CategoryBadge";
+import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const CATEGORIAS = [
