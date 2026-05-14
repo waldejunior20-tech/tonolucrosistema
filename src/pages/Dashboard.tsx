@@ -224,13 +224,13 @@ function MiniTile({
     danger: "text-[#DC2626]", primary: "text-[#2563EB]",
   };
   return (
-    <div className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3.5">
+    <div className="group/tile relative rounded-xl border border-[#E6EAF0] bg-gradient-to-b from-white to-[#F8FAFC] p-3.5 transition-all duration-200 hover:border-[#D8DFE8] hover:shadow-[0_6px_18px_-10px_rgba(15,23,42,0.10)]">
       <div className="flex items-center justify-between mb-2">
-        <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center", tintBg[tone])}>
+        <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center ring-1 ring-inset ring-white/60", tintBg[tone])}>
           <Icon size={14} strokeWidth={2.4} />
         </div>
       </div>
-      <p className={cn(T.mono, "text-[24px] font-bold leading-none mb-1", valColor[tone])}>{value}</p>
+      <p className={cn(T.mono, "text-[26px] font-bold leading-none mb-1.5 tracking-tight", valColor[tone])}>{value}</p>
       <p className={cn(T.body, "text-[11.5px] font-medium", C.muted)}>{label}</p>
     </div>
   );
