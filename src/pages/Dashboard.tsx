@@ -565,7 +565,7 @@ export default function Dashboard() {
         </Bento>
 
         {/* ROW 1 — STATUS FINANCEIRO (col-span-5) */}
-        <Bento className="lg:col-span-5">
+        <Bento hero className="lg:col-span-5">
           <CardHeader
             title="Status Financeiro"
             subtitle="Caixa do mês corrente."
