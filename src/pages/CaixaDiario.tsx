@@ -45,7 +45,7 @@ export default function CaixaDiario() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Venda removida");
+      toast.success("🗑️ Venda removida do caixa.");
       queryClient.invalidateQueries({ queryKey: ["caixa-diario"] });
       queryClient.invalidateQueries({ queryKey: ["caixa-historico"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
