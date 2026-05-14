@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, ChefHat, Wallet, ChevronDown,
-  PanelLeftClose, PanelLeft, Pizza, Cog, LogOut, ChevronUp, Activity
+  PanelLeftClose, PanelLeft, Pizza, Cog, LogOut, ChevronUp, Activity,
+  Package, DollarSign, Tag, FileBarChart, Receipt, Heart, Home
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
