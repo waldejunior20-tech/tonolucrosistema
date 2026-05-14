@@ -257,16 +257,6 @@ export function FichaWizard({ open, onOpenChange, initialType = "pizza", editing
     return "bg-rose-50 text-rose-700 border-rose-200";
   };
 
-  // Validation
-  const canNext = () => {
-    if (step === 1) return !!state.nome.trim();
-    if (step === 2) {
-      if (isBebidaInd) return !!state.bebida_insumo_id;
-      return state.ingredientes.length > 0;
-    }
-    return true;
-  };
-
   // Save
   const saveMutation = useMutation({
     mutationFn: async () => {
