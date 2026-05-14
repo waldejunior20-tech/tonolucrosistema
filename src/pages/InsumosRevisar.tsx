@@ -40,6 +40,8 @@ type Item = {
   destino: string;
   origem: string;
   confianca_classificacao: number | null;
+  motivo_revisao: string | null;
+  preco_medio_canonico: number | null;
   categoria_atual: string | null;
 };
 
