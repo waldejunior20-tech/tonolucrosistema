@@ -25,6 +25,7 @@ import {
   type ConfigPrecificacao, type AppInfo,
 } from "@/lib/pricing-helpers";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { PrecificacaoCategoryTabs } from "@/components/precificacao/PrecificacaoCategoryTabs";
 
 // ─── Types ───────────────────────────────────────────────────────────
 interface FichaPizza {
@@ -401,6 +402,7 @@ export default function PrecificacaoPizzas() {
   return (
     <TooltipProvider>
       <div className="space-y-6 page-enter">
+        <PrecificacaoCategoryTabs />
         <PageHeader title="Precificação de Pizzas" description="Gestão de margem por tamanho · Terminal de precisão.">
           <button
             onClick={() => {

@@ -13,6 +13,7 @@ import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
 import { Plus, Target, AlertTriangle, TrendingUp, TrendingDown } from "lucide-react";
 import { HealthStatus } from "@/components/HealthStatus";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { FinanceiroCategoryTabs } from "@/components/financeiro/FinanceiroCategoryTabs";
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -335,6 +336,7 @@ export default function FinanceiroDRE() {
 
   return (
     <div className="space-y-6 page-enter">
+      <FinanceiroCategoryTabs />
       <PageHeader title="Resumo do Mês" description="Veja quanto entrou, quanto saiu e quanto sobrou.">
         <div className="flex items-center gap-2 bg-muted p-1 rounded-lg border">
           <Select value={String(mes)} onValueChange={(v) => setMes(Number(v))}>

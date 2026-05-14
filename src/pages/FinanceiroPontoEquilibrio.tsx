@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Progress } from "@/components/ui/progress";
 import { Target, TrendingUp, AlertTriangle, Info } from "lucide-react";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { FinanceiroCategoryTabs } from "@/components/financeiro/FinanceiroCategoryTabs";
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -91,6 +92,7 @@ export default function FinanceiroPontoEquilibrio() {
 
   return (
     <div className="space-y-6 page-enter">
+      <FinanceiroCategoryTabs />
       <PageHeader title="Meta Mínima de Vendas" description="Ponto de equilíbrio e meta de vendas por mês.">
         <div className="flex gap-2">
           <Select value={String(mes)} onValueChange={(v) => setMes(Number(v))}>

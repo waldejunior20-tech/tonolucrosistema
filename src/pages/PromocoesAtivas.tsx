@@ -30,6 +30,7 @@ import {
   Plus, Pencil, Copy, Trash2, Pause, Play, AlertTriangle, Search, X,
 } from "lucide-react";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { PrecificacaoCategoryTabs } from "@/components/precificacao/PrecificacaoCategoryTabs";
 import { matchesSearch } from "@/lib/utils";
 
 // ─── Constants ────────────────────────────────────────────────────────
@@ -411,6 +412,7 @@ export default function PromocoesAtivas() {
   // ─── Render ─────────────────────────────────────────────────────
   return (
     <div className="space-y-6 page-enter">
+      <PrecificacaoCategoryTabs />
       <PageHeader title="Promoções Ativas" description="Gerencie suas promoções e descontos.">
         <Button onClick={openNew}><Plus className="mr-2 h-4 w-4" />Nova Promoção</Button>
       </PageHeader>

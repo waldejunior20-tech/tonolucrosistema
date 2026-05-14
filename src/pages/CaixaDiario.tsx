@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { FinanceiroCategoryTabs } from "@/components/financeiro/FinanceiroCategoryTabs";
 import { FechamentoDiaForm } from "@/components/caixa/FechamentoDiaForm";
 import { useCaixaDiario, CATEGORIA_FECHAMENTO } from "@/hooks/useCaixaDiario";
 import { useHistoricoCaixa } from "@/hooks/useHistoricoCaixa";
@@ -96,6 +97,7 @@ export default function CaixaDiario() {
 
   return (
     <div className="space-y-6 page-enter">
+      <FinanceiroCategoryTabs />
       <PageHeader
         title="Caixa Diário"
         description="Registre o fechamento de vendas por forma de pagamento. Os valores alimentam automaticamente DRE e Ponto de Equilíbrio."

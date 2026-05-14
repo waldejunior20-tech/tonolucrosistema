@@ -24,6 +24,7 @@ import {
   type ConfigPrecificacao,
 } from "@/lib/pricing-helpers";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { PrecificacaoCategoryTabs } from "@/components/precificacao/PrecificacaoCategoryTabs";
 import { getOrCreateConfiguracoesPrecificacao } from "@/lib/config-helpers";
 
 // ─── Types ───────────────────────────────────────────────────────────
@@ -455,6 +456,7 @@ export default function PrecificacaoBebidas() {
   return (
     <TooltipProvider>
       <div className="space-y-6 page-enter">
+        <PrecificacaoCategoryTabs />
         <PageHeader title="Precificação de Bebidas" description="Defina preços e acompanhe o custo das suas bebidas." />
 
         {/* Indicators */}
