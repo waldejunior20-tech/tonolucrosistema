@@ -97,7 +97,7 @@ export default function FichasTecnicas() {
   return (
     <div className="space-y-6 page-enter">
       <PageHeader title="Fichas Técnicas" description="Cadastre receitas e calcule lucro por produto.">
-        <Button onClick={() => setWizardOpen(true)} className="gap-2">
+        <Button onClick={() => { setEditingFicha(null); setWizardOpen(true); }} className="gap-2">
           <Plus size={16} /> Nova Ficha
         </Button>
       </PageHeader>
