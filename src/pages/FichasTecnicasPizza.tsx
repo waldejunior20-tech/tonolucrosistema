@@ -354,9 +354,9 @@ export default function FichasTecnicasPizza() {
         if (ingError) throw ingError;
       }
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       invalidateAll();
-      toast.success("Ficha técnica atualizada!");
+      toast.success(`🍕 ${variables.nome || "Ficha"} atualizada com carinho!`);
       resetForm();
     },
     onError: (e) => appError("ERR-FTP-002", e),
