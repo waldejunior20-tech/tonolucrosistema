@@ -48,37 +48,15 @@ const sidebarItems: SidebarItem[] = [
   {
     key: "menu", label: "Engenharia", icon: ChefHat,
     subItems: [
-      {
-        label: "Insumos",
-        subItems: [
-          { label: "Comprados", path: "/insumos/comprados" },
-          { label: "Produzidos", path: "/insumos/produzidos" },
-        ],
-      },
+      { label: "Insumos", path: "/insumos/comprados" },
       { label: "Fichas Técnicas", path: "/fichas/pizzas" },
-      {
-        label: "Precificação & Promoções",
-        subItems: [
-          { label: "Precificar Pizzas", path: "/precificacao/pizzas" },
-          { label: "Precificar Produtos", path: "/precificacao/produtos" },
-          { label: "Precificar Bebidas", path: "/precificacao/bebidas" },
-          { label: "Promoções Ativas", path: "/promocoes/ativas" },
-          { label: "Combos Fixos", path: "/promocoes/combos" },
-        ],
-      },
+      { label: "Precificação & Promoções", path: "/precificacao/pizzas" },
     ],
   },
   {
     key: "financeiro", label: "Financeiro", icon: Wallet,
     subItems: [
-      { label: "Contas a Pagar", path: "/financeiro/contas-a-pagar" },
-      {
-        label: "Relatórios",
-        subItems: [
-          { label: "DRE Simples", path: "/financeiro/dre" },
-          { label: "Ponto de Equilíbrio", path: "/financeiro/ponto-de-equilibrio" },
-        ],
-      },
+      { label: "Caixa & Relatórios", path: "/financeiro/caixa-diario" },
     ],
   },
   {
