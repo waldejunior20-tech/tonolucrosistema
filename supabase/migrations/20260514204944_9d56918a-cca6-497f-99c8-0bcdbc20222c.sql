@@ -1,0 +1,1 @@
+ALTER VIEW public.vw_insumos_canonicos SET (security_invoker = on);
