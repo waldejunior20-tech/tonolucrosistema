@@ -22,6 +22,7 @@ import { Pencil, Trash2, Plus, Filter, Search, X, Check, Pizza, AlertTriangle, P
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { FichasCategoryTabs } from "@/components/fichas/FichasCategoryTabs";
 import { EmptyState } from "@/components/EmptyState";
 import { SkeletonTable } from "@/components/SkeletonCard";
 import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
