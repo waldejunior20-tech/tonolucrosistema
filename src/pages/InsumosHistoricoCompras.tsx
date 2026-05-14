@@ -50,6 +50,14 @@ const DESTINOS = [
   { value: "revisar", label: "A revisar" },
 ];
 
+const ORIGENS = [
+  { value: "todos", label: "Todas as origens" },
+  { value: "manual", label: "Manual" },
+  { value: "whatsapp", label: "WhatsApp" },
+  { value: "n8n", label: "n8n / Importação" },
+  { value: "import", label: "Importação" },
+];
+
 function inPeriodo(dataStr: string, periodo: string): boolean {
   if (periodo === "tudo") return true;
   const d = new Date(dataStr + "T00:00:00");
