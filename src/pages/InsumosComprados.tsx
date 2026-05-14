@@ -23,6 +23,7 @@ import { Pencil, Trash2, Plus, Filter, Package, ChevronDown, LayoutGrid, List } 
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 import { MoneyInput, QuantityInput, formatMoney, formatQuantidade } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { InsumosCategoryTabs } from "@/components/insumos/InsumosCategoryTabs";
 import { EmptyState } from "@/components/EmptyState";
 import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
 import { CategoryBadge } from "@/components/CategoryBadge";
@@ -318,6 +319,7 @@ export default function InsumosComprados() {
 
   return (
     <div className="space-y-6 page-enter">
+      <InsumosCategoryTabs />
       <PageHeader title="Insumos Comprados" description="Gerencie seus insumos e matérias-primas.">
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) resetForm(); setDialogOpen(open); }}>
           <DialogTrigger asChild>

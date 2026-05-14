@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { PrecificacaoCategoryTabs } from "@/components/precificacao/PrecificacaoCategoryTabs";
 import { cn } from "@/lib/utils";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -346,6 +347,7 @@ export default function PrecificacaoProdutos() {
   return (
     <TooltipProvider>
       <div className="space-y-6 page-enter">
+        <PrecificacaoCategoryTabs />
         <PageHeader title="Precificação de Produtos" description="Defina preços e acompanhe o custo de cada produto." />
 
         {/* Indicators */}

@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { PrecificacaoCategoryTabs } from "@/components/precificacao/PrecificacaoCategoryTabs";
 
 // ─── Types ───────────────────────────────────────────────────────────
 interface ComboItem {
@@ -470,6 +471,7 @@ export default function ComboSimulator() {
 
   return (
     <div className="space-y-6 page-enter">
+      <PrecificacaoCategoryTabs />
       <PageHeader title="Simulador de Combos" description="Monte a promoção e descubra se ela dá lucro de verdade." />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

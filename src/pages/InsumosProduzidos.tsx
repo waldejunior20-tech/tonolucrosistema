@@ -21,6 +21,7 @@ import type { Tables } from "@/integrations/supabase/types";
 import { QuantityInput, formatMoney, formatQuantidade } from "@/components/MoneyInput";
 import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { InsumosCategoryTabs } from "@/components/insumos/InsumosCategoryTabs";
 import { EmptyState } from "@/components/EmptyState";
 import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
 import { matchesSearch } from "@/lib/utils";
@@ -400,6 +401,7 @@ export default function InsumosProduzidos() {
 
   return (
     <div className="space-y-6 page-enter">
+      <InsumosCategoryTabs />
       <PageHeader title="Insumos Produzidos" description="Pré-preparos e produções internas.">
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) resetForm(); setDialogOpen(open); }}>
           <DialogTrigger asChild>

@@ -19,6 +19,7 @@ import { requireActiveUnidadeId, getActiveUnidadeId } from "@/hooks/useActiveUni
 import { Plus, Pencil, Trash2, AlertTriangle, Clock, DollarSign } from "lucide-react";
 import { MoneyInput } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { FinanceiroCategoryTabs } from "@/components/financeiro/FinanceiroCategoryTabs";
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -359,6 +360,7 @@ export default function FinanceiroContasPagar() {
 
   return (
     <div className="space-y-6 page-enter">
+      <FinanceiroCategoryTabs />
       <PageHeader title="Contas a Pagar" description="Boletos e parcelas pendentes.">
         <Button onClick={openNew} size="sm">
           <Plus className="h-4 w-4 mr-2" />
