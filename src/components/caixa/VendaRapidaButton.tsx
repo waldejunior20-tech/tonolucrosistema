@@ -60,7 +60,7 @@ export function VendaRapidaButton({
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success(`Entrada de ${formatMoney(valor)} registrada!`);
+      toast.success(`💰 ${formatMoney(valor)} no caixa! Mais uma vendinha.`);
       setValor(0);
       setDescricao("");
       setOpen(false);
