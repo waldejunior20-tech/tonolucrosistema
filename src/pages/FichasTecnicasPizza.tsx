@@ -319,9 +319,9 @@ export default function FichasTecnicasPizza() {
         if (ingError) throw ingError;
       }
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       invalidateAll();
-      toast.success(`🍕 ${data.nome || "Pizza"} no forno! Ficha cadastrada.`);
+      toast.success(`🍕 ${variables.nome || "Pizza"} no forno! Ficha cadastrada.`);
       resetForm();
     },
     onError: (e) => appError("ERR-FTP-001", e),
