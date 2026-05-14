@@ -2655,9 +2655,11 @@ export type Database = {
           fornecedor: string | null
           id: string | null
           insumo_id: string | null
+          motivo_revisao: string | null
           nome_original: string | null
           nota_fiscal_id: string | null
           origem: string | null
+          preco_medio_canonico: number | null
           preco_total: number | null
           preco_unitario: number | null
           quantidade: number | null
