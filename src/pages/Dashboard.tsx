@@ -54,13 +54,16 @@ function Bento({
   return (
     <div
       className={cn(
-        "relative rounded-2xl border p-5 md:p-6 flex flex-col min-w-0 transition-all duration-200",
-        C.card, C.border,
+        "group/bento relative rounded-[20px] border p-5 md:p-6 flex flex-col min-w-0",
+        "transition-[transform,box-shadow,border-color] duration-300 ease-out will-change-transform",
+        C.card, "border-[#E6EAF0]",
         hero
-          ? "shadow-[0_1px_0_rgba(255,255,255,0.8)_inset,0_2px_4px_rgba(15,23,42,0.04),0_12px_32px_-12px_rgba(15,23,42,0.12)]"
-          : "shadow-[0_1px_0_rgba(255,255,255,0.6)_inset,0_1px_2px_rgba(15,23,42,0.04),0_6px_20px_-8px_rgba(15,23,42,0.08)]",
-        "hover:shadow-[0_1px_0_rgba(255,255,255,0.8)_inset,0_2px_4px_rgba(15,23,42,0.05),0_14px_36px_-14px_rgba(15,23,42,0.14)]",
-        "before:absolute before:inset-x-6 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-white/90 before:to-transparent before:pointer-events-none",
+          ? "shadow-[0_1px_0_rgba(255,255,255,0.9)_inset,0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_-10px_rgba(15,23,42,0.10),0_24px_60px_-30px_rgba(15,23,42,0.18)]"
+          : "shadow-[0_1px_0_rgba(255,255,255,0.7)_inset,0_1px_2px_rgba(15,23,42,0.03),0_6px_18px_-10px_rgba(15,23,42,0.10)]",
+        "hover:-translate-y-[2px] hover:border-[#D8DFE8]",
+        "hover:shadow-[0_1px_0_rgba(255,255,255,0.9)_inset,0_2px_4px_rgba(15,23,42,0.05),0_14px_30px_-14px_rgba(15,23,42,0.14),0_28px_70px_-30px_rgba(37,99,235,0.10)]",
+        "before:absolute before:inset-x-8 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-white before:to-transparent before:pointer-events-none",
+        "after:pointer-events-none after:absolute after:inset-0 after:rounded-[20px] after:ring-1 after:ring-inset after:ring-white/40",
         className,
       )}
     >
