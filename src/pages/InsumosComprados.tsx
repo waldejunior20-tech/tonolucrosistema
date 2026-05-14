@@ -77,7 +77,7 @@ export default function InsumosComprados() {
   };
   const formIsValid = !Object.values(errors).some(Boolean);
 
-  // Fetch
+  // Fetch cadastro canônico
   const { data: insumos = [], isLoading } = useQuery({
     queryKey: ["insumos_comprados"],
     queryFn: async () => {
@@ -89,6 +89,23 @@ export default function InsumosComprados() {
       return data as Insumo[];
     },
   });
+
+  // Fetch view canônica (variação + uso em fichas)
+  const { data: canon = [] } = useQuery({
+    queryKey: ["insumos_canonicos"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("vw_insumos_canonicos" as any)
+        .select("id, variacao_pct, usado_em_fichas, preco_anterior");
+      if (error) throw error;
+      return (data ?? []) as unknown as { id: string; variacao_pct: number | null; usado_em_fichas: number; preco_anterior: number | null }[];
+    },
+  });
+  const canonMap = useMemo(() => {
+    const m = new Map<string, { variacao_pct: number | null; usado_em_fichas: number; preco_anterior: number | null }>();
+    canon.forEach((c) => m.set(c.id, c));
+    return m;
+  }, [canon]);
 
   // After insumos refetch following create, expand category & highlight new item
   useEffect(() => {
