@@ -124,7 +124,7 @@ export default function FichasTecnicas() {
                   <p className="text-sm text-muted-foreground max-w-sm mb-4">
                     Crie sua primeira ficha técnica de {t.label.toLowerCase()} para calcular lucro e margem.
                   </p>
-                  <Button onClick={() => setWizardOpen(true)} className="gap-2">
+                  <Button onClick={() => { setEditingFicha(null); setWizardOpen(true); }} className="gap-2">
                     <Plus size={16} /> Criar primeira ficha
                   </Button>
                 </div>
