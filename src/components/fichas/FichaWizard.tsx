@@ -79,10 +79,13 @@ export function FichaWizard({ open, onOpenChange, initialType = "pizza", editing
   const [step, setStep] = useState(1);
   const [state, setState] = useState<WizardState>(emptyState(initialType));
 
-  // Reset on open
+  // Reset on open (only for create mode)
   useEffect(() => {
     if (open && !editingFicha) {
       setState(emptyState(initialType));
+      setStep(1);
+    }
+    if (open && editingFicha) {
       setStep(1);
     }
   }, [open, initialType, editingFicha]);
@@ -121,6 +124,102 @@ export function FichaWizard({ open, onOpenChange, initialType = "pizza", editing
     );
     return m;
   }, [insumosComprados, insumosProprios]);
+
+  // Load existing ficha when editing
+  useEffect(() => {
+    if (!open || !editingFicha || custoMap.size === 0) return;
+    (async () => {
+      if (editingFicha.tipo === "pizza") {
+        const { data: ficha } = await supabase
+          .from("fichas_tecnicas_pizza")
+          .select("*")
+          .eq("id", editingFicha.id)
+          .single();
+        const { data: ings } = await supabase
+          .from("fichas_tecnicas_pizza_ingredientes")
+          .select("*")
+          .eq("ficha_id", editingFicha.id);
+        if (!ficha) return;
+        const ingredientes: IngredientForm[] = (ings ?? []).map((r: any) => {
+          const tipo = r.tipo_insumo as "comprado" | "proprio";
+          const insumo_id = tipo === "comprado" ? r.insumo_comprado_id : r.insumo_proprio_id;
+          const meta = custoMap.get(`${tipo}:${insumo_id}`);
+          return {
+            insumo_id,
+            tipo_insumo: tipo,
+            nome: meta?.nome ?? "(insumo removido)",
+            unidade: meta?.unidade ?? r.unidade,
+            custo_unit: meta?.custo ?? 0,
+            qtd_p: Number(r.qtd_p ?? 0),
+            qtd_m: Number(r.qtd_m ?? 0),
+            qtd_g: Number(r.qtd_g ?? 0),
+          };
+        });
+        setState({
+          tipo: "pizza",
+          nome: ficha.nome ?? "",
+          categoria: ficha.tipo ?? "",
+          codigo: ficha.numero_ficha ?? "",
+          ingredientes,
+          modo_preparo: ficha.modo_preparo ?? "",
+          bebida_insumo_id: "",
+          bebida_custo: 0,
+          markup: 80,
+          taxa_ifood: 14,
+          taxa_cartao: 3.5,
+        });
+      } else {
+        const { data: ficha } = await supabase
+          .from("fichas_tecnicas_produtos")
+          .select("*")
+          .eq("id", editingFicha.id)
+          .single();
+        const { data: ings } = await supabase
+          .from("fichas_tecnicas_produtos_ingredientes")
+          .select("*")
+          .eq("ficha_id", editingFicha.id);
+        if (!ficha) return;
+        const tipo = (ficha.categoria as ProductType) ?? editingFicha.tipo;
+        const isBI = tipo === "bebida_industrial";
+        let bebidaId = "";
+        let bebidaCusto = 0;
+        const ingredientes: IngredientForm[] = [];
+        (ings ?? []).forEach((r: any) => {
+          const ti = r.tipo_insumo as "comprado" | "proprio";
+          const insumo_id = ti === "comprado" ? r.insumo_comprado_id : r.insumo_proprio_id;
+          const meta = custoMap.get(`${ti}:${insumo_id}`);
+          if (isBI) {
+            bebidaId = insumo_id;
+            bebidaCusto = meta?.custo ?? 0;
+          } else {
+            ingredientes.push({
+              insumo_id,
+              tipo_insumo: ti,
+              nome: meta?.nome ?? "(insumo removido)",
+              unidade: meta?.unidade ?? r.unidade,
+              custo_unit: meta?.custo ?? 0,
+              qtd_p: 0,
+              qtd_m: Number(r.quantidade ?? 0),
+              qtd_g: 0,
+            });
+          }
+        });
+        setState({
+          tipo,
+          nome: ficha.nome ?? "",
+          categoria: "",
+          codigo: ficha.numero_ficha ?? "",
+          ingredientes,
+          modo_preparo: ficha.modo_preparo ?? "",
+          bebida_insumo_id: bebidaId,
+          bebida_custo: bebidaCusto,
+          markup: 80,
+          taxa_ifood: 14,
+          taxa_cartao: 3.5,
+        });
+      }
+    })();
+  }, [open, editingFicha, custoMap]);
 
   // Auto-generate code on type change (when not editing)
   useEffect(() => {
@@ -181,25 +280,36 @@ export function FichaWizard({ open, onOpenChange, initialType = "pizza", editing
       const user_id = auth.user?.id;
 
       if (isPizza) {
-        const { data: inserted, error } = await supabase
-          .from("fichas_tecnicas_pizza")
-          .insert({
-            nome: state.nome,
-            tipo: state.categoria || "tradicional",
-            numero_ficha: state.codigo,
-            modo_preparo: state.modo_preparo || null,
-            preco_venda_p: calcPreco(custoP),
-            preco_venda_m: calcPreco(custoM),
-            preco_venda_g: calcPreco(custoG),
-            unidade_id: activeUnidadeId,
-            user_id,
-          })
-          .select()
-          .single();
-        if (error) throw error;
+        const payload = {
+          nome: state.nome,
+          tipo: state.categoria || "tradicional",
+          numero_ficha: state.codigo,
+          modo_preparo: state.modo_preparo || null,
+          preco_venda_p: calcPreco(custoP),
+          preco_venda_m: calcPreco(custoM),
+          preco_venda_g: calcPreco(custoG),
+        };
+        let fichaId: string;
+        if (editingFicha) {
+          const { error } = await supabase
+            .from("fichas_tecnicas_pizza")
+            .update(payload)
+            .eq("id", editingFicha.id);
+          if (error) throw error;
+          fichaId = editingFicha.id;
+          await supabase.from("fichas_tecnicas_pizza_ingredientes").delete().eq("ficha_id", fichaId);
+        } else {
+          const { data: inserted, error } = await supabase
+            .from("fichas_tecnicas_pizza")
+            .insert({ ...payload, unidade_id: activeUnidadeId, user_id })
+            .select()
+            .single();
+          if (error) throw error;
+          fichaId = inserted.id;
+        }
         if (state.ingredientes.length) {
           const rows = state.ingredientes.map((ing) => ({
-            ficha_id: inserted.id,
+            ficha_id: fichaId,
             tipo_insumo: ing.tipo_insumo,
             insumo_comprado_id: ing.tipo_insumo === "comprado" ? ing.insumo_id : null,
             insumo_proprio_id: ing.tipo_insumo === "proprio" ? ing.insumo_id : null,
@@ -215,24 +325,35 @@ export function FichaWizard({ open, onOpenChange, initialType = "pizza", editing
         }
       } else {
         const custo = isBebidaInd ? state.bebida_custo : custoSingle;
-        const { data: inserted, error } = await supabase
-          .from("fichas_tecnicas_produtos")
-          .insert({
-            nome: state.nome,
-            categoria: state.tipo,
-            numero_ficha: state.codigo,
-            modo_preparo: state.modo_preparo || null,
-            preco_venda: calcPreco(custo),
-            unidade_id: activeUnidadeId,
-            user_id,
-          })
-          .select()
-          .single();
-        if (error) throw error;
+        const payload = {
+          nome: state.nome,
+          categoria: state.tipo,
+          numero_ficha: state.codigo,
+          modo_preparo: state.modo_preparo || null,
+          preco_venda: calcPreco(custo),
+        };
+        let fichaId: string;
+        if (editingFicha) {
+          const { error } = await supabase
+            .from("fichas_tecnicas_produtos")
+            .update(payload)
+            .eq("id", editingFicha.id);
+          if (error) throw error;
+          fichaId = editingFicha.id;
+          await supabase.from("fichas_tecnicas_produtos_ingredientes").delete().eq("ficha_id", fichaId);
+        } else {
+          const { data: inserted, error } = await supabase
+            .from("fichas_tecnicas_produtos")
+            .insert({ ...payload, unidade_id: activeUnidadeId, user_id })
+            .select()
+            .single();
+          if (error) throw error;
+          fichaId = inserted.id;
+        }
 
         if (isBebidaInd && state.bebida_insumo_id) {
           await supabase.from("fichas_tecnicas_produtos_ingredientes").insert({
-            ficha_id: inserted.id,
+            ficha_id: fichaId,
             tipo_insumo: "comprado",
             insumo_comprado_id: state.bebida_insumo_id,
             quantidade: 1,
@@ -242,7 +363,7 @@ export function FichaWizard({ open, onOpenChange, initialType = "pizza", editing
           });
         } else if (state.ingredientes.length) {
           const rows = state.ingredientes.map((ing) => ({
-            ficha_id: inserted.id,
+            ficha_id: fichaId,
             tipo_insumo: ing.tipo_insumo,
             insumo_comprado_id: ing.tipo_insumo === "comprado" ? ing.insumo_id : null,
             insumo_proprio_id: ing.tipo_insumo === "proprio" ? ing.insumo_id : null,
@@ -260,14 +381,14 @@ export function FichaWizard({ open, onOpenChange, initialType = "pizza", editing
       qc.invalidateQueries({ queryKey: ["fichas_tecnicas_pizza"] });
       qc.invalidateQueries({ queryKey: ["fichas_tecnicas_produtos"] });
       qc.invalidateQueries({ queryKey: ["fichas_unificadas"] });
-      toast.success("Ficha técnica salva!");
+      toast.success(editingFicha ? "Ficha atualizada!" : "Ficha técnica salva!");
       onOpenChange(false);
     },
     onError: (e: any) => toast.error(e.message ?? "Erro ao salvar"),
   });
 
   const stepTitles = ["Tipo de produto", "Ingredientes", "Embalagens e Extras", "Precificação"];
-  const headerTitle = `Passo ${step} de 4 — ${stepTitles[step - 1]}`;
+  const headerTitle = `${editingFicha ? "Editar" : "Passo"} ${editingFicha ? "—" : step + " de 4 —"} ${stepTitles[step - 1]}`;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

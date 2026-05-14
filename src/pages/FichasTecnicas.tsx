@@ -27,6 +27,7 @@ export default function FichasTecnicas() {
   const initialTab = (params.get("tab") as ProductType) || "pizza";
   const [tab, setTab] = useState<ProductType>(initialTab);
   const [wizardOpen, setWizardOpen] = useState(false);
+  const [editingFicha, setEditingFicha] = useState<{ id: string; tipo: ProductType } | null>(null);
 
   const { allProducts } = useProductCosts();
 
@@ -96,7 +97,7 @@ export default function FichasTecnicas() {
   return (
     <div className="space-y-6 page-enter">
       <PageHeader title="Fichas Técnicas" description="Cadastre receitas e calcule lucro por produto.">
-        <Button onClick={() => setWizardOpen(true)} className="gap-2">
+        <Button onClick={() => { setEditingFicha(null); setWizardOpen(true); }} className="gap-2">
           <Plus size={16} /> Nova Ficha
         </Button>
       </PageHeader>
@@ -123,7 +124,7 @@ export default function FichasTecnicas() {
                   <p className="text-sm text-muted-foreground max-w-sm mb-4">
                     Crie sua primeira ficha técnica de {t.label.toLowerCase()} para calcular lucro e margem.
                   </p>
-                  <Button onClick={() => setWizardOpen(true)} className="gap-2">
+                  <Button onClick={() => { setEditingFicha(null); setWizardOpen(true); }} className="gap-2">
                     <Plus size={16} /> Criar primeira ficha
                   </Button>
                 </div>
@@ -160,7 +161,15 @@ export default function FichasTecnicas() {
                             </span>
                           </TableCell>
                           <TableCell className="text-right">
-                            <Button size="icon" variant="ghost" disabled title="Edição em breve">
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => {
+                                setEditingFicha({ id: r.id, tipo: r.tipo });
+                                setWizardOpen(true);
+                              }}
+                              title="Editar ficha"
+                            >
                               <Pencil size={14} />
                             </Button>
                             <Button
@@ -184,7 +193,12 @@ export default function FichasTecnicas() {
         ))}
       </Tabs>
 
-      <FichaWizard open={wizardOpen} onOpenChange={setWizardOpen} initialType={tab} />
+      <FichaWizard
+        open={wizardOpen}
+        onOpenChange={(o) => { setWizardOpen(o); if (!o) setEditingFicha(null); }}
+        initialType={tab}
+        editingFicha={editingFicha}
+      />
     </div>
   );
 }
