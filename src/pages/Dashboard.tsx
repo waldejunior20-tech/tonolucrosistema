@@ -1,208 +1,184 @@
-import { useState, useEffect } from "react";
-import {
-  XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area, CartesianGrid,
-} from "recharts";
-import { format } from "date-fns";
-import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDashboardData } from "@/hooks/useDashboardData";
+import { useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import {
-  TrendingUp, TrendingDown, Bell, Clock,
-  Wallet, Receipt, PiggyBank, AlertTriangle, ArrowUp, ArrowDown, Minus,
-  Plus, Pizza, ShoppingCart,
+  Wallet, Trophy, AlertTriangle, Clock, TrendingUp, TrendingDown,
+  Plus, ChefHat, Receipt, FileUp, Sparkles, Bell, ArrowRight,
+  CheckCircle2, Activity,
 } from "lucide-react";
-import { AnimatedNumber } from "@/components/AnimatedNumber";
-import { OnboardingChecklist } from "@/components/dashboard/OnboardingChecklist";
+import { supabase } from "@/integrations/supabase/client";
+import { useDashboardData } from "@/hooks/useDashboardData";
 import { usePriceAlerts } from "@/hooks/usePriceAlerts";
-import { ProfitAlertWidget } from "@/components/dashboard/ProfitAlertWidget";
+import { useProfitAlerts } from "@/hooks/useProfitAlerts";
+import { OnboardingChecklist } from "@/components/dashboard/OnboardingChecklist";
+import { cn } from "@/lib/utils";
 
-function formatBRL(v: number) {
-  return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-}
+// ─── Helpers ─────────────────────────────────────────────────────────
+const fmtBRL = (v: number) =>
+  v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-function getGreeting() {
+const fmtPct = (v: number) => `${v.toFixed(1)}%`;
+
+const greeting = () => {
   const h = new Date().getHours();
   if (h < 12) return "Bom dia";
   if (h < 18) return "Boa tarde";
   return "Boa noite";
-}
+};
 
-// ─── Minimal KPI Card ────────────────────────────────────────────────
-type KpiVariant = "faturamento" | "gastos" | "lucro_pos" | "lucro_neg" | "cmv_ok" | "cmv_bad";
+// ─── Typography classes (Plus Jakarta + Inter + JetBrains Mono) ──────
+const T = {
+  display: "font-heading font-bold text-[24px] md:text-[32px] leading-tight tracking-tight",
+  headline: "font-heading font-semibold text-[20px] leading-tight",
+  body: "font-sans font-normal text-[14px] leading-relaxed",
+  label: "font-sans font-medium text-[12px] uppercase tracking-wider",
+  mono: "font-mono font-medium text-[14px] tabular-nums",
+  accent: "font-heading font-semibold text-[16px]",
+};
 
-function MoMBadge({ variacao, higherIsBetter, dark }: {
-  variacao: number | null;
-  higherIsBetter: boolean;
-  dark: boolean;
+// ─── KPI Card ────────────────────────────────────────────────────────
+function KpiCard({
+  icon: Icon,
+  iconTone,
+  label,
+  value,
+  hint,
+  badge,
+  badgeTone = "neutral",
+  onClick,
+}: {
+  icon: any;
+  iconTone: "primary" | "success" | "destructive" | "warning";
+  label: string;
+  value: string;
+  hint?: string;
+  badge?: string;
+  badgeTone?: "neutral" | "success" | "destructive" | "warning";
+  onClick?: () => void;
 }) {
-  if (variacao === null) {
-    return (
-      <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-md inline-flex items-center gap-1 ${
-        dark ? "bg-white/15 text-white/80" : "bg-muted text-muted-foreground"
-      }`}>
-        <Minus size={10} /> sem base
-      </span>
-    );
-  }
-
-  const isFlat = Math.abs(variacao) < 0.5;
-  const isUp = variacao > 0;
-  const isGood = isFlat ? true : isUp === higherIsBetter;
-  const Icon = isFlat ? Minus : isUp ? ArrowUp : ArrowDown;
-  const arrow = isFlat ? "" : isUp ? "+" : "";
-
-  if (dark) {
-    return (
-      <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md inline-flex items-center gap-1 backdrop-blur ${
-        isGood ? "bg-white/25 text-white" : "bg-black/30 text-white"
-      }`}>
-        <Icon size={10} strokeWidth={3} />
-        {arrow}{Math.abs(variacao).toFixed(1)}%
-      </span>
-    );
-  }
-
-  return (
-    <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md inline-flex items-center gap-1 ${
-      isGood ? "text-success bg-success/10" : "text-destructive bg-destructive/10"
-    }`}>
-      <Icon size={10} strokeWidth={3} />
-      {arrow}{Math.abs(variacao).toFixed(1)}%
-    </span>
-  );
-}
-
-function MiniKPI({ label, value, numericValue, formatter, icon: Icon, trendLabel, kpiType, momVariation, higherIsBetter }: {
-  label: string; value: string; icon: any;
-  numericValue?: number; formatter?: (v: number) => string;
-  trendLabel?: string;
-  kpiType: KpiVariant;
-  momVariation?: number | null;
-  higherIsBetter?: boolean;
-}) {
-  const gradients: Partial<Record<KpiVariant, { bg: string; shadow: string }>> = {
-    faturamento: { bg: "linear-gradient(135deg, hsl(var(--grad-faturamento-from)), hsl(var(--grad-faturamento-to)))", shadow: "0 8px 24px hsl(var(--grad-faturamento-from) / 0.2)" },
-    gastos: { bg: "linear-gradient(135deg, hsl(var(--grad-gastos-from)), hsl(var(--grad-gastos-to)))", shadow: "0 8px 24px hsl(var(--grad-gastos-from) / 0.2)" },
-    lucro_pos: { bg: "linear-gradient(135deg, hsl(var(--grad-lucro-pos-from)), hsl(var(--grad-lucro-pos-to)))", shadow: "0 8px 24px hsl(var(--grad-lucro-pos-to) / 0.3)" },
-    lucro_neg: { bg: "linear-gradient(135deg, hsl(var(--grad-lucro-neg-from)), hsl(var(--grad-lucro-neg-to)))", shadow: "0 8px 24px hsl(var(--grad-lucro-neg-from) / 0.2)" },
-    cmv_ok: { bg: "linear-gradient(135deg, hsl(var(--grad-cmv-ok-from)), hsl(var(--grad-cmv-ok-to)))", shadow: "0 8px 24px hsl(var(--grad-cmv-ok-to) / 0.2)" },
-    cmv_bad: { bg: "linear-gradient(135deg, hsl(var(--grad-lucro-neg-from)), hsl(var(--grad-lucro-neg-to)))", shadow: "0 8px 24px hsl(var(--grad-lucro-neg-from) / 0.2)" },
+  const iconBg: Record<string, string> = {
+    primary: "bg-primary/10 text-primary",
+    success: "bg-success/10 text-success",
+    destructive: "bg-destructive/10 text-destructive",
+    warning: "bg-warning/10 text-warning",
+  };
+  const badgeCls: Record<string, string> = {
+    neutral: "bg-muted text-muted-foreground",
+    success: "bg-success/10 text-success",
+    destructive: "bg-destructive/10 text-destructive",
+    warning: "bg-warning/10 text-warning",
   };
 
-  const grad = gradients[kpiType];
-  const showMoM = momVariation !== undefined && higherIsBetter !== undefined;
-
-  const renderValue = (textClass: string) => (
-    numericValue !== undefined && formatter ? (
-      <AnimatedNumber value={numericValue} formatter={formatter} className={`text-[28px] font-extrabold tracking-tight leading-none font-mono tabular-nums ${textClass}`} duration={1000} />
-    ) : (
-      <span className={`text-[28px] font-extrabold tracking-tight leading-none font-mono tabular-nums ${textClass}`}>{value}</span>
-    )
-  );
-
-  // Colored gradient card
-  if (grad) {
-    return (
-      <div
-        style={{ background: grad.bg, boxShadow: grad.shadow }}
-        className="group rounded-2xl px-6 py-5 border border-white/10 transition-all duration-300 hover:scale-[1.02] hover:brightness-110"
-      >
-        <div className="flex items-center justify-between mb-1.5">
-          <span className="text-[13px] font-bold text-white/80 uppercase tracking-wider">{label}</span>
-          <Icon size={20} className="text-white/70" />
-        </div>
-        <div className="flex items-baseline gap-2 flex-wrap">
-          {renderValue("text-white drop-shadow-sm")}
-           {trendLabel && trendLabel !== "—" && (
-             <span className="text-[12px] font-bold px-2 py-1 rounded-md bg-white/20 text-white">{trendLabel}</span>
-           )}
-        </div>
-        {showMoM && (
-          <div className="mt-2 flex items-center gap-1.5">
-            <MoMBadge variacao={momVariation} higherIsBetter={higherIsBetter} dark />
-            <span className="text-[10px] text-white/60 font-medium">vs mês anterior</span>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // Clean white card (CMV)
-  const iconColor = kpiType === "cmv_ok" ? "text-success" : "text-destructive";
   return (
-    <div className="group bg-card rounded-2xl px-6 py-5 border border-border/60 transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)] hover:-translate-y-0.5">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-[13px] font-bold text-muted-foreground/70 uppercase tracking-wider">{label}</span>
-        <Icon size={20} className={iconColor} />
+    <div
+      onClick={onClick}
+      className={cn(
+        "bg-card border border-border rounded-xl p-6 shadow-sm transition-all duration-200",
+        "hover:shadow-md hover:-translate-y-0.5",
+        onClick && "cursor-pointer",
+      )}
+    >
+      <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center mb-4", iconBg[iconTone])}>
+        <Icon size={20} strokeWidth={2.2} />
       </div>
-      <div className="flex items-baseline gap-2 flex-wrap">
-        {renderValue("text-foreground")}
-        {trendLabel && trendLabel !== "—" && (
-          <span className={`text-[12px] font-bold px-2 py-1 rounded-md ${
-            kpiType === "cmv_bad"
-              ? "text-destructive bg-destructive/8"
-              : "text-success bg-success/8"
-          }`}>
-            {trendLabel}
-          </span>
-        )}
-      </div>
-      {showMoM && (
-        <div className="mt-2 flex items-center gap-1.5">
-          <MoMBadge variacao={momVariation} higherIsBetter={higherIsBetter} dark={false} />
-          <span className="text-[10px] text-muted-foreground font-medium">vs mês anterior</span>
-        </div>
+      <p className={cn(T.label, "text-muted-foreground mb-2")}>{label}</p>
+      <p className={cn(T.mono, "text-[24px] font-bold text-foreground leading-none mb-2")}>{value}</p>
+      {hint && <p className={cn(T.body, "text-muted-foreground text-[13px]")}>{hint}</p>}
+      {badge && (
+        <span className={cn("inline-flex mt-3 items-center gap-1 px-2 py-0.5 rounded-md", T.label, "text-[11px]", badgeCls[badgeTone])}>
+          {badge}
+        </span>
       )}
     </div>
   );
 }
 
-// ─── Alert Item ──────────────────────────────────────────────────────
-function AlertItem({ severity, title, detail, value, onClick }: {
-  severity: "warning" | "critical"; title: string; detail: string; value?: string;
-  onClick?: () => void;
+// ─── Quick Action ────────────────────────────────────────────────────
+function QuickAction({ icon: Icon, label, onClick, primary = false }: {
+  icon: any; label: string; onClick: () => void; primary?: boolean;
 }) {
-  const isCritical = severity === "critical";
-  const isClickable = !!onClick;
-  const Wrapper: any = isClickable ? "button" : "div";
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "flex items-center gap-2 h-11 px-4 rounded-lg border transition-all",
+        T.accent,
+        primary
+          ? "bg-primary text-primary-foreground border-primary hover:bg-primary/90 shadow-sm"
+          : "bg-card text-foreground border-border hover:bg-muted hover:border-primary/40",
+      )}
+    >
+      <Icon size={16} strokeWidth={2.4} />
+      <span>{label}</span>
+    </button>
+  );
+}
+
+// ─── Insight List Item ───────────────────────────────────────────────
+function InsightRow({ icon: Icon, tone, title, detail, value, onClick }: {
+  icon: any; tone: "success" | "destructive" | "warning" | "primary";
+  title: string; detail?: string; value?: string; onClick?: () => void;
+}) {
+  const toneCls: Record<string, string> = {
+    success: "bg-success/10 text-success",
+    destructive: "bg-destructive/10 text-destructive",
+    warning: "bg-warning/10 text-warning",
+    primary: "bg-primary/10 text-primary",
+  };
+  const Wrapper: any = onClick ? "button" : "div";
   return (
     <Wrapper
       onClick={onClick}
-      className={`w-full text-left flex items-start gap-3 p-3.5 rounded-xl border transition-all duration-200 ${
-        isCritical
-          ? "bg-destructive/5 border-destructive/15"
-          : "bg-muted border-muted-foreground/15"
-      } ${isClickable ? "hover:scale-[1.01] hover:shadow-md cursor-pointer" : ""}`}
-    >
-      <div className={`mt-1 w-2 h-2 rounded-full flex-shrink-0 ${isCritical ? "bg-destructive" : "bg-warning"}`} />
-      <div className="flex-1 min-w-0">
-        <p className={`text-[13px] font-bold flex items-center gap-1.5 ${
-          isCritical ? "text-destructive" : "text-muted-foreground"
-        }`}>
-          {isCritical && <AlertTriangle size={14} />}
-          {title}
-        </p>
-        <p className="text-[12px] text-muted-foreground mt-0.5">{detail}</p>
-      </div>
-      {value && (
-        <span className={`text-[13px] font-bold whitespace-nowrap font-mono ${
-          isCritical ? "text-destructive" : "text-muted-foreground"
-        }`}>{value}</span>
+      className={cn(
+        "w-full flex items-center gap-3 px-4 py-3 rounded-lg border border-border bg-card text-left transition-all",
+        onClick && "hover:border-primary/40 hover:bg-muted/50 cursor-pointer",
       )}
+    >
+      <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center shrink-0", toneCls[tone])}>
+        <Icon size={15} strokeWidth={2.4} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className={cn(T.accent, "text-[14px] text-foreground truncate")}>{title}</p>
+        {detail && <p className={cn(T.body, "text-[12.5px] text-muted-foreground truncate")}>{detail}</p>}
+      </div>
+      {value && <span className={cn(T.mono, "text-[13px] font-bold text-foreground whitespace-nowrap")}>{value}</span>}
+      {onClick && <ArrowRight size={14} className="text-muted-foreground/60 shrink-0" />}
     </Wrapper>
   );
 }
 
-// ─── Chart Card wrapper ──────────────────────────────────────────────
-function ChartCard({ title, hint, action, children, className = "" }: {
-  title: string; hint?: string; action?: React.ReactNode; children: React.ReactNode; className?: string;
+// ─── Empty State ─────────────────────────────────────────────────────
+function EmptyHint({ icon: Icon, message }: { icon: any; message: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-8 px-4 text-center gap-2">
+      <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+        <Icon size={18} className="text-muted-foreground/60" />
+      </div>
+      <p className={cn(T.body, "text-muted-foreground text-[13px] max-w-[260px]")}>{message}</p>
+    </div>
+  );
+}
+
+// ─── Section Card ────────────────────────────────────────────────────
+function Section({ title, description, icon: Icon, children, action }: {
+  title: string; description?: string; icon?: any;
+  children: React.ReactNode; action?: React.ReactNode;
 }) {
   return (
-    <div className={`bg-card border border-border/60 rounded-2xl p-7 transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)] ${className}`}>
-      <div className="flex items-start justify-between mb-5">
-        <div>
-          <h3 className="text-[16px] font-bold text-foreground">{title}</h3>
-          {hint && <p className="text-[12px] text-muted-foreground/60 mt-0.5">{hint}</p>}
+    <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+      <div className="flex items-start justify-between mb-5 gap-3">
+        <div className="flex items-start gap-3 min-w-0">
+          {Icon && (
+            <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <Icon size={18} strokeWidth={2.2} />
+            </div>
+          )}
+          <div className="min-w-0">
+            <h3 className={cn(T.headline, "text-foreground")}>{title}</h3>
+            {description && <p className={cn(T.body, "text-muted-foreground mt-0.5 text-[13px]")}>{description}</p>}
+          </div>
         </div>
         {action}
       </div>
@@ -211,288 +187,323 @@ function ChartCard({ title, hint, action, children, className = "" }: {
   );
 }
 
-// ─── Donut center label ─────────────────────────────────────────────
-function DonutCenterLabel({ viewBox, value }: any) {
-  const { cx, cy } = viewBox;
-  return (
-    <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central">
-      <tspan x={cx} dy="-6" fontSize="20" fontWeight="700" fill="hsl(var(--text-heading))">
-        {value}
-      </tspan>
-      <tspan x={cx} dy="18" fontSize="10" fill="hsl(var(--text-muted))">
-        total
-      </tspan>
-    </text>
-  );
-}
-
-// ─── Dashboard Alerts (com alertas de preço acionáveis) ─────────────
-function DashboardAlerts({ contasVencendo, cmvPct, cmvMeta, faturamentoMes, onNavigate }: {
-  contasVencendo: any[];
-  cmvPct: number;
-  cmvMeta: number;
-  faturamentoMes: number;
-  onNavigate: (path: string) => void;
-}) {
-  const { data: priceAlerts = [] } = usePriceAlerts();
-
-  const hasAny =
-    contasVencendo.length > 0 ||
-    (cmvPct > cmvMeta && faturamentoMes > 0) ||
-    priceAlerts.length > 0;
-
-  return (
-    <div className="fade-up fade-up-d3">
-      <div className="bg-sidebar border border-border rounded-2xl px-5 py-4">
-        <h3 className="text-[13px] font-semibold text-white mb-2.5 flex items-center gap-2">
-          <Bell size={14} className="text-white/50" />
-          Alertas
-          {hasAny && (
-            <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded-full bg-white/15 text-white/90 font-bold">
-              {contasVencendo.length + priceAlerts.length + (cmvPct > cmvMeta && faturamentoMes > 0 ? 1 : 0)}
-            </span>
-          )}
-        </h3>
-        {hasAny ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-            {priceAlerts.map((a, i) => (
-              <AlertItem
-                key={`price-${i}`}
-                severity="critical"
-                title={`${a.nome} +${a.variacaoPct.toFixed(1)}%`}
-                detail={`R$ ${a.precoAnterior.toFixed(2)} → R$ ${a.precoAtual.toFixed(2)} / ${a.unidade} — clique para revisar`}
-                onClick={() => onNavigate("/precificacao/pizzas")}
-              />
-            ))}
-            {contasVencendo.map((c, i) => (
-              <AlertItem
-                key={`conta-${i}`}
-                severity="warning"
-                title={c.descricao}
-                detail={`Vence ${format(new Date(c.data_lancamento + "T00:00:00"), "dd/MM")} — clique para ver`}
-                value={formatBRL(Number(c.valor))}
-                onClick={() => onNavigate("/financeiro/contas-a-pagar")}
-              />
-            ))}
-            {cmvPct > cmvMeta && faturamentoMes > 0 && (
-              <AlertItem
-                severity="critical"
-                title="CMV acima da meta"
-                detail={`${cmvPct.toFixed(1)}% vs meta de ${cmvMeta}% — clique para ajustar`}
-                onClick={() => onNavigate("/financeiro/dre")}
-              />
-            )}
-          </div>
-        ) : (
-          <div className="flex items-center gap-2 py-1">
-            <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">
-              <Clock size={12} className="text-white/60" />
-            </div>
-            <p className="text-[11px] text-white/50">Nenhum alerta no momento.</p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
+// ─── Main Component ──────────────────────────────────────────────────
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [businessName, setBusinessName] = useState("");
   const [userName, setUserName] = useState("");
-  const [period, setPeriod] = useState("6m");
+  const [businessName, setBusinessName] = useState("");
 
   const {
-    totalFichas, totalInsumos, promocoesAtivas, faturamentoMes,
-    despesasMes, cmvPct, cmvMeta, graficoMensal, contasVencendo,
-    comparativos,
+    faturamentoMes, despesasMes, cmvPct, cmvMeta, contasVencendo, comparativos,
   } = useDashboardData();
 
-  const cmvDisplayPct = cmvPct;
-  const cmvIsReal = false;
+  const { data: priceAlerts = [] } = usePriceAlerts();
+  const { data: profitAlerts = [] } = useProfitAlerts(5);
+
+  // Últimos lançamentos (read-only sobre tabela existente)
+  const { data: ultimosLancamentos = [] } = useQuery({
+    queryKey: ["dashboard-ultimos-lancamentos"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("lancamentos_financeiros")
+        .select("id, descricao, valor, tipo, categoria, data_lancamento, created_at")
+        .order("created_at", { ascending: false })
+        .limit(5);
+      return data ?? [];
+    },
+  });
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) {
-        const meta: any = user.user_metadata || {};
-        const fullName = meta.full_name || meta.name || meta.nome || "";
-        const first = fullName.trim().split(/\s+/)[0] || (user.email ? user.email.split("@")[0] : "");
-        if (first) setUserName(first.charAt(0).toUpperCase() + first.slice(1));
-        supabase.from("profiles").select("business_name").eq("id", user.id).single()
-          .then(({ data }) => { if (data?.business_name) setBusinessName(data.business_name); });
-      }
+      if (!user) return;
+      const meta: any = user.user_metadata || {};
+      const fullName = meta.full_name || meta.name || meta.nome || "";
+      const first = fullName.trim().split(/\s+/)[0] || (user.email ? user.email.split("@")[0] : "");
+      if (first) setUserName(first.charAt(0).toUpperCase() + first.slice(1));
+      supabase.from("profiles").select("business_name").eq("id", user.id).single()
+        .then(({ data }) => { if (data?.business_name) setBusinessName(data.business_name); });
     });
   }, []);
 
   const lucroMes = faturamentoMes - despesasMes;
-  const hasChartData = graficoMensal.some((m) => m.receita > 0 || m.despesa > 0);
+  const dataHoje = format(new Date(), "EEEE, d 'de' MMMM", { locale: ptBR });
+  const caixaStatus = lucroMes > 0 ? "positivo" : lucroMes < 0 ? "negativo" : "zerado";
+  const caixaColor = lucroMes > 0 ? "text-success" : lucroMes < 0 ? "text-destructive" : "text-muted-foreground";
 
-  const tooltipStyle = {
-    backgroundColor: "hsl(var(--card))",
-    border: "1px solid hsl(var(--border))",
-    borderRadius: "10px",
-    color: "hsl(var(--foreground))",
-    fontSize: "12px",
-    boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
-  };
+  const cmvOk = cmvPct <= cmvMeta;
+  const hasFaturamento = faturamentoMes > 0;
+
+  const topProfitAlert = profitAlerts[0];
+  const topPriceAlert = priceAlerts[0];
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-8rem)] page-enter">
-      <div className="space-y-6 flex-1">
-      {/* ─── HEADER ─── */}
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 fade-up">
+    <div className="page-enter space-y-8 pb-12">
+
+      {/* ─── WELCOME ─────────────────────────────────────────────── */}
+      <header className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
         <div>
-          <h1 className="font-heading text-3xl font-medium text-text-heading tracking-tight leading-tight uppercase">
-            {getGreeting()}{userName ? `, ${userName}` : ""}! 🍕
+          <h1 className={cn(T.display, "text-foreground")}>
+            {greeting()}{userName ? `, ${userName}` : ""} <span className="inline-block">👋</span>
           </h1>
-          <p className="text-sm text-muted-foreground mt-1 font-medium">
-            {businessName ? `${businessName} — ` : ""}Visão geral do seu negócio
+          <p className={cn(T.body, "text-muted-foreground mt-2 capitalize")}>
+            Hoje é {dataHoje}.{" "}
+            {hasFaturamento ? (
+              <>Seu caixa do mês está <span className={cn(caixaColor, "font-semibold")}>{fmtBRL(Math.abs(lucroMes))} {caixaStatus}</span>.</>
+            ) : (
+              <>Registre suas vendas para acompanhar o caixa em tempo real.</>
+            )}
           </p>
         </div>
+        {businessName && (
+          <span className={cn(T.label, "px-3 py-1.5 rounded-md bg-muted text-muted-foreground")}>
+            {businessName}
+          </span>
+        )}
+      </header>
 
-        <div className="flex items-center gap-3">
-          <div className="flex gap-1 bg-muted/40 p-0.5 rounded-full border border-border/30">
-            {(["1m", "3m", "6m"] as const).map((p) => (
-              <button
-                key={p}
-                onClick={() => setPeriod(p)}
-                className={`px-3 py-1 rounded-full text-[11px] font-medium transition-all duration-200 ${
-                  period === p
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {p === "1m" ? "1 Mês" : p === "3m" ? "3 Meses" : "6 Meses"}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ─── QUICK ACTIONS ─── */}
-      <div className="flex flex-wrap gap-2 fade-up fade-up-d1">
-        <button
-          onClick={() => navigate("/caixa-diario")}
-          className="btn-hot-cta px-4 py-2.5 text-sm inline-flex items-center gap-2 hover:scale-[1.02] active:scale-95 transition-transform"
-        >
-          <Plus size={16} strokeWidth={3} /> Vender
-        </button>
-        <button
-          onClick={() => navigate("/fichas-tecnicas/pizza")}
-          className="btn-hot-cta px-4 py-2.5 text-sm inline-flex items-center gap-2 hover:scale-[1.02] active:scale-95 transition-transform"
-        >
-          <Pizza size={16} strokeWidth={2.5} /> Nova Ficha
-        </button>
-        <button
-          onClick={() => navigate("/financeiro/contas-a-pagar")}
-          className="px-4 py-2.5 text-sm inline-flex items-center gap-2 rounded-sm border border-border bg-card text-text-heading font-semibold hover:bg-muted transition-colors"
-        >
-          <Receipt size={16} /> + Despesa
-        </button>
-      </div>
-
-      {/* ─── ONBOARDING CHECKLIST ─── */}
+      {/* ─── ONBOARDING ──────────────────────────────────────────── */}
       <OnboardingChecklist />
 
-      {/* ─── MINI KPI CARDS ─── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 stagger-fade-in">
-        <MiniKPI label="Faturamento" value={formatBRL(faturamentoMes)} numericValue={faturamentoMes} formatter={formatBRL} icon={Wallet} kpiType="faturamento" momVariation={comparativos.faturamento} higherIsBetter={true} />
-        <MiniKPI label="Gastos" value={formatBRL(despesasMes)} numericValue={despesasMes} formatter={formatBRL} icon={Receipt} kpiType="gastos" momVariation={comparativos.despesas} higherIsBetter={false} />
-        <MiniKPI label="Lucro" value={formatBRL(lucroMes)} numericValue={lucroMes} formatter={formatBRL} icon={PiggyBank} kpiType={lucroMes >= 0 ? "lucro_pos" : "lucro_neg"} momVariation={comparativos.lucro} higherIsBetter={true} />
-        <MiniKPI label="CMV" value={faturamentoMes > 0 || cmvIsReal ? `${cmvDisplayPct.toFixed(1)}%` : "Sem dados"} numericValue={(faturamentoMes > 0 || cmvIsReal) ? cmvDisplayPct : undefined} formatter={(v) => `${v.toFixed(1)}%`} icon={TrendingDown} trendLabel={(faturamentoMes > 0 || cmvIsReal) ? `Meta ${cmvMeta}%` : undefined} kpiType={cmvDisplayPct <= cmvMeta ? "cmv_ok" : "cmv_bad"} />
+      {/* ─── KPI CARDS ───────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+        <KpiCard
+          icon={Wallet}
+          iconTone={lucroMes >= 0 ? "success" : "destructive"}
+          label="Caixa do Mês"
+          value={hasFaturamento ? fmtBRL(lucroMes) : "—"}
+          hint={hasFaturamento
+            ? `Faturamento ${fmtBRL(faturamentoMes)} · Despesas ${fmtBRL(despesasMes)}`
+            : "Sem lançamentos este mês"}
+          badge={comparativos.lucro !== null
+            ? `${comparativos.lucro > 0 ? "+" : ""}${comparativos.lucro.toFixed(1)}% vs mês anterior`
+            : "Sem base de comparação"}
+          badgeTone={comparativos.lucro && comparativos.lucro > 0 ? "success" : comparativos.lucro && comparativos.lucro < 0 ? "destructive" : "neutral"}
+          onClick={() => navigate("/financeiro/dre")}
+        />
+
+        <KpiCard
+          icon={Trophy}
+          iconTone="primary"
+          label="Top Produto"
+          value={topProfitAlert ? topProfitAlert.nome : "—"}
+          hint={topProfitAlert
+            ? `Sugestão de preço ${fmtBRL(topProfitAlert.preco_sugerido)} · CMV ${fmtBRL(topProfitAlert.cmv_atual)}`
+            : "Cadastre fichas técnicas para ver os mais rentáveis"}
+          badge={topProfitAlert ? topProfitAlert.tipo_ficha : undefined}
+          badgeTone="neutral"
+          onClick={() => navigate("/precificacao/pizzas")}
+        />
+
+        <KpiCard
+          icon={AlertTriangle}
+          iconTone={topPriceAlert ? "destructive" : "success"}
+          label="Alerta de Custo"
+          value={topPriceAlert
+            ? `${topPriceAlert.nome} +${topPriceAlert.variacaoPct.toFixed(1)}%`
+            : "Tudo estável"}
+          hint={topPriceAlert
+            ? `${fmtBRL(topPriceAlert.precoAnterior)} → ${fmtBRL(topPriceAlert.precoAtual)} / ${topPriceAlert.unidade}`
+            : "Nenhum insumo subiu acima do limite"}
+          badge={topPriceAlert ? `${priceAlerts.length} insumo${priceAlerts.length > 1 ? "s" : ""} afetado${priceAlerts.length > 1 ? "s" : ""}` : undefined}
+          badgeTone="destructive"
+          onClick={() => navigate("/insumos/comprados")}
+        />
+
+        <KpiCard
+          icon={Clock}
+          iconTone={cmvOk ? "success" : "warning"}
+          label="Saúde do CMV"
+          value={hasFaturamento ? fmtPct(cmvPct) : "—"}
+          hint={hasFaturamento
+            ? cmvOk ? `Dentro da meta de ${cmvMeta}%` : `Acima da meta de ${cmvMeta}% — revise preços`
+            : "Sem dados suficientes ainda"}
+          badge={hasFaturamento ? (cmvOk ? "Saudável" : "Atenção") : undefined}
+          badgeTone={cmvOk ? "success" : "warning"}
+          onClick={() => navigate("/automacao/saude")}
+        />
       </div>
 
-      {/* ─── CHART: Revenue ─── */}
-      <div className="fade-up fade-up-d2">
-        <div className="bg-card border border-border rounded-2xl p-7 transition-all duration-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.06)]">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h3 className="text-[16px] font-bold text-foreground">Faturamento vs. Despesas</h3>
-              <p className="text-[12px] text-muted-foreground/50 mt-0.5">Evolução mensal do seu negócio</p>
-            </div>
-            <div className="hidden sm:flex items-center gap-3">
-              <div className="flex items-center gap-1.5">
-                <div className="w-3 h-[3px] rounded-full bg-success" />
-                <span className="text-[10px] text-muted-foreground">Receita</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-3 h-[3px] rounded-full bg-warning" />
-                <span className="text-[10px] text-muted-foreground">Despesa</span>
-              </div>
-            </div>
-          </div>
+      {/* ─── QUICK ACTIONS ───────────────────────────────────────── */}
+      <div className="flex flex-wrap items-center gap-3">
+        <span className={cn(T.label, "text-muted-foreground mr-1")}>Ações Rápidas</span>
+        <QuickAction icon={Plus} label="Registrar Venda" primary onClick={() => navigate("/financeiro/caixa-diario")} />
+        <QuickAction icon={ChefHat} label="Nova Ficha Técnica" onClick={() => navigate("/fichas/pizzas")} />
+        <QuickAction icon={Receipt} label="Lançar Despesa" onClick={() => navigate("/financeiro/contas-a-pagar")} />
+        <QuickAction icon={FileUp} label="Importar Nota Fiscal" onClick={() => navigate("/insumos/comprados")} />
+      </div>
 
-          {hasChartData ? (
-            <ResponsiveContainer width="100%" height={260}>
-              <AreaChart data={graficoMensal} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="gradReceita" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="hsl(var(--success))" stopOpacity={0.25} />
-                    <stop offset="50%" stopColor="hsl(var(--success))" stopOpacity={0.08} />
-                    <stop offset="100%" stopColor="hsl(var(--success))" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="gradDespesa" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="hsl(var(--warning))" stopOpacity={0.15} />
-                    <stop offset="50%" stopColor="hsl(var(--warning))" stopOpacity={0.05} />
-                    <stop offset="100%" stopColor="hsl(var(--warning))" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" strokeOpacity={0.4} vertical={false} />
-                <XAxis
-                  dataKey="mes"
-                  tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11, fontWeight: 700 }}
-                  axisLine={false}
-                  tickLine={false}
-                  dy={8}
-                />
-                <YAxis
-                  tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10, fontWeight: 700 }}
-                  tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`}
-                  axisLine={false}
-                  tickLine={false}
-                  width={55}
-                />
-                <Tooltip
-                  contentStyle={{ ...tooltipStyle, padding: "10px 14px", fontWeight: 700 }}
-                  formatter={(value: number) => formatBRL(value)}
-                  cursor={{ stroke: "hsl(var(--border))", strokeWidth: 1 }}
-                />
-                <Area type="monotone" dataKey="receita" name="Receita" stroke="hsl(var(--success))" fill="url(#gradReceita)" strokeWidth={2.5} dot={false} activeDot={{ r: 5, fill: "hsl(var(--success))", stroke: "#fff", strokeWidth: 2 }} />
-                <Area type="monotone" dataKey="despesa" name="Despesa" stroke="hsl(var(--warning))" fill="url(#gradDespesa)" strokeWidth={2} strokeDasharray="6 3" dot={false} activeDot={{ r: 4, fill: "hsl(var(--warning))", stroke: "#fff", strokeWidth: 2 }} />
-              </AreaChart>
-            </ResponsiveContainer>
-          ) : (
-            <div className="flex flex-col items-center justify-center h-[260px] text-muted-foreground gap-3">
-              <div className="w-12 h-12 rounded-full bg-muted/60 flex items-center justify-center">
-                <TrendingUp size={20} className="text-muted-foreground/40" />
+      {/* ─── INSIGHT GRID ────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        {/* Radar de Lucro — large */}
+        <div className="lg:col-span-2">
+          <Section
+            title="Radar de Lucro"
+            description="Insights gerados a partir das suas fichas, vendas e compras."
+            icon={Sparkles}
+          >
+            {profitAlerts.length || priceAlerts.length ? (
+              <div className="space-y-2.5">
+                {priceAlerts.slice(0, 3).map((a, i) => (
+                  <InsightRow
+                    key={`pa-${i}`}
+                    icon={TrendingUp}
+                    tone="destructive"
+                    title={`${a.nome} subiu ${a.variacaoPct.toFixed(1)}%`}
+                    detail={`Custo unitário ${fmtBRL(a.precoAnterior)} → ${fmtBRL(a.precoAtual)} / ${a.unidade}`}
+                    onClick={() => navigate("/insumos/comprados")}
+                  />
+                ))}
+                {profitAlerts.slice(0, 3).map((p) => (
+                  <InsightRow
+                    key={`pf-${p.id}`}
+                    icon={TrendingDown}
+                    tone="warning"
+                    title={`${p.nome} perdeu margem`}
+                    detail={`CMV passou de ${fmtBRL(p.cmv_anterior)} para ${fmtBRL(p.cmv_atual)} · Preço sugerido ${fmtBRL(p.preco_sugerido)}`}
+                    onClick={() => navigate("/automacao/alertas")}
+                  />
+                ))}
               </div>
-              <p className="text-[12px] text-center max-w-[220px]">Registre receitas e despesas no módulo Financeiro para ver a evolução aqui.</p>
-            </div>
-          )}
+            ) : (
+              <EmptyHint
+                icon={Sparkles}
+                message="Cadastre fichas técnicas, vendas e compras para ativar insights inteligentes."
+              />
+            )}
+          </Section>
         </div>
+
+        {/* Central de Alertas */}
+        <Section
+          title="Central de Alertas"
+          icon={Bell}
+          description={`${priceAlerts.length + contasVencendo.length} pendência${priceAlerts.length + contasVencendo.length === 1 ? "" : "s"}`}
+        >
+          {priceAlerts.length || contasVencendo.length || (hasFaturamento && !cmvOk) ? (
+            <div className="space-y-2.5">
+              {!cmvOk && hasFaturamento && (
+                <InsightRow
+                  icon={AlertTriangle}
+                  tone="destructive"
+                  title="CMV acima da meta"
+                  detail={`${fmtPct(cmvPct)} vs meta ${cmvMeta}%`}
+                  onClick={() => navigate("/financeiro/dre")}
+                />
+              )}
+              {priceAlerts.slice(0, 2).map((a, i) => (
+                <InsightRow
+                  key={`alert-price-${i}`}
+                  icon={TrendingUp}
+                  tone="warning"
+                  title={`${a.nome} subiu`}
+                  detail={`+${a.variacaoPct.toFixed(1)}% no custo`}
+                  onClick={() => navigate("/insumos/comprados")}
+                />
+              ))}
+              {contasVencendo.slice(0, 2).map((c, i) => (
+                <InsightRow
+                  key={`alert-conta-${i}`}
+                  icon={Receipt}
+                  tone="warning"
+                  title={c.descricao}
+                  detail={`Vence ${format(new Date(c.data_lancamento + "T00:00:00"), "dd/MM")}`}
+                  value={fmtBRL(Number(c.valor))}
+                  onClick={() => navigate("/financeiro/contas-a-pagar")}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyHint icon={CheckCircle2} message="Tudo em dia. Nenhum alerta no momento." />
+          )}
+        </Section>
       </div>
 
-      {/* ─── ALERTA DE LUCRO (impacto na margem) ─── */}
-      <ProfitAlertWidget />
+      {/* ─── PROMOTIONS / RISK ───────────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Section
+          title="Prontos para Promoção"
+          description="Produtos com margem suficiente para uma campanha."
+          icon={Sparkles}
+        >
+          <EmptyHint
+            icon={Sparkles}
+            message="Em breve: sugestões automáticas de promoção a partir das suas fichas técnicas com maior margem."
+          />
+        </Section>
 
-      {/* ─── ALERTAS ACIONÁVEIS ─── */}
-      <DashboardAlerts
-        contasVencendo={contasVencendo}
-        cmvPct={cmvDisplayPct}
-        cmvMeta={cmvMeta}
-        faturamentoMes={faturamentoMes}
-        onNavigate={navigate}
-      />
-
-
+        <Section
+          title="Produtos em Risco"
+          description="Itens com margem baixa, CMV alto ou preço desatualizado."
+          icon={AlertTriangle}
+        >
+          {profitAlerts.length ? (
+            <div className="space-y-2.5">
+              {profitAlerts.slice(0, 4).map((p) => (
+                <InsightRow
+                  key={`risk-${p.id}`}
+                  icon={TrendingDown}
+                  tone="destructive"
+                  title={p.nome}
+                  detail={`CMV +${fmtBRL(p.delta_abs)} · Preço sugerido ${fmtBRL(p.preco_sugerido)}`}
+                  onClick={() => navigate("/automacao/alertas")}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyHint icon={CheckCircle2} message="Nenhum produto em risco identificado." />
+          )}
+        </Section>
       </div>
 
-      {/* ─── FOOTER ─── */}
-      <div className="border-t border-border/40 pt-4 pb-2 mt-8 text-center fade-up">
-        <p className="text-[10px] text-muted-foreground/50">
-          {businessName || "TôNoLucro"} © {new Date().getFullYear()} — Sistema Profissional de Gestão
-        </p>
-      </div>
+      {/* ─── ÚLTIMOS LANÇAMENTOS ────────────────────────────────── */}
+      <Section
+        title="Últimos Lançamentos"
+        description="Movimentações recentes do caixa."
+        icon={Activity}
+        action={
+          <button
+            onClick={() => navigate("/financeiro/caixa-diario")}
+            className={cn(T.label, "text-primary hover:text-primary/80 transition-colors")}
+          >
+            Ver tudo →
+          </button>
+        }
+      >
+        {ultimosLancamentos.length ? (
+          <div className="divide-y divide-border">
+            {ultimosLancamentos.map((l: any) => {
+              const isReceita = l.tipo === "receita";
+              return (
+                <div key={l.id} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
+                  <div className={cn(
+                    "w-9 h-9 rounded-lg flex items-center justify-center shrink-0",
+                    isReceita ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive",
+                  )}>
+                    {isReceita ? <TrendingUp size={15} /> : <TrendingDown size={15} />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={cn(T.accent, "text-[14px] text-foreground truncate")}>{l.descricao || "Sem descrição"}</p>
+                    <p className={cn(T.body, "text-[12px] text-muted-foreground")}>
+                      {format(new Date(l.data_lancamento + "T00:00:00"), "dd/MM/yyyy")}
+                      {l.categoria && <span className="ml-2 px-1.5 py-0.5 rounded bg-muted text-[11px] uppercase tracking-wider">{l.categoria}</span>}
+                    </p>
+                  </div>
+                  <span className={cn(
+                    T.mono, "text-[14px] font-bold whitespace-nowrap",
+                    isReceita ? "text-success" : "text-destructive",
+                  )}>
+                    {isReceita ? "+" : "−"} {fmtBRL(Math.abs(Number(l.valor)))}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <EmptyHint icon={Activity} message="Nenhum lançamento ainda. Registre uma venda ou despesa para começar." />
+        )}
+      </Section>
+
     </div>
   );
 }
