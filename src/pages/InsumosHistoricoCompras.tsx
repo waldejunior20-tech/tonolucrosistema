@@ -83,7 +83,25 @@ export default function InsumosHistoricoCompras() {
   const [busca, setBusca] = useState(insumoFiltro);
   const [fornecedorFiltro, setFornecedorFiltro] = useState<string>("todos");
   const [destinoFiltro, setDestinoFiltro] = useState<string>("todos");
+  const [origemFiltro, setOrigemFiltro] = useState<string>("todos");
   const [periodo, setPeriodo] = useState<string>("30");
+
+  const { data: precosBloqueados30d = 0 } = useQuery({
+    queryKey: ["precos_bloqueados_30d", unidadeId],
+    enabled: !!unidadeId,
+    queryFn: async () => {
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - 30);
+      const { count, error } = await supabase
+        .from("auditoria_correcoes_precos")
+        .select("id", { count: "exact", head: true })
+        .eq("unidade_id", unidadeId!)
+        .eq("motivo", "preco_suspeito_bloqueado")
+        .gte("created_at", cutoff.toISOString());
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
 
   const { data: rows = [], isLoading } = useQuery({
     queryKey: ["insumos_historico_v2", unidadeId],
