@@ -13,7 +13,7 @@ import { InsumosCategoryTabs } from "@/components/insumos/InsumosCategoryTabs";
 import { InsumosSubTabs } from "@/components/insumos/InsumosSubTabs";
 import { EmptyState } from "@/components/EmptyState";
 import { SkeletonTable } from "@/components/SkeletonCard";
-import { useActiveUnidadeId } from "@/hooks/useActiveUnidade";
+import { useActiveUnidade } from "@/hooks/useActiveUnidade";
 
 type Row = {
   id: string;
