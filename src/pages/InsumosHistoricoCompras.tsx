@@ -130,6 +130,7 @@ export default function InsumosHistoricoCompras() {
       if (!inPeriodo(r.data_compra, periodo)) return false;
       if (fornecedorFiltro !== "todos" && r.fornecedor !== fornecedorFiltro) return false;
       if (destinoFiltro !== "todos" && r.destino !== destinoFiltro) return false;
+      if (origemFiltro !== "todos" && r.origem !== origemFiltro) return false;
       if (!q) return true;
       return (
         r.nome_original?.toLowerCase().includes(q) ||
