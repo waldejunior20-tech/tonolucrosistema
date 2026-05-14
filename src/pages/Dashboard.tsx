@@ -49,14 +49,18 @@ const T = {
 
 // ─── Building blocks ─────────────────────────────────────────────────
 function Bento({
-  className, children,
-}: { className?: string; children: React.ReactNode }) {
+  className, children, hero = false,
+}: { className?: string; children: React.ReactNode; hero?: boolean }) {
   return (
     <div
       className={cn(
-        "rounded-2xl border p-5 md:p-6 flex flex-col min-w-0",
+        "relative rounded-2xl border p-5 md:p-6 flex flex-col min-w-0 transition-all duration-200",
         C.card, C.border,
-        "shadow-[0_1px_2px_rgba(15,23,42,0.04),0_4px_16px_-4px_rgba(15,23,42,0.06)]",
+        hero
+          ? "shadow-[0_1px_0_rgba(255,255,255,0.8)_inset,0_2px_4px_rgba(15,23,42,0.04),0_12px_32px_-12px_rgba(15,23,42,0.12)]"
+          : "shadow-[0_1px_0_rgba(255,255,255,0.6)_inset,0_1px_2px_rgba(15,23,42,0.04),0_6px_20px_-8px_rgba(15,23,42,0.08)]",
+        "hover:shadow-[0_1px_0_rgba(255,255,255,0.8)_inset,0_2px_4px_rgba(15,23,42,0.05),0_14px_36px_-14px_rgba(15,23,42,0.14)]",
+        "before:absolute before:inset-x-6 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-white/90 before:to-transparent before:pointer-events-none",
         className,
       )}
     >
@@ -441,14 +445,14 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 md:gap-5">
 
         {/* ROW 1 — RADAR DE LUCRO (hero, col-span-7) */}
-        <Bento className="lg:col-span-7 relative overflow-hidden">
+        <Bento hero className="lg:col-span-7 relative overflow-hidden">
           <div
             aria-hidden
             className={cn(
-              "absolute inset-0 opacity-[0.55] pointer-events-none",
-              radarTone === "danger" && "bg-gradient-to-br from-[#FEF2F2] via-white to-white",
-              radarTone === "warning" && "bg-gradient-to-br from-[#FFFBEB] via-white to-white",
-              radarTone === "success" && "bg-gradient-to-br from-[#ECFDF5] via-white to-white",
+              "absolute inset-0 opacity-[0.7] pointer-events-none",
+              radarTone === "danger" && "bg-[radial-gradient(120%_80%_at_0%_0%,#FEF2F2_0%,transparent_55%),linear-gradient(135deg,#FFFFFF_0%,#F8FAFC_100%)]",
+              radarTone === "warning" && "bg-[radial-gradient(120%_80%_at_0%_0%,#FFFBEB_0%,transparent_55%),linear-gradient(135deg,#FFFFFF_0%,#F8FAFC_100%)]",
+              radarTone === "success" && "bg-[radial-gradient(120%_80%_at_0%_0%,#ECFDF5_0%,transparent_55%),linear-gradient(135deg,#FFFFFF_0%,#F8FAFC_100%)]",
             )}
           />
           <div className="relative flex flex-col h-full">
@@ -561,7 +565,7 @@ export default function Dashboard() {
         </Bento>
 
         {/* ROW 1 — STATUS FINANCEIRO (col-span-5) */}
-        <Bento className="lg:col-span-5">
+        <Bento hero className="lg:col-span-5">
           <CardHeader
             title="Status Financeiro"
             subtitle="Caixa do mês corrente."
@@ -636,7 +640,7 @@ export default function Dashboard() {
         {/* ROW 2 — PRONTOS PARA PROMOÇÃO (col-span-4) */}
         <Bento className="lg:col-span-4">
           <CardHeader
-            title="Prontos para Promoção"
+            title="Oportunidades de Promoção"
             subtitle="Produtos com margem segura para campanha."
             icon={Sparkles}
             tint="success"
@@ -698,8 +702,8 @@ export default function Dashboard() {
         {/* ROW 2 — PRODUTOS EM RISCO (col-span-4) */}
         <Bento className="lg:col-span-4">
           <CardHeader
-            title="Produtos em Risco"
-            subtitle="Não devem entrar em promoção sem revisão."
+            title="Produtos em Atenção"
+            subtitle="Revisar antes de incluir em promoções."
             icon={ShieldAlert}
             tint="danger"
           />
@@ -733,7 +737,7 @@ export default function Dashboard() {
                   <CheckCircle2 size={16} strokeWidth={2.4} />
                 </div>
                 <div className="min-w-0">
-                  <p className={cn(T.accent, "text-[14px]", C.text)}>Nenhum produto em risco</p>
+                  <p className={cn(T.accent, "text-[14px]", C.text)}>Nenhum produto crítico agora</p>
                   <p className={cn(T.body, "text-[12px]", C.muted)}>Margens saudáveis no momento.</p>
                 </div>
               </div>
