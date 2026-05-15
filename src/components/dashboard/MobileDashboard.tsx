@@ -182,30 +182,45 @@ export function MobileDashboard() {
   const notifCount = priceAlerts.length + perderamMargem.length + warnings.length;
 
   return (
-    <div className="page-enter -m-4 pb-6 bg-[#F8FAFC] min-h-[calc(100vh-4rem)]">
-      {/* HERO AZUL — saudação + sino */}
+    <div className="page-enter -m-4 pb-6 bg-[#F1F5F9] min-h-[calc(100vh-4rem)]">
+      {/* HERO AZUL — gradiente + saudação + caixa do mês gigante */}
       <div
-        className="px-5 pt-6 pb-8 mb-4 text-white"
+        className="relative px-5 pt-6 pb-20 text-white overflow-hidden"
         style={{
-          background: "linear-gradient(180deg, #2563EB 0%, #1D4ED8 100%)",
-          borderBottomLeftRadius: 28,
-          borderBottomRightRadius: 28,
+          background:
+            "radial-gradient(120% 80% at 100% 0%, #60A5FA 0%, transparent 55%)," +
+            "radial-gradient(100% 90% at 0% 100%, #1E3A8A 0%, transparent 60%)," +
+            "linear-gradient(135deg, #2563EB 0%, #1D4ED8 55%, #1E40AF 100%)",
+          borderBottomLeftRadius: 32,
+          borderBottomRightRadius: 32,
         }}
       >
-        <div className="flex items-start justify-between gap-3">
+        {/* Brilhos decorativos */}
+        <div
+          aria-hidden
+          className="absolute -top-16 -right-10 w-56 h-56 rounded-full opacity-30 blur-2xl"
+          style={{ background: "radial-gradient(circle, #93C5FD 0%, transparent 70%)" }}
+        />
+        <div
+          aria-hidden
+          className="absolute -bottom-10 -left-10 w-48 h-48 rounded-full opacity-20 blur-2xl"
+          style={{ background: "radial-gradient(circle, #BFDBFE 0%, transparent 70%)" }}
+        />
+
+        <div className="relative flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="text-[13px] font-medium text-white/80">{greeting()},</p>
-            <h1 className="font-heading text-[24px] font-bold leading-tight mt-0.5 truncate">
+            <h1 className="font-heading text-[22px] font-bold leading-tight mt-0.5 truncate">
               {userName || "Bem-vindo"}
             </h1>
             {businessName && (
-              <p className="text-[12px] text-white/70 mt-1 truncate">{businessName}</p>
+              <p className="text-[12px] text-white/70 mt-0.5 truncate">{businessName}</p>
             )}
           </div>
           <button
             onClick={() => navigate("/automacao/alertas")}
             aria-label="Notificações"
-            className="relative w-11 h-11 rounded-full bg-white/15 backdrop-blur flex items-center justify-center active:scale-95 transition-transform shrink-0"
+            className="relative w-11 h-11 rounded-full bg-white/15 backdrop-blur flex items-center justify-center active:scale-95 transition-transform shrink-0 ring-1 ring-white/20"
           >
             <Bell size={20} strokeWidth={2.2} />
             {notifCount > 0 && (
@@ -215,9 +230,42 @@ export function MobileDashboard() {
             )}
           </button>
         </div>
+
+        {/* Caixa do mês — número gigante dentro do hero */}
+        <div className="relative mt-6">
+          <div className="flex items-center gap-2 mb-1.5">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-white/70">
+              Caixa do mês
+            </p>
+            <span className={cn(
+              "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider backdrop-blur",
+              !hasFaturamento ? "bg-white/15 text-white/80" :
+              caixaNegativo ? "bg-[#DC2626]/90 text-white" :
+              "bg-[#10B981]/90 text-white",
+            )}>
+              <Wallet size={10} />{finanLabel}
+            </span>
+          </div>
+          <p className="font-mono text-[40px] font-bold leading-none tracking-tight text-white drop-shadow-sm">
+            {hasFaturamento ? fmtBRL(lucroMes) : "—"}
+          </p>
+          <div className="flex items-center gap-4 mt-3 text-[12px]">
+            <span className="inline-flex items-center gap-1 text-white/85">
+              <ArrowUpRight size={13} className="text-[#86EFAC]" />
+              <span className="font-mono font-semibold">{fmtBRL(faturamentoMes)}</span>
+              <span className="text-white/60">entrada</span>
+            </span>
+            <span className="inline-flex items-center gap-1 text-white/85">
+              <ArrowDownRight size={13} className="text-[#FCA5A5]" />
+              <span className="font-mono font-semibold">{fmtBRL(despesasMes)}</span>
+              <span className="text-white/60">saída</span>
+            </span>
+          </div>
+        </div>
       </div>
 
-      <div className="px-4">
+      {/* Card branco sobreposto — tira a sensação de esmagado */}
+      <div className="px-4 -mt-12 relative z-10">
 
       {/* HERO — Seu cardápio hoje */}
       <button
@@ -269,51 +317,23 @@ export function MobileDashboard() {
         </div>
       </button>
 
-      {/* CAIXA DO MÊS */}
+      {/* CAIXA DIÁRIO — atalho enxuto (números já estão no hero) */}
       <button
         onClick={() => navigate("/financeiro/caixa-diario")}
-        className="w-full text-left rounded-[22px] border border-[#E6EAF0] bg-white p-5 mb-4 active:scale-[0.99] transition-transform shadow-[0_1px_2px_rgba(15,23,42,0.04),0_12px_28px_-14px_rgba(15,23,42,0.12)]"
+        className="w-full text-left rounded-2xl border border-[#E6EAF0] bg-white p-4 mb-4 active:scale-[0.99] transition-transform shadow-sm flex items-center justify-between"
       >
-        <div className="flex items-start justify-between gap-3 mb-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center">
+            <Wallet size={18} strokeWidth={2.4} />
+          </div>
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-[#64748B] mb-1">
-              Caixa do mês
-            </p>
-            <p className={cn(
-              "font-mono font-bold leading-none tracking-tight text-[30px]",
-              caixaPositivo ? "text-[#059669]" : caixaNegativo ? "text-[#DC2626]" : "text-[#0F172A]",
-            )}>
-              {hasFaturamento ? fmtBRL(lucroMes) : "—"}
+            <p className="font-semibold text-[14px] text-[#0F172A] leading-tight">Caixa diário</p>
+            <p className="text-[11.5px] text-[#64748B] mt-0.5">
+              {caixaNegativo ? "Revise despesas hoje" : "Lançamentos e fechamentos"}
             </p>
           </div>
-          <Pill tone={finanTone}><Wallet size={11} />{finanLabel}</Pill>
         </div>
-
-        <div className="grid grid-cols-2 gap-2 mb-3">
-          <div className="rounded-xl bg-[#F8FAFC] border border-[#E6EAF0] p-3">
-            <div className="flex items-center gap-1 mb-1">
-              <ArrowUpRight size={12} className="text-[#059669]" />
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-[#64748B]">Entrada</p>
-            </div>
-            <p className="font-mono text-[15px] font-bold text-[#0F172A]">{fmtBRL(faturamentoMes)}</p>
-          </div>
-          <div className="rounded-xl bg-[#F8FAFC] border border-[#E6EAF0] p-3">
-            <div className="flex items-center gap-1 mb-1">
-              <ArrowDownRight size={12} className="text-[#DC2626]" />
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-[#64748B]">Saída</p>
-            </div>
-            <p className="font-mono text-[15px] font-bold text-[#0F172A]">{fmtBRL(despesasMes)}</p>
-          </div>
-        </div>
-
-        {caixaNegativo && (
-          <p className="text-[12px] text-[#991B1B] font-medium mb-2">Revise despesas hoje.</p>
-        )}
-
-        <div className="flex items-center justify-between text-[#2563EB] font-semibold text-[13px]">
-          <span>Ver caixa</span>
-          <ArrowRight size={15} />
-        </div>
+        <ArrowRight size={16} className="text-[#94A3B8]" />
       </button>
 
       {/* QUICK ACTIONS — 2x2 */}
