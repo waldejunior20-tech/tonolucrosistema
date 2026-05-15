@@ -175,7 +175,7 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
           )}
         >
           {isActive && !collapsed && (
-            <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full bg-sidebar-primary shadow-[0_0_10px_hsl(var(--sidebar-primary)/0.7)]" />
+            <div className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full bg-sidebar-primary" />
           )}
           <div className={cn("flex items-center w-full px-3 gap-3", collapsed ? "justify-center" : "")}>
             <div className="shrink-0">
