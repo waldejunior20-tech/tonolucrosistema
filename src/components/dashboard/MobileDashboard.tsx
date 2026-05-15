@@ -6,7 +6,7 @@ import { ptBR } from "date-fns/locale";
 import {
   ChefHat, ShieldCheck, AlertTriangle, ArrowRight, Plus, FileUp, Tag,
   TrendingUp, TrendingDown, Sparkles, CheckCircle2, ArrowUpRight, ArrowDownRight,
-  Wallet, Activity, Receipt, ShieldAlert,
+  Wallet, Activity, Receipt, ShieldAlert, Bell,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDashboardData } from "@/hooks/useDashboardData";
@@ -179,20 +179,45 @@ export function MobileDashboard() {
     });
   }
 
+  const notifCount = priceAlerts.length + perderamMargem.length + warnings.length;
+
   return (
-    <div className="page-enter -m-4 p-4 pb-6 bg-[#F8FAFC] min-h-[calc(100vh-4rem)]">
-      {/* Greeting block */}
-      <div className="mb-4">
-        <p className="text-[12px] font-semibold uppercase tracking-wider text-[#64748B]">
-          {greeting()}{userName ? `, ${userName}` : ""}
-        </p>
-        <h1 className="font-heading text-[22px] font-bold leading-tight text-[#0F172A] mt-0.5">
-          {businessName || "Seu negócio"}
-        </h1>
-        <p className="text-[13px] text-[#64748B] mt-1">
-          {format(new Date(), "EEEE, d 'de' MMMM", { locale: ptBR })}
-        </p>
+    <div className="page-enter -m-4 pb-6 bg-[#F8FAFC] min-h-[calc(100vh-4rem)]">
+      {/* HERO AZUL — saudação + sino */}
+      <div
+        className="px-5 pt-6 pb-8 mb-4 text-white"
+        style={{
+          background: "linear-gradient(180deg, #2563EB 0%, #1D4ED8 100%)",
+          borderBottomLeftRadius: 28,
+          borderBottomRightRadius: 28,
+        }}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[13px] font-medium text-white/80">{greeting()},</p>
+            <h1 className="font-heading text-[24px] font-bold leading-tight mt-0.5 truncate">
+              {userName || "Bem-vindo"}
+            </h1>
+            {businessName && (
+              <p className="text-[12px] text-white/70 mt-1 truncate">{businessName}</p>
+            )}
+          </div>
+          <button
+            onClick={() => navigate("/automacao/alertas")}
+            aria-label="Notificações"
+            className="relative w-11 h-11 rounded-full bg-white/15 backdrop-blur flex items-center justify-center active:scale-95 transition-transform shrink-0"
+          >
+            <Bell size={20} strokeWidth={2.2} />
+            {notifCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-[#DC2626] text-white text-[10px] font-bold flex items-center justify-center border-2 border-[#1D4ED8]">
+                {notifCount > 9 ? "9+" : notifCount}
+              </span>
+            )}
+          </button>
+        </div>
       </div>
+
+      <div className="px-4">
 
       {/* HERO — Seu cardápio hoje */}
       <button
@@ -376,6 +401,7 @@ export function MobileDashboard() {
             </div>
           </button>
         ))}
+      </div>
       </div>
     </div>
   );
