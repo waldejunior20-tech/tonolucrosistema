@@ -273,21 +273,9 @@ export default function InsumosHistoricoCompras() {
             {periodoLabel}
           </div>
           <div className="flex items-baseline gap-3 mt-1">
-            <div className="text-3xl sm:text-4xl font-bold tabular-nums text-primary-foreground leading-none">
+            <div className="text-3xl sm:text-4xl font-bold tabular-nums text-slate-950 leading-none">
               {formatMoney(totalPeriodo)}
             </div>
-            {variacaoPct !== null && Math.abs(variacaoPct) > 0.5 && (
-              <span
-                className={
-                  "text-xs font-semibold tabular-nums px-2 py-0.5 rounded-full " +
-                  (variacaoPct > 0
-                    ? "bg-rose-500/20 text-rose-100"
-                    : "bg-emerald-500/20 text-emerald-100")
-                }
-              >
-                {variacaoPct > 0 ? "↑" : "↓"} {Math.abs(variacaoPct).toFixed(1)}%
-              </span>
-            )}
           </div>
           <div className="text-xs text-primary-foreground/70 mt-1.5">
             {compras.length} {compras.length === 1 ? "compra" : "compras"} ·{" "}
