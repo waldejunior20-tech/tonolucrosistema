@@ -334,10 +334,11 @@ export function MobileDashboard() {
         type Insight = {
           key: string;
           tag: string;
-          tagColor: string;
+          tagBg: string;
+          tagFg: string;
           icon: any;
-          iconBg: string;
-          iconColor: string;
+          accent: string; // hex for left bar / glow
+          gradient: string; // bg gradient
           title: string;
           subtitle: string;
           metric?: string;
@@ -347,58 +348,82 @@ export function MobileDashboard() {
         };
         const insights: Insight[] = [];
 
-        // 1) Insumo que mais subiu
-        const topAlta = priceAlerts[0];
-        if (topAlta) {
-          insights.push({
-            key: "alta",
-            tag: "Alerta de preço",
-            tagColor: "bg-[#FEF2F2] text-[#DC2626]",
-            icon: TrendingUp,
-            iconBg: "bg-[#FEF2F2]",
-            iconColor: "text-[#DC2626]",
-            title: topAlta.nome,
-            subtitle: "Subiu nas últimas compras",
-            metric: `+${topAlta.variacaoPct.toFixed(1)}%`,
-            metricColor: "text-[#DC2626]",
-            cta: "Ver insumo",
-            onClick: () => navigate("/insumos/comprados"),
-          });
-        }
-
-        // 2) Pizza candidata a promoção (maior preço de venda como proxy)
-        const topPizza = [...fichasPizza]
+        // 1) Top pra promoção (até 3 pizzas com maior preço)
+        const topPromos = [...fichasPizza]
           .filter((f: any) => f.preco_venda_g || f.preco_venda_m || f.preco_venda_p)
           .sort((a: any, b: any) =>
             (b.preco_venda_g || b.preco_venda_m || b.preco_venda_p || 0) -
             (a.preco_venda_g || a.preco_venda_m || a.preco_venda_p || 0)
-          )[0] as any;
-        if (topPizza) {
+          )
+          .slice(0, 3) as any[];
+        topPromos.forEach((p, i) => {
           insights.push({
-            key: "promo",
-            tag: "Top pra promoção",
-            tagColor: "bg-[#ECFDF5] text-[#059669]",
+            key: `promo-${p.id}`,
+            tag: i === 0 ? "Top promoção" : "Boa pra promo",
+            tagBg: "bg-[#ECFDF5]",
+            tagFg: "text-[#059669]",
             icon: Sparkles,
-            iconBg: "bg-[#ECFDF5]",
-            iconColor: "text-[#059669]",
-            title: topPizza.nome,
-            subtitle: "Boa margem para promo",
-            metric: fmtBRL(topPizza.preco_venda_g || topPizza.preco_venda_m || topPizza.preco_venda_p),
+            accent: "#10B981",
+            gradient: "linear-gradient(135deg, #ffffff 0%, #F0FDF4 100%)",
+            title: p.nome,
+            subtitle: "Margem favorável agora",
+            metric: fmtBRL(p.preco_venda_g || p.preco_venda_m || p.preco_venda_p),
             metricColor: "text-[#0F172A]",
             cta: "Criar promoção",
             onClick: () => navigate("/promocoes"),
           });
+        });
+
+        // 2) Contas a vencer em 7 dias — agregado com nomes + total
+        if (contasVencendo && contasVencendo.length > 0) {
+          const total = contasVencendo.reduce((s: number, c: any) => s + Number(c.valor || 0), 0);
+          const nomes = contasVencendo.slice(0, 2).map((c: any) => c.descricao).filter(Boolean).join(" • ");
+          insights.push({
+            key: "vencer",
+            tag: "Vence em 7 dias",
+            tagBg: "bg-[#FFFBEB]",
+            tagFg: "text-[#D97706]",
+            icon: Receipt,
+            accent: "#F59E0B",
+            gradient: "linear-gradient(135deg, #ffffff 0%, #FFFBEB 100%)",
+            title: `${contasVencendo.length} ${contasVencendo.length === 1 ? "conta" : "contas"} a pagar`,
+            subtitle: nomes || "Despesas próximas do vencimento",
+            metric: fmtBRL(total),
+            metricColor: "text-[#D97706]",
+            cta: "Ver contas",
+            onClick: () => navigate("/financeiro/contas-pagar"),
+          });
         }
 
-        // 3) Última compra registrada
+        // 3) Produtos que subiram o preço — um card por alerta (até 4)
+        priceAlerts.slice(0, 4).forEach((p) => {
+          insights.push({
+            key: `alta-${p.nome}`,
+            tag: "Subiu de preço",
+            tagBg: "bg-[#FEF2F2]",
+            tagFg: "text-[#DC2626]",
+            icon: TrendingUp,
+            accent: "#DC2626",
+            gradient: "linear-gradient(135deg, #ffffff 0%, #FEF2F2 100%)",
+            title: p.nome,
+            subtitle: `De ${fmtBRL(p.precoAnterior)} para ${fmtBRL(p.precoAtual)}`,
+            metric: `+${p.variacaoPct.toFixed(1)}%`,
+            metricColor: "text-[#DC2626]",
+            cta: "Ver insumo",
+            onClick: () => navigate("/insumos/comprados"),
+          });
+        });
+
+        // 4) Última compra (sempre por último)
         if (ultimaCompra) {
           insights.push({
             key: "ultima",
             tag: "Última compra",
-            tagColor: "bg-[#EFF6FF] text-[#2563EB]",
+            tagBg: "bg-[#EFF6FF]",
+            tagFg: "text-[#2563EB]",
             icon: Receipt,
-            iconBg: "bg-[#EFF6FF]",
-            iconColor: "text-[#2563EB]",
+            accent: "#2563EB",
+            gradient: "linear-gradient(135deg, #ffffff 0%, #EFF6FF 100%)",
             title: ultimaCompra.nome,
             subtitle: ultimaCompra.fornecedor || (ultimaCompra.data_compra ? format(new Date(ultimaCompra.data_compra), "dd/MM/yyyy") : "Recente"),
             metric: ultimaCompra.preco_pago != null ? fmtBRL(Number(ultimaCompra.preco_pago)) : undefined,
@@ -408,15 +433,16 @@ export function MobileDashboard() {
           });
         }
 
-        // Fallback: cardápio status
+        // Fallback
         if (insights.length === 0) {
           insights.push({
             key: "ok",
             tag: "Tudo certo",
-            tagColor: "bg-[#ECFDF5] text-[#059669]",
+            tagBg: "bg-[#ECFDF5]",
+            tagFg: "text-[#059669]",
             icon: ShieldCheck,
-            iconBg: "bg-[#ECFDF5]",
-            iconColor: "text-[#059669]",
+            accent: "#10B981",
+            gradient: "linear-gradient(135deg, #ffffff 0%, #F0FDF4 100%)",
             title: "Cardápio protegido",
             subtitle: "Nenhum alerta agora",
             cta: "Ver Radar de Lucro",
@@ -426,39 +452,55 @@ export function MobileDashboard() {
 
         return (
           <div className="mb-4 -mx-4">
-            <div className="flex items-center justify-between px-5 mb-2">
+            <div className="flex items-center justify-between px-5 mb-2.5">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">
-                Insights de hoje
+                Para você agora
               </p>
               <span className="text-[10.5px] text-[#94A3B8] font-medium">deslize →</span>
             </div>
-            <div className="flex gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 px-4 [&::-webkit-scrollbar]:hidden">
+            <div
+              className="flex gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-3 [&::-webkit-scrollbar]:hidden"
+              style={{ paddingLeft: 16, paddingRight: 16, scrollPaddingLeft: 16 }}
+            >
               {insights.map((it) => {
                 const Icon = it.icon;
                 return (
                   <button
                     key={it.key}
                     onClick={it.onClick}
-                    className="snap-start shrink-0 w-[78%] text-left rounded-2xl border border-[#E6EAF0] bg-white p-4 active:scale-[0.99] transition-transform shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_20px_-12px_rgba(15,23,42,0.12)]"
+                    className="snap-start shrink-0 w-[82%] text-left rounded-2xl border border-[#E6EAF0] p-4 active:scale-[0.99] transition-transform shadow-[0_1px_2px_rgba(15,23,42,0.04),0_10px_24px_-14px_rgba(15,23,42,0.18)] relative overflow-hidden"
+                    style={{ background: it.gradient }}
                   >
-                    <div className="flex items-start justify-between gap-2 mb-3">
-                      <span className={cn("inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider", it.tagColor)}>
+                    {/* accent bar */}
+                    <span
+                      aria-hidden
+                      className="absolute left-0 top-4 bottom-4 w-1 rounded-r-full"
+                      style={{ background: it.accent }}
+                    />
+                    {/* glow */}
+                    <span
+                      aria-hidden
+                      className="absolute -bottom-10 -right-10 w-32 h-32 rounded-full opacity-20 blur-2xl pointer-events-none"
+                      style={{ background: it.accent }}
+                    />
+                    <div className="relative flex items-start justify-between gap-2 mb-3">
+                      <span className={cn("inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider", it.tagBg, it.tagFg)}>
                         {it.tag}
                       </span>
-                      <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shrink-0", it.iconBg)}>
-                        <Icon size={17} className={it.iconColor} strokeWidth={2.4} />
+                      <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shrink-0", it.tagBg)}>
+                        <Icon size={17} className={it.tagFg} strokeWidth={2.4} />
                       </div>
                     </div>
-                    <h3 className="font-heading text-[15.5px] font-bold text-[#0F172A] leading-tight line-clamp-1">
+                    <h3 className="relative font-heading text-[15.5px] font-bold text-[#0F172A] leading-tight line-clamp-1">
                       {it.title}
                     </h3>
-                    <p className="text-[11.5px] text-[#64748B] mt-0.5 line-clamp-1">{it.subtitle}</p>
+                    <p className="relative text-[11.5px] text-[#64748B] mt-0.5 line-clamp-1">{it.subtitle}</p>
                     {it.metric && (
-                      <p className={cn("font-mono text-[20px] font-bold leading-none mt-3", it.metricColor)}>
+                      <p className={cn("relative font-mono text-[22px] font-bold leading-none mt-3", it.metricColor)}>
                         {it.metric}
                       </p>
                     )}
-                    <div className="flex items-center gap-1 text-[#2563EB] font-semibold text-[12px] mt-3">
+                    <div className="relative flex items-center gap-1 text-[#2563EB] font-semibold text-[12px] mt-3">
                       <span>{it.cta}</span>
                       <ArrowRight size={13} />
                     </div>
