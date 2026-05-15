@@ -467,23 +467,24 @@ export default function Dashboard() {
         <OnboardingChecklist />
       </div>
 
-      {/* Quick Actions bar */}
-      <div className="flex flex-wrap items-center gap-2.5 mb-6 p-4 rounded-2xl bg-white border border-[#E2E8F0]">
-        <span className={cn(T.label, C.muted, "mr-1 flex items-center gap-1.5")}>
-          <Zap size={13} /> Ações Rápidas
+      {/* Quick Actions bar — 1 primary, demais secundárias */}
+      <div className="flex flex-wrap items-center gap-2 mb-8 p-3 rounded-2xl bg-white border border-[#E2E8F0]">
+        <span className={cn(T.label, C.muted, "mr-2 pl-2 flex items-center gap-1.5 shrink-0")}>
+          <Zap size={13} /> Atalhos
         </span>
         <CTA variant="primary" icon={Plus} onClick={() => navigate("/financeiro/caixa-diario")}>Registrar Venda</CTA>
+        <div className="w-px h-6 bg-[#E2E8F0] mx-1" />
+        <CTA variant="ghost" icon={Sparkles} onClick={() => navigate("/promocoes")}>Criar Promoção</CTA>
+        <CTA variant="ghost" icon={FileUp} onClick={() => navigate("/insumos/comprados")}>Importar Nota</CTA>
         <CTA variant="ghost" icon={ChefHat} onClick={() => navigate("/fichas/pizzas")}>Nova Ficha</CTA>
         <CTA variant="ghost" icon={Tag} onClick={() => navigate("/precificacao/pizzas")}>Atualizar Preço</CTA>
-        <CTA variant="ghost" icon={Sparkles} onClick={() => navigate("/promocoes")}>Criar Promoção</CTA>
-        <CTA variant="ghost" icon={FileUp} onClick={() => navigate("/insumos/comprados")}>Importar Nota Fiscal</CTA>
       </div>
 
       {/* ─── BENTO GRID ───────────────────────────────────────── */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 md:gap-5">
 
-        {/* ROW 1 — RADAR DE LUCRO (hero, col-span-7) */}
-        <Bento hero className="lg:col-span-7 relative overflow-hidden">
+        {/* ROW 1 — RADAR DE LUCRO (hero principal, col-span-8) */}
+        <Bento hero className="lg:col-span-8 relative overflow-hidden">
           {/* Aurora layer — blue/violet/green, very low opacity */}
           <div
             aria-hidden
@@ -624,8 +625,8 @@ export default function Dashboard() {
           </div>
         </Bento>
 
-        {/* ROW 1 — STATUS FINANCEIRO (col-span-5) */}
-        <Bento hero className="lg:col-span-5">
+        {/* ROW 1 — STATUS FINANCEIRO (col-span-4, mais enxuto) */}
+        <Bento hero className="lg:col-span-4">
           <CardHeader
             title="Status Financeiro"
             subtitle="Caixa do mês corrente."
