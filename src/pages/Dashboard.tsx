@@ -424,6 +424,8 @@ export default function Dashboard() {
     });
   }
 
+  if (isMobile) return <MobileDashboard />;
+
   return (
     <div className={cn("page-enter relative -m-4 md:-m-6 lg:-m-8 p-4 md:p-6 lg:p-8 pb-12 min-h-[calc(100vh-4rem)] overflow-hidden", C.bg)}>
       {/* Page-level aurora wash — extremely subtle */}
