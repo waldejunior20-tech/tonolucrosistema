@@ -100,6 +100,19 @@ export function MobileDashboard() {
     },
   });
 
+  // Última compra registrada
+  const { data: ultimaCompra } = useQuery({
+    queryKey: ["dashboard-ultima-compra"],
+    queryFn: async () => {
+      const { data } = await supabase.from("insumos_comprados")
+        .select("nome, preco_pago, fornecedor, data_compra")
+        .order("data_compra", { ascending: false, nullsFirst: false })
+        .limit(1)
+        .maybeSingle();
+      return data;
+    },
+  });
+
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) return;
