@@ -31,15 +31,6 @@ export function SaldoHero({ totalGanho, totalGasto, totalTaxas, totalLiquido, qt
         className="absolute -bottom-20 -left-10 w-64 h-64 rounded-full pointer-events-none"
         style={{ background: "radial-gradient(circle, #BFDBFE 0%, transparent 70%)", opacity: 0.3 }}
       />
-      {/* Grid pattern */}
-      <div
-        className="absolute inset-0 opacity-[0.06] pointer-events-none"
-        style={{
-          backgroundImage:
-            "linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)",
-          backgroundSize: "32px 32px",
-        }}
-      />
 
       <div className="relative">
         {/* Header row */}
