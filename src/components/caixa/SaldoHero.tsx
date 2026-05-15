@@ -13,17 +13,19 @@ type Props = {
 
 export function SaldoHero({ totalGanho, totalGasto, totalTaxas, totalLiquido, qtdVendas, periodoLabel }: Props) {
   return (
-    <div className="relative overflow-hidden rounded-3xl p-6 sm:p-8 text-white shadow-xl"
-         style={{
-           background:
-             "linear-gradient(135deg, hsl(221 83% 18%) 0%, hsl(221 83% 32%) 45%, hsl(217 91% 50%) 100%)",
-         }}>
+    <div
+      className="relative overflow-hidden rounded-3xl p-5 sm:p-7 text-white shadow-xl"
+      style={{
+        background:
+          "linear-gradient(180deg, #2563EB 0%, #1D4ED8 100%)",
+      }}
+    >
       {/* Glow orbs */}
       <div className="absolute -top-20 -right-16 w-64 h-64 rounded-full bg-white/10 blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-24 -left-10 w-72 h-72 rounded-full bg-cyan-400/20 blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-24 -left-10 w-72 h-72 rounded-full bg-cyan-400/15 blur-3xl pointer-events-none" />
       {/* Grid pattern */}
       <div
-        className="absolute inset-0 opacity-[0.07] pointer-events-none"
+        className="absolute inset-0 opacity-[0.06] pointer-events-none"
         style={{
           backgroundImage:
             "linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)",
@@ -32,23 +34,28 @@ export function SaldoHero({ totalGanho, totalGasto, totalTaxas, totalLiquido, qt
       />
 
       <div className="relative">
-        <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.2em] font-semibold text-white/70">
-          <span>Saldo do período</span>
-          <span className="px-2.5 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 normal-case tracking-normal">
+        {/* Header row */}
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-[10px] uppercase tracking-[0.18em] font-semibold text-white/75">
+            Saldo do período
+          </span>
+          <span className="px-2.5 py-1 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 text-[11px] font-medium text-white/95 whitespace-nowrap">
             {periodoLabel}
           </span>
         </div>
 
-        <div className="mt-4">
-          <p className="text-[42px] sm:text-[56px] font-extrabold tabular-nums leading-none tracking-tight">
+        {/* Balance */}
+        <div className="mt-4 text-center">
+          <p className="font-extrabold tabular-nums leading-none tracking-tight whitespace-nowrap text-[clamp(28px,9vw,52px)]">
             {formatMoney(totalLiquido)}
           </p>
-          <p className="mt-2 text-xs text-white/70">
+          <p className="mt-2 text-[11px] text-white/70">
             {qtdVendas} venda{qtdVendas !== 1 ? "s" : ""} · líquido após taxas
           </p>
         </div>
 
-        <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-3">
+        {/* Stats grid */}
+        <div className="mt-5 grid grid-cols-3 gap-2">
           <Stat icon={TrendingUp} label="Entrou" value={totalGanho} tone="up" />
           <Stat icon={Receipt} label="Taxas" value={totalTaxas} tone="warn" />
           <Stat icon={TrendingDown} label="Saiu" value={totalGasto} tone="down" />
@@ -69,14 +76,23 @@ function Stat({
   value: number;
   tone: "up" | "down" | "warn";
 }) {
-  const ring = tone === "up" ? "text-emerald-300" : tone === "down" ? "text-rose-300" : "text-amber-300";
+  const labelColor =
+    tone === "up" ? "text-emerald-200" : tone === "down" ? "text-rose-200" : "text-amber-200";
   return (
-    <div className="rounded-xl bg-white/10 backdrop-blur-sm border border-white/15 p-3">
-      <div className={cn("flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-semibold", ring)}>
-        <Icon size={12} />
-        {label}
+    <div
+      className="rounded-xl border border-white/15 px-2 py-2.5 flex flex-col items-center text-center"
+      style={{
+        background:
+          "linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.06) 100%)",
+      }}
+    >
+      <div className={cn("flex items-center gap-1 text-[9px] uppercase tracking-wider font-semibold", labelColor)}>
+        <Icon size={11} />
+        <span>{label}</span>
       </div>
-      <p className="mt-1 text-sm sm:text-base font-bold tabular-nums">{formatMoney(value)}</p>
+      <p className="mt-1.5 font-bold tabular-nums leading-none whitespace-nowrap text-[clamp(11px,3.4vw,15px)]">
+        {formatMoney(value)}
+      </p>
     </div>
   );
 }
