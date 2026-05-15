@@ -14,9 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
-        heading: ["Plus Jakarta Sans", "Inter", "system-ui", "sans-serif"],
-        display: ["Plus Jakarta Sans", "Inter", "system-ui", "sans-serif"],
+        sans: ["Mulish", "system-ui", "sans-serif"],
+        heading: ["Mulish", "Mulish", "system-ui", "sans-serif"],
+        display: ["Mulish", "Mulish", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "ui-monospace", "monospace"],
       },
       colors: {
