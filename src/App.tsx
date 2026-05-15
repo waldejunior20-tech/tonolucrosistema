@@ -40,6 +40,7 @@ import AutomacaoHistoricoPrecos from "@/pages/AutomacaoHistoricoPrecos";
 import AutomacaoFichasWarnings from "@/pages/AutomacaoFichasWarnings";
 import AutomacaoSaude from "@/pages/AutomacaoSaude";
 import NotFound from "./pages/NotFound.tsx";
+import FichaPizzaEditorMock from "@/pages/FichaPizzaEditorMock";
 
 const queryClient = new QueryClient();
 
@@ -97,6 +98,7 @@ function AppRoutes() {
       <Route path="/signup" element={<Navigate to="/" replace />} />
       <Route path="/onboarding" element={<Navigate to="/" replace />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/fichas/pizza/editor-mock" element={<FichaPizzaEditorMock />} />
       <Route element={<AppLayout />}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/insumos/comprados" element={<InsumosComprados />} />
