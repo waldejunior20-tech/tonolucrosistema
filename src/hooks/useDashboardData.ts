@@ -78,21 +78,21 @@ export function useDashboardData() {
     },
   });
 
-  // Contas a pagar vencendo (próximos 3 dias)
+  // Contas a pagar vencendo (próximos 7 dias)
   const { data: contasVencendo = [] } = useQuery({
-    queryKey: ["dashboard-contas-vencendo"],
+    queryKey: ["dashboard-contas-vencendo-7d"],
     queryFn: async () => {
       const hoje = format(now, "yyyy-MM-dd");
-      const em3dias = format(new Date(now.getTime() + 3 * 86400000), "yyyy-MM-dd");
+      const em7dias = format(new Date(now.getTime() + 7 * 86400000), "yyyy-MM-dd");
       const { data } = await supabase
         .from("lancamentos_financeiros")
         .select("descricao, valor, data_lancamento")
         .eq("tipo", "despesa")
         .eq("pago", false)
-        .lte("data_lancamento", em3dias)
+        .lte("data_lancamento", em7dias)
         .gte("data_lancamento", hoje)
         .order("data_lancamento")
-        .limit(5);
+        .limit(10);
       return data ?? [];
     },
   });

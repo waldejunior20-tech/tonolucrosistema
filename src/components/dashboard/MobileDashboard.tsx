@@ -374,46 +374,64 @@ export function MobileDashboard() {
           });
         });
 
-        // 2) Contas a vencer em 7 dias — agregado com nomes + total
-        if (contasVencendo && contasVencendo.length > 0) {
-          const total = contasVencendo.reduce((s: number, c: any) => s + Number(c.valor || 0), 0);
-          const nomes = contasVencendo.slice(0, 2).map((c: any) => c.descricao).filter(Boolean).join(" • ");
-          insights.push({
-            key: "vencer",
-            tag: "Vence em 7 dias",
-            tagBg: "bg-[#FFFBEB]",
-            tagFg: "text-[#D97706]",
-            icon: Receipt,
-            accent: "#F59E0B",
-            gradient: "linear-gradient(135deg, #ffffff 0%, #FFFBEB 100%)",
-            title: `${contasVencendo.length} ${contasVencendo.length === 1 ? "conta" : "contas"} a pagar`,
-            subtitle: nomes || "Despesas próximas do vencimento",
-            metric: fmtBRL(total),
-            metricColor: "text-[#D97706]",
-            cta: "Ver contas",
-            onClick: () => navigate("/financeiro/contas-pagar"),
-          });
-        }
+        // 2) Contas a vencer nos próximos 7 dias — sempre aparece
+        {
+          const hojeStr = format(new Date(), "yyyy-MM-dd");
+          const lista = (contasVencendo ?? []) as any[];
+          const venceHoje = lista.filter((c) => c.data_lancamento === hojeStr);
+          const temVenceHoje = venceHoje.length > 0;
 
-        // 3) Contas a pagar nos últimos 7 dias
-        if (contasPagar7Dias && contasPagar7Dias.length > 0) {
-          const total = contasPagar7Dias.reduce((s: number, c: any) => s + Number(c.valor || 0), 0);
-          const nomes = contasPagar7Dias.slice(0, 2).map((c: any) => c.descricao).filter(Boolean).join(" • ");
-          insights.push({
-            key: "pagar-7d",
-            tag: "A pagar",
-            tagBg: "bg-[#FEF2F2]",
-            tagFg: "text-[#DC2626]",
-            icon: Receipt,
-            accent: "#DC2626",
-            gradient: "linear-gradient(135deg, #ffffff 0%, #FEF2F2 100%)",
-            title: `${contasPagar7Dias.length} ${contasPagar7Dias.length === 1 ? "conta" : "contas"} a pagar`,
-            subtitle: nomes || "Despesas pendentes nos últimos 7 dias",
-            metric: fmtBRL(total),
-            metricColor: "text-[#DC2626]",
-            cta: "Quitar agora",
-            onClick: () => navigate("/financeiro/contas-pagar"),
-          });
+          if (lista.length === 0) {
+            insights.push({
+              key: "vencer-vazio",
+              tag: "Próximos 7 dias",
+              tagBg: "bg-[#ECFDF5]",
+              tagFg: "text-[#059669]",
+              icon: CheckCircle2,
+              accent: "#10B981",
+              gradient: "linear-gradient(135deg, #ffffff 0%, #ECFDF5 100%)",
+              title: "Nada a pagar",
+              subtitle: "Não temos nada a pagar nos próximos 7 dias",
+              cta: "Ver financeiro",
+              onClick: () => navigate("/financeiro/contas-pagar"),
+            });
+          } else if (temVenceHoje) {
+            const total = venceHoje.reduce((s: number, c: any) => s + Number(c.valor || 0), 0);
+            const nomes = venceHoje.slice(0, 2).map((c: any) => c.descricao).filter(Boolean).join(" • ");
+            insights.push({
+              key: "vence-hoje",
+              tag: "Vence hoje",
+              tagBg: "bg-[#FEF2F2]",
+              tagFg: "text-[#DC2626]",
+              icon: AlertTriangle,
+              accent: "#DC2626",
+              gradient: "linear-gradient(135deg, #ffffff 0%, #FEE2E2 100%)",
+              title: `${venceHoje.length} ${venceHoje.length === 1 ? "conta vence" : "contas vencem"} hoje`,
+              subtitle: nomes || "Quite hoje para evitar juros",
+              metric: fmtBRL(total),
+              metricColor: "text-[#DC2626]",
+              cta: "Quitar agora",
+              onClick: () => navigate("/financeiro/contas-pagar"),
+            });
+          } else {
+            const total = lista.reduce((s: number, c: any) => s + Number(c.valor || 0), 0);
+            const nomes = lista.slice(0, 2).map((c: any) => c.descricao).filter(Boolean).join(" • ");
+            insights.push({
+              key: "vencer",
+              tag: "Vence em 7 dias",
+              tagBg: "bg-[#FFFBEB]",
+              tagFg: "text-[#D97706]",
+              icon: Receipt,
+              accent: "#F59E0B",
+              gradient: "linear-gradient(135deg, #ffffff 0%, #FFFBEB 100%)",
+              title: `${lista.length} ${lista.length === 1 ? "conta a pagar" : "contas a pagar"}`,
+              subtitle: nomes || "Despesas próximas do vencimento",
+              metric: fmtBRL(total),
+              metricColor: "text-[#D97706]",
+              cta: "Ver contas",
+              onClick: () => navigate("/financeiro/contas-pagar"),
+            });
+          }
         }
 
         // 4) Produtos que subiram o preço — um card por alerta (até 4)
