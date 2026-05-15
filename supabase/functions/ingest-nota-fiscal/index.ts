@@ -209,7 +209,7 @@ Deno.serve(async (req) => {
     itensNorm.reduce((s, i) => s + i.preco_total, 0);
 
   // 1. documento_hash
-  const documento_hash = payload.documento_hash ?? calcularDocumentoHash({
+  const documento_hash = payload.documento_hash ?? await calcularDocumentoHash({
     user_id, unidade_id, fornecedor, data: dataCompra, valor_total,
     itens: itensNorm.map((i) => ({
       nome: i.nome, quantidade: i.quantidade, unidade: i.unidade, preco_total: i.preco_total,
