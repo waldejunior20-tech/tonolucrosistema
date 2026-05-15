@@ -109,14 +109,14 @@ function normalizeWhatsapp(raw: string): string {
   return raw.replace(/\D/g, "");
 }
 
-function calcularDocumentoHash(p: {
+async function calcularDocumentoHash(p: {
   user_id: string;
   unidade_id: string;
   fornecedor: string | null;
   data: string;
   valor_total: number;
   itens: Array<{ nome: string; quantidade: number; unidade: string; preco_total: number }>;
-}): string {
+}): Promise<string> {
   const itensNorm = [...p.itens]
     .map((i) => `${i.nome.toLowerCase().trim()}|${i.quantidade}|${i.unidade.toLowerCase()}|${i.preco_total.toFixed(2)}`)
     .sort()
@@ -128,7 +128,7 @@ function calcularDocumentoHash(p: {
     p.valor_total.toFixed(2),
     itensNorm,
   ].join("::");
-  return createHash("sha256").update(base).toString();
+  return await sha256Hex(base);
 }
 
 Deno.serve(async (req) => {
