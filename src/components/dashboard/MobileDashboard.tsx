@@ -53,6 +53,18 @@ export function MobileDashboard() {
   const navigate = useNavigate();
   const [userName, setUserName] = useState("");
   const [businessName, setBusinessName] = useState("");
+  const [showSaldo, setShowSaldo] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return localStorage.getItem("dashboard-show-saldo") !== "0";
+  });
+  const toggleSaldo = () => {
+    setShowSaldo((v) => {
+      const next = !v;
+      try { localStorage.setItem("dashboard-show-saldo", next ? "1" : "0"); } catch {}
+      return next;
+    });
+  };
+  const mask = "R$ ••••••";
 
   const { faturamentoMes, despesasMes } = useDashboardData();
   const { data: priceAlerts = [] } = usePriceAlerts();
