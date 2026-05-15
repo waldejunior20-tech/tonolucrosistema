@@ -369,42 +369,49 @@ export default function FinanceiroContasPagar() {
       </PageHeader>
 
       {/* Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-        <Card>
-          <CardContent className="pt-7 pb-6">
-            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Total a Pagar</p>
-            <p className={`text-2xl font-extrabold ${cards.totalAPagar > 0 ? "text-destructive" : "text-foreground"}`}>
-              {fmt(cards.totalAPagar)}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-7 pb-6">
-            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Pago no Mês</p>
-            <p className="text-2xl font-extrabold text-success">{fmt(cards.totalPagoMes)}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-7 pb-6">
-            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Atrasadas</p>
-            <p className="text-2xl font-extrabold text-foreground flex items-center gap-2">
-              {cards.atrasadas}
-              {cards.atrasadas > 0 && <AlertTriangle className="h-5 w-5 text-destructive" />}
-            </p>
-            {cards.totalAtrasado > 0 && (
-              <p className="text-xs text-destructive mt-1">{fmt(cards.totalAtrasado)}</p>
-            )}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-7 pb-6">
-            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Vencem em 7 dias</p>
-            <p className="text-2xl font-extrabold text-foreground flex items-center gap-2">
-              {cards.vence7d}
-              {cards.vence7d > 0 && <Clock className="h-5 w-5 text-warning" />}
-            </p>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+        {[
+          {
+            label: "Total a Pagar",
+            value: fmt(cards.totalAPagar),
+          },
+          {
+            label: "Pago no Mês",
+            value: fmt(cards.totalPagoMes),
+          },
+          {
+            label: "Atrasadas",
+            value: String(cards.atrasadas),
+            icon: cards.atrasadas > 0 ? <AlertTriangle className="h-5 w-5 text-amber-300" /> : null,
+            sub: cards.totalAtrasado > 0 ? fmt(cards.totalAtrasado) : null,
+          },
+          {
+            label: "Vencem em 7 dias",
+            value: String(cards.vence7d),
+            icon: cards.vence7d > 0 ? <Clock className="h-5 w-5 text-amber-300" /> : null,
+          },
+        ].map((c, i) => (
+          <div
+            key={i}
+            className="relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary via-primary to-primary/80 p-4 shadow-lg text-primary-foreground fade-up"
+          >
+            <div className="absolute -top-10 -right-10 h-28 w-28 rounded-full bg-white/10 blur-2xl pointer-events-none" />
+            <div className="relative">
+              <p className="text-[10px] sm:text-[11px] uppercase tracking-wider text-primary-foreground/70 font-semibold mb-2">
+                {c.label}
+              </p>
+              <div className="flex items-center gap-2">
+                <div className="text-[22px] sm:text-[26px] tabular-nums leading-none num-depth-light">
+                  {c.value}
+                </div>
+                {c.icon}
+              </div>
+              {c.sub && (
+                <p className="text-[11px] text-primary-foreground/80 mt-1.5 tabular-nums">{c.sub}</p>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Filters */}
