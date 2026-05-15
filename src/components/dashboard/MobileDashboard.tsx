@@ -6,7 +6,7 @@ import { ptBR } from "date-fns/locale";
 import {
   ChefHat, ShieldCheck, AlertTriangle, ArrowRight, Plus, FileUp, Tag,
   TrendingUp, TrendingDown, Sparkles, CheckCircle2, ArrowUpRight, ArrowDownRight,
-  Wallet, Activity, Receipt, ShieldAlert,
+  Wallet, Activity, Receipt, ShieldAlert, Bell,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDashboardData } from "@/hooks/useDashboardData";
