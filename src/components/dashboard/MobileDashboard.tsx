@@ -287,7 +287,7 @@ export function MobileDashboard() {
                       </div>
                       <span className="text-[12.5px] font-semibold text-white">Entrada</span>
                     </div>
-                    <span className="font-mono text-[13px] font-bold text-white">{fmtBRL(faturamentoMes)}</span>
+                    <span className="font-mono text-[13px] font-bold text-white">{showSaldo ? fmtBRL(faturamentoMes) : "•••••"}</span>
                   </div>
                   <div className="h-1.5 rounded-full bg-white/15 overflow-hidden">
                     <div className="h-full rounded-full transition-all duration-500" style={{ width: `${entradaPct}%`, background: "linear-gradient(90deg, #34D399 0%, #10B981 100%)" }} />
@@ -301,7 +301,7 @@ export function MobileDashboard() {
                       </div>
                       <span className="text-[12.5px] font-semibold text-white">Saída</span>
                     </div>
-                    <span className="font-mono text-[13px] font-bold text-white">{fmtBRL(despesasMes)}</span>
+                    <span className="font-mono text-[13px] font-bold text-white">{showSaldo ? fmtBRL(despesasMes) : "•••••"}</span>
                   </div>
                   <div className="h-1.5 rounded-full bg-white/15 overflow-hidden">
                     <div className="h-full rounded-full transition-all duration-500" style={{ width: `${saidaPct}%`, background: "linear-gradient(90deg, #FB923C 0%, #EF4444 100%)" }} />
