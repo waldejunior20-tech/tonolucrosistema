@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useMemo } from "react";
-import { startOfMonth, endOfMonth, subMonths, format } from "date-fns";
+import { startOfMonth, endOfMonth, subMonths, subDays, format } from "date-fns";
 
 export function useDashboardData() {
   const now = new Date();
@@ -91,6 +91,25 @@ export function useDashboardData() {
         .eq("pago", false)
         .lte("data_lancamento", em3dias)
         .gte("data_lancamento", hoje)
+        .order("data_lancamento")
+        .limit(5);
+      return data ?? [];
+    },
+  });
+
+  // Contas a pagar nos últimos 7 dias (despesas não pagas)
+  const { data: contasPagar7Dias = [] } = useQuery({
+    queryKey: ["dashboard-contas-pagar-7dias"],
+    queryFn: async () => {
+      const hoje = format(now, "yyyy-MM-dd");
+      const ha7dias = format(subDays(now, 6), "yyyy-MM-dd");
+      const { data } = await supabase
+        .from("lancamentos_financeiros")
+        .select("descricao, valor, data_lancamento")
+        .eq("tipo", "despesa")
+        .eq("pago", false)
+        .gte("data_lancamento", ha7dias)
+        .lte("data_lancamento", hoje)
         .order("data_lancamento")
         .limit(5);
       return data ?? [];
@@ -212,6 +231,7 @@ export function useDashboardData() {
     cmvMeta,
     graficoMensal,
     contasVencendo,
+    contasPagar7Dias,
   };
 }
 
