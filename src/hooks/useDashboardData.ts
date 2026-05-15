@@ -231,6 +231,7 @@ export function useDashboardData() {
     cmvMeta,
     graficoMensal,
     contasVencendo,
+    contasPagar7Dias,
   };
 }
 
