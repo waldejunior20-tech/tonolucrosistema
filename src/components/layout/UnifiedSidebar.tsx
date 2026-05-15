@@ -170,8 +170,8 @@ export function UnifiedSidebar({ collapsed, onToggle, onNavigate }: UnifiedSideb
           className={cn(
             "group relative w-full h-10 flex items-center rounded-xl transition-all duration-200 overflow-hidden",
             isActive
-              ? "bg-sidebar-accent text-white font-bold shadow-[inset_0_0_0_1px_hsl(var(--sidebar-primary)/0.35),0_0_24px_-8px_hsl(var(--sidebar-primary)/0.5)]"
-              : "text-sidebar-foreground hover:bg-sidebar-accent/60 hover:text-white"
+              ? "bg-sidebar-accent text-sidebar-primary font-bold"
+              : "text-sidebar-foreground hover:bg-sidebar-accent/70 hover:text-sidebar-accent-foreground"
           )}
         >
           {isActive && !collapsed && (
