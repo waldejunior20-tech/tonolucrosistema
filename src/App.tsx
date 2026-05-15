@@ -98,6 +98,7 @@ function AppRoutes() {
       <Route path="/signup" element={<Navigate to="/" replace />} />
       <Route path="/onboarding" element={<Navigate to="/" replace />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/fichas/pizza/editor-mock" element={<FichaPizzaEditorMock />} />
       <Route element={<AppLayout />}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/insumos/comprados" element={<InsumosComprados />} />
