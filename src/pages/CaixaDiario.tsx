@@ -1,30 +1,14 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { format, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { toast } from "sonner";
-import { appError } from "@/lib/error-codes";
-import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { formatMoney } from "@/components/MoneyInput";
-import {
-  CalendarIcon, Trash2, Lock, Unlock, CheckCircle2, ChevronRight,
-} from "lucide-react";
+import { Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { FinanceiroCategoryTabs } from "@/components/financeiro/FinanceiroCategoryTabs";
 import { FechamentoDiaForm } from "@/components/caixa/FechamentoDiaForm";
-import { useCaixaDiario, CATEGORIA_FECHAMENTO } from "@/hooks/useCaixaDiario";
-import { useHistoricoCaixa } from "@/hooks/useHistoricoCaixa";
-import { EmptyState } from "@/components/EmptyState";
+import { useCaixaDiario } from "@/hooks/useCaixaDiario";
+import { useCaixaPeriodo } from "@/hooks/useCaixaPeriodo";
 
 export default function CaixaDiario() {
   const [selectedDate, setSelectedDate] = useState(new Date());
