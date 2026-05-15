@@ -266,39 +266,44 @@ export default function InsumosHistoricoCompras() {
       />
 
       {/* HERO — total + período */}
-      <div className="rounded-2xl border border-border/60 bg-gradient-to-br from-card via-card to-muted/30 p-5 fade-up shadow-sm">
-        <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
-          {periodoLabel}
-        </div>
-        <div className="flex items-baseline gap-3 mt-1">
-          <div className="text-3xl sm:text-4xl font-bold tabular-nums text-foreground leading-none">
-            {formatMoney(totalPeriodo)}
+      <div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary via-primary to-primary/80 p-5 fade-up shadow-lg text-primary-foreground">
+        <div className="absolute -top-12 -right-12 h-40 w-40 rounded-full bg-white/10 blur-2xl pointer-events-none" />
+        <div className="relative">
+          <div className="text-[11px] uppercase tracking-wider text-primary-foreground/70 font-semibold">
+            {periodoLabel}
           </div>
-          {variacaoPct !== null && Math.abs(variacaoPct) > 0.5 && (
-            <span
-              className={
-                "text-xs font-semibold tabular-nums " +
-                (variacaoPct > 0 ? "text-rose-600" : "text-emerald-600")
-              }
-            >
-              {variacaoPct > 0 ? "↑" : "↓"} {Math.abs(variacaoPct).toFixed(1)}%
-            </span>
-          )}
-        </div>
-        <div className="text-xs text-muted-foreground mt-1.5">
-          {compras.length} {compras.length === 1 ? "compra" : "compras"} ·{" "}
-          {filtered.length} {filtered.length === 1 ? "item" : "itens"}
-        </div>
+          <div className="flex items-baseline gap-3 mt-1">
+            <div className="text-3xl sm:text-4xl font-bold tabular-nums text-primary-foreground leading-none">
+              {formatMoney(totalPeriodo)}
+            </div>
+            {variacaoPct !== null && Math.abs(variacaoPct) > 0.5 && (
+              <span
+                className={
+                  "text-xs font-semibold tabular-nums px-2 py-0.5 rounded-full " +
+                  (variacaoPct > 0
+                    ? "bg-rose-500/20 text-rose-100"
+                    : "bg-emerald-500/20 text-emerald-100")
+                }
+              >
+                {variacaoPct > 0 ? "↑" : "↓"} {Math.abs(variacaoPct).toFixed(1)}%
+              </span>
+            )}
+          </div>
+          <div className="text-xs text-primary-foreground/70 mt-1.5">
+            {compras.length} {compras.length === 1 ? "compra" : "compras"} ·{" "}
+            {filtered.length} {filtered.length === 1 ? "item" : "itens"}
+          </div>
 
-        <div className="mt-4">
-          <ComprasPeriodoChips
-            periodo={periodo}
-            customRange={customRange}
-            onChange={(p, r) => {
-              setPeriodo(p);
-              if (p === "custom") setCustomRange(r);
-            }}
-          />
+          <div className="mt-4">
+            <ComprasPeriodoChips
+              periodo={periodo}
+              customRange={customRange}
+              onChange={(p, r) => {
+                setPeriodo(p);
+                if (p === "custom") setCustomRange(r);
+              }}
+            />
+          </div>
         </div>
       </div>
 
