@@ -59,27 +59,20 @@ export default function CaixaDiario() {
 
       {/* Action cards */}
       <div className="grid grid-cols-2 gap-3">
-        <button
+        <ActionCard
+          tone="success"
+          icon={<Plus size={18} strokeWidth={2.5} />}
+          title="Lançar receita"
+          subtitle="Vendas do dia"
           onClick={() => setReceitaOpen(true)}
-          className="group relative overflow-hidden rounded-2xl border border-success/30 bg-gradient-to-br from-success/5 to-success/10 p-4 text-left hover:border-success/60 hover:shadow-lg hover:shadow-success/10 transition-all active:scale-[0.98]"
-        >
-          <div className="w-10 h-10 rounded-xl bg-success text-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
-            <Plus size={18} strokeWidth={2.5} />
-          </div>
-          <p className="mt-3 text-sm font-bold text-foreground">Lançar receita</p>
-          <p className="text-[11px] text-muted-foreground mt-0.5">Vendas do dia</p>
-        </button>
-
-        <button
+        />
+        <ActionCard
+          tone="destructive"
+          icon={<Minus size={18} strokeWidth={2.5} />}
+          title="Lançar despesa"
+          subtitle="Gastos e contas"
           onClick={() => setDespesaOpen(true)}
-          className="group relative overflow-hidden rounded-2xl border border-destructive/30 bg-gradient-to-br from-destructive/5 to-destructive/10 p-4 text-left hover:border-destructive/60 hover:shadow-lg hover:shadow-destructive/10 transition-all active:scale-[0.98]"
-        >
-          <div className="w-10 h-10 rounded-xl bg-destructive text-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
-            <Minus size={18} strokeWidth={2.5} />
-          </div>
-          <p className="mt-3 text-sm font-bold text-foreground">Lançar despesa</p>
-          <p className="text-[11px] text-muted-foreground mt-0.5">Gastos e contas</p>
-        </button>
+        />
       </div>
 
       {/* Movimentos timeline */}
