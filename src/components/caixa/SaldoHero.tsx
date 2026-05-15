@@ -17,12 +17,20 @@ export function SaldoHero({ totalGanho, totalGasto, totalTaxas, totalLiquido, qt
       className="relative overflow-hidden rounded-3xl p-5 sm:p-7 text-white shadow-xl"
       style={{
         background:
-          "linear-gradient(180deg, #2563EB 0%, #1D4ED8 100%)",
+          "radial-gradient(120% 80% at 100% 0%, #60A5FA 0%, transparent 55%)," +
+          "radial-gradient(100% 90% at 0% 100%, #1E3A8A 0%, transparent 60%)," +
+          "linear-gradient(135deg, #2563EB 0%, #1D4ED8 55%, #1E40AF 100%)",
       }}
     >
       {/* Glow orbs */}
-      <div className="absolute -top-20 -right-16 w-64 h-64 rounded-full bg-white/10 blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-24 -left-10 w-72 h-72 rounded-full bg-cyan-400/15 blur-3xl pointer-events-none" />
+      <div
+        className="absolute -top-16 -right-12 w-56 h-56 rounded-full pointer-events-none"
+        style={{ background: "radial-gradient(circle, #93C5FD 0%, transparent 70%)", opacity: 0.45 }}
+      />
+      <div
+        className="absolute -bottom-20 -left-10 w-64 h-64 rounded-full pointer-events-none"
+        style={{ background: "radial-gradient(circle, #BFDBFE 0%, transparent 70%)", opacity: 0.3 }}
+      />
       {/* Grid pattern */}
       <div
         className="absolute inset-0 opacity-[0.06] pointer-events-none"
