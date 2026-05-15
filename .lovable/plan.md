@@ -1,77 +1,53 @@
-## Estado atual (já implementado)
+# Redesign do módulo de Compras (mobile-first)
 
-Boa parte da base solicitada já existe no projeto. Antes de criar coisa nova, vou consolidar o que falta e fechar lacunas — sem duplicar.
+Vou reformular a página `/insumos/historico-compras` mantendo toda a lógica de dados que já existe (view `vw_historico_compras_completo`, RLS, hooks), só trocando a apresentação para o padrão que você pediu.
 
-| Requisito | Status | Onde |
-|---|---|---|
-| 1. Histórico de compras (campos + view) | ✅ existe | `insumos_compras_historico` + `vw_historico_compras_completo` |
-| 1. Filtros 7/30/90/mês/fornecedor/categoria | ✅ existe | `InsumosHistoricoCompras.tsx` |
-| 2. Destinos (insumo/embalagem/financeiro/conta_pagar/revisar) | ✅ existe | coluna `destino` + enum textual |
-| 3. Regras aprendidas | ✅ existe | tabela `regras_classificacao` |
-| 4. Revisar Classificações | ✅ existe | `InsumosRevisar.tsx` + `vw_revisar_classificacoes` |
-| 5. Revisar Duplicados | ✅ existe | `InsumosDuplicados.tsx` + `mesclar-insumos` |
-| 6. Idempotência por hash | ✅ parcial | `tr_historico_idempotencia` (chave composta sem hash de documento) |
-| 7. Trava de preço absurdo (3x média) | ✅ existe | `tr_historico_atualiza_insumo` bloqueia + flag `revisar` |
-| 8. Auditoria | ✅ parcial | `auditoria_importacao` + `auditoria_correcoes_precos` existem |
+## O que muda visualmente
 
-## Lacunas reais a fechar
+### 1. Topo — período + total
+- Filtros em chips horizontais: **7d · 30d · Este mês · Personalizado** (calendário)
+- Total grande do período + nº de compras + variação % vs período anterior
+- Visual limpo, fundo com leve degradê (igual fizemos no Caixa do Mês)
 
-### A. Idempotência por documento (item 6)
-A trava atual é por linha de item. Falta uma trava por **documento inteiro** (NF/cupom) para impedir reprocessamento da mesma nota. Adicionar coluna `documento_hash` em `notas_fiscais` (hash de chave-NF + total + fornecedor + data) com índice único parcial por unidade. `ingest-nota-fiscal` calcula o hash antes de inserir e retorna idempotente se já existir.
+### 2. Gráfico principal — POR FORNECEDOR
+- Barras horizontais empilhadas (top 5 fornecedores no período)
+- Cada barra mostra: nome do fornecedor + valor gasto + % do total
+- Toggle discreto pra alternar para "Por categoria" se quiser
+- Tap numa barra → filtra a lista abaixo por aquele fornecedor
 
-### B. Fila "Revisar Preço" dedicada (item 7)
-Hoje preços bloqueados ficam misturados em `destino = revisar`. Adicionar:
-- Coluna `motivo_revisao` em `insumos_compras_historico` (`classificacao` | `preco_suspeito` | `duplicado_suspeito`).
-- Atualizar `tr_historico_atualiza_insumo` para preencher `motivo_revisao = 'preco_suspeito'` quando bloquear.
-- Aba/filtro na página `InsumosRevisar` separando "Classificação" vs "Preço suspeito".
+### 3. Lista de compras (cronológica)
+- Cada linha = **uma compra** (uma "ida ao mercado"):
+  - Logo/inicial do fornecedor + nome do mercado em destaque
+  - Data ("Hoje", "Ontem", "12 mai")
+  - Valor total da compra à direita
+  - Pequeno chip mostrando "5 itens"
+- Agrupadas por dia (separador "HOJE · 15 MAI")
+- Tap abre o cupom
 
-### C. Auditoria de fichas impactadas + CMV recalculado (item 8)
-`auditoria_importacao` hoje guarda contadores básicos. Estender com:
-- `fichas_impactadas` (jsonb): array `{ficha_id, tipo, cmv_antes, cmv_depois}`.
-- `precos_bloqueados` (jsonb): array `{insumo_id, preco_tentado, preco_atual, fator}`.
-- Edge function `ingest-nota-fiscal` calcula e grava esses dois ao final.
+### 4. Modal "Cupom" (sheet vindo de baixo)
+Estilo nota fiscal:
+- Cabeçalho: nome do fornecedor + data + nº da nota (se tiver)
+- Lista de itens, cada um:
+  - Nome do insumo + qtd × unidade
+  - Preço unitário
+  - **Badge de variação**: `↑ 5%` (vermelho) ou `↓ 3%` (verde) comparado à última compra do mesmo insumo
+- Linha pontilhada
+- **TOTAL** em destaque embaixo
+- Botão "Ver insumo no histórico" pra cada item
 
-### D. KPI "preços bloqueados" no Histórico (item 8 + resultado esperado)
-Adicionar card "Preços bloqueados nos últimos 30d" em `InsumosHistoricoCompras` consultando `auditoria_correcoes_precos`.
+## Técnico
 
-### E. Filtros faltantes em Histórico (item 1)
-Adicionar filtros `destino` e `origem` (já existem campos, faltam selects).
+- Reutiliza a query existente `vw_historico_compras_completo` (já agrupa tudo)
+- Cria helper que agrupa rows por `nota_fiscal_id` (ou por fornecedor+data quando não houver NF) → cada grupo = 1 compra
+- Variação de preço por item: pega o `preco_unitario` anterior do mesmo `insumo_id` da query já carregada (sem nova chamada ao banco)
+- Componentes novos:
+  - `ComprasPeriodoChips.tsx` — chips de período
+  - `ComprasGraficoFornecedor.tsx` — barras horizontais
+  - `CompraCard.tsx` — linha da lista
+  - `CupomCompraSheet.tsx` — modal com itens + variação
+- Mantém a tabela atual escondida em `md:` se quiser desktop, ou substitui de vez (recomendo substituir — o mobile-first fica melhor pros dois)
 
-## Plano técnico
-
-```text
-1 migração SQL:
-  - ALTER notas_fiscais: + documento_hash text + idx único parcial por unidade
-  - ALTER insumos_compras_historico: + motivo_revisao text
-  - UPDATE tr_historico_atualiza_insumo (set motivo_revisao = 'preco_suspeito')
-  - ALTER auditoria_importacao: + precos_bloqueados jsonb default '[]'
-
-1 edição edge function:
-  - supabase/functions/ingest-nota-fiscal/index.ts
-    · calcular documento_hash, checar duplicidade → 200 idempotente
-    · capturar preços bloqueados e fichas impactadas → gravar auditoria
-
-3 edições frontend:
-  - src/pages/InsumosRevisar.tsx → tabs Classificação | Preço suspeito
-  - src/pages/InsumosHistoricoCompras.tsx → filtros destino/origem + KPI bloqueados
-  - (opcional) src/components/insumos/InsumosSubTabs.tsx → contador na aba
-```
-
-## Garantias preservadas
-
-- Nenhum DELETE em dados existentes.
-- `documento_hash` é coluna nova nullable — notas antigas continuam intactas.
-- Trava de preço já existente continua; só adiciona rótulo de motivo.
-- Fichas técnicas: vínculo `insumo_comprado_id` permanece intocado.
-- RLS, auth, n8n, cascata-preço-CMV, deduplicar_insumo_comprado: sem mudança.
-
-## Resultado
-
-As 6 perguntas do "resultado esperado" passam a ser respondíveis:
-- Muçarela/tomate por período → já funciona via `vw_historico_compras_completo`.
-- Compras por fornecedor → já funciona.
-- Itens mal classificados → aba Classificação.
-- Compras que impactam ficha → `auditoria_importacao.fichas_impactadas` (novo).
-- **Preços bloqueados** → KPI + `auditoria_correcoes_precos` (novo card).
-
-Aprova? Sigo com a migração + as 4 edições acima.
+## Fora de escopo agora
+- Não mexo em backend/RLS/migrations
+- Não mexo em outras páginas (Insumos, Fichas, Dashboard)
+- Não troco cores base (azul/branco continuam)
