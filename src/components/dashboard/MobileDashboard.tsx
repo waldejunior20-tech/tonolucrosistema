@@ -249,18 +249,43 @@ export function MobileDashboard() {
           <p className="font-mono text-[40px] font-bold leading-none tracking-tight text-white drop-shadow-sm">
             {hasFaturamento ? fmtBRL(lucroMes) : "—"}
           </p>
-          <div className="flex items-center gap-4 mt-3 text-[12px]">
-            <span className="inline-flex items-center gap-1 text-white/85">
-              <ArrowUpRight size={13} className="text-[#86EFAC]" />
-              <span className="font-mono font-semibold">{fmtBRL(faturamentoMes)}</span>
-              <span className="text-white/60">entrada</span>
-            </span>
-            <span className="inline-flex items-center gap-1 text-white/85">
-              <ArrowDownRight size={13} className="text-[#FCA5A5]" />
-              <span className="font-mono font-semibold">{fmtBRL(despesasMes)}</span>
-              <span className="text-white/60">saída</span>
-            </span>
-          </div>
+          {(() => {
+            const maxVal = Math.max(faturamentoMes, despesasMes, 1);
+            const entradaPct = Math.min(100, (faturamentoMes / maxVal) * 100);
+            const saidaPct = Math.min(100, (despesasMes / maxVal) * 100);
+            return (
+              <div className="mt-5 space-y-2.5">
+                <div className="rounded-2xl bg-white/10 backdrop-blur-sm ring-1 ring-white/15 px-3.5 py-2.5">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full bg-white/15 flex items-center justify-center">
+                        <ArrowUpRight size={14} className="text-[#86EFAC]" strokeWidth={2.5} />
+                      </div>
+                      <span className="text-[12.5px] font-semibold text-white">Entrada</span>
+                    </div>
+                    <span className="font-mono text-[13px] font-bold text-white">{fmtBRL(faturamentoMes)}</span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-white/15 overflow-hidden">
+                    <div className="h-full rounded-full transition-all duration-500" style={{ width: `${entradaPct}%`, background: "linear-gradient(90deg, #34D399 0%, #10B981 100%)" }} />
+                  </div>
+                </div>
+                <div className="rounded-2xl bg-white/10 backdrop-blur-sm ring-1 ring-white/15 px-3.5 py-2.5">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full bg-white/15 flex items-center justify-center">
+                        <ArrowDownRight size={14} className="text-[#FCA5A5]" strokeWidth={2.5} />
+                      </div>
+                      <span className="text-[12.5px] font-semibold text-white">Saída</span>
+                    </div>
+                    <span className="font-mono text-[13px] font-bold text-white">{fmtBRL(despesasMes)}</span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-white/15 overflow-hidden">
+                    <div className="h-full rounded-full transition-all duration-500" style={{ width: `${saidaPct}%`, background: "linear-gradient(90deg, #FB923C 0%, #EF4444 100%)" }} />
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </div>
 
