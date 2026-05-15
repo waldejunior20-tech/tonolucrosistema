@@ -203,22 +203,6 @@ export default function CaixaDiario() {
                   ))}
                 </div>
 
-                {/* Totals */}
-                <div className="grid grid-cols-3 gap-3 mt-4 p-4 rounded-xl bg-gradient-to-r from-primary/5 to-success/5 border border-border/40">
-                  <div>
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Bruto</p>
-                    <p className="text-xl font-extrabold text-money tabular-nums">{formatMoney(totalBruto)}</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Taxas</p>
-                    <p className="text-base font-bold text-destructive tabular-nums">- {formatMoney(totalTaxas)}</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Líquido → DRE</p>
-                    <p className="text-xl font-extrabold text-success tabular-nums">{formatMoney(totalLiquido)}</p>
-                  </div>
-                </div>
-
                 {/* Lançamentos individuais (apenas remoção, sem nova entrada) */}
                 {lancamentos.length > 0 && (
                   <div className="mt-6">
