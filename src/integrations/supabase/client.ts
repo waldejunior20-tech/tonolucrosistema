@@ -13,5 +13,8 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
+    // Bypass navigator.locks — evita "Lock broken by another request with the 'steal' option"
+    // quando há múltiplas instâncias (preview + HMR). Seguro para uso single-tab.
+    lock: async (_name, _acquireTimeout, fn) => await fn(),
   }
 });
