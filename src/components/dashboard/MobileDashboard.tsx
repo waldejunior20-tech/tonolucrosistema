@@ -66,7 +66,7 @@ export function MobileDashboard() {
   };
   const mask = "R$ ••••••";
 
-  const { faturamentoMes, despesasMes } = useDashboardData();
+  const { faturamentoMes, despesasMes, contasVencendo } = useDashboardData();
   const { data: priceAlerts = [] } = usePriceAlerts();
   const { data: profitAlerts = [] } = useProfitAlerts(20);
 
