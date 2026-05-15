@@ -395,7 +395,28 @@ export function MobileDashboard() {
           });
         }
 
-        // 3) Produtos que subiram o preço — um card por alerta (até 4)
+        // 3) Contas a pagar nos últimos 7 dias
+        if (contasPagar7Dias && contasPagar7Dias.length > 0) {
+          const total = contasPagar7Dias.reduce((s: number, c: any) => s + Number(c.valor || 0), 0);
+          const nomes = contasPagar7Dias.slice(0, 2).map((c: any) => c.descricao).filter(Boolean).join(" • ");
+          insights.push({
+            key: "pagar-7d",
+            tag: "A pagar",
+            tagBg: "bg-[#FEF2F2]",
+            tagFg: "text-[#DC2626]",
+            icon: Receipt,
+            accent: "#DC2626",
+            gradient: "linear-gradient(135deg, #ffffff 0%, #FEF2F2 100%)",
+            title: `${contasPagar7Dias.length} ${contasPagar7Dias.length === 1 ? "conta" : "contas"} a pagar`,
+            subtitle: nomes || "Despesas pendentes nos últimos 7 dias",
+            metric: fmtBRL(total),
+            metricColor: "text-[#DC2626]",
+            cta: "Quitar agora",
+            onClick: () => navigate("/financeiro/contas-pagar"),
+          });
+        }
+
+        // 4) Produtos que subiram o preço — um card por alerta (até 4)
         priceAlerts.slice(0, 4).forEach((p) => {
           insights.push({
             key: `alta-${p.nome}`,
