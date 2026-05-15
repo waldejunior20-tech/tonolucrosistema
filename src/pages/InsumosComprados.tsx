@@ -24,7 +24,7 @@ import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 import { MoneyInput, QuantityInput, formatMoney, formatQuantidade } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { InsumosCategoryTabs } from "@/components/insumos/InsumosCategoryTabs";
-import { InsumosSubTabs } from "@/components/insumos/InsumosSubTabs";
+
 import { EmptyState } from "@/components/EmptyState";
 import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
 import { CategoryBadge } from "@/components/CategoryBadge";
@@ -343,7 +343,7 @@ export default function InsumosComprados() {
               className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
               aria-label="Ver histórico"
             >
-              <Link to={`/insumos/comprados/historico?insumo=${encodeURIComponent(insumo.nome)}`}>
+              <Link to={`/compras/historico?insumo=${encodeURIComponent(insumo.nome)}`}>
                 <History className="h-4 w-4" />
               </Link>
             </Button>

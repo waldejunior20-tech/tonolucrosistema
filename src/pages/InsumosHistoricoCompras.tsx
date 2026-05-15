@@ -6,8 +6,6 @@ import { History, Search, ShieldAlert } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { formatMoney } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { InsumosCategoryTabs } from "@/components/insumos/InsumosCategoryTabs";
-import { InsumosSubTabs } from "@/components/insumos/InsumosSubTabs";
 import { EmptyState } from "@/components/EmptyState";
 import { SkeletonCard } from "@/components/SkeletonCard";
 import { useActiveUnidade } from "@/hooks/useActiveUnidade";
@@ -258,8 +256,6 @@ export default function InsumosHistoricoCompras() {
 
   return (
     <div className="space-y-4 page-enter pb-6">
-      <InsumosCategoryTabs />
-      <InsumosSubTabs />
       <PageHeader
         title="Histórico de Compras"
         description="Tudo que entrou em insumos, embalagens e despesas."

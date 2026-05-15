@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { formatMoney } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { InsumosCategoryTabs } from "@/components/insumos/InsumosCategoryTabs";
-import { InsumosSubTabs } from "@/components/insumos/InsumosSubTabs";
+
 import { EmptyState } from "@/components/EmptyState";
 import { SkeletonTable } from "@/components/SkeletonCard";
 import { useActiveUnidade } from "@/hooks/useActiveUnidade";
@@ -137,7 +137,6 @@ export default function InsumosDuplicados() {
   return (
     <div className="space-y-6 page-enter">
       <InsumosCategoryTabs />
-      <InsumosSubTabs />
       <PageHeader
         title="Revisar Duplicados"
         description="Insumos com nomes parecidos. Escolha o principal e mescle — fichas técnicas continuam funcionando."

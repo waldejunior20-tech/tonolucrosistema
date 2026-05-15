@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export type ModuleKey = "dashboard" | "insumos" | "fichas" | "precificacao" | "financeiro" | "configuracoes";
+export type ModuleKey = "dashboard" | "insumos" | "compras" | "fichas" | "precificacao" | "financeiro" | "configuracoes";
 
 interface SubItem {
   label: string;
@@ -34,6 +34,7 @@ interface SidebarItem {
 const navigationItems: SidebarItem[] = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/" },
   { key: "insumos", label: "Insumos", icon: Package, path: "/insumos/comprados" },
+  { key: "compras" as ModuleKey, label: "Compras", icon: Receipt, path: "/compras/historico" },
   { key: "fichas", label: "Fichas Técnicas", icon: ChefHat, path: "/fichas/pizzas" },
   { key: "precificacao", label: "Precificação & Promos", icon: Tag, path: "/precificacao/pizzas" },
   { key: "financeiro", label: "Financeiro", icon: Wallet, path: "/financeiro/caixa-diario" },

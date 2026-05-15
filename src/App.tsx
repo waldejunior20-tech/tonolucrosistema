@@ -100,7 +100,8 @@ function AppRoutes() {
       <Route element={<AppLayout />}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/insumos/comprados" element={<InsumosComprados />} />
-        <Route path="/insumos/comprados/historico" element={<InsumosHistoricoCompras />} />
+        <Route path="/compras/historico" element={<InsumosHistoricoCompras />} />
+        <Route path="/insumos/comprados/historico" element={<Navigate to="/compras/historico" replace />} />
         <Route path="/insumos/comprados/revisar" element={<InsumosRevisar />} />
         <Route path="/insumos/comprados/duplicados" element={<InsumosDuplicados />} />
         <Route path="/insumos/produzidos" element={<InsumosProduzidos />} />
