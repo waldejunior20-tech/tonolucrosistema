@@ -402,6 +402,7 @@ export function MobileDashboard() {
           </button>
         ))}
       </div>
+      </div>
     </div>
   );
 }
