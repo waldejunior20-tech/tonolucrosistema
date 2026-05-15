@@ -152,26 +152,22 @@
     font-family: 'JetBrains Mono', ui-monospace, monospace;
   }
 
-  /* Big display numbers — heavy, chunky, deep black like fintech apps */
+  /* Big display numbers — heavy, chunky black with subtle depth */
   .num-depth-dark {
-    color: hsl(220 40% 6%);
-    font-weight: 900;
-    letter-spacing: -0.045em;
+    color: hsl(220 40% 8%);
+    font-weight: 800;
+    letter-spacing: -0.03em;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     font-variant-numeric: tabular-nums;
-    text-shadow:
-      0 1px 0 hsl(0 0% 100% / 0.6),
-      0 2px 3px hsl(220 40% 5% / 0.08);
+    text-shadow: 0 1px 0 hsl(0 0% 100% / 0.35);
   }
   .num-depth-light {
     color: hsl(0 0% 100%);
-    font-weight: 900;
-    letter-spacing: -0.045em;
+    font-weight: 800;
+    letter-spacing: -0.03em;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     font-variant-numeric: tabular-nums;
-    text-shadow:
-      0 1px 0 hsl(0 0% 100% / 0.15),
-      0 2px 8px hsl(220 40% 5% / 0.35);
+    text-shadow: 0 1px 2px hsl(220 40% 5% / 0.18);
   }
 }
 
