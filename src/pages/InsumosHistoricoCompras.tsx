@@ -5,7 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { History, Search, TrendingUp, ShieldAlert } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { History, Search, TrendingUp, ShieldAlert, CalendarIcon } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { formatMoney, formatQuantidade } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -14,6 +17,10 @@ import { InsumosSubTabs } from "@/components/insumos/InsumosSubTabs";
 import { EmptyState } from "@/components/EmptyState";
 import { SkeletonTable } from "@/components/SkeletonCard";
 import { useActiveUnidade } from "@/hooks/useActiveUnidade";
+import { ResponsiveContainer, BarChart, Bar, XAxis, Tooltip, CartesianGrid } from "recharts";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import type { DateRange } from "react-day-picker";
 
 type Row = {
   id: string;
@@ -33,12 +40,14 @@ type Row = {
 };
 
 const PERIODOS = [
-  { value: "7", label: "Últimos 7 dias" },
-  { value: "30", label: "Últimos 30 dias" },
-  { value: "90", label: "Últimos 90 dias" },
+  { value: "7", label: "7 dias" },
+  { value: "30", label: "30 dias" },
+  { value: "60", label: "60 dias" },
+  { value: "90", label: "90 dias" },
   { value: "este_mes", label: "Este mês" },
   { value: "mes_passado", label: "Mês passado" },
   { value: "tudo", label: "Tudo" },
+  { value: "custom", label: "Personalizado" },
 ];
 
 const DESTINOS = [
@@ -58,22 +67,39 @@ const ORIGENS = [
   { value: "import", label: "Importação" },
 ];
 
-function inPeriodo(dataStr: string, periodo: string): boolean {
-  if (periodo === "tudo") return true;
-  const d = new Date(dataStr + "T00:00:00");
+function getPeriodoRange(periodo: string, custom?: DateRange): { from: Date; to: Date } | null {
   const now = new Date();
+  now.setHours(23, 59, 59, 999);
+  if (periodo === "tudo") return null;
+  if (periodo === "custom") {
+    if (!custom?.from) return null;
+    const to = new Date(custom.to ?? custom.from);
+    to.setHours(23, 59, 59, 999);
+    const from = new Date(custom.from);
+    from.setHours(0, 0, 0, 0);
+    return { from, to };
+  }
   if (periodo === "este_mes") {
-    return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+    return { from: new Date(now.getFullYear(), now.getMonth(), 1), to: now };
   }
   if (periodo === "mes_passado") {
-    const mp = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    return d.getFullYear() === mp.getFullYear() && d.getMonth() === mp.getMonth();
+    return {
+      from: new Date(now.getFullYear(), now.getMonth() - 1, 1),
+      to: new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999),
+    };
   }
   const dias = parseInt(periodo, 10);
-  if (Number.isNaN(dias)) return true;
-  const cutoff = new Date(now);
-  cutoff.setDate(cutoff.getDate() - dias);
-  return d >= cutoff;
+  if (Number.isNaN(dias)) return null;
+  const from = new Date(now);
+  from.setDate(from.getDate() - dias);
+  from.setHours(0, 0, 0, 0);
+  return { from, to: now };
+}
+
+function inRange(dataStr: string, range: { from: Date; to: Date } | null): boolean {
+  if (!range) return true;
+  const d = new Date(dataStr + "T00:00:00");
+  return d >= range.from && d <= range.to;
 }
 
 export default function InsumosHistoricoCompras() {
@@ -85,6 +111,8 @@ export default function InsumosHistoricoCompras() {
   const [destinoFiltro, setDestinoFiltro] = useState<string>("todos");
   const [origemFiltro, setOrigemFiltro] = useState<string>("todos");
   const [periodo, setPeriodo] = useState<string>("30");
+  const [customRange, setCustomRange] = useState<DateRange | undefined>();
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   const { data: precosBloqueados30d = 0 } = useQuery({
     queryKey: ["precos_bloqueados_30d", unidadeId],
@@ -124,10 +152,25 @@ export default function InsumosHistoricoCompras() {
     return Array.from(s).sort((a, b) => a.localeCompare(b, "pt-BR"));
   }, [rows]);
 
+  const range = useMemo(() => getPeriodoRange(periodo, customRange), [periodo, customRange]);
+
+  const periodoLabel = useMemo(() => {
+    if (periodo === "tudo") return "Todo o período";
+    if (periodo === "custom" && customRange?.from) {
+      const from = format(customRange.from, "dd/MM", { locale: ptBR });
+      const to = format(customRange.to ?? customRange.from, "dd/MM", { locale: ptBR });
+      return `${from} – ${to}`;
+    }
+    const found = PERIODOS.find((p) => p.value === periodo);
+    if (!found) return "Período";
+    if (["7", "30", "60", "90"].includes(periodo)) return `Últimos ${periodo} dias`;
+    return found.label;
+  }, [periodo, customRange]);
+
   const filtered = useMemo(() => {
     const q = busca.trim().toLowerCase();
     return rows.filter((r) => {
-      if (!inPeriodo(r.data_compra, periodo)) return false;
+      if (!inRange(r.data_compra, range)) return false;
       if (fornecedorFiltro !== "todos" && r.fornecedor !== fornecedorFiltro) return false;
       if (destinoFiltro !== "todos" && r.destino !== destinoFiltro) return false;
       if (origemFiltro !== "todos" && r.origem !== origemFiltro) return false;
@@ -138,7 +181,7 @@ export default function InsumosHistoricoCompras() {
         r.fornecedor?.toLowerCase().includes(q)
       );
     });
-  }, [rows, busca, fornecedorFiltro, destinoFiltro, origemFiltro, periodo]);
+  }, [rows, busca, fornecedorFiltro, destinoFiltro, origemFiltro, range]);
 
   const kpis = useMemo(() => {
     const total = filtered.reduce((acc, r) => acc + Number(r.preco_total ?? r.preco_unitario * r.quantidade), 0);
@@ -154,8 +197,52 @@ export default function InsumosHistoricoCompras() {
     return { total, topFornecedor: topF, count: filtered.length };
   }, [filtered]);
 
+  // Série diária para o gráfico
+  const chartData = useMemo(() => {
+    if (!range) {
+      // Sem range: usa últimos 30 dias do dataset filtrado
+      const map = new Map<string, number>();
+      filtered.forEach((r) => {
+        const v = Number(r.preco_total ?? r.preco_unitario * r.quantidade);
+        map.set(r.data_compra, (map.get(r.data_compra) ?? 0) + v);
+      });
+      return Array.from(map.entries())
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .slice(-30)
+        .map(([data, total]) => ({
+          data,
+          label: format(new Date(data + "T00:00:00"), "dd/MM"),
+          total,
+        }));
+    }
+    const map = new Map<string, number>();
+    filtered.forEach((r) => {
+      const v = Number(r.preco_total ?? r.preco_unitario * r.quantidade);
+      map.set(r.data_compra, (map.get(r.data_compra) ?? 0) + v);
+    });
+    // Preencher dias vazios
+    const out: { data: string; label: string; total: number }[] = [];
+    const cur = new Date(range.from);
+    cur.setHours(0, 0, 0, 0);
+    const end = new Date(range.to);
+    end.setHours(0, 0, 0, 0);
+    let safety = 0;
+    while (cur <= end && safety++ < 400) {
+      const key = format(cur, "yyyy-MM-dd");
+      out.push({
+        data: key,
+        label: format(cur, "dd/MM"),
+        total: map.get(key) ?? 0,
+      });
+      cur.setDate(cur.getDate() + 1);
+    }
+    return out;
+  }, [filtered, range]);
+
+  const showChart = chartData.length > 1 && kpis.total > 0;
+
   return (
-    <div className="space-y-6 page-enter">
+    <div className="space-y-5 page-enter">
       <InsumosCategoryTabs />
       <InsumosSubTabs />
       <PageHeader
@@ -163,64 +250,141 @@ export default function InsumosHistoricoCompras() {
         description="Memória completa de tudo que foi comprado — insumos, embalagens e despesas."
       />
 
-      {/* KPIs */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 fade-up">
-        <div className="rounded-xl border border-border/60 bg-card p-4">
-          <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Total no período</div>
-          <div className="text-2xl font-bold tabular-nums text-foreground mt-1">{formatMoney(kpis.total)}</div>
+      {/* HERO — total do período + seletor */}
+      <div className="rounded-2xl border border-border/60 bg-card p-5 fade-up">
+        <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
+          <div>
+            <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
+              {periodoLabel}
+            </div>
+            <div className="text-3xl sm:text-4xl font-bold tabular-nums text-foreground mt-1 leading-none">
+              {formatMoney(kpis.total)}
+            </div>
+            <div className="text-xs text-muted-foreground mt-1.5">
+              {kpis.count} {kpis.count === 1 ? "compra" : "compras"} no período
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Select
+              value={periodo}
+              onValueChange={(v) => {
+                setPeriodo(v);
+                if (v === "custom") setCalendarOpen(true);
+              }}
+            >
+              <SelectTrigger className="w-[150px] h-9"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {PERIODOS.map((p) => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-9 px-3"
+                  onClick={() => setPeriodo("custom")}
+                >
+                  <CalendarIcon className="h-4 w-4" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-auto p-0">
+                <Calendar
+                  mode="range"
+                  selected={customRange}
+                  onSelect={(r) => {
+                    setCustomRange(r);
+                    setPeriodo("custom");
+                    if (r?.from && r?.to) setCalendarOpen(false);
+                  }}
+                  numberOfMonths={1}
+                  locale={ptBR}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
+
+        {/* Gráfico de compras por dia */}
+        {showChart && (
+          <div className="h-[160px] -mx-1">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData} margin={{ top: 4, right: 4, bottom: 0, left: 4 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.4} />
+                <XAxis
+                  dataKey="label"
+                  tickLine={false}
+                  axisLine={false}
+                  fontSize={10}
+                  tick={{ fill: "hsl(var(--muted-foreground))" }}
+                  interval="preserveStartEnd"
+                  minTickGap={20}
+                />
+                <Tooltip
+                  cursor={{ fill: "hsl(var(--muted))", opacity: 0.4 }}
+                  contentStyle={{
+                    background: "hsl(var(--card))",
+                    border: "1px solid hsl(var(--border))",
+                    borderRadius: 10,
+                    fontSize: 12,
+                  }}
+                  formatter={(v: number) => [formatMoney(v), "Compras"]}
+                  labelFormatter={(l) => `Dia ${l}`}
+                />
+                <Bar dataKey="total" fill="#2563EB" radius={[4, 4, 0, 0]} maxBarSize={28} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+      </div>
+
+      {/* KPIs secundários */}
+      <div className="grid grid-cols-2 gap-3 fade-up fade-up-d1">
         <div className="rounded-xl border border-border/60 bg-card p-4">
-          <div className="text-[11px] uppercase tracking-wider text-muted-foreground">Compras</div>
-          <div className="text-2xl font-bold tabular-nums text-foreground mt-1">{kpis.count}</div>
-        </div>
-        <div className="rounded-xl border border-border/60 bg-card p-4">
-          <div className="text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+          <div className="text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1 font-semibold">
             <TrendingUp className="h-3 w-3" /> Maior fornecedor
           </div>
-          <div className="text-sm font-bold text-foreground mt-1 truncate">{kpis.topFornecedor?.nome ?? "—"}</div>
-          <div className="text-xs tabular-nums text-muted-foreground">{kpis.topFornecedor ? formatMoney(kpis.topFornecedor.valor) : ""}</div>
+          <div className="text-sm font-bold text-foreground mt-1.5 truncate">{kpis.topFornecedor?.nome ?? "—"}</div>
+          <div className="text-xs tabular-nums text-muted-foreground mt-0.5">
+            {kpis.topFornecedor ? formatMoney(kpis.topFornecedor.valor) : ""}
+          </div>
         </div>
         <div className="rounded-xl border border-border/60 bg-card p-4">
-          <div className="text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-            <ShieldAlert className="h-3 w-3" /> Preços bloqueados (30d)
+          <div className="text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-1 font-semibold">
+            <ShieldAlert className="h-3 w-3" /> Preços bloqueados
           </div>
           <div className="text-2xl font-bold tabular-nums text-foreground mt-1">{precosBloqueados30d}</div>
-          <div className="text-xs text-muted-foreground">aumentos suspeitos travados</div>
+          <div className="text-xs text-muted-foreground">aumentos suspeitos travados (30d)</div>
         </div>
       </div>
 
       {/* Filtros */}
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative flex-1 min-w-[260px] max-w-[420px]">
+      <div className="flex flex-wrap items-center gap-2 fade-up fade-up-d2">
+        <div className="relative flex-1 min-w-[220px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Buscar por insumo, nome na nota ou fornecedor..."
+            placeholder="Buscar insumo, nome na nota ou fornecedor..."
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
-            className="pl-9"
+            className="pl-9 h-9"
           />
         </div>
-        <Select value={periodo} onValueChange={setPeriodo}>
-          <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            {PERIODOS.map((p) => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}
-          </SelectContent>
-        </Select>
         <Select value={fornecedorFiltro} onValueChange={setFornecedorFiltro}>
-          <SelectTrigger className="w-[220px]"><SelectValue placeholder="Fornecedor" /></SelectTrigger>
+          <SelectTrigger className="w-[200px] h-9"><SelectValue placeholder="Fornecedor" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="todos">Todos os fornecedores</SelectItem>
             {fornecedores.map((f) => <SelectItem key={f} value={f}>{f}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={destinoFiltro} onValueChange={setDestinoFiltro}>
-          <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-[160px] h-9"><SelectValue /></SelectTrigger>
           <SelectContent>
             {DESTINOS.map((d) => <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={origemFiltro} onValueChange={setOrigemFiltro}>
-          <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-[160px] h-9"><SelectValue /></SelectTrigger>
           <SelectContent>
             {ORIGENS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
           </SelectContent>
@@ -236,7 +400,7 @@ export default function InsumosHistoricoCompras() {
           description="Ajuste os filtros ou aguarde a próxima nota fiscal ser processada."
         />
       ) : (
-        <div className="rounded-2xl border border-border/60 bg-card overflow-hidden shadow-sm fade-up fade-up-d1">
+        <div className="rounded-2xl border border-border/60 bg-card overflow-hidden shadow-sm fade-up fade-up-d3">
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/40 hover:bg-muted/40 border-b border-border/60">
