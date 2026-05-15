@@ -12,7 +12,13 @@
 // NÃO altera UI, dashboard, fichas, n8n. NÃO apaga histórico nem duplicados.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
-import { createHash } from "https://deno.land/std@0.224.0/hash/mod.ts";
+import { crypto as stdCrypto } from "https://deno.land/std@0.224.0/crypto/mod.ts";
+
+async function sha256Hex(input: string): Promise<string> {
+  const data = new TextEncoder().encode(input);
+  const buf = await stdCrypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
