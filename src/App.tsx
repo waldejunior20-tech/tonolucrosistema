@@ -40,6 +40,7 @@ import AutomacaoHistoricoPrecos from "@/pages/AutomacaoHistoricoPrecos";
 import AutomacaoFichasWarnings from "@/pages/AutomacaoFichasWarnings";
 import AutomacaoSaude from "@/pages/AutomacaoSaude";
 import NotFound from "./pages/NotFound.tsx";
+import FichaPizzaEditorMock from "@/pages/FichaPizzaEditorMock";
 
 const queryClient = new QueryClient();
 
