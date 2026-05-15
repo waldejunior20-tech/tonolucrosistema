@@ -273,7 +273,7 @@ export default function InsumosHistoricoCompras() {
             {periodoLabel}
           </div>
           <div className="flex items-baseline gap-3 mt-1">
-            <div className="text-3xl sm:text-4xl font-bold tabular-nums text-slate-950 leading-none">
+            <div className="text-3xl sm:text-4xl font-bold tabular-nums leading-none num-depth-dark">
               {formatMoney(totalPeriodo)}
             </div>
           </div>
