@@ -44,43 +44,33 @@ export function Header({ onMenuClick, showMenuButton, sidebarWidth = "0px" }: He
     return (
       <>
         <header
-          style={{ left: sidebarWidth }}
-          className="h-16 border-b border-border bg-white/90 backdrop-blur flex items-center justify-between px-3 fixed top-0 right-0 z-30"
+          style={{ left: sidebarWidth, background: "linear-gradient(180deg, #2563EB 0%, #1D4ED8 100%)" }}
+          className="h-16 flex items-center justify-between px-3 fixed top-0 right-0 z-30 text-white"
         >
           <button
             onClick={onMenuClick}
             aria-label="Abrir menu"
-            className="w-11 h-11 flex items-center justify-center rounded-xl text-[#0F172A] active:bg-[#F1F5F9] transition-colors"
+            className="w-11 h-11 flex items-center justify-center rounded-xl text-white active:bg-white/15 transition-colors"
           >
             <Menu size={22} />
           </button>
 
           <div className="flex-1 min-w-0 px-1">
-            <p className="text-[10.5px] font-semibold uppercase tracking-wider text-[#64748B] leading-none">
+            <p className="text-[10.5px] font-semibold uppercase tracking-wider text-white/70 leading-none">
               TôNoLucro
             </p>
-            <p className="text-[14px] font-bold text-[#0F172A] truncate leading-tight mt-0.5">
+            <p className="text-[14px] font-bold text-white truncate leading-tight mt-0.5">
               {businessName || "Seu negócio"}
             </p>
           </div>
 
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setSearchOpen(true)}
-              aria-label="Buscar"
-              className="w-11 h-11 flex items-center justify-center rounded-xl text-[#0F172A] active:bg-[#F1F5F9] transition-colors"
-            >
-              <Search size={20} />
-            </button>
-            <button
-              onClick={() => navigate("/automacao/alertas")}
-              aria-label="Notificações"
-              className="w-11 h-11 flex items-center justify-center rounded-xl text-[#0F172A] active:bg-[#F1F5F9] transition-colors relative"
-            >
-              <Bell size={20} />
-              <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-[#DC2626] ring-2 ring-white" />
-            </button>
-          </div>
+          <button
+            onClick={() => setSearchOpen(true)}
+            aria-label="Buscar"
+            className="w-11 h-11 flex items-center justify-center rounded-xl text-white active:bg-white/15 transition-colors"
+          >
+            <Search size={20} />
+          </button>
         </header>
 
         <CommandDialog open={searchOpen} onOpenChange={setSearchOpen}>
