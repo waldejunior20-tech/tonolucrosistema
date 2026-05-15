@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { format, isToday } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { formatMoney } from "@/components/MoneyInput";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -16,47 +14,17 @@ export default function CaixaDiario() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [periodo, setPeriodo] = useState<Periodo>(30);
 
-  const { totalBruto, totalLiquido, totalTaxas, totalVendas, taxas } = useCaixaDiario(selectedDate);
+  const { taxas } = useCaixaDiario(selectedDate);
   const periodoData = useCaixaPeriodo(periodo);
-
-  const dateLabel = isToday(selectedDate) ? "Hoje" : format(selectedDate, "dd 'de' MMMM", { locale: ptBR });
 
   return (
     <div className="space-y-6 page-enter">
       <FinanceiroCategoryTabs />
       <PageHeader title="Caixa Diário" />
 
-      {/* Hero azul — totais do dia */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary via-primary to-primary/80 p-5 shadow-lg">
-        <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
-        <div className="relative flex items-center justify-between mb-4">
-          <div>
-            <p className="text-[10px] uppercase tracking-wider text-primary-foreground/70 font-semibold">
-              {dateLabel}
-            </p>
-            <p className="text-sm text-primary-foreground/90 font-medium">
-              {totalVendas} venda{totalVendas !== 1 ? "s" : ""} registrada{totalVendas !== 1 ? "s" : ""}
-            </p>
-          </div>
-        </div>
-        <div className="relative grid grid-cols-3 gap-3">
-          <div>
-            <p className="text-[9px] uppercase tracking-wider text-primary-foreground/70 font-semibold mb-1">Bruto</p>
-            <p className="num-depth-light text-[22px] sm:text-[26px] tabular-nums leading-none">{formatMoney(totalBruto)}</p>
-          </div>
-          <div>
-            <p className="text-[9px] uppercase tracking-wider text-primary-foreground/70 font-semibold mb-1">Taxas</p>
-            <p className="num-depth-light text-[18px] sm:text-[22px] tabular-nums leading-none">- {formatMoney(totalTaxas)}</p>
-          </div>
-          <div>
-            <p className="text-[9px] uppercase tracking-wider text-primary-foreground/70 font-semibold mb-1">Líquido</p>
-            <p className="num-depth-light text-[22px] sm:text-[26px] tabular-nums leading-none">{formatMoney(totalLiquido)}</p>
-          </div>
-        </div>
-      </div>
-
       {/* Formulário de fechamento */}
       <FechamentoDiaForm taxas={taxas} onSelectDate={setSelectedDate} />
+
 
       {/* Filtro por período */}
       <div className="space-y-3">
