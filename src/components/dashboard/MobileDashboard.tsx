@@ -317,51 +317,23 @@ export function MobileDashboard() {
         </div>
       </button>
 
-      {/* CAIXA DO MÊS */}
+      {/* CAIXA DIÁRIO — atalho enxuto (números já estão no hero) */}
       <button
         onClick={() => navigate("/financeiro/caixa-diario")}
-        className="w-full text-left rounded-[22px] border border-[#E6EAF0] bg-white p-5 mb-4 active:scale-[0.99] transition-transform shadow-[0_1px_2px_rgba(15,23,42,0.04),0_12px_28px_-14px_rgba(15,23,42,0.12)]"
+        className="w-full text-left rounded-2xl border border-[#E6EAF0] bg-white p-4 mb-4 active:scale-[0.99] transition-transform shadow-sm flex items-center justify-between"
       >
-        <div className="flex items-start justify-between gap-3 mb-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center">
+            <Wallet size={18} strokeWidth={2.4} />
+          </div>
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-[#64748B] mb-1">
-              Caixa do mês
-            </p>
-            <p className={cn(
-              "font-mono font-bold leading-none tracking-tight text-[30px]",
-              caixaPositivo ? "text-[#059669]" : caixaNegativo ? "text-[#DC2626]" : "text-[#0F172A]",
-            )}>
-              {hasFaturamento ? fmtBRL(lucroMes) : "—"}
+            <p className="font-semibold text-[14px] text-[#0F172A] leading-tight">Caixa diário</p>
+            <p className="text-[11.5px] text-[#64748B] mt-0.5">
+              {caixaNegativo ? "Revise despesas hoje" : "Lançamentos e fechamentos"}
             </p>
           </div>
-          <Pill tone={finanTone}><Wallet size={11} />{finanLabel}</Pill>
         </div>
-
-        <div className="grid grid-cols-2 gap-2 mb-3">
-          <div className="rounded-xl bg-[#F8FAFC] border border-[#E6EAF0] p-3">
-            <div className="flex items-center gap-1 mb-1">
-              <ArrowUpRight size={12} className="text-[#059669]" />
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-[#64748B]">Entrada</p>
-            </div>
-            <p className="font-mono text-[15px] font-bold text-[#0F172A]">{fmtBRL(faturamentoMes)}</p>
-          </div>
-          <div className="rounded-xl bg-[#F8FAFC] border border-[#E6EAF0] p-3">
-            <div className="flex items-center gap-1 mb-1">
-              <ArrowDownRight size={12} className="text-[#DC2626]" />
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-[#64748B]">Saída</p>
-            </div>
-            <p className="font-mono text-[15px] font-bold text-[#0F172A]">{fmtBRL(despesasMes)}</p>
-          </div>
-        </div>
-
-        {caixaNegativo && (
-          <p className="text-[12px] text-[#991B1B] font-medium mb-2">Revise despesas hoje.</p>
-        )}
-
-        <div className="flex items-center justify-between text-[#2563EB] font-semibold text-[13px]">
-          <span>Ver caixa</span>
-          <ArrowRight size={15} />
-        </div>
+        <ArrowRight size={16} className="text-[#94A3B8]" />
       </button>
 
       {/* QUICK ACTIONS — 2x2 */}
