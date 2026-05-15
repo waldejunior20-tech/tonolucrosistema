@@ -34,7 +34,7 @@ export function ComprasPeriodoChips({ periodo, customRange, onChange }: Props) {
       : "Personalizado";
 
   return (
-    <div className="flex items-center gap-2 overflow-x-auto no-scrollbar -mx-1 px-1 py-1">
+    <div className="flex items-center gap-2 overflow-x-auto -mx-1 px-1 py-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       {CHIPS.map((c) => {
         const active = periodo === c.value;
         return (
