@@ -1,53 +1,38 @@
-# Redesign do módulo de Compras (mobile-first)
+# Histórico de Compras como módulo próprio
 
-Vou reformular a página `/insumos/historico-compras` mantendo toda a lógica de dados que já existe (view `vw_historico_compras_completo`, RLS, hooks), só trocando a apresentação para o padrão que você pediu.
+Hoje "Histórico de Compras" vive embaixo de Insumos → Comprados (rota `/insumos/comprados/historico`) e aparece como sub-aba junto com "Insumos Comprados". A ideia é dar a ele uma "casa própria" no menu, separado de Insumos.
 
-## O que muda visualmente
+## O que muda
 
-### 1. Topo — período + total
-- Filtros em chips horizontais: **7d · 30d · Este mês · Personalizado** (calendário)
-- Total grande do período + nº de compras + variação % vs período anterior
-- Visual limpo, fundo com leve degradê (igual fizemos no Caixa do Mês)
+### 1. Navegação (sidebar desktop + menu mobile)
+- Adicionar item de 1º nível **"Compras"** com ícone `History` (ou `Receipt`), logo abaixo de Insumos, apontando para `/compras/historico`.
+- Remover o sub-link "Histórico de Compras" de dentro de Insumos.
+- Insumos passa a ter só **Comprados** e **Produzidos** como abas (já é o caso em `InsumosCategoryTabs`); o `InsumosSubTabs` (que mostrava Comprados / Histórico) deixa de ser usado nessa página e some.
 
-### 2. Gráfico principal — POR FORNECEDOR
-- Barras horizontais empilhadas (top 5 fornecedores no período)
-- Cada barra mostra: nome do fornecedor + valor gasto + % do total
-- Toggle discreto pra alternar para "Por categoria" se quiser
-- Tap numa barra → filtra a lista abaixo por aquele fornecedor
+### 2. Rota
+- Criar nova rota `/compras/historico` apontando para `InsumosHistoricoCompras` (mesmo componente, só renomeado conceitualmente).
+- Manter `/insumos/comprados/historico` por 1 release como redirect → `/compras/historico` (não quebra links/QR antigos).
 
-### 3. Lista de compras (cronológica)
-- Cada linha = **uma compra** (uma "ida ao mercado"):
-  - Logo/inicial do fornecedor + nome do mercado em destaque
-  - Data ("Hoje", "Ontem", "12 mai")
-  - Valor total da compra à direita
-  - Pequeno chip mostrando "5 itens"
-- Agrupadas por dia (separador "HOJE · 15 MAI")
-- Tap abre o cupom
+### 3. Página em si
+- Remove `<InsumosCategoryTabs />` e `<InsumosSubTabs />` do topo de `InsumosHistoricoCompras.tsx` — agora ela é uma página autônoma, não vive dentro do contexto "Insumos".
+- Mantém todo o resto: hero com período, gráfico por fornecedor, lista por dia, cupom-sheet. Lógica de dados intacta.
 
-### 4. Modal "Cupom" (sheet vindo de baixo)
-Estilo nota fiscal:
-- Cabeçalho: nome do fornecedor + data + nº da nota (se tiver)
-- Lista de itens, cada um:
-  - Nome do insumo + qtd × unidade
-  - Preço unitário
-  - **Badge de variação**: `↑ 5%` (vermelho) ou `↓ 3%` (verde) comparado à última compra do mesmo insumo
-- Linha pontilhada
-- **TOTAL** em destaque embaixo
-- Botão "Ver insumo no histórico" pra cada item
+### 4. Bottom nav mobile (opcional, recomendado)
+Hoje a barra inferior tem: Início · Insumos · Fichas · Caixa · Mais. Não cabe um 6º item fixo. Sugestão: **manter Compras só no menu lateral / "Mais"**, sem entrar no bottom nav (usuário acessa via gaveta). Se quiser, posso trocar Fichas por Compras no bottom nav, mas acho que Fichas é mais usado no dia a dia.
 
-## Técnico
+## Arquivos tocados
 
-- Reutiliza a query existente `vw_historico_compras_completo` (já agrupa tudo)
-- Cria helper que agrupa rows por `nota_fiscal_id` (ou por fornecedor+data quando não houver NF) → cada grupo = 1 compra
-- Variação de preço por item: pega o `preco_unitario` anterior do mesmo `insumo_id` da query já carregada (sem nova chamada ao banco)
-- Componentes novos:
-  - `ComprasPeriodoChips.tsx` — chips de período
-  - `ComprasGraficoFornecedor.tsx` — barras horizontais
-  - `CompraCard.tsx` — linha da lista
-  - `CupomCompraSheet.tsx` — modal com itens + variação
-- Mantém a tabela atual escondida em `md:` se quiser desktop, ou substitui de vez (recomendo substituir — o mobile-first fica melhor pros dois)
+- `src/components/layout/UnifiedSidebar.tsx` — adicionar item "Compras" em `navigationItems`
+- `src/components/layout/MobileSidebar.tsx` — refletir mesma mudança (se tiver lista própria)
+- `src/components/insumos/InsumosSubTabs.tsx` — apagar (não tem mais função) ou esvaziar
+- `src/pages/InsumosComprados.tsx` — remover uso de `InsumosSubTabs`
+- `src/pages/InsumosHistoricoCompras.tsx` — remover `InsumosCategoryTabs` + `InsumosSubTabs` do topo
+- `src/App.tsx` — adicionar rota `/compras/historico` e redirect da antiga
 
-## Fora de escopo agora
-- Não mexo em backend/RLS/migrations
-- Não mexo em outras páginas (Insumos, Fichas, Dashboard)
-- Não troco cores base (azul/branco continuam)
+## Fora de escopo
+- Não mexo em backend, RLS, queries.
+- Não mudo o visual da página (hero, gráfico, lista continuam iguais).
+- Não toco em Insumos Produzidos.
+
+## Pergunta rápida
+Confirma o nome **"Compras"** no menu? Outras opções: "Histórico de Compras", "Notas Fiscais", "Mercado". Sigo com "Compras" se você não responder.

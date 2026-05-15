@@ -20,7 +20,7 @@ import { toast } from "sonner";
 import { AlertCircle, Check, Pencil, X, Sparkles, Search, ShieldAlert } from "lucide-react";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { InsumosCategoryTabs } from "@/components/insumos/InsumosCategoryTabs";
-import { InsumosSubTabs } from "@/components/insumos/InsumosSubTabs";
+
 import { EmptyState } from "@/components/EmptyState";
 import { SkeletonTable } from "@/components/SkeletonCard";
 import { formatMoney, formatQuantidade } from "@/components/MoneyInput";
@@ -186,7 +186,6 @@ export default function InsumosRevisar() {
   return (
     <div className="space-y-6 page-enter">
       <InsumosCategoryTabs />
-      <InsumosSubTabs />
       <PageHeader
         title="Revisar Classificações"
         description="Itens importados que precisam confirmação humana antes de virar insumo, despesa ou embalagem."
