@@ -281,7 +281,7 @@ export function MobileDashboard() {
             </button>
           </div>
           <p className={cn(
-            "font-mono font-bold leading-none tracking-tight text-white drop-shadow-sm transition-all",
+            "leading-none transition-all num-depth-light",
             showSaldo ? "text-[52px]" : "text-[40px] tracking-widest",
           )}>
             {!hasFaturamento ? "—" : showSaldo ? fmtBRL(lucroMes) : mask}
