@@ -359,49 +359,6 @@ export function MobileDashboard() {
         </button>
       </div>
 
-      {/* SMART FEED */}
-      <div className="flex items-center justify-between mb-2 px-1">
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">
-          Agora precisa de atenção
-        </p>
-        <button
-          onClick={() => navigate("/automacao/alertas")}
-          className="text-[11px] font-semibold uppercase tracking-wider text-[#2563EB]"
-        >
-          Ver tudo
-        </button>
-      </div>
-
-      <div className="space-y-2">
-        {feed.map((item) => (
-          <button
-            key={item.id}
-            onClick={item.onClick}
-            className="w-full flex items-start gap-3 p-3.5 rounded-2xl bg-white border border-[#E6EAF0] active:scale-[0.99] transition-transform text-left min-h-[64px]"
-          >
-            <div className={cn(
-              "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
-              toneBg[item.tone],
-            )}>
-              <item.icon size={16} strokeWidth={2.4} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between gap-2">
-                <p className="font-semibold text-[13.5px] text-[#0F172A] leading-tight truncate">
-                  {item.title}
-                </p>
-                <Pill tone={item.tone}>
-                  {item.tone === "danger" ? "Alta" : item.tone === "warning" ? "Média" : "OK"}
-                </Pill>
-              </div>
-              <p className="text-[12px] text-[#64748B] mt-0.5 leading-snug">{item.message}</p>
-              {item.time && (
-                <p className="text-[10.5px] text-[#94A3B8] mt-1">{item.time}</p>
-              )}
-            </div>
-          </button>
-        ))}
-      </div>
       </div>
     </div>
   );
