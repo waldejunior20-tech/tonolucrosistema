@@ -13,6 +13,8 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { usePriceAlerts } from "@/hooks/usePriceAlerts";
 import { useProfitAlerts } from "@/hooks/useProfitAlerts";
 import { OnboardingChecklist } from "@/components/dashboard/OnboardingChecklist";
+import { MobileDashboard } from "@/components/dashboard/MobileDashboard";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
 // ─── Palette (scoped to dashboard) ───────────────────────────────────
