@@ -329,55 +329,146 @@ export function MobileDashboard() {
       {/* Card branco sobreposto — tira a sensação de esmagado */}
       <div className="px-4 -mt-12 relative z-10">
 
-      {/* HERO — Seu cardápio hoje */}
-      <button
-        onClick={() => navigate("/automacao/saude")}
-        className="w-full text-left rounded-[22px] border border-[#E6EAF0] bg-white p-5 mb-4 active:scale-[0.99] transition-transform shadow-[0_1px_2px_rgba(15,23,42,0.04),0_12px_28px_-14px_rgba(15,23,42,0.12)]"
-        style={{
-          background:
-            "radial-gradient(60% 50% at 0% 0%, rgba(37,99,235,0.06) 0%, transparent 60%), radial-gradient(50% 60% at 100% 100%, rgba(5,150,105,0.06) 0%, transparent 65%), #FFFFFF",
-        }}
-      >
-        <div className="flex items-start justify-between gap-3 mb-4">
-          <div className="min-w-0">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-[#64748B] mb-1">
-              Seu cardápio hoje
-            </p>
-            <h2 className="font-heading text-[20px] font-bold leading-tight text-[#0F172A]">
-              {cardapioTone === "success" ? "Cardápio protegido" : cardapioTone === "warning" ? "Precisa de atenção" : "Risco na margem"}
-            </h2>
-          </div>
-          <Pill tone={cardapioTone}>
-            <ShieldCheck size={11} /> {cardapioLabel}
-          </Pill>
-        </div>
+      {/* INSIGHTS — carrossel deslizável horizontal */}
+      {(() => {
+        type Insight = {
+          key: string;
+          tag: string;
+          tagColor: string;
+          icon: any;
+          iconBg: string;
+          iconColor: string;
+          title: string;
+          subtitle: string;
+          metric?: string;
+          metricColor?: string;
+          cta: string;
+          onClick: () => void;
+        };
+        const insights: Insight[] = [];
 
-        <div className="grid grid-cols-3 gap-2 mb-4">
-          <div className="rounded-xl bg-[#F8FAFC] border border-[#E6EAF0] p-3">
-            <p className="font-mono text-[20px] font-bold text-[#059669] leading-none">{fichasMargemOk}</p>
-            <p className="text-[10.5px] text-[#64748B] mt-1.5 font-medium">saudáveis</p>
-          </div>
-          <div className="rounded-xl bg-[#F8FAFC] border border-[#E6EAF0] p-3">
-            <p className={cn(
-              "font-mono text-[20px] font-bold leading-none",
-              precosRevisar > 0 ? "text-[#D97706]" : "text-[#059669]",
-            )}>{precosRevisar}</p>
-            <p className="text-[10.5px] text-[#64748B] mt-1.5 font-medium">a revisar</p>
-          </div>
-          <div className="rounded-xl bg-[#F8FAFC] border border-[#E6EAF0] p-3">
-            <p className={cn(
-              "font-mono text-[20px] font-bold leading-none",
-              perderamMargem.length > 0 ? "text-[#DC2626]" : "text-[#059669]",
-            )}>{perderamMargem.length}</p>
-            <p className="text-[10.5px] text-[#64748B] mt-1.5 font-medium">críticos</p>
-          </div>
-        </div>
+        // 1) Insumo que mais subiu
+        const topAlta = priceAlerts[0];
+        if (topAlta) {
+          insights.push({
+            key: "alta",
+            tag: "Alerta de preço",
+            tagColor: "bg-[#FEF2F2] text-[#DC2626]",
+            icon: TrendingUp,
+            iconBg: "bg-[#FEF2F2]",
+            iconColor: "text-[#DC2626]",
+            title: topAlta.nome,
+            subtitle: "Subiu nas últimas compras",
+            metric: `+${topAlta.variacaoPct.toFixed(1)}%`,
+            metricColor: "text-[#DC2626]",
+            cta: "Ver insumo",
+            onClick: () => navigate("/insumos/comprados"),
+          });
+        }
 
-        <div className="flex items-center justify-between text-[#2563EB] font-semibold text-[13px]">
-          <span>Ver Radar de Lucro</span>
-          <ArrowRight size={15} />
-        </div>
-      </button>
+        // 2) Pizza candidata a promoção (maior preço de venda como proxy)
+        const topPizza = [...fichasPizza]
+          .filter((f: any) => f.preco_venda_g || f.preco_venda_m || f.preco_venda_p)
+          .sort((a: any, b: any) =>
+            (b.preco_venda_g || b.preco_venda_m || b.preco_venda_p || 0) -
+            (a.preco_venda_g || a.preco_venda_m || a.preco_venda_p || 0)
+          )[0] as any;
+        if (topPizza) {
+          insights.push({
+            key: "promo",
+            tag: "Top pra promoção",
+            tagColor: "bg-[#ECFDF5] text-[#059669]",
+            icon: Sparkles,
+            iconBg: "bg-[#ECFDF5]",
+            iconColor: "text-[#059669]",
+            title: topPizza.nome,
+            subtitle: "Boa margem para promo",
+            metric: fmtBRL(topPizza.preco_venda_g || topPizza.preco_venda_m || topPizza.preco_venda_p),
+            metricColor: "text-[#0F172A]",
+            cta: "Criar promoção",
+            onClick: () => navigate("/promocoes"),
+          });
+        }
+
+        // 3) Última compra registrada
+        if (ultimaCompra) {
+          insights.push({
+            key: "ultima",
+            tag: "Última compra",
+            tagColor: "bg-[#EFF6FF] text-[#2563EB]",
+            icon: Receipt,
+            iconBg: "bg-[#EFF6FF]",
+            iconColor: "text-[#2563EB]",
+            title: ultimaCompra.nome,
+            subtitle: ultimaCompra.fornecedor || (ultimaCompra.data_compra ? format(new Date(ultimaCompra.data_compra), "dd/MM/yyyy") : "Recente"),
+            metric: ultimaCompra.preco_pago != null ? fmtBRL(Number(ultimaCompra.preco_pago)) : undefined,
+            metricColor: "text-[#0F172A]",
+            cta: "Ver histórico",
+            onClick: () => navigate("/insumos/historico-compras"),
+          });
+        }
+
+        // Fallback: cardápio status
+        if (insights.length === 0) {
+          insights.push({
+            key: "ok",
+            tag: "Tudo certo",
+            tagColor: "bg-[#ECFDF5] text-[#059669]",
+            icon: ShieldCheck,
+            iconBg: "bg-[#ECFDF5]",
+            iconColor: "text-[#059669]",
+            title: "Cardápio protegido",
+            subtitle: "Nenhum alerta agora",
+            cta: "Ver Radar de Lucro",
+            onClick: () => navigate("/automacao/saude"),
+          });
+        }
+
+        return (
+          <div className="mb-4 -mx-4">
+            <div className="flex items-center justify-between px-5 mb-2">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">
+                Insights de hoje
+              </p>
+              <span className="text-[10.5px] text-[#94A3B8] font-medium">deslize →</span>
+            </div>
+            <div className="flex gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2 px-4 [&::-webkit-scrollbar]:hidden">
+              {insights.map((it) => {
+                const Icon = it.icon;
+                return (
+                  <button
+                    key={it.key}
+                    onClick={it.onClick}
+                    className="snap-start shrink-0 w-[78%] text-left rounded-2xl border border-[#E6EAF0] bg-white p-4 active:scale-[0.99] transition-transform shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_20px_-12px_rgba(15,23,42,0.12)]"
+                  >
+                    <div className="flex items-start justify-between gap-2 mb-3">
+                      <span className={cn("inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider", it.tagColor)}>
+                        {it.tag}
+                      </span>
+                      <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shrink-0", it.iconBg)}>
+                        <Icon size={17} className={it.iconColor} strokeWidth={2.4} />
+                      </div>
+                    </div>
+                    <h3 className="font-heading text-[15.5px] font-bold text-[#0F172A] leading-tight line-clamp-1">
+                      {it.title}
+                    </h3>
+                    <p className="text-[11.5px] text-[#64748B] mt-0.5 line-clamp-1">{it.subtitle}</p>
+                    {it.metric && (
+                      <p className={cn("font-mono text-[20px] font-bold leading-none mt-3", it.metricColor)}>
+                        {it.metric}
+                      </p>
+                    )}
+                    <div className="flex items-center gap-1 text-[#2563EB] font-semibold text-[12px] mt-3">
+                      <span>{it.cta}</span>
+                      <ArrowRight size={13} />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* CAIXA DIÁRIO — atalho enxuto (números já estão no hero) */}
       <button
