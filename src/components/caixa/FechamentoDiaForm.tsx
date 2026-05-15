@@ -124,16 +124,11 @@ export function FechamentoDiaForm({ taxas, onSelectDate }: Props) {
   return (
     <Card className="rounded-2xl border-primary/20 shadow-sm">
       <CardHeader className="pb-3">
-        <div className="flex items-start justify-between gap-3 flex-wrap">
-          <div>
-            <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <TrendingUp size={16} className="text-primary" />
-              Lançar vendas do dia
-            </CardTitle>
-            <p className="text-xs text-muted-foreground mt-1">
-              Informe quanto foi vendido por forma de pagamento. Esses valores alimentam DRE e Ponto de Equilíbrio.
-            </p>
-          </div>
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <CardTitle className="text-base font-semibold flex items-center gap-2">
+            <TrendingUp size={16} className="text-primary" />
+            Lançar vendas do dia
+          </CardTitle>
           <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
             <PopoverTrigger asChild>
               <Button variant="outline" size="sm" className="gap-2">
