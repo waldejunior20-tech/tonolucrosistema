@@ -294,15 +294,16 @@ export default function InsumosHistoricoCompras() {
             {filtered.length} {filtered.length === 1 ? "item" : "itens"}
           </div>
 
-        <div className="mt-4">
-          <ComprasPeriodoChips
-            periodo={periodo}
-            customRange={customRange}
-            onChange={(p, r) => {
-              setPeriodo(p);
-              if (p === "custom") setCustomRange(r);
-            }}
-          />
+          <div className="mt-4">
+            <ComprasPeriodoChips
+              periodo={periodo}
+              customRange={customRange}
+              onChange={(p, r) => {
+                setPeriodo(p);
+                if (p === "custom") setCustomRange(r);
+              }}
+            />
+          </div>
         </div>
       </div>
 
