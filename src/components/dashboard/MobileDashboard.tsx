@@ -243,23 +243,35 @@ export function MobileDashboard() {
           </button>
         </div>
 
-        {/* Caixa do mês — número gigante dentro do hero */}
-        <div className="relative mt-6">
-          <div className="flex items-center gap-2 mb-1.5">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-white/70">
-              Caixa do mês
-            </p>
-            <span className={cn(
-              "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider backdrop-blur",
-              !hasFaturamento ? "bg-white/15 text-white/80" :
-              caixaNegativo ? "bg-[#DC2626]/90 text-white" :
-              "bg-[#10B981]/90 text-white",
-            )}>
-              <Wallet size={10} />{finanLabel}
-            </span>
+        {/* Caixa do mês — número GIGANTE com olhinho */}
+        <div className="relative mt-7">
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <div className="flex items-center gap-2">
+              <p className="text-[11.5px] font-semibold uppercase tracking-wider text-white/70">
+                Caixa do mês
+              </p>
+              <span className={cn(
+                "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider backdrop-blur",
+                !hasFaturamento ? "bg-white/15 text-white/80" :
+                caixaNegativo ? "bg-[#DC2626]/90 text-white" :
+                "bg-[#10B981]/90 text-white",
+              )}>
+                <Wallet size={10} />{finanLabel}
+              </span>
+            </div>
+            <button
+              onClick={toggleSaldo}
+              aria-label={showSaldo ? "Ocultar saldo" : "Mostrar saldo"}
+              className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center active:scale-95 transition"
+            >
+              {showSaldo ? <Eye size={15} className="text-white" /> : <EyeOff size={15} className="text-white" />}
+            </button>
           </div>
-          <p className="font-mono text-[40px] font-bold leading-none tracking-tight text-white drop-shadow-sm">
-            {hasFaturamento ? fmtBRL(lucroMes) : "—"}
+          <p className={cn(
+            "font-mono font-bold leading-none tracking-tight text-white drop-shadow-sm transition-all",
+            showSaldo ? "text-[52px]" : "text-[40px] tracking-widest",
+          )}>
+            {!hasFaturamento ? "—" : showSaldo ? fmtBRL(lucroMes) : mask}
           </p>
           {(() => {
             const maxVal = Math.max(faturamentoMes, despesasMes, 1);
