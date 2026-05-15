@@ -98,10 +98,41 @@ export default function CaixaDiario() {
   return (
     <div className="space-y-6 page-enter">
       <FinanceiroCategoryTabs />
-      <PageHeader
-        title="Caixa Diário"
-        description="Registre o fechamento de vendas por forma de pagamento. Os valores alimentam automaticamente DRE e Ponto de Equilíbrio."
-      />
+      <PageHeader title="Caixa Diário" />
+
+      {/* Hero azul — totais do dia */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary via-primary to-primary/80 p-5 shadow-lg">
+        <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
+        <div className="relative flex items-center justify-between mb-4">
+          <div>
+            <p className="text-[10px] uppercase tracking-wider text-primary-foreground/70 font-semibold">
+              {dateLabel}
+            </p>
+            <p className="text-sm text-primary-foreground/90 font-medium">
+              {totalVendas} venda{totalVendas !== 1 ? "s" : ""} registrada{totalVendas !== 1 ? "s" : ""}
+            </p>
+          </div>
+          {isClosed && (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/15 text-primary-foreground text-[11px] font-semibold">
+              <Lock size={11} /> Fechado
+            </span>
+          )}
+        </div>
+        <div className="relative grid grid-cols-3 gap-3">
+          <div>
+            <p className="text-[9px] uppercase tracking-wider text-primary-foreground/70 font-semibold mb-1">Bruto</p>
+            <p className="num-depth-light text-[22px] sm:text-[26px] tabular-nums leading-none">{formatMoney(totalBruto)}</p>
+          </div>
+          <div>
+            <p className="text-[9px] uppercase tracking-wider text-primary-foreground/70 font-semibold mb-1">Taxas</p>
+            <p className="num-depth-light text-[18px] sm:text-[22px] tabular-nums leading-none">- {formatMoney(totalTaxas)}</p>
+          </div>
+          <div>
+            <p className="text-[9px] uppercase tracking-wider text-primary-foreground/70 font-semibold mb-1">Líquido</p>
+            <p className="num-depth-light text-[22px] sm:text-[26px] tabular-nums leading-none">{formatMoney(totalLiquido)}</p>
+          </div>
+        </div>
+      </div>
 
       {/* Formulário consolidado de fechamento */}
       <FechamentoDiaForm taxas={taxas} onSelectDate={setSelectedDate} />
@@ -170,22 +201,6 @@ export default function CaixaDiario() {
                       </div>
                     </div>
                   ))}
-                </div>
-
-                {/* Totals */}
-                <div className="grid grid-cols-3 gap-3 mt-4 p-4 rounded-xl bg-gradient-to-r from-primary/5 to-success/5 border border-border/40">
-                  <div>
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Bruto</p>
-                    <p className="text-xl font-extrabold text-money tabular-nums">{formatMoney(totalBruto)}</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Taxas</p>
-                    <p className="text-base font-bold text-destructive tabular-nums">- {formatMoney(totalTaxas)}</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Líquido → DRE</p>
-                    <p className="text-xl font-extrabold text-success tabular-nums">{formatMoney(totalLiquido)}</p>
-                  </div>
                 </div>
 
                 {/* Lançamentos individuais (apenas remoção, sem nova entrada) */}
