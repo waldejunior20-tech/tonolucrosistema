@@ -245,8 +245,6 @@ export default function Dashboard() {
   const [userName, setUserName] = useState("");
   const [businessName, setBusinessName] = useState("");
 
-  if (isMobile) return <MobileDashboard />;
-
   const { faturamentoMes, despesasMes, cmvPct, cmvMeta, comparativos } = useDashboardData();
   const { data: priceAlerts = [] } = usePriceAlerts();
   const { data: profitAlerts = [] } = useProfitAlerts(20);
@@ -425,6 +423,8 @@ export default function Dashboard() {
       tone: "success",
     });
   }
+
+  if (isMobile) return <MobileDashboard />;
 
   return (
     <div className={cn("page-enter relative -m-4 md:-m-6 lg:-m-8 p-4 md:p-6 lg:p-8 pb-12 min-h-[calc(100vh-4rem)] overflow-hidden", C.bg)}>
