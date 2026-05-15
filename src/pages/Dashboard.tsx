@@ -241,8 +241,11 @@ function MiniTile({
 // ─── Main ────────────────────────────────────────────────────────────
 export default function Dashboard() {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [userName, setUserName] = useState("");
   const [businessName, setBusinessName] = useState("");
+
+  if (isMobile) return <MobileDashboard />;
 
   const { faturamentoMes, despesasMes, cmvPct, cmvMeta, comparativos } = useDashboardData();
   const { data: priceAlerts = [] } = usePriceAlerts();
