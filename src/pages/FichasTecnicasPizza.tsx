@@ -793,9 +793,9 @@ export default function FichasTecnicasPizza() {
                         <Table className="table-fixed w-full">
                           <TableHeader>
                             <TableRow className="!bg-transparent">
-                              <TableHead className="w-2/5 px-4">Insumo</TableHead>
-                              <TableHead className="w-1/4 text-center bg-slate-50/50 dark:bg-muted/30">Quantidades (P · M · G)</TableHead>
-                              <TableHead className="w-1/5 text-right px-4">Custos</TableHead>
+                              <TableHead className="w-[45%] px-3">Insumo</TableHead>
+                              <TableHead className="w-[30%] text-center bg-slate-50/40 dark:bg-muted/30">Quantidades (P · M · G)</TableHead>
+                              <TableHead className="w-[25%] text-right px-3">Custos</TableHead>
                               <TableHead className="w-[44px] !px-1"></TableHead>
                             </TableRow>
                           </TableHeader>
