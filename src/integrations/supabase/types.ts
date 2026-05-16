@@ -865,11 +865,13 @@ export type Database = {
           data_pagamento: string | null
           data_vencimento: string
           descricao: string | null
+          descricao_limpa: string | null
           documento_hash: string | null
           forma_pagamento: string | null
           fornecedor: string
           id: string
           linha_digitavel: string | null
+          mensagem_whatsapp: string | null
           nosso_numero: string | null
           nota_fiscal_id: string | null
           numero_parcela: number
@@ -893,11 +895,13 @@ export type Database = {
           data_pagamento?: string | null
           data_vencimento: string
           descricao?: string | null
+          descricao_limpa?: string | null
           documento_hash?: string | null
           forma_pagamento?: string | null
           fornecedor: string
           id?: string
           linha_digitavel?: string | null
+          mensagem_whatsapp?: string | null
           nosso_numero?: string | null
           nota_fiscal_id?: string | null
           numero_parcela?: number
@@ -921,11 +925,13 @@ export type Database = {
           data_pagamento?: string | null
           data_vencimento?: string
           descricao?: string | null
+          descricao_limpa?: string | null
           documento_hash?: string | null
           forma_pagamento?: string | null
           fornecedor?: string
           id?: string
           linha_digitavel?: string | null
+          mensagem_whatsapp?: string | null
           nosso_numero?: string | null
           nota_fiscal_id?: string | null
           numero_parcela?: number
@@ -1464,6 +1470,45 @@ export type Database = {
         }
         Relationships: []
       }
+      insumo_aliases_manuais: {
+        Row: {
+          alias_padrao: string
+          created_at: string | null
+          id: number
+          insumo_id: string
+          unidade_id: string
+        }
+        Insert: {
+          alias_padrao: string
+          created_at?: string | null
+          id?: number
+          insumo_id: string
+          unidade_id: string
+        }
+        Update: {
+          alias_padrao?: string
+          created_at?: string | null
+          id?: number
+          insumo_id?: string
+          unidade_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insumo_aliases_manuais_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "insumos_comprados"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "insumo_aliases_manuais_insumo_id_fkey"
+            columns: ["insumo_id"]
+            isOneToOne: false
+            referencedRelation: "vw_insumos_canonicos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       insumo_canonicos: {
         Row: {
           aliases: string[] | null
@@ -1886,6 +1931,13 @@ export type Database = {
             columns: ["conta_pagar_id"]
             isOneToOne: false
             referencedRelation: "contas_a_pagar"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lancamentos_financeiros_conta_pagar_id_fkey"
+            columns: ["conta_pagar_id"]
+            isOneToOne: false
+            referencedRelation: "v_ultima_mensagem_whatsapp"
             referencedColumns: ["id"]
           },
           {
@@ -2826,6 +2878,42 @@ export type Database = {
           },
         ]
       }
+      v_ultima_mensagem_whatsapp: {
+        Row: {
+          categoria: string | null
+          created_at: string | null
+          data_vencimento: string | null
+          fornecedor: string | null
+          id: string | null
+          mensagem_whatsapp: string | null
+          subcategoria: string | null
+          unidade_id: string | null
+          valor: number | null
+        }
+        Insert: {
+          categoria?: string | null
+          created_at?: string | null
+          data_vencimento?: string | null
+          fornecedor?: string | null
+          id?: string | null
+          mensagem_whatsapp?: string | null
+          subcategoria?: string | null
+          unidade_id?: string | null
+          valor?: number | null
+        }
+        Update: {
+          categoria?: string | null
+          created_at?: string | null
+          data_vencimento?: string | null
+          fornecedor?: string | null
+          id?: string | null
+          mensagem_whatsapp?: string | null
+          subcategoria?: string | null
+          unidade_id?: string | null
+          valor?: number | null
+        }
+        Relationships: []
+      }
       vw_historico_compras_completo: {
         Row: {
           cnpj_fornecedor: string | null
@@ -3085,6 +3173,19 @@ export type Database = {
       gerar_mensagem_lote_insumos: {
         Args: { p_resultados: Json }
         Returns: string
+      }
+      get_mensagem_para_whatsapp: {
+        Args: { p_conta_id?: string; p_unidade_id: string }
+        Returns: {
+          action: string
+          categoria: string
+          data_vencimento: string
+          fornecedor: string
+          id: string
+          mensagem: string
+          subcategoria: string
+          valor: number
+        }[]
       }
       get_user_unidades: {
         Args: { _user_id: string }
