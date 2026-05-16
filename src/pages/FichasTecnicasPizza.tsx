@@ -789,18 +789,13 @@ export default function FichasTecnicasPizza() {
                     }
 
                     return (
-                      <div className="rounded-md border border-border/60 overflow-visible bg-card/40">
+                      <div className="mx-auto max-w-4xl rounded-md border border-border/60 overflow-visible bg-card/40">
                         <Table>
                           <TableHeader>
                             <TableRow className="!bg-transparent">
-                              <TableHead className="w-[300px] ">Ingrediente</TableHead>
-                              <TableHead className="w-[80px] ">Un</TableHead>
-                              <TableHead className="w-[64px] text-right ">Qtd P</TableHead>
-                              <TableHead className="w-[64px] text-right ">Qtd M</TableHead>
-                              <TableHead className="w-[64px] text-right ">Qtd G</TableHead>
-                              <TableHead className="w-[68px] text-right ">R$ P</TableHead>
-                              <TableHead className="w-[68px] text-right ">R$ M</TableHead>
-                              <TableHead className="w-[68px] text-right ">R$ G</TableHead>
+                              <TableHead className="min-w-[340px]">Insumo</TableHead>
+                              <TableHead className="w-[260px] text-center bg-slate-50/50 dark:bg-muted/30">Quantidades (P · M · G)</TableHead>
+                              <TableHead className="w-[180px] text-right">Custos</TableHead>
                               <TableHead className="w-[36px] !px-1"></TableHead>
                             </TableRow>
                           </TableHeader>
@@ -814,6 +809,7 @@ export default function FichasTecnicasPizza() {
                               const fromBase = !!ing.db_id && ingredientesBaseIds.has(ing.db_id);
 
                               const insumoCompradoSel = insumosComprados.find((i) => i.id === ing.insumo_comprado_id);
+                              const insumoProprioSel = insumosProprios.find((i) => i.id === ing.insumo_proprio_id);
                               const familiaCompra = insumoCompradoSel
                                 ? (["kg", "g"].includes(insumoCompradoSel.unidade) ? "peso"
                                   : ["L", "ml"].includes(insumoCompradoSel.unidade) ? "volume" : "un")
@@ -822,19 +818,43 @@ export default function FichasTecnicasPizza() {
                                 : ["L", "ml"].includes(ing.unidade) ? "volume" : "un";
                               const mismatchUnidade = tipoInsumo === "comprado" && familiaCompra && ing.unidade && familiaCompra !== familiaUso;
 
-                              const renderQtdInput = (qtdKey: "qtd_p" | "qtd_m" | "qtd_g", qtdVal: number) => {
+                              // Sugestão fantasma a partir do P
+                              const nomeInsumo = ing.nome_display
+                                || insumoCompradoSel?.nome
+                                || insumoProprioSel?.nome
+                                || "";
+                              const categoriaInsumo = (insumoCompradoSel as any)?.categoria
+                                ?? (insumoProprioSel as any)?.categoria
+                                ?? null;
+                              const sug = ing.qtd_p > 0 ? sugerir(nomeInsumo, ing.qtd_p, categoriaInsumo) : { qtdM: 0, qtdG: 0 };
+                              // Pizza doce: reduz a sugestão (incrementos menores)
+                              const isDoce = form.tipo === "doce";
+                              const sugM = isDoce ? Math.round((sug.qtdM * 0.8) / 5) * 5 : sug.qtdM;
+                              const sugG = isDoce ? Math.round((sug.qtdG * 0.8) / 5) * 5 : sug.qtdG;
+                              const podeSugerir = ing.qtd_p > 0 && (ing.qtd_m === 0 || ing.qtd_g === 0) && (sugM > 0 || sugG > 0);
+
+                              const aplicarSugestao = () => {
+                                if (ing.qtd_m === 0 && sugM > 0) updateIngrediente(idx, "qtd_m", sugM);
+                                if (ing.qtd_g === 0 && sugG > 0) updateIngrediente(idx, "qtd_g", sugG);
+                              };
+
+                              const renderQtdInput = (
+                                qtdKey: "qtd_p" | "qtd_m" | "qtd_g",
+                                qtdVal: number,
+                                placeholderSugestao?: number,
+                              ) => {
                                 const invalid = qtdVal < 0 || qtdVal > 999;
                                 return (
                                   <Input
                                     type="number" step="0.01" min="0"
                                     className={cn(
-                                      "h-8 text-xs text-right  px-1.5 !min-w-0",
+                                      "h-8 w-16 text-center text-xs tabular-nums px-1 border-border/40 bg-background/60 placeholder:text-muted-foreground/50 placeholder:italic !min-w-0",
                                       invalid && "border-destructive focus-visible:border-destructive",
                                     )}
                                     value={qtdVal || ""}
                                     onChange={(e) => updateIngrediente(idx, qtdKey, parseFloat(e.target.value) || 0)}
                                     onBlur={() => autoSaveIngredienteQtd(ing, qtdKey, ing[qtdKey])}
-                                    placeholder="0"
+                                    placeholder={placeholderSugestao && placeholderSugestao > 0 ? `~${placeholderSugestao}` : "0"}
                                   />
                                 );
                               };
@@ -847,11 +867,11 @@ export default function FichasTecnicasPizza() {
                                     fromBase && "border-l-2 border-l-success",
                                   )}
                                 >
-                                  {/* Ingrediente: tipo + nome/busca + badge base inline */}
+                                  {/* BLOCO 1 — INSUMO: tipo + busca (flex-1) + unidade */}
                                   <TableCell className="align-middle !py-2 !px-2 overflow-visible relative">
                                     <div className="flex items-center gap-1.5">
                                       <Select value={normalizarTipoInsumo(ing.tipo_insumo)} onValueChange={(v) => updateIngrediente(idx, "tipo_insumo", v)}>
-                                        <SelectTrigger className="h-8 w-[92px] text-[11px] px-2"><SelectValue /></SelectTrigger>
+                                        <SelectTrigger className="h-8 w-[88px] shrink-0 text-[11px] px-2"><SelectValue /></SelectTrigger>
                                         <SelectContent>
                                           <SelectItem value="comprado">Comprado</SelectItem>
                                           <SelectItem value="proprio">Produzido</SelectItem>
@@ -859,8 +879,8 @@ export default function FichasTecnicasPizza() {
                                       </Select>
                                       <div className="flex-1 relative min-w-0">
                                         {hasInsumoSelected(ing) ? (
-                                          <div className="flex items-center gap-1 h-8">
-                                            <span className="text-xs  font-medium text-foreground truncate" title={ing.nome_display}>{ing.nome_display}</span>
+                                          <div className="flex items-center gap-1 h-8 px-2 rounded-md bg-muted/30">
+                                            <span className="text-xs font-medium text-foreground truncate" title={ing.nome_display}>{ing.nome_display}</span>
                                             {fromBase && (
                                               <Sparkles className="h-3 w-3 text-success shrink-0" aria-label="da base" />
                                             )}
@@ -874,8 +894,8 @@ export default function FichasTecnicasPizza() {
                                               <div className="relative">
                                                 <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground pointer-events-none z-10" />
                                                 <Input
-                                                  placeholder="Buscar..."
-                                                  className="pl-7 h-8 text-xs"
+                                                  placeholder="Buscar ingrediente..."
+                                                  className="pl-7 h-8 text-xs w-full"
                                                   value={buscaAberta === idx ? buscaIngrediente : ""}
                                                   onFocus={() => { if (buscaAberta !== idx) { setBuscaAberta(idx); setBuscaIngrediente(""); } }}
                                                   onChange={(e) => { setBuscaAberta(idx); setBuscaIngrediente(e.target.value); }}
@@ -906,6 +926,12 @@ export default function FichasTecnicasPizza() {
                                           </Popover>
                                         )}
                                       </div>
+                                      <Select value={ing.unidade} onValueChange={(v) => updateIngrediente(idx, "unidade", v)}>
+                                        <SelectTrigger className="h-8 w-[68px] shrink-0 text-[11px] px-2"><SelectValue placeholder="Un" /></SelectTrigger>
+                                        <SelectContent>
+                                          {UNIDADES.map((u) => <SelectItem key={u} value={u}>{u}</SelectItem>)}
+                                        </SelectContent>
+                                      </Select>
                                     </div>
                                     {mismatchUnidade && (
                                       <p className="flex items-center gap-1 text-[10px] text-warning mt-1">
@@ -915,30 +941,32 @@ export default function FichasTecnicasPizza() {
                                     )}
                                   </TableCell>
 
-                                  {/* Unidade */}
-                                  <TableCell className="align-middle !py-2 !px-1.5">
-                                    <Select value={ing.unidade} onValueChange={(v) => updateIngrediente(idx, "unidade", v)}>
-                                      <SelectTrigger className="h-8 text-[11px] px-2"><SelectValue placeholder="Un" /></SelectTrigger>
-                                      <SelectContent>
-                                        {UNIDADES.map((u) => <SelectItem key={u} value={u}>{u}</SelectItem>)}
-                                      </SelectContent>
-                                    </Select>
+                                  {/* BLOCO 2 — QUANTIDADES compactas P/M/G + Aplicar sugestão */}
+                                  <TableCell className="align-middle !py-2 !px-2 bg-slate-50/50 dark:bg-muted/30">
+                                    <div className="flex items-center justify-center gap-1.5">
+                                      {renderQtdInput("qtd_p", ing.qtd_p)}
+                                      {renderQtdInput("qtd_m", ing.qtd_m, sugM)}
+                                      {renderQtdInput("qtd_g", ing.qtd_g, sugG)}
+                                      {podeSugerir && (
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="icon"
+                                          title={`Aplicar sugestão: M ${sugM}g · G ${sugG}g`}
+                                          onClick={aplicarSugestao}
+                                          className="h-7 w-7 text-primary hover:bg-primary/10"
+                                        >
+                                          <Sparkles className="h-3.5 w-3.5" />
+                                        </Button>
+                                      )}
+                                    </div>
                                   </TableCell>
 
-                                  {/* Quantidades */}
-                                  <TableCell className="align-middle !py-2 !px-1">{renderQtdInput("qtd_p", ing.qtd_p)}</TableCell>
-                                  <TableCell className="align-middle !py-2 !px-1">{renderQtdInput("qtd_m", ing.qtd_m)}</TableCell>
-                                  <TableCell className="align-middle !py-2 !px-1">{renderQtdInput("qtd_g", ing.qtd_g)}</TableCell>
-
-                                  {/* Custos */}
-                                  <TableCell className="text-right text-xs  align-middle !py-2 !px-1.5">
-                                    {fmt(custoUnit * converterQuantidade(ing.qtd_p, ing.unidade))}
-                                  </TableCell>
-                                  <TableCell className="text-right text-xs  align-middle !py-2 !px-1.5">
-                                    {fmt(custoUnit * converterQuantidade(ing.qtd_m, ing.unidade))}
-                                  </TableCell>
-                                  <TableCell className="text-right text-xs  align-middle !py-2 !px-1.5">
-                                    {fmt(custoUnit * converterQuantidade(ing.qtd_g, ing.unidade))}
+                                  {/* BLOCO 3 — CUSTOS empilhados (compacto, direita) */}
+                                  <TableCell className="align-middle !py-2 !px-2 text-right text-[11px] font-mono text-muted-foreground tabular-nums leading-tight">
+                                    <div>P: {fmt(custoUnit * converterQuantidade(ing.qtd_p, ing.unidade))}</div>
+                                    <div>M: {fmt(custoUnit * converterQuantidade(ing.qtd_m, ing.unidade))}</div>
+                                    <div>G: {fmt(custoUnit * converterQuantidade(ing.qtd_g, ing.unidade))}</div>
                                   </TableCell>
 
                                   <TableCell className="align-middle !py-2 !px-1">
