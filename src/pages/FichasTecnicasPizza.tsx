@@ -793,9 +793,9 @@ export default function FichasTecnicasPizza() {
                         <Table className="table-fixed w-full">
                           <TableHeader>
                             <TableRow className="!bg-transparent">
-                              <TableHead className="w-auto px-6">Insumo</TableHead>
-                              <TableHead className="w-[280px] text-center bg-slate-50/50 dark:bg-muted/30">Quantidades (P · M · G)</TableHead>
-                              <TableHead className="w-[160px] text-right px-4">Custos</TableHead>
+                              <TableHead className="w-2/5 px-4">Insumo</TableHead>
+                              <TableHead className="w-1/4 text-center bg-slate-50/50 dark:bg-muted/30">Quantidades (P · M · G)</TableHead>
+                              <TableHead className="w-1/5 text-right px-4">Custos</TableHead>
                               <TableHead className="w-[44px] !px-1"></TableHead>
                             </TableRow>
                           </TableHeader>
@@ -868,7 +868,7 @@ export default function FichasTecnicasPizza() {
                                   )}
                                 >
                                   {/* BLOCO 1 — INSUMO: tipo + busca (flex-1) + unidade */}
-                                  <TableCell className="align-middle !py-3 !px-6 overflow-visible relative">
+                                  <TableCell className="align-middle !py-3 !px-4 overflow-visible relative">
                                     <div className="flex items-center gap-2 w-full">
                                       <Select value={normalizarTipoInsumo(ing.tipo_insumo)} onValueChange={(v) => updateIngrediente(idx, "tipo_insumo", v)}>
                                         <SelectTrigger className="h-8 w-[88px] shrink-0 text-[11px] px-2"><SelectValue /></SelectTrigger>
