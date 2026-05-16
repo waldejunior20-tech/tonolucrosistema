@@ -483,10 +483,331 @@ export default function Dashboard() {
         <CTA variant="ghost" icon={Tag} onClick={() => navigate("/precificacao/pizzas")}>Atualizar Preço</CTA>
       </div>
 
-      {/* ─── BENTO GRID ───────────────────────────────────────── */}
+      {/* ─── ROW 1 — HERO CAIXA DO MÊS + PARA VOCÊ AGORA ───── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-5">
+        {/* Hero card — azul (ou vermelho se devedor) */}
+        <div
+          className={cn(
+            "lg:col-span-8 rounded-[2.5rem] p-8 lg:p-10 text-white relative overflow-hidden flex flex-col justify-between min-h-[280px] lg:min-h-[340px]",
+            "shadow-[0_30px_80px_-30px_rgba(37,99,235,0.45)] fade-up",
+            caixaNegativo
+              ? "bg-gradient-to-br from-rose-600 to-rose-700"
+              : "bg-gradient-to-br from-blue-600 to-blue-700",
+          )}
+        >
+          {/* Decor blurs */}
+          <div className="absolute top-0 right-0 w-80 h-80 rounded-full blur-[80px] -mr-20 -mt-20 opacity-50 bg-white/20 pointer-events-none" />
+          <div className="absolute bottom-0 left-1/3 w-64 h-64 rounded-full blur-[100px] opacity-30 bg-white/10 pointer-events-none" />
+
+          <div className="relative z-10">
+            <p className="text-white/75 font-semibold uppercase tracking-[0.2em] text-[11px] mb-3 flex items-center gap-2">
+              Caixa do Mês
+              <span className="w-1.5 h-1.5 rounded-full bg-white/80 animate-pulse" />
+            </p>
+            <div className="flex items-baseline gap-3 flex-wrap">
+              <span className={cn(T.mono, "font-bold leading-none tracking-tight text-[44px] sm:text-[56px] lg:text-[72px]")}>
+                {fmtBRL(lucroMes)}
+              </span>
+              {comparativos?.lucro !== null && comparativos?.lucro !== undefined && (
+                <span className={cn(
+                  "px-3 py-1 rounded-full text-sm font-bold border backdrop-blur-md",
+                  comparativos.lucro >= 0
+                    ? "bg-emerald-400/20 text-emerald-100 border-emerald-300/40"
+                    : "bg-white/15 text-white border-white/30",
+                )}>
+                  {comparativos.lucro >= 0 ? "+" : ""}{comparativos.lucro.toFixed(1)}%
+                </span>
+              )}
+            </div>
+            <p className="text-white/85 text-[13.5px] mt-3 max-w-[480px]">
+              {greetingInsight}
+            </p>
+          </div>
+
+          <div className="relative z-10 flex flex-wrap gap-8 lg:gap-12 mt-8 pt-6 border-t border-white/15">
+            <div>
+              <p className="text-white/70 text-[11px] uppercase tracking-wider font-semibold mb-1">Entradas no mês</p>
+              <p className={cn(T.mono, "text-xl font-bold")}>{fmtBRL(faturamentoMes)}</p>
+            </div>
+            <div>
+              <p className="text-white/70 text-[11px] uppercase tracking-wider font-semibold mb-1">Saídas no mês</p>
+              <p className={cn(T.mono, "text-xl font-bold")}>{fmtBRL(despesasMes)}</p>
+            </div>
+            <div className="ml-auto self-end">
+              <button
+                onClick={() => navigate("/financeiro/caixa-diario")}
+                className="px-5 py-2.5 rounded-xl bg-white text-blue-700 font-semibold text-[13px] hover:bg-blue-50 transition-colors flex items-center gap-2"
+              >
+                Abrir caixa <ArrowRight size={14} />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Para você agora — promo lateral */}
+        <div className="lg:col-span-4 bg-white border border-[#E2E8F0] rounded-[2.5rem] p-7 lg:p-8 flex flex-col justify-between shadow-sm relative overflow-hidden group fade-up">
+          <div className="absolute -right-4 -top-4 w-28 h-28 bg-orange-50 rounded-full opacity-60 group-hover:scale-110 transition-transform" />
+          <div className="relative">
+            <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider mb-4 inline-block">
+              Para você agora
+            </span>
+            {insumoCritico ? (
+              <>
+                <h3 className={cn("font-heading font-bold text-[20px] leading-tight mb-2", C.text)}>
+                  {insumoCritico.nome} subiu {insumoCritico.variacaoPct.toFixed(1)}%
+                </h3>
+                <p className={cn(T.body, C.muted, "text-[13px]")}>
+                  Revise os preços das fichas que usam esse insumo antes que afete a margem.
+                </p>
+              </>
+            ) : prontosPromocao.length > 0 ? (
+              <>
+                <h3 className={cn("font-heading font-bold text-[20px] leading-tight mb-2", C.text)}>
+                  {prontosPromocao.length} produto{prontosPromocao.length > 1 ? "s" : ""} pronto{prontosPromocao.length > 1 ? "s" : ""} pra promoção
+                </h3>
+                <p className={cn(T.body, C.muted, "text-[13px]")}>
+                  Margem segura — bom momento pra lançar campanha.
+                </p>
+              </>
+            ) : (
+              <>
+                <h3 className={cn("font-heading font-bold text-[20px] leading-tight mb-2", C.text)}>
+                  Tudo sob controle por aqui
+                </h3>
+                <p className={cn(T.body, C.muted, "text-[13px]")}>
+                  Nenhum alerta crítico no momento. Continue acompanhando.
+                </p>
+              </>
+            )}
+          </div>
+          <button
+            onClick={() => navigate(insumoCritico ? "/precificacao/pizzas" : "/promocoes")}
+            className="relative w-full mt-6 py-3.5 bg-slate-900 text-white rounded-2xl font-bold text-[13px] transition-all group-hover:bg-blue-600"
+          >
+            {insumoCritico ? "Ver impacto nos preços" : "Criar promoção"}
+          </button>
+        </div>
+      </div>
+
+      {/* ─── ROW 2 — 4 KPIs ─────────────────────────────────── */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-5">
+        {/* Entradas */}
+        <div className="bg-white border border-[#E2E8F0] rounded-3xl p-6 shadow-sm">
+          <div className="flex justify-between items-start mb-3">
+            <p className={cn(T.label, C.muted, "text-[11px]")}>Entradas</p>
+            <div className="text-emerald-500"><ArrowUpRight size={18} /></div>
+          </div>
+          <p className={cn(T.mono, "text-2xl font-bold mb-3", C.text)}>{fmtBRL(faturamentoMes)}</p>
+          <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-emerald-500 rounded-full transition-all"
+              style={{ width: `${Math.min(100, faturamentoMes > 0 ? 100 : 0)}%` }}
+            />
+          </div>
+          {comparativos?.faturamento !== null && comparativos?.faturamento !== undefined && (
+            <p className={cn(
+              "text-[11px] font-semibold mt-2",
+              comparativos.faturamento >= 0 ? "text-emerald-600" : "text-rose-500",
+            )}>
+              {comparativos.faturamento >= 0 ? "+" : ""}{comparativos.faturamento.toFixed(1)}% vs mês anterior
+            </p>
+          )}
+        </div>
+
+        {/* Saídas */}
+        <div className="bg-white border border-[#E2E8F0] rounded-3xl p-6 shadow-sm">
+          <div className="flex justify-between items-start mb-3">
+            <p className={cn(T.label, C.muted, "text-[11px]")}>Saídas</p>
+            <div className="text-rose-500"><ArrowDownRight size={18} /></div>
+          </div>
+          <p className={cn(T.mono, "text-2xl font-bold mb-3", C.text)}>{fmtBRL(despesasMes)}</p>
+          <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-rose-500 rounded-full transition-all"
+              style={{ width: `${Math.min(100, faturamentoMes > 0 ? (despesasMes / faturamentoMes) * 100 : 0)}%` }}
+            />
+          </div>
+          {comparativos?.despesas !== null && comparativos?.despesas !== undefined && (
+            <p className={cn(
+              "text-[11px] font-semibold mt-2",
+              comparativos.despesas <= 0 ? "text-emerald-600" : "text-rose-500",
+            )}>
+              {comparativos.despesas >= 0 ? "+" : ""}{comparativos.despesas.toFixed(1)}% vs mês anterior
+            </p>
+          )}
+        </div>
+
+        {/* CMV % */}
+        <div className="bg-white border border-[#E2E8F0] rounded-3xl p-6 shadow-sm">
+          <p className={cn(T.label, C.muted, "text-[11px] mb-3")}>CMV Operacional</p>
+          <div className="flex items-end justify-between mb-3">
+            <p className={cn(T.mono, "text-2xl font-bold", C.text)}>{cmvPct.toFixed(1)}%</p>
+            <span className={cn(
+              "text-[11px] font-bold",
+              cmvOk ? "text-emerald-600" : "text-rose-500",
+            )}>
+              Meta {cmvMeta}%
+            </span>
+          </div>
+          <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+            <div
+              className={cn(
+                "h-full rounded-full transition-all",
+                cmvOk ? "bg-emerald-500" : cmvPct < cmvMeta * 1.2 ? "bg-amber-400" : "bg-rose-500",
+              )}
+              style={{ width: `${Math.min(100, (cmvPct / (cmvMeta * 1.5)) * 100)}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Lucro Líquido */}
+        <div className="bg-white border border-[#E2E8F0] rounded-3xl p-6 shadow-sm">
+          <p className={cn(T.label, C.muted, "text-[11px] mb-3")}>Lucro Líquido</p>
+          <p className={cn(
+            T.mono, "text-2xl font-bold mb-2",
+            caixaPositivo ? "text-emerald-600" : caixaNegativo ? "text-rose-500" : C.text,
+          )}>
+            {fmtBRL(lucroMes)}
+          </p>
+          <p className={cn(T.body, C.muted, "text-[11px]")}>
+            Margem de {faturamentoMes > 0 ? ((lucroMes / faturamentoMes) * 100).toFixed(1) : "0"}%
+          </p>
+        </div>
+      </div>
+
+      {/* ─── ROW 3 — CHART + CONTAS A VENCER ────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-8">
+        {/* Chart 6 meses */}
+        <div className="lg:col-span-8 bg-white border border-[#E2E8F0] rounded-[2.5rem] p-7 lg:p-8 shadow-sm">
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h3 className="font-heading font-bold text-lg text-slate-900">Desempenho Semestral</h3>
+              <p className={cn(T.body, C.muted, "text-[12px] mt-0.5")}>Últimos 6 meses</p>
+            </div>
+            <div className="flex gap-3 text-[11px]">
+              <span className="flex items-center gap-1.5 font-semibold text-slate-600">
+                <span className="w-2.5 h-2.5 rounded-full bg-blue-600" /> Receita
+              </span>
+              <span className="flex items-center gap-1.5 font-semibold text-slate-600">
+                <span className="w-2.5 h-2.5 rounded-full bg-rose-300" /> Despesa
+              </span>
+            </div>
+          </div>
+          {(() => {
+            const maxVal = Math.max(
+              1,
+              ...graficoMensal.flatMap((m) => [m.receita, m.despesa]),
+            );
+            const currentIdx = graficoMensal.length - 1;
+            return (
+              <div className="h-64 flex items-end justify-between gap-3 lg:gap-4">
+                {graficoMensal.map((m, idx) => {
+                  const hReceita = (m.receita / maxVal) * 100;
+                  const hDespesa = (m.despesa / maxVal) * 100;
+                  const isCurrent = idx === currentIdx;
+                  return (
+                    <div key={m.mes} className="flex-1 flex flex-col items-center gap-3 group">
+                      <div className="w-full flex items-end justify-center gap-1 h-56">
+                        <div
+                          className={cn(
+                            "flex-1 rounded-t-lg transition-all max-w-[16px]",
+                            isCurrent ? "bg-blue-600" : "bg-blue-200/70 group-hover:bg-blue-300",
+                          )}
+                          style={{ height: `${hReceita}%` }}
+                          title={`Receita: ${fmtBRL(m.receita)}`}
+                        />
+                        <div
+                          className="flex-1 rounded-t-lg bg-rose-200 transition-all max-w-[16px] group-hover:bg-rose-300"
+                          style={{ height: `${hDespesa}%` }}
+                          title={`Despesa: ${fmtBRL(m.despesa)}`}
+                        />
+                      </div>
+                      <span className={cn(
+                        T.mono, "text-[10px] font-bold uppercase",
+                        isCurrent ? "text-blue-700" : "text-slate-400",
+                      )}>
+                        {m.mes}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })()}
+        </div>
+
+        {/* Contas a vencer */}
+        <div className="lg:col-span-4 bg-white border border-[#E2E8F0] rounded-[2.5rem] p-7 lg:p-8 shadow-sm flex flex-col">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="font-heading font-bold text-lg text-slate-900">Contas a Vencer</h3>
+            <span className={cn(
+              "text-[10px] font-bold px-2 py-1 rounded-full",
+              contasVencendo.length > 0 ? "bg-rose-100 text-rose-600" : "bg-emerald-100 text-emerald-600",
+            )}>
+              {contasVencendo.length} pendentes
+            </span>
+          </div>
+          {contasVencendo.length > 0 ? (
+            <>
+              <div className="space-y-3 flex-1">
+                {contasVencendo.slice(0, 3).map((c: any, idx) => {
+                  const dias = Math.ceil(
+                    (new Date(c.data_lancamento).getTime() - Date.now()) / 86400000,
+                  );
+                  const urgente = dias <= 1;
+                  return (
+                    <div
+                      key={idx}
+                      className={cn(
+                        "flex items-center justify-between p-3.5 rounded-2xl transition-colors",
+                        urgente ? "bg-rose-50" : "border border-slate-100",
+                      )}
+                    >
+                      <div className="flex gap-3 items-center min-w-0">
+                        <div className={cn(
+                          "w-10 h-10 rounded-xl flex items-center justify-center font-bold text-[10px] shrink-0 uppercase",
+                          urgente ? "bg-rose-100 text-rose-600" : "bg-blue-50 text-blue-600",
+                        )}>
+                          {dias <= 0 ? "Hoje" : `${dias}d`}
+                        </div>
+                        <div className="min-w-0">
+                          <p className={cn(T.accent, "text-[13px] truncate", C.text)}>
+                            {c.descricao || "Conta a pagar"}
+                          </p>
+                          <p className="text-[10.5px] text-slate-400">
+                            {dias <= 0 ? "Vence hoje" : `Vence em ${dias} dia${dias > 1 ? "s" : ""}`}
+                          </p>
+                        </div>
+                      </div>
+                      <p className={cn(T.mono, "font-bold text-[13px] whitespace-nowrap ml-2", C.text)}>
+                        {fmtBRL(Number(c.valor))}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+              <button
+                onClick={() => navigate("/financeiro/contas-pagar")}
+                className="mt-5 text-[13px] font-bold text-blue-600 hover:text-blue-700 flex items-center gap-2"
+              >
+                Ver todas as contas <ArrowRight size={14} />
+              </button>
+            </>
+          ) : (
+            <EmptyState
+              icon={CheckCircle2}
+              title="Nenhuma conta urgente"
+              hint="Você está em dia com os pagamentos dos próximos 7 dias."
+              tone="success"
+            />
+          )}
+        </div>
+      </div>
+
+      {/* ─── BENTO GRID — SEÇÕES RICAS (mantido) ────────────── */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 md:gap-5">
 
-        {/* ROW 1 — RADAR DE LUCRO (hero principal, col-span-8) */}
+        {/* RADAR DE LUCRO (col-span-8) */}
         <Bento hero className="lg:col-span-8 relative overflow-hidden">
           {/* Aurora layer — blue/violet/green, very low opacity */}
           <div
@@ -495,28 +816,6 @@ export default function Dashboard() {
             style={{
               background:
                 "radial-gradient(60% 50% at 8% 0%, rgba(37,99,235,0.10) 0%, transparent 60%), radial-gradient(50% 60% at 100% 10%, rgba(139,92,246,0.09) 0%, transparent 65%), radial-gradient(70% 60% at 90% 100%, rgba(5,150,105,0.08) 0%, transparent 65%), linear-gradient(135deg,#FFFFFF 0%,#FAFCFF 100%)",
-            }}
-          />
-          {/* Tone-aware accent wash */}
-          <div
-            aria-hidden
-            className={cn(
-              "absolute inset-0 pointer-events-none opacity-70",
-              radarTone === "danger" && "bg-[radial-gradient(80%_50%_at_0%_0%,rgba(220,38,38,0.06)_0%,transparent_55%)]",
-              radarTone === "warning" && "bg-[radial-gradient(80%_50%_at_0%_0%,rgba(217,119,6,0.06)_0%,transparent_55%)]",
-              radarTone === "success" && "bg-[radial-gradient(80%_50%_at_0%_0%,rgba(5,150,105,0.06)_0%,transparent_55%)]",
-            )}
-          />
-          {/* Subtle grid texture, masked to top-right */}
-          <div
-            aria-hidden
-            className="absolute inset-0 pointer-events-none opacity-[0.35]"
-            style={{
-              backgroundImage:
-                "linear-gradient(to right, rgba(15,23,42,0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(15,23,42,0.04) 1px, transparent 1px)",
-              backgroundSize: "28px 28px",
-              maskImage: "radial-gradient(60% 60% at 90% 0%, black, transparent 70%)",
-              WebkitMaskImage: "radial-gradient(60% 60% at 90% 0%, black, transparent 70%)",
             }}
           />
           <div className="relative flex flex-col h-full">
@@ -587,26 +886,8 @@ export default function Dashboard() {
                     tone={(fichasIncompletas + warnings.length) > 0 ? "warning" : "success"}
                   />
                 </div>
-
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {insumoCritico ? (
-                    <>
-                      <CTA variant="primary" onClick={() => navigate("/precificacao/pizzas")}>
-                        Ver impacto nos preços
-                      </CTA>
-                      <CTA variant="ghost" onClick={() => navigate("/insumos/comprados")}>
-                        Histórico do insumo
-                      </CTA>
-                    </>
-                  ) : (
-                    <CTA variant="primary" onClick={() => navigate("/automacao/saude")}>
-                      Ver saúde do cardápio
-                    </CTA>
-                  )}
-                </div>
               </div>
 
-              {/* Right: only show ring when we have a clear, explainable metric */}
               {totalFichas > 0 && (
                 <div className="hidden md:flex flex-col items-center justify-center gap-2 pt-1">
                   <ProgressRing
@@ -628,75 +909,51 @@ export default function Dashboard() {
           </div>
         </Bento>
 
-        {/* ROW 1 — STATUS FINANCEIRO (col-span-4, mais enxuto) */}
-        <Bento hero className="lg:col-span-4">
+        {/* OPORTUNIDADES (col-span-4) — substitui status financeiro (já no hero) */}
+        <Bento className="lg:col-span-4">
           <CardHeader
-            title="Status Financeiro"
-            subtitle="Caixa do mês corrente."
-            icon={Wallet}
-            tint={finanTone}
-            action={<StatusBadge tone={finanTone} glow>{finanLabel}</StatusBadge>}
+            title="Oportunidades"
+            subtitle="Produtos prontos pra campanha."
+            icon={Sparkles}
+            tint="success"
+            action={
+              prontosPromocao.length > 0 && (
+                <button
+                  onClick={() => navigate("/promocoes")}
+                  className={cn(T.label, "text-[#2563EB] hover:text-[#1D4ED8]")}
+                >
+                  Criar →
+                </button>
+              )
+            }
           />
-
-          {hasFaturamento ? (
-            <div className="space-y-5 flex-1 flex flex-col">
-              <div>
-                <p className={cn(T.label, C.muted, "mb-1.5")}>Saldo do mês</p>
-                <p className={cn(
-                  T.mono, "font-bold leading-none text-[34px] md:text-[40px]",
-                  caixaPositivo ? "text-[#059669]" : caixaNegativo ? "text-[#DC2626]" : C.text,
-                )}>
-                  {fmtBRL(lucroMes)}
-                </p>
-                {comparativos?.lucro !== null && comparativos?.lucro !== undefined && (
-                  <div className={cn(
-                    "inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-md text-[11.5px] font-semibold",
-                    comparativos.lucro >= 0 ? "bg-[#ECFDF5] text-[#059669]" : "bg-[#FEF2F2] text-[#DC2626]",
-                  )}>
-                    {comparativos.lucro >= 0 ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
-                    {Math.abs(comparativos.lucro).toFixed(1)}% vs mês anterior
+          {prontosPromocao.length ? (
+            <div className="space-y-1.5">
+              {prontosPromocao.slice(0, 5).map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => navigate("/promocoes")}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-transparent hover:border-[#E2E8F0] hover:bg-[#F8FAFC] transition-all text-left"
+                >
+                  <div className="w-7 h-7 rounded-lg bg-[#ECFDF5] text-[#059669] flex items-center justify-center shrink-0">
+                    <Sparkles size={13} strokeWidth={2.4} />
                   </div>
-                )}
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3.5">
-                  <div className="flex items-center gap-1.5 mb-1.5">
-                    <ArrowUpRight size={13} className="text-[#059669]" />
-                    <p className={cn(T.label, C.muted)}>Entrada</p>
+                  <div className="flex-1 min-w-0">
+                    <p className={cn(T.accent, "text-[13.5px] truncate", C.text)}>{p.nome}</p>
+                    <span className={cn(T.label, "text-[10px]", C.muted)}>{p.categoria}</span>
                   </div>
-                  <p className={cn(T.mono, "text-[18px] font-bold", C.text)}>{fmtBRL(faturamentoMes)}</p>
-                </div>
-                <div className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3.5">
-                  <div className="flex items-center gap-1.5 mb-1.5">
-                    <ArrowDownRight size={13} className="text-[#DC2626]" />
-                    <p className={cn(T.label, C.muted)}>Saída</p>
-                  </div>
-                  <p className={cn(T.mono, "text-[18px] font-bold", C.text)}>{fmtBRL(despesasMes)}</p>
-                </div>
-              </div>
-
-              {caixaNegativo && (
-                <div className="flex items-start gap-2.5 p-3 rounded-xl bg-[#FEF2F2] border border-[#FECACA]">
-                  <AlertTriangle size={15} className="text-[#DC2626] shrink-0 mt-0.5" />
-                  <p className="text-[12.5px] text-[#991B1B]">
-                    Seu caixa do mês está negativo em <strong>{fmtBRL(Math.abs(lucroMes))}</strong>. Revise despesas e priorize ajustes de preço.
-                  </p>
-                </div>
-              )}
-
-              <div className="mt-auto pt-1">
-                <CTA variant="ghost" icon={ArrowRight} onClick={() => navigate("/financeiro/caixa-diario")}>
-                  Ver financeiro
-                </CTA>
-              </div>
+                  <span className={cn(T.mono, "text-[13px] font-bold text-[#059669] whitespace-nowrap")}>
+                    {fmtBRL(p.preco)}
+                  </span>
+                </button>
+              ))}
             </div>
           ) : (
             <EmptyState
-              icon={Wallet}
-              title="Dados insuficientes"
-              hint="Cadastre vendas e despesas para ativar o status financeiro."
-              tone="warning"
+              icon={Sparkles}
+              title="Nenhum produto liberado ainda"
+              hint="Defina preços nas fichas técnicas."
+              tone="success"
             />
           )}
         </Bento>
