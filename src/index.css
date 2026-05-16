@@ -202,35 +202,39 @@
 
   /* ═══ Labels ═══ */
   .label-upper {
-    font-size: 13px;
+    font-family: 'Golos Text', sans-serif;
+    font-size: 11px;
     font-weight: 600;
     color: hsl(var(--text-muted));
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
   }
 
   /* ═══ KPI Numbers ═══ */
   .kpi-number {
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     font-size: 32px;
     font-weight: 700;
     line-height: 1.1;
+    letter-spacing: -0.025em;
     font-variant-numeric: tabular-nums;
     color: hsl(var(--text-heading));
   }
 
   .kpi-number-sm {
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     font-size: 24px;
     font-weight: 700;
     line-height: 1.1;
+    letter-spacing: -0.02em;
     font-variant-numeric: tabular-nums;
     color: hsl(var(--text-heading));
   }
 
   .font-mono-data {
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-family: 'Inter', system-ui, sans-serif;
     font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
   }
 
   /* ═══ Card — solid white ═══ */
@@ -250,8 +254,9 @@
   /* ═══ Money values ═══ */
   .text-money {
     color: hsl(var(--text-heading));
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
-    font-weight: 600;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.01em;
     font-variant-numeric: tabular-nums;
   }
 
