@@ -191,13 +191,18 @@ export function MobileDashboard() {
   };
   const feed: FeedItem[] = [];
 
-  for (const p of priceAlerts.slice(0, 2)) {
+  for (const p of priceAlerts.slice(0, 3)) {
+    const muitoAlto = p.variacaoPct >= 20;
     feed.push({
       id: `price-${p.nome}`,
       icon: TrendingUp,
-      title: `${p.nome} subiu ${p.variacaoPct.toFixed(1)}%`,
-      message: "Insumo em alta nesta semana.",
-      tone: p.variacaoPct >= 10 ? "danger" : "warning",
+      title: muitoAlto
+        ? `${p.nome} — preço muito alto, conferir`
+        : `${p.nome} subiu ${p.variacaoPct.toFixed(1)}%`,
+      message: muitoAlto
+        ? `Subiu ${p.variacaoPct.toFixed(1)}% desde a última compra. Verifique se o valor está correto.`
+        : "Insumo em alta nesta semana.",
+      tone: muitoAlto ? "danger" : p.variacaoPct >= 10 ? "danger" : "warning",
       onClick: () => navigate("/insumos/comprados"),
     });
   }
@@ -209,6 +214,27 @@ export function MobileDashboard() {
       message: `CMV subiu ${fmtBRL(p.delta_abs)}.`,
       tone: "danger",
       onClick: () => navigate("/automacao/alertas"),
+    });
+  }
+  for (const n of (notasHoje as any[]).slice(0, 3)) {
+    feed.push({
+      id: `nota-${n.id}`,
+      icon: Receipt,
+      title: `Nota adicionada: ${n.nome}`,
+      message: `${n.fornecedor || "Sem fornecedor"} • ${n.preco_pago != null ? fmtBRL(Number(n.preco_pago)) : ""}`.trim(),
+      tone: "primary",
+      time: n.created_at ? formatDistanceToNow(new Date(n.created_at), { locale: ptBR, addSuffix: true }) : undefined,
+      onClick: () => navigate("/insumos/historico-compras"),
+    });
+  }
+  for (const pg of (pagamentosHoje as any[]).slice(0, 3)) {
+    feed.push({
+      id: `pag-${pg.id}`,
+      icon: Wallet,
+      title: `Pagamento: ${pg.descricao || pg.categoria || "Despesa"}`,
+      message: `${fmtBRL(Number(pg.valor))} • hoje`,
+      tone: "warning",
+      onClick: () => navigate("/financeiro/caixa-diario"),
     });
   }
   for (const w of warnings.slice(0, 2) as any[]) {
@@ -233,7 +259,12 @@ export function MobileDashboard() {
     });
   }
 
-  const notifCount = priceAlerts.length + perderamMargem.length + warnings.length;
+  const notifCount =
+    priceAlerts.length +
+    perderamMargem.length +
+    warnings.length +
+    (notasHoje as any[]).length +
+    (pagamentosHoje as any[]).length;
 
   return (
     <div className="page-enter -m-4 pb-6 bg-[#F1F5F9] min-h-[calc(100vh-4rem)]">
