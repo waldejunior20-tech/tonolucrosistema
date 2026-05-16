@@ -125,14 +125,9 @@ export function NoticiasRestaurantes() {
               return (
                 <li key={idx}>
                   <a
-                    href={`https://www.google.com/search?q=${encodeURIComponent(n.title)}&tbm=nws`}
+                    href={n.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      const url = `https://www.google.com/search?q=${encodeURIComponent(n.title)}&tbm=nws`;
-                      window.open(url, "_blank", "noopener,noreferrer");
-                    }}
                     className="group flex items-start gap-3 py-3 px-2 -mx-2 rounded-lg hover:bg-[#F8FAFC] transition-colors cursor-pointer"
                   >
                     <div className="flex-1 min-w-0">
