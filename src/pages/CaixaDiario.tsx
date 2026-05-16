@@ -57,22 +57,22 @@ export default function CaixaDiario() {
         periodoLabel={`Últimos ${periodo} dias`}
       />
 
-      {/* Action cards */}
-      <div className="grid grid-cols-2 gap-3">
-        <ActionCard
-          tone="success"
-          icon={<Plus size={18} strokeWidth={2.5} />}
-          title="Lançar receita"
-          subtitle="Vendas do dia"
+      {/* Quick actions - compact */}
+      <div className="flex items-center gap-2">
+        <button
           onClick={() => setReceitaOpen(true)}
-        />
-        <ActionCard
-          tone="destructive"
-          icon={<Minus size={18} strokeWidth={2.5} />}
-          title="Lançar despesa"
-          subtitle="Gastos e contas"
+          className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 text-[13px] font-semibold hover:bg-emerald-100 transition-colors"
+        >
+          <Plus size={14} strokeWidth={2.5} />
+          Lançar receita
+        </button>
+        <button
           onClick={() => setDespesaOpen(true)}
-        />
+          className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-rose-200 bg-rose-50 text-rose-700 text-[13px] font-semibold hover:bg-rose-100 transition-colors"
+        >
+          <Minus size={14} strokeWidth={2.5} />
+          Lançar despesa
+        </button>
       </div>
 
       {/* Movimentos timeline */}
