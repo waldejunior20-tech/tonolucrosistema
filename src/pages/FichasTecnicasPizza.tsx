@@ -1197,18 +1197,17 @@ export default function FichasTecnicasPizza() {
               </div>
 
               {/* STICKY FOOTER */}
-              <div className="border-t border-slate-200/70 bg-white shrink-0">
-                <div className="mx-auto w-full max-w-6xl px-8 py-4">
-                <div className="flex items-center justify-between gap-4 flex-wrap">
-                  <div className="flex items-center gap-8">
+              <div className="border-t border-slate-200 bg-white shrink-0">
+                <div className="mx-auto w-full max-w-6xl px-8 h-16 flex items-center justify-between gap-6">
+                  <div className="flex items-center divide-x divide-slate-200">
                     {[
-                      { l: "Total P", v: custoForm.custoP },
-                      { l: "Total M", v: custoForm.custoM },
-                      { l: "Total G", v: custoForm.custoG },
+                      { l: "P", v: custoForm.custoP },
+                      { l: "M", v: custoForm.custoM },
+                      { l: "G", v: custoForm.custoG },
                     ].map((t) => (
-                      <div key={t.l} className="flex flex-col gap-0.5">
-                        <span className="text-xs font-medium text-slate-500 uppercase tracking-wider">{t.l}</span>
-                        <Money value={t.v} className="text-lg font-bold text-slate-900 tabular-nums leading-tight" />
+                      <div key={t.l} className="flex items-baseline gap-2 px-5 first:pl-0 last:pr-0">
+                        <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Total {t.l}</span>
+                        <Money value={t.v} className="text-base font-semibold text-slate-900 tabular-nums" />
                       </div>
                     ))}
                   </div>
@@ -1230,7 +1229,6 @@ export default function FichasTecnicasPizza() {
                       {editingId ? "Salvar" : "Cadastrar"}
                     </Button>
                   </div>
-                </div>
                 </div>
               </div>
             </form>
