@@ -829,6 +829,7 @@ export type Database = {
           data_pagamento: string | null
           data_vencimento: string
           descricao: string | null
+          documento_hash: string | null
           forma_pagamento: string | null
           fornecedor: string
           id: string
@@ -856,6 +857,7 @@ export type Database = {
           data_pagamento?: string | null
           data_vencimento: string
           descricao?: string | null
+          documento_hash?: string | null
           forma_pagamento?: string | null
           fornecedor: string
           id?: string
@@ -883,6 +885,7 @@ export type Database = {
           data_pagamento?: string | null
           data_vencimento?: string
           descricao?: string | null
+          documento_hash?: string | null
           forma_pagamento?: string | null
           fornecedor?: string
           id?: string
@@ -2854,6 +2857,10 @@ export type Database = {
         }[]
       }
       cleanup_rate_limit_log: { Args: never; Returns: undefined }
+      detectar_tipo_documento: {
+        Args: { p_texto_ocr: string }
+        Returns: string
+      }
       enqueue_retry: {
         Args: {
           p_delay_minutes?: number
@@ -2888,6 +2895,27 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      ingest_documento_fiscal: {
+        Args: {
+          p_chave_acesso?: string
+          p_cnpj?: string
+          p_codigo_barras?: string
+          p_data_emissao?: string
+          p_data_pagamento?: string
+          p_data_vencimento?: string
+          p_fornecedor: string
+          p_linha_digitavel?: string
+          p_numero_nf?: string
+          p_observacoes?: string
+          p_origem?: string
+          p_serie_nf?: string
+          p_tipo: string
+          p_unidade_id: string
+          p_user_id: string
+          p_valor?: number
+        }
+        Returns: Json
       }
       is_admin_of_unidade: {
         Args: { _unidade_id: string; _user_id: string }
@@ -2932,6 +2960,7 @@ export type Database = {
           similarity_score: number
         }[]
       }
+      normalizar_cnpj: { Args: { p_cnpj: string }; Returns: string }
       normalizar_nome_fornecedor: { Args: { p_nome: string }; Returns: string }
       normalizar_nome_insumo: { Args: { nome: string }; Returns: string }
       pode_editar_negocio: {
