@@ -60,7 +60,7 @@ export function Money({
   return (
     <span
       className={cn(
-        "inline-flex items-baseline gap-[0.18em] tabular-nums whitespace-nowrap",
+        "text-finance-mono inline-flex items-baseline gap-[0.18em] whitespace-nowrap",
         colorClass,
         className,
       )}
