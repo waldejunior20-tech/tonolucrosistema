@@ -521,6 +521,24 @@ export type Database = {
           },
         ]
       }
+      categoria_canonica: {
+        Row: {
+          nome_canonico: string
+          nome_display: string
+          nome_qualquer: string
+        }
+        Insert: {
+          nome_canonico: string
+          nome_display: string
+          nome_qualquer: string
+        }
+        Update: {
+          nome_canonico?: string
+          nome_display?: string
+          nome_qualquer?: string
+        }
+        Relationships: []
+      }
       categorias_despesa: {
         Row: {
           ativo: boolean | null
@@ -1413,6 +1431,21 @@ export type Database = {
         }
         Relationships: []
       }
+      insumo_aliases_curtos: {
+        Row: {
+          abrev: string
+          expandido: string
+        }
+        Insert: {
+          abrev: string
+          expandido: string
+        }
+        Update: {
+          abrev?: string
+          expandido?: string
+        }
+        Relationships: []
+      }
       insumo_canonicos: {
         Row: {
           aliases: string[] | null
@@ -1443,6 +1476,18 @@ export type Database = {
           nome_display?: string
           unidade_id?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      insumo_stopwords: {
+        Row: {
+          token: string
+        }
+        Insert: {
+          token: string
+        }
+        Update: {
+          token?: string
         }
         Relationships: []
       }
@@ -2098,6 +2143,63 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      precos_em_revisao: {
+        Row: {
+          created_at: string | null
+          data_compra: string | null
+          fornecedor: string | null
+          id: string
+          insumo_id: string | null
+          motivo: string | null
+          nome_insumo: string
+          payload_origem: Json | null
+          preco_atual: number | null
+          preco_novo: number
+          revisado_em: string | null
+          revisado_por: string | null
+          status: string | null
+          unidade_id: string | null
+          user_id: string | null
+          variacao_pct: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          data_compra?: string | null
+          fornecedor?: string | null
+          id?: string
+          insumo_id?: string | null
+          motivo?: string | null
+          nome_insumo: string
+          payload_origem?: Json | null
+          preco_atual?: number | null
+          preco_novo: number
+          revisado_em?: string | null
+          revisado_por?: string | null
+          status?: string | null
+          unidade_id?: string | null
+          user_id?: string | null
+          variacao_pct?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          data_compra?: string | null
+          fornecedor?: string | null
+          id?: string
+          insumo_id?: string | null
+          motivo?: string | null
+          nome_insumo?: string
+          payload_origem?: Json | null
+          preco_atual?: number | null
+          preco_novo?: number
+          revisado_em?: string | null
+          revisado_por?: string | null
+          status?: string | null
+          unidade_id?: string | null
+          user_id?: string | null
+          variacao_pct?: number | null
+        }
+        Relationships: []
       }
       processamento_mensagens: {
         Row: {
@@ -2806,6 +2908,7 @@ export type Database = {
         Args: { p_confianca_media: number; p_items_classificados: Json }
         Returns: boolean
       }
+      canonizar_categoria: { Args: { p_input: string }; Returns: string }
       check_rate_limit: {
         Args: {
           p_identifier: string
@@ -2860,6 +2963,14 @@ export type Database = {
       detectar_tipo_documento: {
         Args: { p_texto_ocr: string }
         Returns: string
+      }
+      encontrar_match_insumo: {
+        Args: { p_min_score?: number; p_nome: string; p_unidade_id: string }
+        Returns: {
+          insumo_id: string
+          nome_match: string
+          score: number
+        }[]
       }
       enqueue_retry: {
         Args: {
@@ -2982,10 +3093,44 @@ export type Database = {
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
+      similaridade_insumo: {
+        Args: { p_a: string; p_b: string }
+        Returns: number
+      }
+      tokens_significativos: { Args: { p_nome: string }; Returns: string[] }
       unaccent: { Args: { "": string }; Returns: string }
+      upsert_insumo_comprado_smart: {
+        Args: {
+          p_categoria?: string
+          p_codigo?: string
+          p_data_compra?: string
+          p_force_create?: boolean
+          p_fornecedor?: string
+          p_min_score?: number
+          p_nome: string
+          p_preco_pago: number
+          p_quantidade: number
+          p_unidade: string
+          p_unidade_id: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
       validar_ficha_pizza_completa: {
         Args: { p_ficha_id: string }
         Returns: boolean
+      }
+      validar_preco_novo: {
+        Args: {
+          p_insumo_id: string
+          p_preco_novo: number
+          p_quantidade?: number
+        }
+        Returns: {
+          preco_anterior: number
+          status: string
+          variacao_pct: number
+        }[]
       }
       varredura_fichas_incompletas: {
         Args: never
