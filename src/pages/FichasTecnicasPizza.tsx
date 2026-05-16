@@ -868,7 +868,7 @@ export default function FichasTecnicasPizza() {
                                   )}
                                 >
                                   {/* BLOCO 1 — INSUMO: tipo + busca (flex-1) + unidade */}
-                                  <TableCell className="align-middle !py-3 !px-6 overflow-visible relative">
+                                  <TableCell className="align-middle !py-3 !px-4 overflow-visible relative">
                                     <div className="flex items-center gap-2 w-full">
                                       <Select value={normalizarTipoInsumo(ing.tipo_insumo)} onValueChange={(v) => updateIngrediente(idx, "tipo_insumo", v)}>
                                         <SelectTrigger className="h-8 w-[88px] shrink-0 text-[11px] px-2"><SelectValue /></SelectTrigger>
