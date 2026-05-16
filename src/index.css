@@ -376,8 +376,9 @@
 
   /* ═══ Utility ═══ */
   .font-terminal {
-    font-family: var(--font-inter, 'Mulish'), system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     font-feature-settings: 'tnum';
+    font-variant-numeric: tabular-nums;
   }
 
   /* ═══ Loader ═══ */
