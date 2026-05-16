@@ -15,7 +15,7 @@ const TONE_COLOR: Record<StatTone, string> = {
 type StatCardProps = {
   label: string;
   value: number | ReactNode;
-  unit?: "BRL" | "PERCENT" | "COUNT";
+  unit?: "BRL" | "PERCENT";
   icon?: LucideIcon;
   tone?: StatTone;
   onClick?: () => void;
@@ -49,7 +49,7 @@ export function StatCard({
       {typeof value === "number" ? (
         <Money
           value={value}
-          unit={unit === "COUNT" ? undefined as any : unit}
+          unit={unit}
           symbolScale={0.55}
           className={cn("text-[22px] leading-tight", TONE_COLOR[tone])}
         />

@@ -9,8 +9,8 @@ type Props = {
   label: string;
   /** Valor herói principal. Se number, renderiza com <Money/>. Se ReactNode, renderiza direto. */
   value: number | ReactNode;
-  /** Unidade do valor quando number. */
-  unit?: "BRL" | "PERCENT" | "COUNT";
+  /** Unidade do valor quando number. Para contagens puras, passe value como string/ReactNode. */
+  unit?: "BRL" | "PERCENT";
   /** Linha de contexto abaixo do valor (ex: "22 compras · 82 itens", "⚠️ Caixa devedor"). */
   context?: ReactNode;
   /** Define a cor do degradê. Default: neutral (azul). */
@@ -64,7 +64,7 @@ export function PageHero({
             {typeof value === "number" ? (
               <Money
                 value={value}
-                unit={unit === "COUNT" ? undefined as any : unit}
+                unit={unit}
                 onDark
                 className="text-[32px] sm:text-[44px] leading-none font-semibold"
                 symbolScale={0.5}
