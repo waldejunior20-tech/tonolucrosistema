@@ -47,7 +47,7 @@ export function AppLayout() {
           sidebarWidth={!isMobile ? (sidebarCollapsed ? "80px" : "296px") : "0px"}
         />
         <main className={cn("flex-1 p-4 lg:p-6 overflow-auto relative mt-16", isMobile && "pb-24")}>
-          <div className="max-w-[1280px] mx-auto relative z-10 w-full px-6">
+          <div className="w-full max-w-[1600px] mx-auto relative z-10 px-4 lg:px-8">
             <Outlet />
           </div>
         </main>
