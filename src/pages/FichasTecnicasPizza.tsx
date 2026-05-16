@@ -942,8 +942,8 @@ export default function FichasTecnicasPizza() {
                                   </TableCell>
 
                                   {/* BLOCO 2 — QUANTIDADES compactas P/M/G + Aplicar sugestão */}
-                                  <TableCell className="align-middle !py-2 !px-2 bg-slate-50/50 dark:bg-muted/30">
-                                    <div className="flex items-center justify-center gap-1.5">
+                                  <TableCell className="align-middle !py-3 !px-3 bg-slate-50/50 dark:bg-muted/30">
+                                    <div className="flex items-center justify-center gap-2 whitespace-nowrap">
                                       {renderQtdInput("qtd_p", ing.qtd_p)}
                                       {renderQtdInput("qtd_m", ing.qtd_m, sugM)}
                                       {renderQtdInput("qtd_g", ing.qtd_g, sugG)}
@@ -954,7 +954,7 @@ export default function FichasTecnicasPizza() {
                                           size="icon"
                                           title={`Aplicar sugestão: M ${sugM}g · G ${sugG}g`}
                                           onClick={aplicarSugestao}
-                                          className="h-7 w-7 text-primary hover:bg-primary/10"
+                                          className="h-7 w-7 text-primary hover:bg-primary/10 shrink-0"
                                         >
                                           <Sparkles className="h-3.5 w-3.5" />
                                         </Button>
@@ -963,13 +963,13 @@ export default function FichasTecnicasPizza() {
                                   </TableCell>
 
                                   {/* BLOCO 3 — CUSTOS empilhados (compacto, direita) */}
-                                  <TableCell className="align-middle !py-2 !px-2 text-right text-[11px] font-mono text-muted-foreground tabular-nums leading-tight">
+                                  <TableCell className="align-middle !py-3 !px-4 text-right text-[11px] font-mono text-muted-foreground tabular-nums leading-tight whitespace-nowrap">
                                     <div>P: {fmt(custoUnit * converterQuantidade(ing.qtd_p, ing.unidade))}</div>
                                     <div>M: {fmt(custoUnit * converterQuantidade(ing.qtd_m, ing.unidade))}</div>
                                     <div>G: {fmt(custoUnit * converterQuantidade(ing.qtd_g, ing.unidade))}</div>
                                   </TableCell>
 
-                                  <TableCell className="align-middle !py-2 !px-1">
+                                  <TableCell className="align-middle !py-3 !px-1">
                                     <Button
                                       type="button"
                                       variant="ghost"
