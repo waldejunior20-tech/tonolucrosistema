@@ -245,7 +245,10 @@ export default function Dashboard() {
   const [userName, setUserName] = useState("");
   const [businessName, setBusinessName] = useState("");
 
-  const { faturamentoMes, despesasMes, cmvPct, cmvMeta, comparativos } = useDashboardData();
+  const {
+    faturamentoMes, despesasMes, cmvPct, cmvMeta, comparativos,
+    graficoMensal, contasVencendo,
+  } = useDashboardData();
   const { data: priceAlerts = [] } = usePriceAlerts();
   const { data: profitAlerts = [] } = useProfitAlerts(20);
 
