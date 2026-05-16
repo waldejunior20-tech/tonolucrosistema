@@ -458,5 +458,6 @@ label, .label {
 .font-mono, [class*="font-mono"] {
   font-weight: 600;
   font-size: 15px;
+  font-variant-numeric: tabular-nums;
 }
 
