@@ -20,6 +20,7 @@ import { ComprasGraficoFornecedor } from "@/components/compras/ComprasGraficoFor
 import { CompraCard, type CompraGrupo } from "@/components/compras/CompraCard";
 import { CupomCompraSheet, type CupomItem } from "@/components/compras/CupomCompraSheet";
 import { Money } from "@/components/Money";
+import { PageHero } from "@/components/layout/PageHero";
 
 type Row = {
   id: string;
@@ -262,35 +263,32 @@ export default function InsumosHistoricoCompras() {
         description="Tudo que entrou em insumos, embalagens e despesas."
       />
 
-      {/* HERO — total + período */}
-      <div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary via-primary to-primary/80 p-5 fade-up shadow-lg text-primary-foreground">
-        <div className="absolute -top-12 -right-12 h-40 w-40 rounded-full bg-white/10 blur-2xl pointer-events-none" />
-        <div className="relative">
-          <div className="text-[11px] uppercase tracking-wider text-primary-foreground/70 font-semibold">
-            {periodoLabel}
-          </div>
-          <div className="flex items-baseline gap-3 mt-1">
-            <div className="text-[28px] sm:text-[32px] tabular-nums leading-none num-depth-dark">
-              {<Money value={totalPeriodo} />}
-            </div>
-          </div>
-          <div className="text-xs text-primary-foreground/70 mt-1.5">
+      <PageHero
+        label={periodoLabel}
+        value={totalPeriodo}
+        context={
+          <>
             {compras.length} {compras.length === 1 ? "compra" : "compras"} ·{" "}
             {filtered.length} {filtered.length === 1 ? "item" : "itens"}
-          </div>
-
-          <div className="mt-4">
-            <ComprasPeriodoChips
-              periodo={periodo}
-              customRange={customRange}
-              onChange={(p, r) => {
-                setPeriodo(p);
-                if (p === "custom") setCustomRange(r);
-              }}
-            />
-          </div>
-        </div>
-      </div>
+            {variacaoPct !== null && (
+              <span className={variacaoPct >= 0 ? "text-white/95" : "text-white/95"}>
+                {" · "}
+                {variacaoPct >= 0 ? "▲" : "▼"} {Math.abs(variacaoPct).toFixed(1)}% vs. período anterior
+              </span>
+            )}
+          </>
+        }
+        rightSlot={
+          <ComprasPeriodoChips
+            periodo={periodo}
+            customRange={customRange}
+            onChange={(p, r) => {
+              setPeriodo(p);
+              if (p === "custom") setCustomRange(r);
+            }}
+          />
+        }
+      />
 
       {/* Gráfico por fornecedor */}
       <ComprasGraficoFornecedor

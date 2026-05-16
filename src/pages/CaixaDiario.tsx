@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Plus, Minus } from "lucide-react";
+import { Plus, Minus, TrendingUp, TrendingDown, Receipt, ShoppingBag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { PageHero } from "@/components/layout/PageHero";
+import { StatCard, StatCardGrid } from "@/components/layout/StatCardGrid";
 import { FinanceiroCategoryTabs } from "@/components/financeiro/FinanceiroCategoryTabs";
-import { SaldoHero } from "@/components/caixa/SaldoHero";
 import { LancarReceitaDialog } from "@/components/caixa/LancarReceitaDialog";
 import { LancarDespesaDialog } from "@/components/caixa/LancarDespesaDialog";
 import { MovimentosTimeline } from "@/components/caixa/MovimentosTimeline";
@@ -23,39 +24,48 @@ export default function CaixaDiario() {
   const periodoData = useCaixaPeriodo(periodo);
   const { movimentos, isLoading } = useMovimentosCaixa(periodo, taxas);
 
+  const saldo = periodoData.totalLiquido - periodoData.totalGasto;
+  const devedor = saldo < 0;
+
+  const periodSelector = (
+    <div className="flex items-center gap-1 p-1 rounded-lg bg-white/15 border border-white/20 backdrop-blur-sm">
+      {PERIODOS.map((p) => (
+        <button
+          key={p}
+          onClick={() => setPeriodo(p)}
+          className={cn(
+            "px-3 py-1 rounded-md text-[12px] font-semibold transition-all",
+            periodo === p ? "bg-white text-blue-700 shadow-sm" : "text-white/85 hover:text-white",
+          )}
+        >
+          {p}d
+        </button>
+      ))}
+    </div>
+  );
+
   return (
     <div className="space-y-5 page-enter">
       <FinanceiroCategoryTabs />
       <PageHeader title="Caixa Diário" />
 
-      {/* Period selector */}
-      <div className="flex items-center justify-between gap-3">
-        <h3 className="text-sm font-semibold text-foreground">Resumo</h3>
-        <div className="flex items-center gap-1 p-1 rounded-lg bg-muted/60 border border-border/40">
-          {PERIODOS.map((p) => (
-            <button
-              key={p}
-              onClick={() => setPeriodo(p)}
-              className={cn(
-                "px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all",
-                periodo === p ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {p}d
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Futuristic balance hero */}
-      <SaldoHero
-        totalGanho={periodoData.totalGanho}
-        totalGasto={periodoData.totalGasto}
-        totalTaxas={periodoData.totalTaxas}
-        totalLiquido={periodoData.totalLiquido - periodoData.totalGasto}
-        qtdVendas={periodoData.qtdVendas}
-        periodoLabel={`Últimos ${periodo} dias`}
+      <PageHero
+        label={`Saldo dos últimos ${periodo} dias`}
+        value={saldo}
+        status={devedor ? "danger" : "neutral"}
+        context={
+          devedor
+            ? `⚠️ Caixa devedor — necessita aportes · ${periodoData.qtdVendas} venda${periodoData.qtdVendas !== 1 ? "s" : ""}`
+            : `✅ Saldo positivo · ${periodoData.qtdVendas} venda${periodoData.qtdVendas !== 1 ? "s" : ""}`
+        }
+        rightSlot={periodSelector}
       />
+
+      <StatCardGrid cols={3}>
+        <StatCard icon={TrendingUp} tone="up" label="Entrou" value={periodoData.totalGanho} />
+        <StatCard icon={Receipt} tone="warn" label="Taxas" value={periodoData.totalTaxas} />
+        <StatCard icon={TrendingDown} tone="down" label="Saiu" value={periodoData.totalGasto} />
+      </StatCardGrid>
 
       {/* Quick actions - compact */}
       <div className="flex items-center gap-2">
