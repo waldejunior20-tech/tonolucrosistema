@@ -12,28 +12,38 @@ type NewsItem = {
   description?: string;
 };
 
-const FEED_URL =
-  "https://news.google.com/rss/search?q=restaurantes+brasil+vendas+OR+food+service+OR+delivery+when:7d&hl=pt-BR&gl=BR&ceid=BR:pt-419";
+// Feeds RSS de portais brasileiros do setor — links diretos aos artigos
+const FEEDS: { url: string; source: string }[] = [
+  { url: "https://www.foodservicenews.com.br/feed/", source: "Food Service News" },
+  { url: "https://www.mercadoeconsumo.com.br/categoria/food-service/feed/", source: "Mercado&Consumo" },
+  { url: "https://forbes.com.br/forbeslife/gastronomia/feed/", source: "Forbes Gastronomia" },
+];
 
-async function fetchNoticias(): Promise<NewsItem[]> {
-  const url = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(FEED_URL)}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Falha ao buscar notícias");
-  const json = await res.json();
-  const items = (json.items || []) as any[];
-  return items.slice(0, 8).map((i) => {
-    // Google News mostra "Fonte" no final do título: "Notícia X - Folha"
-    const parts = String(i.title || "").split(" - ");
-    const source = parts.length > 1 ? parts.pop() : undefined;
-    const title = parts.join(" - ");
-    return {
-      title: title || i.title,
+async function fetchFromFeed(feed: { url: string; source: string }): Promise<NewsItem[]> {
+  try {
+    const url = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}&count=5`;
+    const res = await fetch(url);
+    if (!res.ok) return [];
+    const json = await res.json();
+    const items = (json.items || []) as any[];
+    return items.map((i) => ({
+      title: String(i.title || "").trim(),
       link: i.link,
       pubDate: i.pubDate,
-      source,
+      source: feed.source,
       description: i.description,
-    };
-  });
+    }));
+  } catch {
+    return [];
+  }
+}
+
+async function fetchNoticias(): Promise<NewsItem[]> {
+  const results = await Promise.all(FEEDS.map(fetchFromFeed));
+  const all = results.flat();
+  // Ordena por data desc e pega os 10 mais recentes
+  all.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
+  return all.slice(0, 10);
 }
 
 export function NoticiasRestaurantes() {
