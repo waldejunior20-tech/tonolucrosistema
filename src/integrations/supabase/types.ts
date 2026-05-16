@@ -265,6 +265,69 @@ export type Database = {
         }
         Relationships: []
       }
+      auditoria_whatsapp: {
+        Row: {
+          acao: string
+          created_at: string | null
+          custo_llm: number | null
+          custo_ocr: number | null
+          dados_extraidos: Json | null
+          duracao_ms: number | null
+          id: string
+          llm_raw: Json | null
+          mensagem_enviada: string | null
+          ocr_chars: number | null
+          ocr_preview: string | null
+          registro_id: string | null
+          remote_jid: string
+          tabela_afetada: string | null
+          tipo_entrada: string
+          unidade_id: string | null
+          user_id: string | null
+          whatsapp_msg_id: string | null
+        }
+        Insert: {
+          acao: string
+          created_at?: string | null
+          custo_llm?: number | null
+          custo_ocr?: number | null
+          dados_extraidos?: Json | null
+          duracao_ms?: number | null
+          id?: string
+          llm_raw?: Json | null
+          mensagem_enviada?: string | null
+          ocr_chars?: number | null
+          ocr_preview?: string | null
+          registro_id?: string | null
+          remote_jid: string
+          tabela_afetada?: string | null
+          tipo_entrada: string
+          unidade_id?: string | null
+          user_id?: string | null
+          whatsapp_msg_id?: string | null
+        }
+        Update: {
+          acao?: string
+          created_at?: string | null
+          custo_llm?: number | null
+          custo_ocr?: number | null
+          dados_extraidos?: Json | null
+          duracao_ms?: number | null
+          id?: string
+          llm_raw?: Json | null
+          mensagem_enviada?: string | null
+          ocr_chars?: number | null
+          ocr_preview?: string | null
+          registro_id?: string | null
+          remote_jid?: string
+          tabela_afetada?: string | null
+          tipo_entrada?: string
+          unidade_id?: string | null
+          user_id?: string | null
+          whatsapp_msg_id?: string | null
+        }
+        Relationships: []
+      }
       bases_ficha: {
         Row: {
           created_at: string
@@ -1606,6 +1669,7 @@ export type Database = {
         Row: {
           categoria: string
           codigo: string | null
+          conteudo_hash: string | null
           created_at: string | null
           data_compra: string | null
           fornecedor: string | null
@@ -1627,6 +1691,7 @@ export type Database = {
         Insert: {
           categoria: string
           codigo?: string | null
+          conteudo_hash?: string | null
           created_at?: string | null
           data_compra?: string | null
           fornecedor?: string | null
@@ -1648,6 +1713,7 @@ export type Database = {
         Update: {
           categoria?: string
           codigo?: string | null
+          conteudo_hash?: string | null
           created_at?: string | null
           data_compra?: string | null
           fornecedor?: string | null
@@ -2633,6 +2699,51 @@ export type Database = {
         }
         Relationships: []
       }
+      sessoes_pendentes: {
+        Row: {
+          confirmada_em: string | null
+          created_at: string | null
+          dados_json: Json
+          expira_em: string
+          id: string
+          msg_id: string | null
+          remote_jid: string
+          resposta: string | null
+          status: string
+          tipo: string
+          unidade_id: string
+          user_id: string
+        }
+        Insert: {
+          confirmada_em?: string | null
+          created_at?: string | null
+          dados_json: Json
+          expira_em?: string
+          id?: string
+          msg_id?: string | null
+          remote_jid: string
+          resposta?: string | null
+          status?: string
+          tipo: string
+          unidade_id: string
+          user_id: string
+        }
+        Update: {
+          confirmada_em?: string | null
+          created_at?: string | null
+          dados_json?: Json
+          expira_em?: string
+          id?: string
+          msg_id?: string | null
+          remote_jid?: string
+          resposta?: string | null
+          status?: string
+          tipo?: string
+          unidade_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       unidade_membros: {
         Row: {
           created_at: string
@@ -3077,6 +3188,18 @@ export type Database = {
         Args: { p_confianca_media: number; p_items_classificados: Json }
         Returns: boolean
       }
+      buscar_sessao_ativa: {
+        Args: { p_remote_jid: string }
+        Returns: {
+          s_dados: Json
+          s_expira_em: string
+          s_id: string
+          s_msg_id: string
+          s_tipo: string
+          s_unidade_id: string
+          s_user_id: string
+        }[]
+      }
       canonizar_categoria: { Args: { p_input: string }; Returns: string }
       check_rate_limit: {
         Args: {
@@ -3129,6 +3252,18 @@ export type Database = {
         }[]
       }
       cleanup_rate_limit_log: { Args: never; Returns: undefined }
+      criar_sessao_pendente: {
+        Args: {
+          p_dados: Json
+          p_msg_id?: string
+          p_remote_jid: string
+          p_timeout_min?: number
+          p_tipo: string
+          p_unidade_id: string
+          p_user_id: string
+        }
+        Returns: string
+      }
       detectar_tipo_documento: {
         Args: { p_texto_ocr: string }
         Returns: string
@@ -3209,6 +3344,15 @@ export type Database = {
         }
         Returns: boolean
       }
+      hash_cupom_fiscal: {
+        Args: {
+          p_cnpj: string
+          p_data: string
+          p_n_itens: number
+          p_valor: number
+        }
+        Returns: string
+      }
       ingest_documento_fiscal: {
         Args: {
           p_chave_acesso?: string
@@ -3258,6 +3402,7 @@ export type Database = {
         Returns: boolean
       }
       legenda_dias: { Args: { p_dias: number }; Returns: string }
+      limpar_sessoes_expiradas: { Args: never; Returns: number }
       lookup_fornecedor_cache: {
         Args: { p_min_confianca?: number; p_nome: string }
         Returns: {
@@ -3349,6 +3494,25 @@ export type Database = {
         Args: { p_insumo_proprio_id: string }
         Returns: number
       }
+      registrar_auditoria: {
+        Args: {
+          p_acao?: string
+          p_dados_extraidos?: Json
+          p_duracao_ms?: number
+          p_llm_raw?: Json
+          p_mensagem_enviada?: string
+          p_ocr_chars?: number
+          p_ocr_preview?: string
+          p_registro_id?: string
+          p_remote_jid: string
+          p_tabela_afetada?: string
+          p_tipo_entrada: string
+          p_unidade_id: string
+          p_user_id: string
+          p_whatsapp_msg_id: string
+        }
+        Returns: string
+      }
       resolve_insumo_ingrediente: {
         Args: {
           p_nome_ingrediente: string
@@ -3360,6 +3524,10 @@ export type Database = {
       resolver_cnpj_real: {
         Args: { p_cnpj_beneficiario: string; p_cnpj_documento: string }
         Returns: string
+      }
+      resolver_sessao: {
+        Args: { p_resposta: string; p_sessao_id: string; p_status?: string }
+        Returns: Json
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
