@@ -942,7 +942,7 @@ export default function FichasTecnicasPizza() {
                                   </TableCell>
 
                                   {/* BLOCO 2 — QUANTIDADES compactas P/M/G + Aplicar sugestão */}
-                                  <TableCell className="align-middle !py-3 !px-3 bg-slate-50/50 dark:bg-muted/30">
+                                  <TableCell className="align-middle !py-3 !px-3 bg-slate-50/40 dark:bg-muted/30">
                                     <div className="flex items-center justify-center gap-2 whitespace-nowrap">
                                       {renderQtdInput("qtd_p", ing.qtd_p)}
                                       {renderQtdInput("qtd_m", ing.qtd_m, sugM)}
@@ -962,11 +962,13 @@ export default function FichasTecnicasPizza() {
                                     </div>
                                   </TableCell>
 
-                                  {/* BLOCO 3 — CUSTOS empilhados (compacto, direita) */}
-                                  <TableCell className="align-middle !py-3 !px-4 text-right text-[11px] font-mono text-muted-foreground tabular-nums leading-tight whitespace-nowrap">
-                                    <div>P: {fmt(custoUnit * converterQuantidade(ing.qtd_p, ing.unidade))}</div>
-                                    <div>M: {fmt(custoUnit * converterQuantidade(ing.qtd_m, ing.unidade))}</div>
-                                    <div>G: {fmt(custoUnit * converterQuantidade(ing.qtd_g, ing.unidade))}</div>
+                                  {/* BLOCO 3 — CUSTOS empilhados (grade rígida P/M/G) */}
+                                  <TableCell className="align-middle !py-3 !px-3 text-right">
+                                    <div className="inline-block text-left text-xs font-mono text-muted-foreground space-y-0.5 leading-tight tabular-nums">
+                                      <div className="flex justify-between gap-4"><span>P:</span><span className="font-semibold text-foreground">{fmt(custoUnit * converterQuantidade(ing.qtd_p, ing.unidade))}</span></div>
+                                      <div className="flex justify-between gap-4"><span>M:</span><span className="font-semibold text-foreground">{fmt(custoUnit * converterQuantidade(ing.qtd_m, ing.unidade))}</span></div>
+                                      <div className="flex justify-between gap-4"><span>G:</span><span className="font-semibold text-foreground">{fmt(custoUnit * converterQuantidade(ing.qtd_g, ing.unidade))}</span></div>
+                                    </div>
                                   </TableCell>
 
                                   <TableCell className="align-middle !py-3 !px-1">
