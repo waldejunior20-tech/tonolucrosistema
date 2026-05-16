@@ -3513,6 +3513,15 @@ export type Database = {
         }
         Returns: string
       }
+      registrar_msg_idempotente: {
+        Args: { p_msg_id: string; p_remote_jid: string }
+        Returns: {
+          ja_existia: boolean
+          msg_id_int: number
+          posso_processar: boolean
+          status_anterior: string
+        }[]
+      }
       resolve_insumo_ingrediente: {
         Args: {
           p_nome_ingrediente: string
