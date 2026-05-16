@@ -21,6 +21,8 @@ type Props = {
   signColor?: boolean;
   /** Mostra "+" para positivos quando signColor está ativo. */
   showSign?: boolean;
+  /** Em fundo escuro/colorido, sobe a opacidade do símbolo de 60% para 85%. */
+  onDark?: boolean;
 };
 
 const brl = new Intl.NumberFormat("pt-BR", {
@@ -40,7 +42,9 @@ export function Money({
   symbolScale = 0.55,
   signColor = false,
   showSign = false,
+  onDark = false,
 }: Props) {
+  const symbolOpacity = onDark ? "opacity-85" : "opacity-60";
   const v = typeof value === "number" && isFinite(value) ? value : 0;
   const isNegative = v < 0;
   const abs = Math.abs(v);
@@ -69,7 +73,7 @@ export function Money({
       {unit === "BRL" && (
         <span
           aria-hidden="true"
-          className="font-normal opacity-60 leading-none"
+          className={cn("font-normal leading-none", symbolOpacity)}
           style={{ fontSize: `${symbolScale}em` }}
         >
           {symbol}
@@ -79,7 +83,7 @@ export function Money({
       {unit === "PERCENT" && (
         <span
           aria-hidden="true"
-          className="font-normal opacity-60 leading-none"
+          className={cn("font-normal leading-none", symbolOpacity)}
           style={{ fontSize: `${symbolScale}em` }}
         >
           {symbol}

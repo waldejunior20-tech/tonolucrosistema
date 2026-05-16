@@ -26,6 +26,8 @@ import {
   type ConfigPrecificacao, type AppInfo,
 } from "@/lib/pricing-helpers";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { PageHero } from "@/components/layout/PageHero";
+import { StatCard, StatCardGrid } from "@/components/layout/StatCardGrid";
 import { PrecificacaoCategoryTabs } from "@/components/precificacao/PrecificacaoCategoryTabs";
 
 // ─── Types ───────────────────────────────────────────────────────────
@@ -477,33 +479,39 @@ export default function PrecificacaoPizzas() {
           </Card>
         )}
 
-        {/* ═══ KPI Cards ═══ */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 stagger-fade-in">
-          <div className="card-premium group">
-            <div className="flex items-center gap-2 mb-4">
-              <Activity className="h-4 w-4 text-muted-foreground" />
-              <p className="text-mini-label">Custo Médio das Pizzas</p>
-            </div>
-            <Money
-              value={indicators.avgCmv}
-              unit="PERCENT"
-              symbolScale={0.4}
-              className={cn("text-kpi-giant text-[48px] leading-none", cmvColor(indicators.avgCmv))}
-            />
-            <p className="text-[12px] text-muted-foreground font-medium mt-3">
-              {cmvMessage(indicators.avgCmv)}
-            </p>
-          </div>
+        {/* ═══ HERO + Stats ═══ */}
+        <PageHero
+          label="CMV Médio das Pizzas"
+          value={indicators.avgCmv}
+          unit="PERCENT"
+          status={
+            indicators.avgCmv > 40 ? "danger" :
+            indicators.avgCmv > 35 ? "warning" :
+            indicators.avgCmv >= 25 ? "success" : "neutral"
+          }
+          context={cmvMessage(indicators.avgCmv)}
+        />
 
-          <div className="card-premium group">
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingDown className="h-4 w-4 text-destructive" />
-              <p className="text-mini-label text-destructive">Precisam de Atenção</p>
-            </div>
-            <p className="text-kpi-giant text-[48px] leading-none text-destructive">{indicators.foraMetaCount}</p>
-            <p className="text-[12px] text-muted-foreground font-medium mt-3">Tamanhos com custo &gt; 40%</p>
-          </div>
-        </div>
+        <StatCardGrid cols={3}>
+          <StatCard
+            icon={TrendingDown}
+            tone={indicators.foraMetaCount > 0 ? "down" : "up"}
+            label="Precisam de atenção"
+            value={<span>{indicators.foraMetaCount}</span>}
+          />
+          <StatCard
+            icon={Activity}
+            tone="neutral"
+            label="Total de pizzas"
+            value={<span>{fichas.length}</span>}
+          />
+          <StatCard
+            icon={Cog}
+            tone="neutral"
+            label="Meta de CMV"
+            value={<span>{cmvMeta.toFixed(0)}%</span>}
+          />
+        </StatCardGrid>
 
         {/* ═══ Legenda das faixas de CMV (padrão Abrasel) ═══ */}
         <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold">
