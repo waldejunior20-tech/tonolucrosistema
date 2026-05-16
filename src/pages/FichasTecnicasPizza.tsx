@@ -1182,14 +1182,15 @@ export default function FichasTecnicasPizza() {
                 })()}
 
                 {/* MODO DE PREPARO */}
-                <div>
-                  <Label htmlFor="modo_preparo">Modo de Preparo</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="modo_preparo" className="text-xs font-medium uppercase tracking-wider text-slate-500">Modo de Preparo</Label>
                   <Textarea
                     id="modo_preparo"
                     placeholder="Descreva o passo a passo do preparo..."
                     value={form.modo_preparo}
                     onChange={(e) => setForm({ ...form, modo_preparo: e.target.value })}
                     rows={3}
+                    className="text-sm border-slate-200 resize-none"
                   />
                 </div>
                 </div>
