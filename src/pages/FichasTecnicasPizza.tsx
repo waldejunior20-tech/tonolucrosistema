@@ -765,9 +765,12 @@ export default function FichasTecnicasPizza() {
                 {/* INGREDIENTES — TABELA DENSA */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <Label className="text-lg font-semibold text-foreground">Ingredientes *</Label>
-                    <Button type="button" size="sm" className="btn-action-add gap-1" onClick={addIngrediente}>
-                      <Plus className="h-3.5 w-3.5" /> Adicionar Ingrediente
+                    <div className="flex items-baseline gap-2">
+                      <h3 className="text-base font-semibold text-foreground">Ingredientes</h3>
+                      <span className="text-[11px] uppercase tracking-wider text-muted-foreground">obrigatório</span>
+                    </div>
+                    <Button type="button" size="sm" className="btn-action-add gap-1.5 h-9 px-3" onClick={addIngrediente}>
+                      <Plus className="h-4 w-4" /> Adicionar Ingrediente
                     </Button>
                   </div>
 
