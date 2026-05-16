@@ -1115,14 +1115,14 @@ export default function FichasTecnicasPizza() {
                   };
 
                   return (
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <Package className="h-4 w-4 text-foreground" />
-                          <Label className="text-lg font-semibold text-foreground">Embalagens por Tamanho</Label>
+                          <Package className="h-4 w-4 text-slate-500" />
+                          <h3 className="text-base font-semibold text-slate-900 tracking-tight">Embalagens por Tamanho</h3>
                         </div>
-                        <Button type="button" variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => removeIngrediente(embIdx)}>
-                          <Trash2 className="h-3.5 w-3.5" /> Remover
+                        <Button type="button" variant="ghost" size="sm" className="h-8 text-xs font-medium text-slate-500 hover:text-destructive" onClick={() => removeIngrediente(embIdx)}>
+                          <Trash2 className="h-3.5 w-3.5 mr-1" /> Remover
                         </Button>
                       </div>
 
@@ -1133,7 +1133,7 @@ export default function FichasTecnicasPizza() {
                         </div>
                       )}
 
-                      <div className="grid grid-cols-3 gap-3">
+                      <div className="grid grid-cols-3 gap-6">
                         {renderCaixaSlot("p", "P", "25cm", ing.caixa_p_id, ing.caixa_p_nome)}
                         {renderCaixaSlot("m", "M", "30cm", ing.caixa_m_id, ing.caixa_m_nome)}
                         {renderCaixaSlot("g", "G", "35cm", ing.caixa_g_id, ing.caixa_g_nome)}
