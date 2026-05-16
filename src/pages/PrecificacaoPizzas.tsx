@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { SkeletonCard } from "@/components/SkeletonCard";
+import { SkeletonCard, SkeletonPricingRow } from "@/components/SkeletonCard";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -524,7 +524,7 @@ export default function PrecificacaoPizzas() {
         <div className="space-y-4">
           {loadingFichas ? (
             <div className="space-y-3">
-              {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
+              {Array.from({ length: 4 }).map((_, i) => <SkeletonPricingRow key={i} />)}
             </div>
           ) : fichas.length === 0 ? (
             <div className="card-premium flex flex-col items-center gap-5 py-20">
