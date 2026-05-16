@@ -111,6 +111,7 @@ export default function FichasTecnicasPizza() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [filtroTipo, setFiltroTipo] = useState("todos");
+  const { sugerir } = useSugestaoQuantidade();
 
   useEffect(() => {
     const tipo = searchParams.get("tipo");
