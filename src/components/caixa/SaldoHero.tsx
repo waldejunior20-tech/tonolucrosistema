@@ -93,7 +93,7 @@ function Stat({
         <Icon size={11} />
         <span>{label}</span>
       </div>
-      <p className="mt-1.5 font-bold tabular-nums leading-none whitespace-nowrap text-[clamp(11px,3.4vw,15px)]">
+      <p className="mt-1.5 w-full font-bold tabular-nums leading-none text-center text-[clamp(10px,2.4vw,13px)] truncate">
         {formatMoney(value)}
       </p>
     </div>
