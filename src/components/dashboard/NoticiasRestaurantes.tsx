@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   ArrowUpRight, RefreshCw, TrendingUp, TrendingDown,
-  AlertTriangle, Building2, ExternalLink,
+  AlertTriangle, Building2, ExternalLink, Loader2,
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface NoticiaRestaurante {
-  id: number;
+  id: string;
   titulo: string;
-  fonte: "ABRASEL" | "ANR" | "MERCADO" | "DELIVERY";
+  fonte: string;
   linkFonte: string;
   statusVendas: "alta" | "baixa" | "alerta" | "neutro";
   badgeTexto: string;
@@ -15,58 +16,11 @@ interface NoticiaRestaurante {
   resumo: string;
 }
 
-const NOTICIAS: NoticiaRestaurante[] = [
-  {
-    id: 1,
-    titulo: "Faturamento das pizzarias e bares registra alta de 14% no Centro-Oeste impulsionado pelo calor e delivery",
-    fonte: "ABRASEL",
-    linkFonte: "https://abrasel.com.br",
-    statusVendas: "alta",
-    badgeTexto: "Vendas em Alta",
-    tempo: "há 5 min",
-    resumo: "O movimento de sexta-feira superou as expectativas na região devido ao aumento de pedidos pelo ecossistema de delivery local e consumo de balcão.",
-  },
-  {
-    id: 2,
-    titulo: "Preço do queijo muçarela e óleo de soja registra nova alta de 6.8% nesta semana e pressiona o CMV",
-    fonte: "MERCADO",
-    linkFonte: "https://anrbrasil.org.br",
-    statusVendas: "baixa",
-    badgeTexto: "Alerta de Custos",
-    tempo: "há 22 min",
-    resumo: "Donos de restaurantes devem revisar as fichas técnicas imediatamente para evitar perda de margem de lucro operacional na precificação do cardápio.",
-  },
-  {
-    id: 3,
-    titulo: "ANR publica guia de orientação tributária sobre a exclusão de taxas de aplicativos na base de cálculo do Simples",
-    fonte: "ANR",
-    linkFonte: "https://anrbrasil.org.br",
-    statusVendas: "neutro",
-    badgeTexto: "Contabilidade",
-    tempo: "há 1 hora",
-    resumo: "Medida visa reduzir o impacto fiscal sobre o faturamento bruto que passa por intermediadores de pedidos de delivery.",
-  },
-  {
-    id: 4,
-    titulo: "Queda na instabilidade: Aplicativos de entrega registram lentidão em pagamentos via Pix nesta manhã",
-    fonte: "DELIVERY",
-    linkFonte: "https://abrasel.com.br",
-    statusVendas: "alerta",
-    badgeTexto: "Instabilidade",
-    tempo: "há 2 horas",
-    resumo: "Restaurantes relatam atrasos na confirmação automática de pedidos integrados ao PDV. Recomendável conferir o extrato da conta temporariamente.",
-  },
-  {
-    id: 5,
-    titulo: "Tendência: Consumidores reduzem ticket médio no salão, mas aumentam frequência de pedidos de combos familiares no delivery",
-    fonte: "MERCADO",
-    linkFonte: "https://abrasel.com.br",
-    statusVendas: "neutro",
-    badgeTexto: "Comportamento",
-    tempo: "há 3 horas",
-    resumo: "Estratégia recomendada para o fim de semana é focar em cupons de fidelidade e combos de pizzas grandes com bebida inclusa.",
-  },
-];
+async function fetchNoticias(): Promise<NoticiaRestaurante[]> {
+  const { data, error } = await supabase.functions.invoke("noticias-setor");
+  if (error) throw new Error(error.message);
+  return (data?.noticias || []) as NoticiaRestaurante[];
+}
 
 const renderStatusIcon = (status: string) => {
   switch (status) {
@@ -87,18 +41,17 @@ const getBadgeClass = (status: string) => {
 };
 
 export function NoticiasRestaurantes() {
-  const [loading, setLoading] = useState(false);
-  const [ultimoRefresco, setUltimoRefresco] = useState(() =>
-    new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
-  );
+  const {
+    data: noticias = [], isLoading, isError, refetch, isFetching, dataUpdatedAt,
+  } = useQuery({
+    queryKey: ["noticias-setor"],
+    queryFn: fetchNoticias,
+    staleTime: 1000 * 60 * 10,
+    refetchInterval: 1000 * 60 * 15,
+  });
 
-  const handleRefresh = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setUltimoRefresco(new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }));
-    }, 800);
-  };
+  const ultimoRefresco = new Date(dataUpdatedAt || Date.now())
+    .toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 
   return (
     <div className="w-full p-5 bg-white rounded-xl shadow-md border border-slate-200 font-sans">
@@ -112,18 +65,18 @@ export function NoticiasRestaurantes() {
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
-            Indicadores de vendas, custos e atualizações institucionais da Abrasel e ANR.
+            Notícias reais do setor — Food Service News, Mercado&amp;Consumo, ABRASEL e Forbes Gastronomia.
           </p>
         </div>
 
         <div className="flex items-center gap-3 self-end sm:self-center">
           <span className="text-[11px] text-slate-400">Atualizado às {ultimoRefresco}</span>
           <button
-            onClick={handleRefresh}
-            disabled={loading}
+            onClick={() => refetch()}
+            disabled={isFetching}
             className="p-2 hover:bg-slate-100 border border-slate-200 rounded-lg transition-all text-slate-600 active:scale-95 disabled:opacity-50"
           >
-            <RefreshCw size={15} className={loading ? "animate-spin text-blue-600" : ""} />
+            <RefreshCw size={15} className={isFetching ? "animate-spin text-blue-600" : ""} />
           </button>
         </div>
       </div>
@@ -140,14 +93,33 @@ export function NoticiasRestaurantes() {
         </a>
       </div>
 
+      {/* Loading */}
+      {isLoading && (
+        <div className="flex flex-col items-center justify-center py-12 text-slate-500 gap-2">
+          <Loader2 size={28} className="animate-spin text-blue-600" />
+          <p className="text-sm">Buscando notícias reais do setor...</p>
+        </div>
+      )}
+
+      {/* Erro */}
+      {isError && (
+        <div className="p-4 bg-red-50 text-red-700 rounded-lg text-sm">
+          Não foi possível carregar as notícias. Tente atualizar.
+        </div>
+      )}
+
       {/* Lista */}
+      {!isLoading && !isError && noticias.length === 0 && (
+        <p className="text-center py-8 text-sm text-slate-400">Nenhuma notícia encontrada agora.</p>
+      )}
+
       <div className="space-y-4">
-        {NOTICIAS.map((item) => (
+        {noticias.map((item) => (
           <div
             key={item.id}
             className="p-4 border border-slate-100 rounded-xl hover:border-slate-200 bg-gradient-to-r from-white to-slate-50/30 shadow-sm transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
           >
-            <div className="flex-1 space-y-1.5">
+            <div className="flex-1 space-y-1.5 min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${getBadgeClass(item.statusVendas)} flex items-center gap-1`}>
                   {renderStatusIcon(item.statusVendas)}
@@ -159,9 +131,11 @@ export function NoticiasRestaurantes() {
               <h3 className="text-sm font-semibold text-slate-800 leading-snug">
                 {item.titulo}
               </h3>
-              <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
-                {item.resumo}
-              </p>
+              {item.resumo && (
+                <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                  {item.resumo}
+                </p>
+              )}
             </div>
 
             <a
