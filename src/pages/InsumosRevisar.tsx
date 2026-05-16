@@ -26,6 +26,7 @@ import { SkeletonTable } from "@/components/SkeletonCard";
 import { formatMoney, formatQuantidade } from "@/components/MoneyInput";
 import { useActiveUnidade } from "@/hooks/useActiveUnidade";
 import { cn } from "@/lib/utils";
+import { Money } from "@/components/Money";
 
 type Item = {
   id: string;
@@ -256,7 +257,7 @@ export default function InsumosRevisar() {
                     {formatQuantidade(Number(item.quantidade), item.unidade_medida)}
                   </TableCell>
                   <TableCell className="text-right tabular-nums text-foreground">
-                    {formatMoney(Number(item.preco_total ?? item.preco_unitario * item.quantidade))}
+                    {<Money value={Number(item.preco_total ?? item.preco_unitario * item.quantidade)} />}
                   </TableCell>
                   <TableCell>
                     {item.motivo_revisao === "preco_suspeito" ? (
@@ -266,7 +267,7 @@ export default function InsumosRevisar() {
                         </Badge>
                         {item.preco_medio_canonico && (
                           <div className="text-[11px] text-muted-foreground tabular-nums">
-                            tentou {formatMoney(Number(item.preco_unitario))} · média {formatMoney(Number(item.preco_medio_canonico))}
+                            tentou {<Money value={Number(item.preco_unitario)} />} · média {<Money value={Number(item.preco_medio_canonico)} />}
                           </div>
                         )}
                       </div>
@@ -312,7 +313,7 @@ export default function InsumosRevisar() {
               <div className="rounded-lg bg-muted/40 p-3 space-y-1">
                 <div className="font-bold text-foreground">{editing.nome_original}</div>
                 <div className="text-xs text-muted-foreground">
-                  {editing.fornecedor ?? "sem fornecedor"} · {formatQuantidade(Number(editing.quantidade), editing.unidade_medida)} · {formatMoney(Number(editing.preco_total ?? editing.preco_unitario * editing.quantidade))}
+                  {editing.fornecedor ?? "sem fornecedor"} · {formatQuantidade(Number(editing.quantidade), editing.unidade_medida)} · {<Money value={Number(editing.preco_total ?? editing.preco_unitario * editing.quantidade)} />}
                 </div>
               </div>
 

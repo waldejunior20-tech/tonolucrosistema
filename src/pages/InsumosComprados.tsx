@@ -30,6 +30,7 @@ import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
 import { CategoryBadge } from "@/components/CategoryBadge";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { Money } from "@/components/Money";
 
 const CATEGORIAS = [
   "Proteínas", "Laticínios", "Hortifruti", "Secos", "Bebidas",
@@ -290,7 +291,7 @@ export default function InsumosComprados() {
           </TableCell>
         )}
         <TableCell className="text-right tabular-nums font-bold text-foreground">
-          {formatMoney(Number(insumo.preco_pago))}
+          {<Money value={Number(insumo.preco_pago)} />}
         </TableCell>
         <TableCell className="text-right tabular-nums text-foreground">
           {formatQuantidade(Number(insumo.quantidade), insumo.unidade)}

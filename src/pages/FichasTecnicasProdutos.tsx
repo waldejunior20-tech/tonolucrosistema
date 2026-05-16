@@ -25,6 +25,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { SkeletonTable } from "@/components/SkeletonCard";
 import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
 import { matchesSearch } from "@/lib/utils";
+import { Money } from "@/components/Money";
 
 const UNIDADES = ["kg", "g", "L", "ml", "unidade"];
 
@@ -489,7 +490,7 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
                         <span className="text-sm font-medium">Ingrediente {idx + 1}</span>
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-semibold text-primary">
-                            {custoIng > 0 ? formatMoney(custoIng) : "—"}
+                            {custoIng > 0 ? <Money value={custoIng} /> : "—"}
                           </span>
                           <Button
                             type="button"
@@ -607,7 +608,7 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
               {/* Cost summary */}
               <div className="flex items-center justify-between border-t pt-3">
                 <span className="font-semibold">Custo Total:</span>
-                <span className="text-lg font-bold text-primary">{formatMoney(custoForm)}</span>
+                <span className="text-lg font-bold text-primary">{<Money value={custoForm} />}</span>
               </div>
 
               <div className="flex justify-end gap-2">
@@ -649,7 +650,7 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
                       {ficha.nome}
                     </TableCell>
                     <TableCell className="text-right tabular-nums cursor-pointer" onClick={() => handleEdit(ficha)}>
-                      {custo > 0 ? formatMoney(custo) : "—"}
+                      {custo > 0 ? <Money value={custo} /> : "—"}
                     </TableCell>
                     <TableCell className="text-center">
                       <Button

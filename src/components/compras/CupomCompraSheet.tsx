@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
+import { Money } from "@/components/Money";
 
 export interface CupomItem {
   id: string;
@@ -68,14 +69,14 @@ export function CupomCompraSheet({ open, onOpenChange, fornecedor, data_compra, 
                     {it.nome}
                   </div>
                   <div className="text-[13px] tabular-nums font-bold text-foreground shrink-0">
-                    {formatMoney(it.preco_total)}
+                    {<Money value={it.preco_total} />}
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between gap-2">
                   <div className="text-[11px] text-muted-foreground tabular-nums">
                     {formatQuantidade(it.quantidade, it.unidade_medida)} ×{" "}
-                    {formatMoney(it.preco_unitario)}
+                    {<Money value={it.preco_unitario} />}
                   </div>
                   <VariacaoBadge pct={it.variacao_pct} />
                 </div>
@@ -89,7 +90,7 @@ export function CupomCompraSheet({ open, onOpenChange, fornecedor, data_compra, 
               Total
             </div>
             <div className="text-2xl font-bold tabular-nums text-foreground">
-              {formatMoney(total)}
+              {<Money value={total} />}
             </div>
           </div>
 

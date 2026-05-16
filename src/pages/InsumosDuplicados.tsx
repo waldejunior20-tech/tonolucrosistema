@@ -14,6 +14,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { SkeletonTable } from "@/components/SkeletonCard";
 import { useActiveUnidade } from "@/hooks/useActiveUnidade";
 import { cn } from "@/lib/utils";
+import { Money } from "@/components/Money";
 
 type Canon = {
   id: string;
@@ -215,7 +216,7 @@ export default function InsumosDuplicados() {
                           <div className="flex justify-between">
                             <span>Preço atual</span>
                             <span className="tabular-nums font-bold text-foreground">
-                              {formatMoney(Number(i.preco_atual ?? 0))}/{i.unidade}
+                              {<Money value={Number(i.preco_atual ?? 0)} />}/{i.unidade}
                             </span>
                           </div>
                           <div className="flex justify-between">

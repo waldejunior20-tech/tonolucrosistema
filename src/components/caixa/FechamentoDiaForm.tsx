@@ -18,6 +18,7 @@ import { MoneyInput, formatMoney } from "@/components/MoneyInput";
 import type { DateRange } from "react-day-picker";
 import type { LucideIcon } from "lucide-react";
 import type { FormaPagamento } from "@/hooks/useCaixaDiario";
+import { Money } from "@/components/Money";
 
 type FormaConfig = {
   forma: FormaPagamento;
@@ -174,7 +175,7 @@ export function FechamentoDiaForm({ taxas, onSelectDate }: Props) {
                     {taxa > 0 ? `Taxa ${taxa}%` : "Sem taxa"}
                   </span>
                   {taxa > 0 && v > 0 && (
-                    <span className="text-success font-semibold">{formatMoney(liq)}</span>
+                    <span className="text-success font-semibold">{<Money value={liq} />}</span>
                   )}
                 </div>
               </div>

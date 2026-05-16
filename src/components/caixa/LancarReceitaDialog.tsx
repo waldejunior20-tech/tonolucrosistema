@@ -15,6 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { MoneyInput, formatMoney } from "@/components/MoneyInput";
 import type { LucideIcon } from "lucide-react";
 import type { FormaPagamento } from "@/hooks/useCaixaDiario";
+import { Money } from "@/components/Money";
 
 type FormaConfig = {
   forma: FormaPagamento;
@@ -144,7 +145,7 @@ export function LancarReceitaDialog({ open, onOpenChange, taxas }: Props) {
                     />
                     {taxa > 0 && v > 0 && (
                       <span className="text-[10px] text-success font-semibold tabular-nums whitespace-nowrap">
-                        líq {formatMoney(liq)}
+                        líq {<Money value={liq} />}
                       </span>
                     )}
                   </div>
@@ -159,15 +160,15 @@ export function LancarReceitaDialog({ open, onOpenChange, taxas }: Props) {
           <div className="grid grid-cols-3 gap-2 text-center">
             <div>
               <p className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold">Bruto</p>
-              <p className="text-sm font-bold tabular-nums">{formatMoney(totalBruto)}</p>
+              <p className="text-sm font-bold tabular-nums">{<Money value={totalBruto} />}</p>
             </div>
             <div>
               <p className="text-[9px] uppercase tracking-wider text-warning font-semibold">Taxas</p>
-              <p className="text-sm font-bold tabular-nums text-warning">- {formatMoney(totalTaxas)}</p>
+              <p className="text-sm font-bold tabular-nums text-warning">- {<Money value={totalTaxas} />}</p>
             </div>
             <div>
               <p className="text-[9px] uppercase tracking-wider text-success font-semibold">Líquido</p>
-              <p className="text-sm font-bold tabular-nums text-success">{formatMoney(totalLiquido)}</p>
+              <p className="text-sm font-bold tabular-nums text-success">{<Money value={totalLiquido} />}</p>
             </div>
           </div>
           <Button

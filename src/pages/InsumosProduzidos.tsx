@@ -25,6 +25,7 @@ import { InsumosCategoryTabs } from "@/components/insumos/InsumosCategoryTabs";
 import { EmptyState } from "@/components/EmptyState";
 import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
 import { matchesSearch } from "@/lib/utils";
+import { Money } from "@/components/Money";
 
 const UNIDADES_RENDIMENTO = ["kg", "g", "L", "ml", "unidade"];
 const UNIDADES_INGREDIENTE = ["kg", "g", "L", "ml", "unidade", "caixa", "pacote"];
@@ -451,7 +452,7 @@ export default function InsumosProduzidos() {
                 <div className="flex flex-col justify-end">
                   <p className="text-sm text-muted-foreground">Custo/{unidadeBaseRendimento}:</p>
                   <p className="text-lg font-semibold text-foreground">
-                    {formatMoney(custoPorUnidade)}
+                    {<Money value={custoPorUnidade} />}
                   </p>
                   {temIncompativel && (
                     <p className="text-xs text-destructive flex items-center gap-1 mt-1">
@@ -571,7 +572,7 @@ export default function InsumosProduzidos() {
 
                 {form.ingredientes.length > 0 && (
                   <div className="text-right text-sm text-muted-foreground">
-                    Custo total: {formatMoney(custoFormulario)}
+                    Custo total: {<Money value={custoFormulario} />}
                   </div>
                 )}
               </div>
@@ -618,10 +619,10 @@ export default function InsumosProduzidos() {
                       {formatQuantidade(Number(ip.rendimento), ip.unidade_rendimento)}
                     </TableCell>
                     <TableCell className="text-right">
-                      {formatMoney(custoPorUn)}/{unBase}
+                      {<Money value={custoPorUn} />}/{unBase}
                     </TableCell>
                     <TableCell className="text-right">
-                      {formatMoney(custoTotal)}
+                      {<Money value={custoTotal} />}
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-1">
