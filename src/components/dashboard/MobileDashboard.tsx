@@ -113,6 +113,35 @@ export function MobileDashboard() {
     },
   });
 
+  // Notas adicionadas hoje (últimas 24h via created_at)
+  const { data: notasHoje = [] } = useQuery({
+    queryKey: ["dashboard-notas-hoje"],
+    queryFn: async () => {
+      const desde = new Date(); desde.setHours(0, 0, 0, 0);
+      const { data } = await supabase.from("insumos_comprados")
+        .select("id, nome, preco_pago, fornecedor, created_at")
+        .gte("created_at", desde.toISOString())
+        .order("created_at", { ascending: false })
+        .limit(10);
+      return data ?? [];
+    },
+  });
+
+  // Pagamentos (despesas) do dia
+  const { data: pagamentosHoje = [] } = useQuery({
+    queryKey: ["dashboard-pagamentos-hoje"],
+    queryFn: async () => {
+      const hoje = format(new Date(), "yyyy-MM-dd");
+      const { data } = await supabase.from("lancamentos_financeiros")
+        .select("id, descricao, valor, categoria, data_lancamento")
+        .eq("tipo", "despesa")
+        .eq("data_lancamento", hoje)
+        .order("created_at", { ascending: false })
+        .limit(10);
+      return data ?? [];
+    },
+  });
+
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) return;
