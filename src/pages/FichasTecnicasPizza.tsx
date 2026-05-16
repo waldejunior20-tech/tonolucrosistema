@@ -793,9 +793,9 @@ export default function FichasTecnicasPizza() {
                         <Table className="table-fixed w-full">
                           <TableHeader>
                             <TableRow className="!bg-transparent">
-                              <TableHead className="w-2/5 px-4">Insumo</TableHead>
-                              <TableHead className="w-1/4 text-center bg-slate-50/50 dark:bg-muted/30">Quantidades (P · M · G)</TableHead>
-                              <TableHead className="w-1/5 text-right px-4">Custos</TableHead>
+                              <TableHead className="w-[45%] px-3">Insumo</TableHead>
+                              <TableHead className="w-[30%] text-center bg-slate-50/40 dark:bg-muted/30">Quantidades (P · M · G)</TableHead>
+                              <TableHead className="w-[25%] text-right px-3">Custos</TableHead>
                               <TableHead className="w-[44px] !px-1"></TableHead>
                             </TableRow>
                           </TableHeader>
@@ -848,13 +848,13 @@ export default function FichasTecnicasPizza() {
                                   <Input
                                     type="number" step="0.01" min="0"
                                     className={cn(
-                                      "h-9 w-[68px] text-center text-sm font-medium tabular-nums px-1 border-border/40 bg-background/60 placeholder:text-muted-foreground/50 placeholder:italic !min-w-0",
+                                      "h-9 w-16 text-center text-sm font-semibold tabular-nums px-1 rounded-md border border-gray-300 bg-white text-gray-900 shadow-sm placeholder:text-muted-foreground/50 placeholder:italic !min-w-0 focus-visible:border-blue-500 focus-visible:ring-1 focus-visible:ring-blue-500",
                                       invalid && "border-destructive focus-visible:border-destructive",
                                     )}
                                     value={qtdVal || ""}
                                     onChange={(e) => updateIngrediente(idx, qtdKey, parseFloat(e.target.value) || 0)}
                                     onBlur={() => autoSaveIngredienteQtd(ing, qtdKey, ing[qtdKey])}
-                                    placeholder={placeholderSugestao && placeholderSugestao > 0 ? `~${placeholderSugestao}` : "0"}
+                                    placeholder={placeholderSugestao && placeholderSugestao > 0 ? `~${placeholderSugestao}` : qtdKey === "qtd_p" ? "P" : qtdKey === "qtd_m" ? "M" : "G"}
                                   />
                                 );
                               };
@@ -942,7 +942,7 @@ export default function FichasTecnicasPizza() {
                                   </TableCell>
 
                                   {/* BLOCO 2 — QUANTIDADES compactas P/M/G + Aplicar sugestão */}
-                                  <TableCell className="align-middle !py-3 !px-3 bg-slate-50/50 dark:bg-muted/30">
+                                  <TableCell className="align-middle !py-3 !px-3 bg-slate-50/40 dark:bg-muted/30">
                                     <div className="flex items-center justify-center gap-2 whitespace-nowrap">
                                       {renderQtdInput("qtd_p", ing.qtd_p)}
                                       {renderQtdInput("qtd_m", ing.qtd_m, sugM)}
@@ -962,11 +962,13 @@ export default function FichasTecnicasPizza() {
                                     </div>
                                   </TableCell>
 
-                                  {/* BLOCO 3 — CUSTOS empilhados (compacto, direita) */}
-                                  <TableCell className="align-middle !py-3 !px-4 text-right text-[11px] font-mono text-muted-foreground tabular-nums leading-tight whitespace-nowrap">
-                                    <div>P: {fmt(custoUnit * converterQuantidade(ing.qtd_p, ing.unidade))}</div>
-                                    <div>M: {fmt(custoUnit * converterQuantidade(ing.qtd_m, ing.unidade))}</div>
-                                    <div>G: {fmt(custoUnit * converterQuantidade(ing.qtd_g, ing.unidade))}</div>
+                                  {/* BLOCO 3 — CUSTOS empilhados (grade rígida P/M/G) */}
+                                  <TableCell className="align-middle !py-3 !px-3 text-right">
+                                    <div className="inline-block text-left text-xs font-mono text-muted-foreground space-y-0.5 leading-tight tabular-nums">
+                                      <div className="flex justify-between gap-4"><span>P:</span><span className="font-semibold text-foreground">{fmt(custoUnit * converterQuantidade(ing.qtd_p, ing.unidade))}</span></div>
+                                      <div className="flex justify-between gap-4"><span>M:</span><span className="font-semibold text-foreground">{fmt(custoUnit * converterQuantidade(ing.qtd_m, ing.unidade))}</span></div>
+                                      <div className="flex justify-between gap-4"><span>G:</span><span className="font-semibold text-foreground">{fmt(custoUnit * converterQuantidade(ing.qtd_g, ing.unidade))}</span></div>
+                                    </div>
                                   </TableCell>
 
                                   <TableCell className="align-middle !py-3 !px-1">
