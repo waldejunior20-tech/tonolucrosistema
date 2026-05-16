@@ -617,6 +617,24 @@ export type Database = {
         }
         Relationships: []
       }
+      cnpj_intermediadores: {
+        Row: {
+          cnpj_raiz: string
+          nome: string
+          tipo: string
+        }
+        Insert: {
+          cnpj_raiz: string
+          nome: string
+          tipo: string
+        }
+        Update: {
+          cnpj_raiz?: string
+          nome?: string
+          tipo?: string
+        }
+        Relationships: []
+      }
       combos_fixos: {
         Row: {
           created_at: string | null
@@ -1939,6 +1957,7 @@ export type Database = {
           fornecedor: string
           id: string
           numero_nf: string | null
+          numero_parcelas: number | null
           observacoes: string | null
           origem: string
           serie_nf: string | null
@@ -1947,6 +1966,7 @@ export type Database = {
           unidade_id: string
           updated_at: string
           user_id: string
+          valor_parcela: number | null
           valor_total: number
         }
         Insert: {
@@ -1960,6 +1980,7 @@ export type Database = {
           fornecedor: string
           id?: string
           numero_nf?: string | null
+          numero_parcelas?: number | null
           observacoes?: string | null
           origem?: string
           serie_nf?: string | null
@@ -1968,6 +1989,7 @@ export type Database = {
           unidade_id: string
           updated_at?: string
           user_id?: string
+          valor_parcela?: number | null
           valor_total?: number
         }
         Update: {
@@ -1981,6 +2003,7 @@ export type Database = {
           fornecedor?: string
           id?: string
           numero_nf?: string | null
+          numero_parcelas?: number | null
           observacoes?: string | null
           origem?: string
           serie_nf?: string | null
@@ -1989,6 +2012,7 @@ export type Database = {
           unidade_id?: string
           updated_at?: string
           user_id?: string
+          valor_parcela?: number | null
           valor_total?: number
         }
         Relationships: []
@@ -2044,6 +2068,60 @@ export type Database = {
           unidade_id?: string
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      pedidos_compra: {
+        Row: {
+          cnpj_fornecedor: string | null
+          created_at: string | null
+          data_pedido: string | null
+          forma_pagamento: string | null
+          fornecedor: string
+          id: string
+          num_itens: number | null
+          numero_pedido: string | null
+          origem: string | null
+          payload_itens: Json | null
+          prazo_dias: number | null
+          status: string | null
+          unidade_id: string
+          user_id: string
+          valor_total: number
+        }
+        Insert: {
+          cnpj_fornecedor?: string | null
+          created_at?: string | null
+          data_pedido?: string | null
+          forma_pagamento?: string | null
+          fornecedor: string
+          id?: string
+          num_itens?: number | null
+          numero_pedido?: string | null
+          origem?: string | null
+          payload_itens?: Json | null
+          prazo_dias?: number | null
+          status?: string | null
+          unidade_id: string
+          user_id: string
+          valor_total: number
+        }
+        Update: {
+          cnpj_fornecedor?: string | null
+          created_at?: string | null
+          data_pedido?: string | null
+          forma_pagamento?: string | null
+          fornecedor?: string
+          id?: string
+          num_itens?: number | null
+          numero_pedido?: string | null
+          origem?: string | null
+          payload_itens?: Json | null
+          prazo_dias?: number | null
+          status?: string | null
+          unidade_id?: string
+          user_id?: string
+          valor_total?: number
         }
         Relationships: []
       }
@@ -3048,6 +3126,25 @@ export type Database = {
         }
         Returns: Json
       }
+      ingest_nf_com_parcelas: {
+        Args: {
+          p_chave_acesso?: string
+          p_cnpj?: string
+          p_data_emissao?: string
+          p_fornecedor: string
+          p_numero_nf?: string
+          p_numero_parcelas?: number
+          p_observacoes?: string
+          p_serie_nf?: string
+          p_tipo: string
+          p_unidade_id: string
+          p_user_id: string
+          p_valor_parcela?: number
+          p_valor_total?: number
+          p_vencimentos?: string[]
+        }
+        Returns: Json
+      }
       is_admin_of_unidade: {
         Args: { _unidade_id: string; _user_id: string }
         Returns: boolean
@@ -3100,26 +3197,50 @@ export type Database = {
         Returns: boolean
       }
       primeira_unidade_do_user: { Args: { _user_id: string }; Returns: string }
-      processar_documento_whatsapp: {
-        Args: {
-          p_chave_acesso?: string
-          p_cnpj?: string
-          p_codigo_barras?: string
-          p_data_emissao?: string
-          p_data_pagamento?: string
-          p_data_vencimento?: string
-          p_fornecedor: string
-          p_linha_digitavel?: string
-          p_numero_nf?: string
-          p_observacoes?: string
-          p_serie_nf?: string
-          p_tipo: string
-          p_unidade_id: string
-          p_user_id: string
-          p_valor?: number
-        }
-        Returns: Json
-      }
+      processar_documento_whatsapp:
+        | {
+            Args: {
+              p_chave_acesso?: string
+              p_cnpj?: string
+              p_cnpj_beneficiario?: string
+              p_codigo_barras?: string
+              p_data_emissao?: string
+              p_data_pagamento?: string
+              p_data_vencimento?: string
+              p_fornecedor: string
+              p_linha_digitavel?: string
+              p_numero_nf?: string
+              p_numero_parcelas?: number
+              p_observacoes?: string
+              p_serie_nf?: string
+              p_tipo: string
+              p_unidade_id: string
+              p_user_id: string
+              p_valor?: number
+              p_vencimentos?: string[]
+            }
+            Returns: Json
+          }
+        | {
+            Args: {
+              p_chave_acesso?: string
+              p_cnpj?: string
+              p_codigo_barras?: string
+              p_data_emissao?: string
+              p_data_pagamento?: string
+              p_data_vencimento?: string
+              p_fornecedor: string
+              p_linha_digitavel?: string
+              p_numero_nf?: string
+              p_observacoes?: string
+              p_serie_nf?: string
+              p_tipo: string
+              p_unidade_id: string
+              p_user_id: string
+              p_valor?: number
+            }
+            Returns: Json
+          }
       recalcular_custo_insumo_proprio: {
         Args: { p_insumo_proprio_id: string }
         Returns: number
@@ -3130,6 +3251,10 @@ export type Database = {
           p_unidade_id: string
           p_user_id: string
         }
+        Returns: string
+      }
+      resolver_cnpj_real: {
+        Args: { p_cnpj_beneficiario: string; p_cnpj_documento: string }
         Returns: string
       }
       show_limit: { Args: never; Returns: number }

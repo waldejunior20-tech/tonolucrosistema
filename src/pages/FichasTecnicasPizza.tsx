@@ -789,7 +789,7 @@ export default function FichasTecnicasPizza() {
                     }
 
                     return (
-                      <div className="mx-auto w-full max-w-5xl rounded-md border border-border/60 overflow-visible bg-card/40">
+                      <div className="mx-auto w-full max-w-7xl px-4 lg:px-8 rounded-md border border-border/60 overflow-visible bg-card/40">
                         <Table className="table-fixed w-full">
                           <TableHeader>
                             <TableRow className="!bg-transparent">
