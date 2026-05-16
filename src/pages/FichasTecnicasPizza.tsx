@@ -848,7 +848,7 @@ export default function FichasTecnicasPizza() {
                                   <Input
                                     type="number" step="0.01" min="0"
                                     className={cn(
-                                      "h-8 w-16 text-center text-xs tabular-nums px-1 border-border/40 bg-background/60 placeholder:text-muted-foreground/50 placeholder:italic !min-w-0",
+                                      "h-9 w-[68px] text-center text-sm font-medium tabular-nums px-1 border-border/40 bg-background/60 placeholder:text-muted-foreground/50 placeholder:italic !min-w-0",
                                       invalid && "border-destructive focus-visible:border-destructive",
                                     )}
                                     value={qtdVal || ""}
