@@ -740,27 +740,27 @@ export default function FichasTecnicasPizza() {
                 )}
 
                 {/* Dados principais — inputs minimalistas (tipo já está no header) */}
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="col-span-2">
-                    <Label htmlFor="nome" className=" text-xs uppercase tracking-wider text-muted-foreground">Nome da Pizza *</Label>
+                <div className="grid grid-cols-3 gap-6">
+                  <div className="col-span-2 space-y-1.5">
+                    <Label htmlFor="nome" className="text-xs font-medium uppercase tracking-wider text-slate-500">Nome da Pizza</Label>
                     <Input
                       id="nome"
                       placeholder="Ex: Margherita, Calabresa"
                       value={form.nome}
                       onChange={(e) => setForm({ ...form, nome: e.target.value })}
                       onBlur={() => setTouched(t => ({ ...t, nome: true }))}
-                      className={cn("text-base border-input", fieldErrorClass(nomeInvalid))}
+                      className={cn("h-10 text-sm font-medium border-slate-200", fieldErrorClass(nomeInvalid))}
                     />
                     <FieldError show={nomeInvalid} />
                   </div>
-                  <div>
-                    <Label htmlFor="numero_ficha" className=" text-xs uppercase tracking-wider text-muted-foreground">Nº da Ficha</Label>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="numero_ficha" className="text-xs font-medium uppercase tracking-wider text-slate-500">Nº da Ficha</Label>
                     <Input
                       id="numero_ficha"
                       placeholder="FT-001"
                       value={form.numero_ficha}
                       onChange={(e) => setForm({ ...form, numero_ficha: e.target.value })}
-                      className=" text-sm border-input"
+                      className="h-10 text-sm font-medium border-slate-200"
                     />
                   </div>
                 </div>
