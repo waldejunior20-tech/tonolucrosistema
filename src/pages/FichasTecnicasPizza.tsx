@@ -28,6 +28,7 @@ import { SkeletonTable } from "@/components/SkeletonCard";
 import { fieldErrorClass, FieldError } from "@/components/FormFieldError";
 import type { Tables } from "@/integrations/supabase/types";
 import { formatQty } from "@/components/MoneyInput";
+import { Money } from "@/components/Money";
 import { matchesSearch } from "@/lib/utils";
 import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
 import { BaseSelector } from "@/components/fichas/BaseSelector";
