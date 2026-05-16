@@ -789,14 +789,14 @@ export default function FichasTecnicasPizza() {
                     }
 
                     return (
-                      <div className="mx-auto max-w-4xl rounded-md border border-border/60 overflow-visible bg-card/40">
-                        <Table>
+                      <div className="mx-auto w-full max-w-5xl rounded-md border border-border/60 overflow-visible bg-card/40">
+                        <Table className="table-fixed w-full">
                           <TableHeader>
                             <TableRow className="!bg-transparent">
-                              <TableHead className="min-w-[340px]">Insumo</TableHead>
-                              <TableHead className="w-[260px] text-center bg-slate-50/50 dark:bg-muted/30">Quantidades (P · M · G)</TableHead>
-                              <TableHead className="w-[180px] text-right">Custos</TableHead>
-                              <TableHead className="w-[36px] !px-1"></TableHead>
+                              <TableHead className="w-auto px-6">Insumo</TableHead>
+                              <TableHead className="w-[280px] text-center bg-slate-50/50 dark:bg-muted/30">Quantidades (P · M · G)</TableHead>
+                              <TableHead className="w-[160px] text-right px-4">Custos</TableHead>
+                              <TableHead className="w-[44px] !px-1"></TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
@@ -848,7 +848,7 @@ export default function FichasTecnicasPizza() {
                                   <Input
                                     type="number" step="0.01" min="0"
                                     className={cn(
-                                      "h-8 w-16 text-center text-xs tabular-nums px-1 border-border/40 bg-background/60 placeholder:text-muted-foreground/50 placeholder:italic !min-w-0",
+                                      "h-9 w-[68px] text-center text-sm font-medium tabular-nums px-1 border-border/40 bg-background/60 placeholder:text-muted-foreground/50 placeholder:italic !min-w-0",
                                       invalid && "border-destructive focus-visible:border-destructive",
                                     )}
                                     value={qtdVal || ""}
@@ -868,8 +868,8 @@ export default function FichasTecnicasPizza() {
                                   )}
                                 >
                                   {/* BLOCO 1 — INSUMO: tipo + busca (flex-1) + unidade */}
-                                  <TableCell className="align-middle !py-2 !px-2 overflow-visible relative">
-                                    <div className="flex items-center gap-1.5">
+                                  <TableCell className="align-middle !py-3 !px-6 overflow-visible relative">
+                                    <div className="flex items-center gap-2 w-full">
                                       <Select value={normalizarTipoInsumo(ing.tipo_insumo)} onValueChange={(v) => updateIngrediente(idx, "tipo_insumo", v)}>
                                         <SelectTrigger className="h-8 w-[88px] shrink-0 text-[11px] px-2"><SelectValue /></SelectTrigger>
                                         <SelectContent>
@@ -942,8 +942,8 @@ export default function FichasTecnicasPizza() {
                                   </TableCell>
 
                                   {/* BLOCO 2 — QUANTIDADES compactas P/M/G + Aplicar sugestão */}
-                                  <TableCell className="align-middle !py-2 !px-2 bg-slate-50/50 dark:bg-muted/30">
-                                    <div className="flex items-center justify-center gap-1.5">
+                                  <TableCell className="align-middle !py-3 !px-3 bg-slate-50/50 dark:bg-muted/30">
+                                    <div className="flex items-center justify-center gap-2 whitespace-nowrap">
                                       {renderQtdInput("qtd_p", ing.qtd_p)}
                                       {renderQtdInput("qtd_m", ing.qtd_m, sugM)}
                                       {renderQtdInput("qtd_g", ing.qtd_g, sugG)}
@@ -954,7 +954,7 @@ export default function FichasTecnicasPizza() {
                                           size="icon"
                                           title={`Aplicar sugestão: M ${sugM}g · G ${sugG}g`}
                                           onClick={aplicarSugestao}
-                                          className="h-7 w-7 text-primary hover:bg-primary/10"
+                                          className="h-7 w-7 text-primary hover:bg-primary/10 shrink-0"
                                         >
                                           <Sparkles className="h-3.5 w-3.5" />
                                         </Button>
@@ -963,13 +963,13 @@ export default function FichasTecnicasPizza() {
                                   </TableCell>
 
                                   {/* BLOCO 3 — CUSTOS empilhados (compacto, direita) */}
-                                  <TableCell className="align-middle !py-2 !px-2 text-right text-[11px] font-mono text-muted-foreground tabular-nums leading-tight">
+                                  <TableCell className="align-middle !py-3 !px-4 text-right text-[11px] font-mono text-muted-foreground tabular-nums leading-tight whitespace-nowrap">
                                     <div>P: {fmt(custoUnit * converterQuantidade(ing.qtd_p, ing.unidade))}</div>
                                     <div>M: {fmt(custoUnit * converterQuantidade(ing.qtd_m, ing.unidade))}</div>
                                     <div>G: {fmt(custoUnit * converterQuantidade(ing.qtd_g, ing.unidade))}</div>
                                   </TableCell>
 
-                                  <TableCell className="align-middle !py-2 !px-1">
+                                  <TableCell className="align-middle !py-3 !px-1">
                                     <Button
                                       type="button"
                                       variant="ghost"
