@@ -73,7 +73,7 @@ export function Money({
       {unit === "BRL" && (
         <span
           aria-hidden="true"
-          className="font-normal opacity-60 leading-none"
+          className={cn("font-normal leading-none", symbolOpacity)}
           style={{ fontSize: `${symbolScale}em` }}
         >
           {symbol}
@@ -83,7 +83,7 @@ export function Money({
       {unit === "PERCENT" && (
         <span
           aria-hidden="true"
-          className="font-normal opacity-60 leading-none"
+          className={cn("font-normal leading-none", symbolOpacity)}
           style={{ fontSize: `${symbolScale}em` }}
         >
           {symbol}
