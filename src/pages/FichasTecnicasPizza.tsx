@@ -848,13 +848,13 @@ export default function FichasTecnicasPizza() {
                                   <Input
                                     type="number" step="0.01" min="0"
                                     className={cn(
-                                      "h-9 w-[68px] text-center text-sm font-medium tabular-nums px-1 border-border/40 bg-background/60 placeholder:text-muted-foreground/50 placeholder:italic !min-w-0",
+                                      "h-9 w-16 text-center text-sm font-semibold tabular-nums px-1 rounded-md border border-gray-300 bg-white text-gray-900 shadow-sm placeholder:text-muted-foreground/50 placeholder:italic !min-w-0 focus-visible:border-blue-500 focus-visible:ring-1 focus-visible:ring-blue-500",
                                       invalid && "border-destructive focus-visible:border-destructive",
                                     )}
                                     value={qtdVal || ""}
                                     onChange={(e) => updateIngrediente(idx, qtdKey, parseFloat(e.target.value) || 0)}
                                     onBlur={() => autoSaveIngredienteQtd(ing, qtdKey, ing[qtdKey])}
-                                    placeholder={placeholderSugestao && placeholderSugestao > 0 ? `~${placeholderSugestao}` : "0"}
+                                    placeholder={placeholderSugestao && placeholderSugestao > 0 ? `~${placeholderSugestao}` : qtdKey === "qtd_p" ? "P" : qtdKey === "qtd_m" ? "M" : "G"}
                                   />
                                 );
                               };
