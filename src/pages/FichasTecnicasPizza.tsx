@@ -1195,17 +1195,17 @@ export default function FichasTecnicasPizza() {
               </div>
 
               {/* STICKY FOOTER */}
-              <div className="border-t border-border bg-background px-8 py-3 shrink-0">
+              <div className="border-t border-border bg-background px-8 py-4 shrink-0">
                 <div className="flex items-center justify-between gap-4 flex-wrap">
-                  <div className="flex items-center gap-4 text-xs ">
+                  <div className="flex items-center gap-6">
                     {[
                       { l: "Total P", v: custoForm.custoP },
                       { l: "Total M", v: custoForm.custoM },
                       { l: "Total G", v: custoForm.custoG },
                     ].map((t) => (
-                      <div key={t.l}>
-                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{t.l}</span>
-                        <p className=" font-bold text-foreground">R$ {fmt(t.v)}</p>
+                      <div key={t.l} className="flex flex-col">
+                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">{t.l}</span>
+                        <p className="text-lg font-bold text-foreground tabular-nums leading-tight">R$ {fmt(t.v)}</p>
                       </div>
                     ))}
                   </div>
@@ -1215,14 +1215,15 @@ export default function FichasTecnicasPizza() {
                         type="button"
                         variant="outline"
                         size="sm"
+                        className="h-10 gap-1.5"
                         onClick={() => setSalvarBaseOpen(true)}
                       >
-                        <Sparkles className="h-3.5 w-3.5" />
+                        <Sparkles className="h-4 w-4" />
                         Salvar como base
                       </Button>
                     )}
-                    <Button type="button" variant="outline" onClick={resetForm}>Cancelar</Button>
-                    <Button type="submit" disabled={insertMutation.isPending || updateMutation.isPending || (!editingId && !formIsValid)} className={!editingId && !formIsValid ? "opacity-50" : ""}>
+                    <Button type="button" variant="outline" size="sm" className="h-10 px-4" onClick={resetForm}>Cancelar</Button>
+                    <Button type="submit" size="sm" className="h-10 px-6" disabled={insertMutation.isPending || updateMutation.isPending || (!editingId && !formIsValid)} >
                       {editingId ? "Salvar" : "Cadastrar"}
                     </Button>
                   </div>
