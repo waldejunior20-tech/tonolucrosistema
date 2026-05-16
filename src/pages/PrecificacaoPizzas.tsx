@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
 import { Cog, Save, AlertTriangle, Check, TrendingUp, TrendingDown, Activity, ChevronDown, Info } from "lucide-react";
 import { formatMoney } from "@/components/MoneyInput";
+import { Money } from "@/components/Money";
 import {
   fmt, fmtPct, calcCmv, converterQuantidade, cmvBg, cmvColor, cmvEmoji, cmvMessage,
   calcAppPrice, getActiveApps, APP_TOOLTIP,
@@ -481,11 +482,14 @@ export default function PrecificacaoPizzas() {
           <div className="card-premium group">
             <div className="flex items-center gap-2 mb-4">
               <Activity className="h-4 w-4 text-muted-foreground" />
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">Custo Médio das Pizzas</p>
+              <p className="text-mini-label">Custo Médio das Pizzas</p>
             </div>
-            <p className={cn("text-[48px] font-extrabold leading-none tracking-tight font-terminal", cmvColor(indicators.avgCmv))}>
-              {fmtPct(indicators.avgCmv)}
-            </p>
+            <Money
+              value={indicators.avgCmv}
+              unit="PERCENT"
+              symbolScale={0.4}
+              className={cn("text-kpi-giant text-[48px] leading-none", cmvColor(indicators.avgCmv))}
+            />
             <p className="text-[12px] text-muted-foreground font-medium mt-3">
               {cmvMessage(indicators.avgCmv)}
             </p>
@@ -494,9 +498,9 @@ export default function PrecificacaoPizzas() {
           <div className="card-premium group">
             <div className="flex items-center gap-2 mb-4">
               <TrendingDown className="h-4 w-4 text-destructive" />
-              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-destructive">Precisam de Atenção</p>
+              <p className="text-mini-label text-destructive">Precisam de Atenção</p>
             </div>
-            <p className="text-[48px] font-extrabold leading-none text-destructive font-terminal">{indicators.foraMetaCount}</p>
+            <p className="text-kpi-giant text-[48px] leading-none text-destructive">{indicators.foraMetaCount}</p>
             <p className="text-[12px] text-muted-foreground font-medium mt-3">Tamanhos com custo &gt; 40%</p>
           </div>
         </div>
@@ -579,8 +583,8 @@ export default function PrecificacaoPizzas() {
                             style={{ background: health.color, boxShadow: `0 0 8px ${health.glow}` }}
                           />
                           <div>
-                            <h3 className="font-extrabold text-lg text-foreground leading-tight">{ficha.nome}</h3>
-                            <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-[0.12em]">{tipoLabel(ficha.tipo)}</span>
+                            <h3 className="text-table-row-title text-lg leading-tight">{ficha.nome}</h3>
+                            <span className="text-mini-label">{tipoLabel(ficha.tipo)}</span>
                           </div>
                         </div>
 
@@ -592,21 +596,19 @@ export default function PrecificacaoPizzas() {
                             const pill = getCmvPillStyle(cmv);
                             return (
                               <div key={s} className="flex items-center gap-2">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground w-4">{sizeLabels[s]}</span>
+                                <span className="text-mini-label w-4">{sizeLabels[s]}</span>
                                 {preco > 0 ? (
                                   <>
-                                    <span className="font-terminal text-sm font-bold text-foreground tabular-nums">
-                                      {formatMoney(preco)}
-                                    </span>
+                                    <Money value={preco} className="text-sm text-foreground" symbolScale={0.6} />
                                     <span
-                                      className="inline-block text-[11px] font-bold px-2.5 py-0.5 rounded-full font-terminal"
+                                      className="inline-block text-finance-mono text-[11px] px-2.5 py-0.5 rounded-full"
                                       style={{ background: pill.bg, color: pill.text, boxShadow: `0 2px 8px ${pill.glow}` }}
                                     >
                                       {fmtPct(cmv)}
                                     </span>
                                   </>
                                 ) : (
-                                  <span className="text-muted-foreground/40 text-xs font-terminal">—</span>
+                                  <span className="text-muted-foreground/40 text-finance-mono text-xs">—</span>
                                 )}
                               </div>
                             );
@@ -644,12 +646,12 @@ export default function PrecificacaoPizzas() {
                             >
                               {/* Size badge */}
                               <div className="flex items-center justify-between">
-                                <span className="text-xs font-extrabold uppercase tracking-[0.15em] px-3 py-1.5 rounded-lg" style={{ color: '#5D5D5D' }}>
+                                <span className="text-mini-label px-3 py-1.5 rounded-lg">
                                   Tamanho {sizeLabels[s]}
                                 </span>
                                 {preco > 0 && (
                                   <span
-                                    className="text-xs font-bold px-3 py-1 rounded-full font-terminal"
+                                    className="text-finance-mono text-xs px-3 py-1 rounded-full"
                                     style={{ background: pill.bg, color: pill.text, boxShadow: `0 2px 8px ${pill.glow}` }}
                                   >
                                     CMV {fmtPct(cmv)}
@@ -660,15 +662,12 @@ export default function PrecificacaoPizzas() {
                               {/* Info block — Custo + Sugerido */}
                               <div className="rounded-lg p-4 space-y-3">
                                 <div className="flex items-center justify-between">
-                                  <span className="text-[10px] font-bold uppercase tracking-[0.12em]" style={{ color: '#5D5D5D' }}>Custo</span>
-                                  <div className="flex items-baseline gap-1">
-                                    <span className="text-xs font-bold" style={{ color: '#5D5D5D' }}>R$</span>
-                                    <span className="text-base font-bold font-terminal" style={{ color: '#5D5D5D' }}>{custo.toFixed(2)}</span>
-                                  </div>
+                                  <span className="text-mini-label">Custo</span>
+                                  <Money value={custo} className="text-base text-muted-foreground" symbolScale={0.55} />
                                 </div>
                                 <div className="h-px bg-border/40" />
                                 <div className="flex items-center justify-between rounded-md px-2 py-1 -mx-2 bg-success/10 border border-success/30">
-                                  <span className="text-[10px] font-bold uppercase tracking-[0.12em] flex items-center gap-1 text-success">
+                                  <span className="text-mini-label flex items-center gap-1 text-success">
                                     Sugerido
                                     <Tooltip>
                                       <TooltipTrigger asChild>
@@ -681,10 +680,7 @@ export default function PrecificacaoPizzas() {
                                       </TooltipContent>
                                     </Tooltip>
                                   </span>
-                                  <div className="flex items-baseline gap-1 text-success">
-                                    <span className="text-xs font-bold">R$</span>
-                                    <span className="text-base font-extrabold font-terminal">{sug.toFixed(2)}</span>
-                                  </div>
+                                  <Money value={sug} className="text-base text-success" symbolScale={0.55} />
                                 </div>
                               </div>
 
@@ -698,7 +694,7 @@ export default function PrecificacaoPizzas() {
                                 return (
                                   <div className="rounded-lg p-4 space-y-3" style={{ background: 'rgba(255,255,255,0.35)' }}>
                                     <div className="flex items-center justify-between">
-                                      <span className="text-[10px] font-bold uppercase tracking-[0.12em] flex items-center gap-1" style={{ color: sobraColor }}>
+                                      <span className="text-mini-label flex items-center gap-1" style={{ color: sobraColor }}>
                                         {sobraPositiva ? 'Sobra (lucro)' : 'Prejuízo'}
                                         <Tooltip>
                                           <TooltipTrigger asChild>
@@ -709,17 +705,16 @@ export default function PrecificacaoPizzas() {
                                           </TooltipContent>
                                         </Tooltip>
                                       </span>
-                                      <div className="flex items-baseline gap-1">
-                                        <span className="text-xs font-bold" style={{ color: sobraColor }}>R$</span>
-                                        <span className="text-base font-extrabold font-terminal" style={{ color: sobraColor }}>{sobra.toFixed(2)}</span>
+                                      <div className="flex items-baseline gap-1" style={{ color: sobraColor }}>
+                                        <Money value={sobra} className="text-base" symbolScale={0.55} />
                                         {preco > 0 && (
-                                          <span className="text-[10px] font-bold ml-1" style={{ color: sobraColor }}>({sobraPct.toFixed(1)}%)</span>
+                                          <span className="text-finance-mono text-[11px] ml-1">({sobraPct.toFixed(1)}%)</span>
                                         )}
                                       </div>
                                     </div>
                                     <div className="h-px bg-border/40" />
                                     <div className="flex items-center justify-between">
-                                      <span className="text-[10px] font-bold uppercase tracking-[0.12em] flex items-center gap-1" style={{ color: '#5D5D5D' }}>
+                                      <span className="text-mini-label flex items-center gap-1">
                                         Preço Zero
                                         <Tooltip>
                                           <TooltipTrigger asChild>
@@ -730,10 +725,7 @@ export default function PrecificacaoPizzas() {
                                           </TooltipContent>
                                         </Tooltip>
                                       </span>
-                                      <div className="flex items-baseline gap-1">
-                                        <span className="text-xs font-bold" style={{ color: '#5D5D5D' }}>R$</span>
-                                        <span className="text-base font-bold font-terminal" style={{ color: '#5D5D5D' }}>{precoZero.toFixed(2)}</span>
-                                      </div>
+                                      <Money value={precoZero} className="text-base text-muted-foreground" symbolScale={0.55} />
                                     </div>
                                   </div>
                                 );
@@ -741,12 +733,12 @@ export default function PrecificacaoPizzas() {
 
                               {/* Action block — Seu Preço */}
                               <div className="space-y-2">
-                                <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-primary block">Seu Preço</span>
+                                <span className="text-mini-label text-primary block">Seu Preço</span>
                                 <div className="relative">
                                   <input
                                     type={localPrices[ficha.id]?.[s] !== undefined ? "number" : "text"}
                                     step={localPrices[ficha.id]?.[s] !== undefined ? "0.01" : undefined}
-                                    className="input-glow-focus w-full text-center rounded-lg outline-none font-terminal"
+                                    className="input-glow-focus text-finance-mono w-full text-center rounded-lg outline-none"
                                     style={{
                                       height: '52px',
                                       fontSize: '20px',
@@ -792,7 +784,7 @@ export default function PrecificacaoPizzas() {
                               {/* App Prices */}
                               {activeApps.length > 0 && (
                                 <div className="pt-3 border-t border-border/30 space-y-2.5">
-                                  <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-muted-foreground">Delivery Apps</span>
+                                  <span className="text-mini-label">Delivery Apps</span>
                                   {activeApps.map((app) => {
                                     const appPrice = preco > 0 ? calcAppPrice(preco, app.taxa) : 0;
                                     const appCmv = calcCmv(custo, appPrice);
@@ -800,23 +792,20 @@ export default function PrecificacaoPizzas() {
                                     return (
                                       <div key={app.key} className="flex items-center justify-between">
                                         <div>
-                                          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{app.label}</span>
+                                          <span className="text-mini-label">{app.label}</span>
                                           {appPrice > 0 && (
-                                            <p className="text-sm font-bold font-terminal text-foreground">
-                                              <span className="text-[10px] text-muted-foreground mr-0.5">R$</span>
-                                              {appPrice.toFixed(2)}
-                                            </p>
+                                            <Money value={appPrice} className="text-sm text-foreground block" symbolScale={0.55} />
                                           )}
                                         </div>
                                         {appPrice > 0 ? (
                                           <span
-                                            className="text-[10px] font-bold px-2 py-0.5 rounded-full font-terminal"
+                                            className="text-finance-mono text-[10px] px-2 py-0.5 rounded-full"
                                             style={{ background: appPill.bg, color: appPill.text }}
                                           >
                                             {fmtPct(appCmv)}
                                           </span>
                                         ) : (
-                                          <span className="text-muted-foreground/40 text-xs">—</span>
+                                          <span className="text-muted-foreground/40 text-finance-mono text-xs">—</span>
                                         )}
                                       </div>
                                     );
