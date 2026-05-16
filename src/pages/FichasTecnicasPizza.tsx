@@ -692,19 +692,19 @@ export default function FichasTecnicasPizza() {
               </div>
             </DialogHeader>
 
-            {/* COST-STRIP HORIZONTAL: P · M · G — tipografia consistente */}
-            <div className="px-8 py-3 shrink-0 border-b border-border/40">
-              <div className="inline-flex items-center gap-6">
+            {/* COST-STRIP: P · M · G — tipografia uniforme Linear-style */}
+            <div className="shrink-0 border-b border-slate-200/70 bg-slate-50/30">
+              <div className="mx-auto w-full max-w-6xl px-8 py-2.5 flex items-center gap-6">
                 {[
                   { label: "P", dim: "25cm", value: custoForm.custoP },
                   { label: "M", dim: "30cm", value: custoForm.custoM },
                   { label: "G", dim: "35cm", value: custoForm.custoG },
                 ].map((c, i) => (
                   <div key={c.label} className="flex items-baseline gap-2">
-                    {i > 0 && <span className="text-muted-foreground/30 text-base">·</span>}
-                    <span className="text-base font-bold text-foreground">{c.label}</span>
-                    <span className="text-xs text-muted-foreground tabular-nums">{c.dim}</span>
-                    <span className="text-base font-semibold text-foreground tabular-nums">R$ {fmt(c.value)}</span>
+                    {i > 0 && <span className="text-slate-300">·</span>}
+                    <span className="text-xs font-semibold text-slate-700 uppercase tracking-wider">{c.label}</span>
+                    <span className="text-xs font-medium text-slate-500 tabular-nums">{c.dim}</span>
+                    <Money value={c.value} className="text-sm font-semibold text-slate-900" />
                   </div>
                 ))}
               </div>
