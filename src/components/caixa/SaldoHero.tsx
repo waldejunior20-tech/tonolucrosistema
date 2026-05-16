@@ -55,7 +55,6 @@ export function SaldoHero({ totalGanho, totalGasto, totalTaxas, totalLiquido, qt
             symbolScale={0.42}
             className="font-extrabold leading-none tracking-tight text-[clamp(28px,9vw,52px)]"
           />
-        </div>
           <p className="mt-2 text-[11px] text-white/70">
             {qtdVendas} venda{qtdVendas !== 1 ? "s" : ""} · líquido após taxas
           </p>
