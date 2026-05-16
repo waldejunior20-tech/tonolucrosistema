@@ -19,6 +19,7 @@ import {
 import { ComprasGraficoFornecedor } from "@/components/compras/ComprasGraficoFornecedor";
 import { CompraCard, type CompraGrupo } from "@/components/compras/CompraCard";
 import { CupomCompraSheet, type CupomItem } from "@/components/compras/CupomCompraSheet";
+import { Money } from "@/components/Money";
 
 type Row = {
   id: string;
@@ -270,7 +271,7 @@ export default function InsumosHistoricoCompras() {
           </div>
           <div className="flex items-baseline gap-3 mt-1">
             <div className="text-[28px] sm:text-[32px] tabular-nums leading-none num-depth-dark">
-              {formatMoney(totalPeriodo)}
+              {<Money value={totalPeriodo} />}
             </div>
           </div>
           <div className="text-xs text-primary-foreground/70 mt-1.5">

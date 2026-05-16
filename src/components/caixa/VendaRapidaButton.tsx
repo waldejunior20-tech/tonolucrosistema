@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Money } from "@/components/Money";
 
 type Props = {
   forma: "Dinheiro/PIX" | "Débito" | "Crédito" | "iFood" | "Outros Apps";
@@ -112,7 +113,7 @@ export function VendaRapidaButton({
               <MoneyInput value={valor} onChange={setValor} />
               {valor > 0 && taxaPct > 0 && (
                 <p className="text-xs text-muted-foreground">
-                  Taxa {taxaPct}% → Líquido: <span className="font-semibold text-success">{formatMoney(liquido)}</span>
+                  Taxa {taxaPct}% → Líquido: <span className="font-semibold text-success">{<Money value={liquido} />}</span>
                 </p>
               )}
             </div>

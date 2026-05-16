@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { formatMoney } from "@/components/MoneyInput";
 import { Store, Tag } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Money } from "@/components/Money";
 
 interface Row {
   fornecedor: string | null;
@@ -102,7 +103,7 @@ export function ComprasGraficoFornecedor({ rows, selectedFornecedor, onSelectFor
                   {it.nome}
                 </span>
                 <span className="text-[12px] tabular-nums font-bold text-foreground shrink-0">
-                  {formatMoney(it.valor)}
+                  {<Money value={it.valor} />}
                 </span>
               </div>
               <div className="relative h-2 rounded-full bg-muted/50 overflow-hidden">

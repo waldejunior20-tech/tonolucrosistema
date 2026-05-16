@@ -14,6 +14,7 @@ import { Plus, Target, AlertTriangle, TrendingUp, TrendingDown } from "lucide-re
 import { HealthStatus } from "@/components/HealthStatus";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { FinanceiroCategoryTabs } from "@/components/financeiro/FinanceiroCategoryTabs";
+import { Money } from "@/components/Money";
 
 const fmt = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -501,7 +502,7 @@ export default function FinanceiroDRE() {
             <div key={item.label} className="space-y-1">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">{item.label}</span>
-                <span className="font-bold text-foreground">R$ {item.value.toFixed(2)}</span>
+                <Money value={item.value} className="font-bold text-foreground" />
               </div>
               <div className="h-2 bg-muted rounded-full overflow-hidden">
                 <div className={cn("h-full rounded-full transition-all duration-500", item.color)} style={{ width: `${Math.min(Math.abs(item.value), 100)}%` }} />

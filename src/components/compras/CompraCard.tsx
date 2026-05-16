@@ -1,5 +1,6 @@
 import { formatMoney } from "@/components/MoneyInput";
 import { ChevronRight, Receipt } from "lucide-react";
+import { Money } from "@/components/Money";
 
 export interface CompraGrupo {
   key: string;
@@ -50,7 +51,7 @@ export function CompraCard({ compra, onClick }: Props) {
 
       <div className="flex items-center gap-1 shrink-0">
         <div className="text-[14px] tabular-nums font-bold text-foreground">
-          {formatMoney(compra.total)}
+          {<Money value={compra.total} />}
         </div>
         <ChevronRight className="h-4 w-4 text-muted-foreground" />
       </div>
