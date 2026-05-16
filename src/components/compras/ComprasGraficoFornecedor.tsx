@@ -43,7 +43,7 @@ export function ComprasGraficoFornecedor({ rows, selectedFornecedor, onSelectFor
   if (data.items.length === 0) return null;
 
   return (
-    <div className="rounded-2xl border border-border/60 bg-card p-4 fade-up">
+    <div className="rounded-2xl border border-border/60 bg-card p-4 fade-up text-slate-400">
       {/* Toggle modo */}
       <div className="flex items-center justify-between mb-4">
         <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
