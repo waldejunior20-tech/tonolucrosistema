@@ -811,7 +811,7 @@ export default function Dashboard() {
         {/* RADAR DE LUCRO removido */}
 
         {/* OPORTUNIDADES (col-span-4) — substitui status financeiro (já no hero) */}
-        <Bento className="lg:col-span-4">
+        <Bento className="lg:col-span-12">
           <CardHeader
             title="Oportunidades"
             subtitle="Produtos prontos pra campanha."
