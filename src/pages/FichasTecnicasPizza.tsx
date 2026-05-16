@@ -690,19 +690,19 @@ export default function FichasTecnicasPizza() {
               </DialogTitle>
             </DialogHeader>
 
-            {/* COST-STRIP HORIZONTAL COMPACTO: P · M · G */}
-            <div className="px-8 py-2 shrink-0">
-              <div className="inline-flex items-center gap-4 text-xs ">
+            {/* COST-STRIP HORIZONTAL: P · M · G — tipografia consistente */}
+            <div className="px-8 py-3 shrink-0 border-b border-border/40">
+              <div className="inline-flex items-center gap-6">
                 {[
                   { label: "P", dim: "25cm", value: custoForm.custoP },
                   { label: "M", dim: "30cm", value: custoForm.custoM },
                   { label: "G", dim: "35cm", value: custoForm.custoG },
                 ].map((c, i) => (
-                  <div key={c.label} className="flex items-center gap-1.5">
-                    {i > 0 && <span className="text-muted-foreground/40">·</span>}
-                    <span className="font-semibold text-foreground">{c.label}</span>
-                    <span className="text-muted-foreground/70">{c.dim}</span>
-                    <span className=" font-semibold text-foreground">R$ {fmt(c.value)}</span>
+                  <div key={c.label} className="flex items-baseline gap-2">
+                    {i > 0 && <span className="text-muted-foreground/30 text-base">·</span>}
+                    <span className="text-base font-bold text-foreground">{c.label}</span>
+                    <span className="text-xs text-muted-foreground tabular-nums">{c.dim}</span>
+                    <span className="text-base font-semibold text-foreground tabular-nums">R$ {fmt(c.value)}</span>
                   </div>
                 ))}
               </div>
@@ -765,9 +765,12 @@ export default function FichasTecnicasPizza() {
                 {/* INGREDIENTES — TABELA DENSA */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <Label className="text-lg font-semibold text-foreground">Ingredientes *</Label>
-                    <Button type="button" size="sm" className="btn-action-add gap-1" onClick={addIngrediente}>
-                      <Plus className="h-3.5 w-3.5" /> Adicionar Ingrediente
+                    <div className="flex items-baseline gap-2">
+                      <h3 className="text-base font-semibold text-foreground">Ingredientes</h3>
+                      <span className="text-[11px] uppercase tracking-wider text-muted-foreground">obrigatório</span>
+                    </div>
+                    <Button type="button" size="sm" className="btn-action-add gap-1.5 h-9 px-3" onClick={addIngrediente}>
+                      <Plus className="h-4 w-4" /> Adicionar Ingrediente
                     </Button>
                   </div>
 
@@ -1192,17 +1195,17 @@ export default function FichasTecnicasPizza() {
               </div>
 
               {/* STICKY FOOTER */}
-              <div className="border-t border-border bg-background px-8 py-3 shrink-0">
+              <div className="border-t border-border bg-background px-8 py-4 shrink-0">
                 <div className="flex items-center justify-between gap-4 flex-wrap">
-                  <div className="flex items-center gap-4 text-xs ">
+                  <div className="flex items-center gap-6">
                     {[
                       { l: "Total P", v: custoForm.custoP },
                       { l: "Total M", v: custoForm.custoM },
                       { l: "Total G", v: custoForm.custoG },
                     ].map((t) => (
-                      <div key={t.l}>
-                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{t.l}</span>
-                        <p className=" font-bold text-foreground">R$ {fmt(t.v)}</p>
+                      <div key={t.l} className="flex flex-col">
+                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">{t.l}</span>
+                        <p className="text-lg font-bold text-foreground tabular-nums leading-tight">R$ {fmt(t.v)}</p>
                       </div>
                     ))}
                   </div>
@@ -1212,14 +1215,15 @@ export default function FichasTecnicasPizza() {
                         type="button"
                         variant="outline"
                         size="sm"
+                        className="h-10 gap-1.5"
                         onClick={() => setSalvarBaseOpen(true)}
                       >
-                        <Sparkles className="h-3.5 w-3.5" />
+                        <Sparkles className="h-4 w-4" />
                         Salvar como base
                       </Button>
                     )}
-                    <Button type="button" variant="outline" onClick={resetForm}>Cancelar</Button>
-                    <Button type="submit" disabled={insertMutation.isPending || updateMutation.isPending || (!editingId && !formIsValid)} className={!editingId && !formIsValid ? "opacity-50" : ""}>
+                    <Button type="button" variant="outline" size="sm" className="h-10 px-4" onClick={resetForm}>Cancelar</Button>
+                    <Button type="submit" size="sm" className="h-10 px-6" disabled={insertMutation.isPending || updateMutation.isPending || (!editingId && !formIsValid)} >
                       {editingId ? "Salvar" : "Cadastrar"}
                     </Button>
                   </div>
