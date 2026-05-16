@@ -57,22 +57,22 @@ export default function CaixaDiario() {
         periodoLabel={`Últimos ${periodo} dias`}
       />
 
-      {/* Action cards */}
-      <div className="grid grid-cols-2 gap-3">
-        <ActionCard
-          tone="success"
-          icon={<Plus size={18} strokeWidth={2.5} />}
-          title="Lançar receita"
-          subtitle="Vendas do dia"
+      {/* Quick actions - compact */}
+      <div className="flex items-center gap-2">
+        <button
           onClick={() => setReceitaOpen(true)}
-        />
-        <ActionCard
-          tone="destructive"
-          icon={<Minus size={18} strokeWidth={2.5} />}
-          title="Lançar despesa"
-          subtitle="Gastos e contas"
+          className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 text-[13px] font-semibold hover:bg-emerald-100 transition-colors"
+        >
+          <Plus size={14} strokeWidth={2.5} />
+          Lançar receita
+        </button>
+        <button
           onClick={() => setDespesaOpen(true)}
-        />
+          className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-rose-200 bg-rose-50 text-rose-700 text-[13px] font-semibold hover:bg-rose-100 transition-colors"
+        >
+          <Minus size={14} strokeWidth={2.5} />
+          Lançar despesa
+        </button>
       </div>
 
       {/* Movimentos timeline */}
@@ -87,44 +87,3 @@ export default function CaixaDiario() {
   );
 }
 
-function ActionCard({
-  tone,
-  icon,
-  title,
-  subtitle,
-  onClick,
-}: {
-  tone: "success" | "destructive";
-  icon: React.ReactNode;
-  title: string;
-  subtitle: string;
-  onClick: () => void;
-}) {
-  const accent = tone === "success" ? "bg-success" : "bg-destructive";
-  const ring = tone === "success" ? "border-success/25 hover:border-success/50" : "border-destructive/25 hover:border-destructive/50";
-  return (
-    <button
-      onClick={onClick}
-      className={cn(
-        "group relative overflow-hidden rounded-2xl border p-4 text-left transition-all active:scale-[0.98] hover:shadow-lg",
-        ring,
-      )}
-      style={{
-        background:
-          "linear-gradient(160deg, rgba(37,99,235,0.06) 0%, rgba(29,78,216,0.10) 100%)",
-      }}
-    >
-      {/* subtle blue glow */}
-      <div className="absolute -bottom-10 -right-10 w-28 h-28 rounded-full bg-primary/15 blur-2xl pointer-events-none" />
-      <div className="relative flex flex-col items-start gap-3">
-        <div className={cn("w-10 h-10 rounded-xl text-white flex items-center justify-center shadow-md group-hover:scale-105 transition-transform", accent)}>
-          {icon}
-        </div>
-        <div>
-          <p className="text-sm font-bold text-foreground leading-tight">{title}</p>
-          <p className="text-[11px] text-muted-foreground mt-0.5 leading-tight">{subtitle}</p>
-        </div>
-      </div>
-    </button>
-  );
-}
