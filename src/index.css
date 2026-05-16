@@ -266,7 +266,8 @@
     background: hsl(var(--surface-card));
     border: 1px solid hsl(var(--border));
     padding: 8px 10px;
-    font-family: var(--font-inter, 'Mulish'), system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-variant-numeric: tabular-nums;
     font-size: 14px;
     height: 40px;
     color: hsl(var(--foreground));
