@@ -114,7 +114,7 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Mulish', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     font-size: 14px;
     line-height: 1.6;
     color: hsl(var(--foreground));
@@ -123,14 +123,14 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Mulish', 'Mulish', system-ui, sans-serif;
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
     color: hsl(var(--text-heading));
-    letter-spacing: -0.01em;
+    letter-spacing: -0.015em;
     font-weight: 700;
   }
 
   h1 { font-size: 28px; line-height: 1.2; font-weight: 700; }
-  h2 { font-size: 20px; line-height: 1.3; font-weight: 600; }
+  h2 { font-size: 20px; line-height: 1.3; font-weight: 700; }
   h3 { font-size: 18px; line-height: 1.3; font-weight: 600; }
 
   /* Enforce minimum 14px body text */
@@ -139,25 +139,28 @@
   }
 
   /* Typography utilities */
-  .text-page-title { font-size: 28px; font-weight: 700; line-height: 1.2; letter-spacing: -0.01em; }
-  .text-card-title { font-size: 20px; font-weight: 600; line-height: 1.3; }
-  .text-body       { font-size: 14px; font-weight: 400; line-height: 1.6; }
-  .text-money-lg   { font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; font-family: 'JetBrains Mono', ui-monospace, monospace; }
-  .text-money-md   { font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; font-family: 'JetBrains Mono', ui-monospace, monospace; }
-  .text-label-xs   { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: hsl(var(--text-muted)); }
-  .text-menu       { font-size: 14px; font-weight: 500; }
+  .text-page-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 28px; font-weight: 700; line-height: 1.2; letter-spacing: -0.015em; }
+  .text-card-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; }
+  .text-body       { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 400; line-height: 1.6; }
+  .text-money-lg   { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+  .text-money-md   { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+  .text-label-xs   { font-family: 'Golos Text', sans-serif; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: hsl(var(--text-muted)); }
+  .text-menu       { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500; }
 
-  .tabular-nums, td, th, input[type="number"], .font-mono {
+  .tabular-nums, td, th, input[type="number"] {
     font-variant-numeric: tabular-nums;
+  }
+  .font-mono {
     font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
   }
 
-  /* Big display numbers — heavy, chunky black with subtle depth */
+  /* Big display numbers — Plus Jakarta Sans, chunky */
   .num-depth-dark {
     color: hsl(220 40% 8%);
     font-weight: 800;
     letter-spacing: -0.03em;
-    font-family: 'Mulish', system-ui, -apple-system, sans-serif;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     font-variant-numeric: tabular-nums;
     text-shadow: 0 1px 0 hsl(0 0% 100% / 0.35);
   }
@@ -165,7 +168,7 @@
     color: hsl(0 0% 100%);
     font-weight: 800;
     letter-spacing: -0.03em;
-    font-family: 'Mulish', system-ui, -apple-system, sans-serif;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     font-variant-numeric: tabular-nums;
     text-shadow: 0 1px 2px hsl(220 40% 5% / 0.18);
   }
