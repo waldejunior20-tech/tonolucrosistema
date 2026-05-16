@@ -1,4 +1,3 @@
-import { formatMoney } from "@/components/MoneyInput";
 import { Money } from "@/components/Money";
 import { TrendingUp, TrendingDown, Receipt } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -96,9 +95,11 @@ function Stat({
         <Icon size={11} />
         <span>{label}</span>
       </div>
-      <p className="mt-1.5 w-full font-bold tabular-nums leading-none text-center text-[clamp(10px,2.4vw,13px)] truncate">
-        {formatMoney(value)}
-      </p>
+      <Money
+        value={value}
+        symbolScale={0.6}
+        className="mt-1.5 font-bold leading-none text-[clamp(10px,2.4vw,13px)]"
+      />
     </div>
   );
 }
