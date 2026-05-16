@@ -958,67 +958,7 @@ export default function Dashboard() {
           )}
         </Bento>
 
-        {/* ROW 2 — PRONTOS PARA PROMOÇÃO (col-span-4) */}
-        <Bento className="lg:col-span-4">
-          <CardHeader
-            title="Oportunidades de Promoção"
-            subtitle="Produtos com margem segura para campanha."
-            icon={Sparkles}
-            tint="success"
-            action={
-              prontosPromocao.length > 0 && (
-                <button
-                  onClick={() => navigate("/promocoes")}
-                  className={cn(T.label, "text-[#2563EB] hover:text-[#1D4ED8]")}
-                >
-                  Criar →
-                </button>
-              )
-            }
-          />
-          {prontosPromocao.length ? (
-            <div className="space-y-1.5">
-              {prontosPromocao.slice(0, 6).map((p) => (
-                <button
-                  key={p.id}
-                  onClick={() => navigate("/promocoes")}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-transparent hover:border-[#E2E8F0] hover:bg-[#F8FAFC] transition-all text-left group"
-                >
-                  <div className="w-7 h-7 rounded-lg bg-[#ECFDF5] text-[#059669] flex items-center justify-center shrink-0">
-                    <Sparkles size={13} strokeWidth={2.4} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className={cn(T.accent, "text-[13.5px] truncate", C.text)}>{p.nome}</p>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <span className={cn(T.label, "text-[10px] px-1.5 py-0.5 rounded-md bg-[#F1F5F9]", C.muted)}>
-                        {p.categoria}
-                      </span>
-                      <span className={cn(T.label, "text-[10px] px-1.5 py-0.5 rounded-md bg-[#FEF3C7] text-[#92400E]")}>
-                        Margem: dados insuficientes
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-end gap-0.5">
-                    <span className={cn(T.mono, "text-[13px] font-bold text-[#059669] whitespace-nowrap")}>
-                      {fmtBRL(p.preco)}
-                    </span>
-                    <span className={cn(T.label, "text-[9.5px] text-[#2563EB]")}>Combo →</span>
-                  </div>
-                </button>
-              ))}
-              <p className={cn(T.body, C.muted, "text-[11px] mt-2 px-1")}>
-                Cadastre o custo das fichas para liberar margem real por produto.
-              </p>
-            </div>
-          ) : (
-            <EmptyState
-              icon={Sparkles}
-              title="Nenhum produto liberado ainda"
-              hint="Defina preços nas fichas técnicas para liberar candidatos a promoção."
-              tone="success"
-            />
-          )}
-        </Bento>
+        {/* (Oportunidades já renderizado acima junto do Radar) */}
 
         {/* ROW 2 — PRODUTOS EM RISCO (col-span-4) */}
         <Bento className="lg:col-span-4">
