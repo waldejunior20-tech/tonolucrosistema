@@ -35,6 +35,7 @@ import { BaseSelector } from "@/components/fichas/BaseSelector";
 import { SalvarComoBaseDialog } from "@/components/fichas/SalvarComoBaseDialog";
 import { useBasesFicha, type BaseIngredienteInput } from "@/hooks/useBasesFicha";
 import { BordasSection } from "@/components/fichas/BordasSection";
+import { useSugestaoQuantidade } from "@/hooks/useSugestaoQuantidade";
 
 const TIPOS = ["tradicional", "especial", "premium", "doce"];
 const UNIDADES = ["kg", "g", "L", "ml", "unidade"];
