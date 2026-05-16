@@ -4,24 +4,28 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * Linear-style buttons: rounded-lg, peso semi-bold, alturas padronizadas,
+ * cor primária sólida com hover sutil. Sem sombras "premium" que polui o sistema.
+ */
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm text-sm font-bold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-semibold ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground shadow-[0_4px_15px_hsl(var(--primary)/0.3)] hover:shadow-[0_6px_20px_hsl(var(--primary)/0.4)] hover:-translate-y-px hover:brightness-110 active:scale-[0.98] transition-all duration-200",
-        destructive: "bg-[#DC2626] text-white hover:bg-[#B91C1C] shadow-sm",
-        outline: "border-[1.5px] border-[#D1D5DB] bg-white text-[#374151] hover:border-[#10B981] hover:text-[#059669] hover:bg-[#F0FDF4]",
-        secondary: "bg-[#F3F4F6] text-[#374151] hover:bg-[#E5E7EB] font-semibold",
-        ghost: "hover:bg-[#F3F4F6] hover:text-[#1F2937]",
-        link: "text-[#10B981] underline-offset-4 hover:underline font-semibold",
-        emerald: "bg-[#10B981] text-white hover:bg-[#059669] shadow-[0_4px_15px_rgba(16,185,129,0.3)]",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/95",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        outline: "border border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50",
+        secondary: "bg-slate-100 text-slate-900 hover:bg-slate-200",
+        ghost: "text-slate-700 hover:bg-slate-100 hover:text-slate-900",
+        link: "text-primary underline-offset-4 hover:underline font-semibold",
+        emerald: "bg-emerald-600 text-white hover:bg-emerald-700",
       },
       size: {
-        default: "h-11 px-6 py-2.5",
-        sm: "h-9 rounded-sm px-4",
-        lg: "h-12 rounded-sm px-8 text-base",
-        icon: "h-11 w-11",
+        default: "h-10 px-4 py-2",
+        sm: "h-9 px-3 text-xs",
+        lg: "h-11 px-6 text-base",
+        icon: "h-10 w-10",
       },
     },
     defaultVariants: {
