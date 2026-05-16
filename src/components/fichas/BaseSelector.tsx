@@ -107,10 +107,10 @@ export function BaseSelector({
           <button
             type="button"
             onClick={onCriarNovaBase}
-            className="text-xs text-primary hover:underline font-medium inline-flex items-center gap-1"
+            className="text-xs text-primary hover:bg-primary/10 font-semibold uppercase tracking-wider inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-primary/30 transition-colors"
           >
-            <Plus className="h-3 w-3" />
-            nova base
+            <Plus className="h-3.5 w-3.5" />
+            Nova Base
           </button>
         )}
       </div>
