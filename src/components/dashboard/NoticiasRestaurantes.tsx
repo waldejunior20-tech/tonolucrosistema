@@ -115,10 +115,15 @@ export function NoticiasRestaurantes() {
               return (
                 <li key={idx}>
                   <a
-                    href={n.link}
+                    href={`https://www.google.com/search?q=${encodeURIComponent(n.title)}&tbm=nws`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex items-start gap-3 py-3 px-2 -mx-2 rounded-lg hover:bg-[#F8FAFC] transition-colors"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const url = `https://www.google.com/search?q=${encodeURIComponent(n.title)}&tbm=nws`;
+                      window.open(url, "_blank", "noopener,noreferrer");
+                    }}
+                    className="group flex items-start gap-3 py-3 px-2 -mx-2 rounded-lg hover:bg-[#F8FAFC] transition-colors cursor-pointer"
                   >
                     <div className="flex-1 min-w-0">
                       <p className="font-heading font-semibold text-[14px] text-[#0F172A] leading-snug line-clamp-2 group-hover:text-[#2563EB] transition-colors">
