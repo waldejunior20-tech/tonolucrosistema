@@ -959,6 +959,9 @@ export default function Dashboard() {
         </Bento>
 
       </div>
+
+      {/* ─── NOTÍCIAS DO SETOR ──────────────────────────────── */}
+      <NoticiasRestaurantes />
       </div>
     </div>
   );
