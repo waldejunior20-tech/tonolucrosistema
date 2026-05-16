@@ -74,9 +74,9 @@ export function PageHeader({ title, description, children, className }: PageHead
       {/* Title row */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-extrabold text-text-heading">{title}</h1>
+          <h1 className="text-heading-hero text-2xl">{title}</h1>
           {description && (
-            <p className="text-sm text-muted-foreground mt-1 font-medium">{description}</p>
+            <p className="text-table-body text-sm mt-1">{description}</p>
           )}
         </div>
         {children && <div className="flex items-center gap-2">{children}</div>}
