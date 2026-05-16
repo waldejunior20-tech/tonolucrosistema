@@ -15,3 +15,6 @@ verify_jwt = false
 [functions.bootstrap-cascata]
 verify_jwt = false
 
+
+[functions.noticias-setor]
+verify_jwt = false
