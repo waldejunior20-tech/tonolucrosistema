@@ -792,14 +792,14 @@ export default function FichasTecnicasPizza() {
                     }
 
                     return (
-                      <div className="mx-auto w-full max-w-7xl px-4 lg:px-8 rounded-md border border-border/60 overflow-visible bg-card/40">
+                      <div className="w-full rounded-lg border border-slate-200 overflow-visible bg-white">
                         <Table className="table-fixed w-full">
                           <TableHeader>
-                            <TableRow className="!bg-transparent">
-                              <TableHead className="w-[45%] px-3">Insumo</TableHead>
-                              <TableHead className="w-[30%] text-center bg-slate-50/40 dark:bg-muted/30">Quantidades (P · M · G)</TableHead>
-                              <TableHead className="w-[25%] text-right px-3">Custos</TableHead>
-                              <TableHead className="w-[44px] !px-1"></TableHead>
+                            <TableRow className="!bg-slate-50/60 border-b border-slate-200 hover:!bg-slate-50/60">
+                              <TableHead className="w-[45%] px-4 h-10 text-[11px] font-medium uppercase tracking-wider text-slate-400 bg-transparent">Insumo</TableHead>
+                              <TableHead className="w-[30%] px-4 h-10 text-center text-[11px] font-medium uppercase tracking-wider text-slate-400 bg-transparent">Quantidades</TableHead>
+                              <TableHead className="w-[25%] px-4 h-10 text-right text-[11px] font-medium uppercase tracking-wider text-slate-400 bg-transparent">Custos</TableHead>
+                              <TableHead className="w-[44px] !px-1 bg-transparent"></TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
