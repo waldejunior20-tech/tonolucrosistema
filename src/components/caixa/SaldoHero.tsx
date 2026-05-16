@@ -12,14 +12,18 @@ type Props = {
 };
 
 export function SaldoHero({ totalGanho, totalGasto, totalTaxas, totalLiquido, qtdVendas, periodoLabel }: Props) {
+  const isNegative = totalLiquido < 0;
   return (
     <div
       className="relative overflow-hidden rounded-3xl p-5 sm:p-7 text-white shadow-xl"
       style={{
-        background:
-          "radial-gradient(120% 80% at 100% 0%, #60A5FA 0%, transparent 55%)," +
-          "radial-gradient(100% 90% at 0% 100%, #1E3A8A 0%, transparent 60%)," +
-          "linear-gradient(135deg, #2563EB 0%, #1D4ED8 55%, #1E40AF 100%)",
+        background: isNegative
+          ? "radial-gradient(120% 80% at 100% 0%, #F87171 0%, transparent 55%)," +
+            "radial-gradient(100% 90% at 0% 100%, #7F1D1D 0%, transparent 60%)," +
+            "linear-gradient(135deg, #DC2626 0%, #B91C1C 55%, #991B1B 100%)"
+          : "radial-gradient(120% 80% at 100% 0%, #60A5FA 0%, transparent 55%)," +
+            "radial-gradient(100% 90% at 0% 100%, #1E3A8A 0%, transparent 60%)," +
+            "linear-gradient(135deg, #2563EB 0%, #1D4ED8 55%, #1E40AF 100%)",
       }}
     >
       {/* Glow orbs */}
@@ -89,7 +93,7 @@ function Stat({
         <Icon size={11} />
         <span>{label}</span>
       </div>
-      <p className="mt-1.5 font-bold tabular-nums leading-none whitespace-nowrap text-[clamp(11px,3.4vw,15px)]">
+      <p className="mt-1.5 w-full font-bold tabular-nums leading-none text-center text-[clamp(10px,2.4vw,13px)] truncate">
         {formatMoney(value)}
       </p>
     </div>
