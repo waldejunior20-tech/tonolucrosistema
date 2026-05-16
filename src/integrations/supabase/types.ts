@@ -2964,6 +2964,8 @@ export type Database = {
         Args: { p_texto_ocr: string }
         Returns: string
       }
+      dias_ate: { Args: { p_data: string }; Returns: number }
+      emoji_urgencia: { Args: { p_dias: number }; Returns: string }
       encontrar_match_insumo: {
         Args: { p_min_score?: number; p_nome: string; p_unidade_id: string }
         Returns: {
@@ -2986,6 +2988,24 @@ export type Database = {
       }
       extrair_fornecedor_da_descricao: {
         Args: { p_descricao: string }
+        Returns: string
+      }
+      fmt_brl: { Args: { p_valor: number }; Returns: string }
+      gerar_mensagem_documento: {
+        Args: {
+          p_action: string
+          p_categoria: string
+          p_data_emissao: string
+          p_data_vencimento: string
+          p_fornecedor: string
+          p_subcategoria: string
+          p_tipo: string
+          p_valor: number
+        }
+        Returns: string
+      }
+      gerar_mensagem_lote_insumos: {
+        Args: { p_resultados: Json }
         Returns: string
       }
       get_user_unidades: {
@@ -3036,6 +3056,7 @@ export type Database = {
         Args: { _unidade_id: string; _user_id: string }
         Returns: boolean
       }
+      legenda_dias: { Args: { p_dias: number }; Returns: string }
       lookup_fornecedor_cache: {
         Args: { p_min_confianca?: number; p_nome: string }
         Returns: {
@@ -3079,6 +3100,26 @@ export type Database = {
         Returns: boolean
       }
       primeira_unidade_do_user: { Args: { _user_id: string }; Returns: string }
+      processar_documento_whatsapp: {
+        Args: {
+          p_chave_acesso?: string
+          p_cnpj?: string
+          p_codigo_barras?: string
+          p_data_emissao?: string
+          p_data_pagamento?: string
+          p_data_vencimento?: string
+          p_fornecedor: string
+          p_linha_digitavel?: string
+          p_numero_nf?: string
+          p_observacoes?: string
+          p_serie_nf?: string
+          p_tipo: string
+          p_unidade_id: string
+          p_user_id: string
+          p_valor?: number
+        }
+        Returns: Json
+      }
       recalcular_custo_insumo_proprio: {
         Args: { p_insumo_proprio_id: string }
         Returns: number
