@@ -789,14 +789,14 @@ export default function FichasTecnicasPizza() {
                     }
 
                     return (
-                      <div className="mx-auto max-w-4xl rounded-md border border-border/60 overflow-visible bg-card/40">
-                        <Table>
+                      <div className="mx-auto w-full max-w-5xl rounded-md border border-border/60 overflow-visible bg-card/40">
+                        <Table className="table-fixed w-full">
                           <TableHeader>
                             <TableRow className="!bg-transparent">
-                              <TableHead className="min-w-[340px]">Insumo</TableHead>
-                              <TableHead className="w-[260px] text-center bg-slate-50/50 dark:bg-muted/30">Quantidades (P · M · G)</TableHead>
-                              <TableHead className="w-[180px] text-right">Custos</TableHead>
-                              <TableHead className="w-[36px] !px-1"></TableHead>
+                              <TableHead className="w-auto px-6">Insumo</TableHead>
+                              <TableHead className="w-[280px] text-center bg-slate-50/50 dark:bg-muted/30">Quantidades (P · M · G)</TableHead>
+                              <TableHead className="w-[160px] text-right px-4">Custos</TableHead>
+                              <TableHead className="w-[44px] !px-1"></TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
