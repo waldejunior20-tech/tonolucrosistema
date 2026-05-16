@@ -15,6 +15,7 @@ import { useProfitAlerts } from "@/hooks/useProfitAlerts";
 import { OnboardingChecklist } from "@/components/dashboard/OnboardingChecklist";
 import { MobileDashboard } from "@/components/dashboard/MobileDashboard";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { NoticiasRestaurantes } from "@/components/dashboard/NoticiasRestaurantes";
 import { cn } from "@/lib/utils";
 
 // ─── Palette (scoped to dashboard) ───────────────────────────────────
@@ -959,6 +960,9 @@ export default function Dashboard() {
         </Bento>
 
       </div>
+
+      {/* ─── NOTÍCIAS DO SETOR ──────────────────────────────── */}
+      <NoticiasRestaurantes />
       </div>
     </div>
   );
