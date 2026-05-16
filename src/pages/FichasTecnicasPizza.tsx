@@ -1074,13 +1074,13 @@ export default function FichasTecnicasPizza() {
                   const renderCaixaSlot = (size: "p" | "m" | "g", label: string, dim: string, caixaId: string, caixaNome: string) => {
                     const custo = custoCompradoMap.get(caixaId) ?? 0;
                     return (
-                      <div className="space-y-1.5">
+                      <div className="space-y-2">
                         <div className="flex items-baseline justify-between">
-                          <span className="text-sm font-semibold text-foreground">Caixa {label}</span>
-                          <span className="text-[10px] text-muted-foreground ">{dim}</span>
+                          <span className="text-xs font-semibold text-slate-700 uppercase tracking-wider">Caixa {label}</span>
+                          <span className="text-[11px] font-medium text-slate-400 tabular-nums">{dim}</span>
                         </div>
                         {embalagensDisponiveis.length === 0 ? (
-                          <div className="text-[10px] text-muted-foreground italic px-2 py-2 border border-dashed border-border rounded-md">
+                          <div className="text-[11px] text-slate-400 italic px-3 py-2 border border-dashed border-slate-200 rounded-md">
                             Nenhuma embalagem cadastrada.
                           </div>
                         ) : (
@@ -1091,23 +1091,23 @@ export default function FichasTecnicasPizza() {
                               if (item) selectEmbalagemInsumo(embIdx, size, item.id, item.nome);
                             }}
                           >
-                            <SelectTrigger className="h-9 text-xs border-input">
+                            <SelectTrigger className="h-9 text-xs font-medium border-slate-200">
                               <SelectValue placeholder="Selecionar caixa" />
                             </SelectTrigger>
                             <SelectContent>
                               {embalagensDisponiveis.map((item) => (
                                 <SelectItem key={item.id} value={item.id}>
                                   <span className="font-medium">{item.nome}</span>
-                                  <span className="text-xs text-muted-foreground ml-2 ">R$ {fmt(custoCompradoMap.get(item.id) ?? 0)}</span>
+                                  <span className="text-xs text-slate-500 ml-2 tabular-nums">R$ {fmt(custoCompradoMap.get(item.id) ?? 0)}</span>
                                 </SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
                         )}
                         {caixaId && (
-                          <div className="flex items-center justify-between text-[11px] ">
-                            <span className="text-muted-foreground truncate" title={caixaNome}>{caixaNome}</span>
-                            <span className=" font-semibold text-foreground">R$ {fmt(custo)}</span>
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="text-slate-500 truncate font-medium" title={caixaNome}>{caixaNome}</span>
+                            <span className="font-semibold text-slate-900 tabular-nums font-mono">R$ {fmt(custo)}</span>
                           </div>
                         )}
                       </div>
