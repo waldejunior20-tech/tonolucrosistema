@@ -690,19 +690,19 @@ export default function FichasTecnicasPizza() {
               </DialogTitle>
             </DialogHeader>
 
-            {/* COST-STRIP HORIZONTAL COMPACTO: P · M · G */}
-            <div className="px-8 py-2 shrink-0">
-              <div className="inline-flex items-center gap-4 text-xs ">
+            {/* COST-STRIP HORIZONTAL: P · M · G — tipografia consistente */}
+            <div className="px-8 py-3 shrink-0 border-b border-border/40">
+              <div className="inline-flex items-center gap-6">
                 {[
                   { label: "P", dim: "25cm", value: custoForm.custoP },
                   { label: "M", dim: "30cm", value: custoForm.custoM },
                   { label: "G", dim: "35cm", value: custoForm.custoG },
                 ].map((c, i) => (
-                  <div key={c.label} className="flex items-center gap-1.5">
-                    {i > 0 && <span className="text-muted-foreground/40">·</span>}
-                    <span className="font-semibold text-foreground">{c.label}</span>
-                    <span className="text-muted-foreground/70">{c.dim}</span>
-                    <span className=" font-semibold text-foreground">R$ {fmt(c.value)}</span>
+                  <div key={c.label} className="flex items-baseline gap-2">
+                    {i > 0 && <span className="text-muted-foreground/30 text-base">·</span>}
+                    <span className="text-base font-bold text-foreground">{c.label}</span>
+                    <span className="text-xs text-muted-foreground tabular-nums">{c.dim}</span>
+                    <span className="text-base font-semibold text-foreground tabular-nums">R$ {fmt(c.value)}</span>
                   </div>
                 ))}
               </div>
