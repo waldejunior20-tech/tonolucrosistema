@@ -1233,6 +1233,7 @@ export default function FichasTecnicasPizza() {
                     </Button>
                   </div>
                 </div>
+                </div>
               </div>
             </form>
 
