@@ -1,4 +1,4 @@
-import { formatMoney } from "@/components/MoneyInput";
+import { Money } from "@/components/Money";
 import { TrendingUp, TrendingDown, Receipt } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -49,9 +49,11 @@ export function SaldoHero({ totalGanho, totalGasto, totalTaxas, totalLiquido, qt
 
         {/* Balance */}
         <div className="mt-4 text-center">
-          <p className="font-extrabold tabular-nums leading-none tracking-tight whitespace-nowrap text-[clamp(28px,9vw,52px)]">
-            {formatMoney(totalLiquido)}
-          </p>
+          <Money
+            value={totalLiquido}
+            symbolScale={0.42}
+            className="font-extrabold leading-none tracking-tight text-[clamp(28px,9vw,52px)]"
+          />
           <p className="mt-2 text-[11px] text-white/70">
             {qtdVendas} venda{qtdVendas !== 1 ? "s" : ""} · líquido após taxas
           </p>
@@ -93,9 +95,11 @@ function Stat({
         <Icon size={11} />
         <span>{label}</span>
       </div>
-      <p className="mt-1.5 w-full font-bold tabular-nums leading-none text-center text-[clamp(10px,2.4vw,13px)] truncate">
-        {formatMoney(value)}
-      </p>
+      <Money
+        value={value}
+        symbolScale={0.6}
+        className="mt-1.5 font-bold leading-none text-[clamp(10px,2.4vw,13px)]"
+      />
     </div>
   );
 }

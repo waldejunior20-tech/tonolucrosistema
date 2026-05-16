@@ -560,6 +560,45 @@ export type Database = {
         }
         Relationships: []
       }
+      categorias_keywords: {
+        Row: {
+          ativo: boolean | null
+          categoria: string
+          confianca: number
+          created_at: string | null
+          descricao_help: string | null
+          id: number
+          pattern: string
+          pattern_type: string
+          prioridade: number
+          subcategoria: string | null
+        }
+        Insert: {
+          ativo?: boolean | null
+          categoria: string
+          confianca?: number
+          created_at?: string | null
+          descricao_help?: string | null
+          id?: number
+          pattern: string
+          pattern_type: string
+          prioridade?: number
+          subcategoria?: string | null
+        }
+        Update: {
+          ativo?: boolean | null
+          categoria?: string
+          confianca?: number
+          created_at?: string | null
+          descricao_help?: string | null
+          id?: number
+          pattern?: string
+          pattern_type?: string
+          prioridade?: number
+          subcategoria?: string | null
+        }
+        Relationships: []
+      }
       combos_fixos: {
         Row: {
           created_at: string | null
@@ -1248,6 +1287,39 @@ export type Database = {
           id?: string
           nome_normalizado?: string
           nome_original?: string
+          subcategoria?: string | null
+          ultimo_uso?: string | null
+          vezes_visto?: number | null
+        }
+        Relationships: []
+      }
+      fornecedor_categoria_cache: {
+        Row: {
+          categoria: string
+          cnpj_raiz: string
+          confianca: number | null
+          created_at: string | null
+          fornecedor_exemplo: string | null
+          subcategoria: string | null
+          ultimo_uso: string | null
+          vezes_visto: number | null
+        }
+        Insert: {
+          categoria: string
+          cnpj_raiz: string
+          confianca?: number | null
+          created_at?: string | null
+          fornecedor_exemplo?: string | null
+          subcategoria?: string | null
+          ultimo_uso?: string | null
+          vezes_visto?: number | null
+        }
+        Update: {
+          categoria?: string
+          cnpj_raiz?: string
+          confianca?: number | null
+          created_at?: string | null
+          fornecedor_exemplo?: string | null
           subcategoria?: string | null
           ultimo_uso?: string | null
           vezes_visto?: number | null
@@ -2694,6 +2766,16 @@ export type Database = {
         Args: { p_base_id: string; p_ficha_id: string; p_tipo_ficha: string }
         Returns: number
       }
+      aprender_classificacao: {
+        Args: {
+          p_categoria: string
+          p_cnpj: string
+          p_confianca?: number
+          p_fornecedor: string
+          p_subcategoria?: string
+        }
+        Returns: undefined
+      }
       aprovar_classificacao_item: {
         Args: {
           p_categoria?: string
@@ -2728,6 +2810,15 @@ export type Database = {
           p_window_seconds?: number
         }
         Returns: boolean
+      }
+      classificar_documento: {
+        Args: { p_cnpj?: string; p_descricao?: string; p_fornecedor: string }
+        Returns: {
+          categoria: string
+          confianca: number
+          origem: string
+          subcategoria: string
+        }[]
       }
       classificar_e_upsert_insumo: {
         Args: {
