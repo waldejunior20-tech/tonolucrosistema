@@ -1268,37 +1268,54 @@ export default function FichasTecnicasPizza() {
                 <TableHead className="text-right">Custo P</TableHead>
                 <TableHead className="text-right">Custo M</TableHead>
                 <TableHead className="text-right">Custo G</TableHead>
-                <TableHead className="w-[100px]">Ações</TableHead>
+                <TableHead className="w-[120px]">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredFichas.map((ficha) => {
                 const custos = calcularCustosFicha(ficha.id);
                 return (
-                  <TableRow key={ficha.id} className="cursor-pointer">
-                    <TableCell
-                      className="font-semibold text-primary hover:underline"
-                      onClick={() => handleEdit(ficha)}
-                    >
+                  <TableRow
+                    key={ficha.id}
+                    className="group cursor-pointer transition-all duration-150"
+                    onClick={() => handleEdit(ficha)}
+                  >
+                    <TableCell className="font-medium text-foreground group-hover:text-primary transition-colors">
                       {ficha.nome}
                     </TableCell>
-                    <TableCell className="capitalize" onClick={() => handleEdit(ficha)}>{ficha.tipo ?? "—"}</TableCell>
-                    <TableCell className="text-right tabular-nums" onClick={() => handleEdit(ficha)}>R$ {fmt(custos.custoP)}</TableCell>
-                    <TableCell className="text-right tabular-nums" onClick={() => handleEdit(ficha)}>R$ {fmt(custos.custoM)}</TableCell>
-                    <TableCell className="text-right tabular-nums" onClick={() => handleEdit(ficha)}>R$ {fmt(custos.custoG)}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="capitalize text-xs">
+                        {ficha.tipo ?? "—"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Money value={custos.custoP} />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Money value={custos.custoM} />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Money value={custos.custoG} />
+                    </TableCell>
                     <TableCell onClick={(e) => e.stopPropagation()}>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        title="Excluir ficha"
-                        onClick={() => {
-                          if (confirm(`🗑️ Excluir "${ficha.nome}"? Essa ação não pode ser desfeita.`)) {
-                            deleteMutation.mutate(ficha.id);
-                          }
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
+                      <div className="flex items-center justify-end gap-3">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                          title="Excluir ficha"
+                          onClick={() => {
+                            if (confirm(`🗑️ Excluir "${ficha.nome}"? Essa ação não pode ser desfeita.`)) {
+                              deleteMutation.mutate(ficha.id);
+                            }
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                        <span className="text-muted-foreground/40 group-hover:text-muted-foreground group-hover:translate-x-0.5 transition-all duration-150 text-xs">
+                          ▶
+                        </span>
+                      </div>
                     </TableCell>
                   </TableRow>
                 );
