@@ -944,8 +944,8 @@ export default function FichasTecnicasPizza() {
                                     )}
                                   </TableCell>
 
-                                  {/* BLOCO 2 — QUANTIDADES compactas P/M/G + Aplicar sugestão */}
-                                  <TableCell className="align-middle !py-3 !px-3 bg-slate-50/40 dark:bg-muted/30">
+                                  {/* BLOCO 2 — QUANTIDADES P/M/G */}
+                                  <TableCell className="align-middle !py-3 !px-4">
                                     <div className="flex items-center justify-center gap-2 whitespace-nowrap">
                                       {renderQtdInput("qtd_p", ing.qtd_p)}
                                       {renderQtdInput("qtd_m", ing.qtd_m, sugM)}
@@ -965,12 +965,12 @@ export default function FichasTecnicasPizza() {
                                     </div>
                                   </TableCell>
 
-                                  {/* BLOCO 3 — CUSTOS empilhados (grade rígida P/M/G) */}
-                                  <TableCell className="align-middle !py-3 !px-3 text-right">
-                                    <div className="inline-block text-left text-xs font-mono text-muted-foreground space-y-0.5 leading-tight tabular-nums">
-                                      <div className="flex justify-between gap-4"><span>P:</span><span className="font-semibold text-foreground">{fmt(custoUnit * converterQuantidade(ing.qtd_p, ing.unidade))}</span></div>
-                                      <div className="flex justify-between gap-4"><span>M:</span><span className="font-semibold text-foreground">{fmt(custoUnit * converterQuantidade(ing.qtd_m, ing.unidade))}</span></div>
-                                      <div className="flex justify-between gap-4"><span>G:</span><span className="font-semibold text-foreground">{fmt(custoUnit * converterQuantidade(ing.qtd_g, ing.unidade))}</span></div>
+                                  {/* BLOCO 3 — CUSTOS mono uniforme, alinhado à direita */}
+                                  <TableCell className="align-middle !py-3 !px-4 text-right">
+                                    <div className="inline-flex flex-col items-end gap-0.5 font-mono text-sm text-slate-600 tabular-nums leading-tight">
+                                      <div className="flex items-baseline gap-2"><span className="text-xs text-slate-400">P</span><span className="font-semibold text-slate-900 min-w-[72px] text-right">R$ {fmt(custoUnit * converterQuantidade(ing.qtd_p, ing.unidade))}</span></div>
+                                      <div className="flex items-baseline gap-2"><span className="text-xs text-slate-400">M</span><span className="font-semibold text-slate-900 min-w-[72px] text-right">R$ {fmt(custoUnit * converterQuantidade(ing.qtd_m, ing.unidade))}</span></div>
+                                      <div className="flex items-baseline gap-2"><span className="text-xs text-slate-400">G</span><span className="font-semibold text-slate-900 min-w-[72px] text-right">R$ {fmt(custoUnit * converterQuantidade(ing.qtd_g, ing.unidade))}</span></div>
                                     </div>
                                   </TableCell>
 
