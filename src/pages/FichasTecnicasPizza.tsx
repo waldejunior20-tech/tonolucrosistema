@@ -663,31 +663,33 @@ export default function FichasTecnicasPizza() {
           </DialogTrigger>
           <DialogContent className="!max-w-none w-screen h-screen sm:rounded-none p-0 gap-0 flex flex-col overflow-hidden border-0">
             {/* HEADER UNIFICADO: Nome · Nº ficha · Tipo */}
-            <DialogHeader className="px-8 pt-6 pb-4 shrink-0">
-              <DialogTitle asChild>
-                <div className="flex items-center gap-3 flex-wrap">
-                  <span className="text-2xl font-semibold text-foreground">
-                    {form.nome || (editingId ? "Sem nome" : "Nova ficha")}
-                  </span>
-                  {form.numero_ficha && (
-                    <>
-                      <span className="text-muted-foreground/50">·</span>
-                      <span className=" text-sm text-muted-foreground">{form.numero_ficha}</span>
-                    </>
-                  )}
-                  <span className="text-muted-foreground/50">·</span>
-                  <Select value={form.tipo} onValueChange={(v) => setForm({ ...form, tipo: v })}>
-                    <SelectTrigger className="h-8 w-[160px] text-xs border-input bg-transparent">
-                      <SelectValue placeholder="Selecionar tipo" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {TIPOS.map((t) => (
-                        <SelectItem key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </DialogTitle>
+            <DialogHeader className="border-b border-slate-200/70 shrink-0">
+              <div className="mx-auto w-full max-w-6xl px-8 pt-6 pb-4">
+                <DialogTitle asChild>
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <span className="text-xl font-semibold text-slate-900 tracking-tight">
+                      {form.nome || (editingId ? "Sem nome" : "Nova ficha")}
+                    </span>
+                    {form.numero_ficha && (
+                      <>
+                        <span className="text-slate-300">·</span>
+                        <span className="text-xs font-medium text-slate-500">{form.numero_ficha}</span>
+                      </>
+                    )}
+                    <span className="text-slate-300">·</span>
+                    <Select value={form.tipo} onValueChange={(v) => setForm({ ...form, tipo: v })}>
+                      <SelectTrigger className="h-8 w-[160px] text-xs font-medium border-slate-200 bg-transparent text-slate-700">
+                        <SelectValue placeholder="Selecionar tipo" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {TIPOS.map((t) => (
+                          <SelectItem key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </DialogTitle>
+              </div>
             </DialogHeader>
 
             {/* COST-STRIP HORIZONTAL: P · M · G — tipografia consistente */}
