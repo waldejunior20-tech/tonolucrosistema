@@ -799,34 +799,7 @@ export default function PrecificacaoPizzas() {
                                       </div>
                                       <div className="grid grid-cols-[1fr_auto] items-center gap-3">
                                         <span className="text-slate-500 font-semibold">Sugerido por Meta</span>
-                                        <div className="flex items-center gap-2 justify-self-end">
-                                          <Money value={sug} className="text-emerald-700 font-extrabold tabular-nums" symbolScale={0.6} />
-                                          {sug > 0 && (
-                                            <button
-                                              type="button"
-                                              onClick={() => {
-                                                const formatted = formatMoney(sug);
-                                                handlePriceChange(ficha.id, s, formatted);
-                                                autoSavePrice(ficha.id, s, formatted);
-                                                setTimeout(() => {
-                                                  setLocalPrices((prev) => {
-                                                    const copy = { ...prev };
-                                                    if (copy[ficha.id]) {
-                                                      delete copy[ficha.id][s];
-                                                      if (!copy[ficha.id].p && !copy[ficha.id].m && !copy[ficha.id].g)
-                                                        delete copy[ficha.id];
-                                                    }
-                                                    return copy;
-                                                  });
-                                                }, 100);
-                                              }}
-                                              className="inline-flex items-center justify-center h-6 w-6 rounded-md bg-emerald-100 hover:bg-emerald-200 text-emerald-700 transition-colors"
-                                              title="Aplicar preço sugerido"
-                                            >
-                                              <Zap className="h-3 w-3" strokeWidth={2.5} />
-                                            </button>
-                                          )}
-                                        </div>
+                                        <Money value={sug} className="text-emerald-700 font-extrabold tabular-nums text-right justify-self-end" symbolScale={0.6} />
                                       </div>
                                       <div className="grid grid-cols-[1fr_auto] items-center gap-3">
                                         <span className="text-slate-500 font-semibold">{sobraPositiva ? "Sobra Real (Lucro)" : "Prejuízo"}</span>
