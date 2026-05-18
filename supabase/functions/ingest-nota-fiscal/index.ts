@@ -416,6 +416,19 @@ Deno.serve(async (req) => {
       nomeCanonicoExistente = novo.nome;
     }
 
+    // 3b) Confiança MÉDIA: registra sugestão de vínculo (não vincula automaticamente)
+    if (matchConfianca === "media" && matchCandidatoId && insumo_id && matchCandidatoId !== insumo_id) {
+      await supabase.from("insumo_match_sugestoes").insert({
+        unidade_id,
+        user_id,
+        insumo_novo_id: insumo_id,
+        insumo_candidato_id: matchCandidatoId,
+        nome_original: it.nome,
+        score: matchScore ?? 0,
+        motivo: matchMotivo ?? "similaridade média",
+      }).then(() => {}, () => { /* ignora duplicado */ });
+    }
+
     // 4) Salva nome ORIGINAL da nota como alias (se diferente do canônico)
     if (insumo_id && it.nome && nomeCanonicoExistente &&
         it.nome.trim().toLowerCase() !== nomeCanonicoExistente.trim().toLowerCase()) {
