@@ -1074,22 +1074,22 @@ export default function Dashboard() {
                     <button
                       key={p.id}
                       onClick={() => navigate("/promocoes")}
-                      className="w-full flex items-center gap-3.5 px-2 py-3.5 border-b border-[#F1F5F9] last:border-b-0 hover:bg-[#F8FAFC]/50 rounded-xl transition-colors text-left"
+                      className="w-full flex items-center gap-3 px-2 py-2.5 border-b border-[#F1F5F9] last:border-b-0 hover:bg-[#F8FAFC]/50 rounded-xl transition-colors text-left"
                     >
-                      <div className="w-10 h-10 rounded-lg bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center shrink-0">
-                        <Icon size={18} strokeWidth={2.2} className="text-[#2563EB]" />
+                      <div className="w-9 h-9 rounded-lg bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center shrink-0">
+                        <Icon size={16} strokeWidth={2.2} className="text-[#2563EB]" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className={cn(T.accent, "text-[15px] font-semibold truncate", C.text)}>{p.nome}</p>
-                        <p className={cn(T.body, "text-[11.5px] text-slate-500 mt-0.5 truncate")}>
+                        <p className={cn(T.accent, "text-[13.5px] font-semibold truncate", C.text)}>{p.nome}</p>
+                        <p className={cn(T.body, "text-[11px] text-slate-500 mt-0.5 truncate")}>
                           {motivos.join(" · ")}
                         </p>
                       </div>
                       <div className="flex flex-col items-end shrink-0">
-                        <span className={cn(T.mono, "text-[16px] font-bold text-[#2563EB] whitespace-nowrap")}>
+                        <span className={cn(T.mono, "text-[14px] font-bold text-[#2563EB] whitespace-nowrap")}>
                           {fmtBRL(p.preco)}
                         </span>
-                        <span className={cn(T.label, "text-[9.5px] text-slate-400 mt-0.5")}>preço sugerido</span>
+                        <span className={cn(T.label, "text-[9px] text-slate-400 mt-0.5")}>preço sugerido</span>
                       </div>
                     </button>
                   );
