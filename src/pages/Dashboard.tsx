@@ -668,90 +668,86 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ─── Diagnóstico do dia ─────────────────────────────── */}
-      {showDiagnostico && (
-        <div
-          className={cn(
-            "mb-5 rounded-[2rem] border bg-white shadow-sm fade-up overflow-hidden",
-            diagnosticoTone === "danger"
-              ? "border-rose-100"
-              : diagnosticoTone === "warning"
-              ? "border-amber-100"
-              : "border-emerald-100",
-          )}
-        >
-          <div className="flex flex-col lg:flex-row">
-            {/* Faixa lateral colorida */}
-            <div
-              className={cn(
-                "lg:w-1.5 h-1.5 lg:h-auto w-full",
-                diagnosticoTone === "danger"
-                  ? "bg-rose-500"
-                  : diagnosticoTone === "warning"
-                  ? "bg-amber-500"
+      {/* ─── Diagnóstico do dia — copiloto financeiro ───────── */}
+      {showDiagnostico && (() => {
+        const problema =
+          statusCaixa === "negativo" ? "Você está no prejuízo este mês"
+          : statusCaixa === "atencao" ? "Sua margem está no limite"
+          : "Operação saudável";
+        const causa =
+          diagCausas.length > 0
+            ? diagCausas.join(" + ")
+            : "sem causas críticas identificadas";
+        const acaoPrincipal =
+          fichasRevisar > 0
+            ? `Revisar ${fichasRevisar} ficha${fichasRevisar > 1 ? "s" : ""} técnica${fichasRevisar > 1 ? "s" : ""}`
+            : precosAtualizar > 0
+            ? `Atualizar ${precosAtualizar} preço${precosAtualizar > 1 ? "s" : ""} crítico${precosAtualizar > 1 ? "s" : ""}`
+            : "Acompanhar próximas movimentações";
+        const rotaCorrigir = fichasRevisar > 0 ? "/fichas/pizzas" : "/precificacao/pizzas";
+        const glassTone = diagnosticoTone === "danger" ? GLASS_DANGER
+          : diagnosticoTone === "warning" ? GLASS_WARN
+          : GLASS_SUCCESS;
+        return (
+          <div className={cn("mb-5 rounded-[2rem] overflow-hidden fade-up", glassTone)}>
+            <div className="flex flex-col lg:flex-row">
+              <div
+                className={cn(
+                  "lg:w-1.5 h-1.5 lg:h-auto w-full",
+                  diagnosticoTone === "danger" ? "bg-rose-500"
+                  : diagnosticoTone === "warning" ? "bg-amber-500"
                   : "bg-emerald-500",
-              )}
-            />
-            <div className="flex-1 p-6 lg:p-7 flex flex-col lg:flex-row gap-6 items-start lg:items-center">
-              {/* Ícone + diagnóstico */}
-              <div className="flex items-start gap-4 flex-1 min-w-0">
-                <div
-                  className={cn(
-                    "w-11 h-11 rounded-2xl flex items-center justify-center shrink-0",
-                    diagnosticoTone === "danger"
-                      ? "bg-rose-50 text-rose-600"
-                      : diagnosticoTone === "warning"
-                      ? "bg-amber-50 text-amber-600"
-                      : "bg-emerald-50 text-emerald-600",
-                  )}
-                >
-                  <Activity size={20} />
-                </div>
-                <div className="min-w-0">
-                  <p className={cn(T.label, C.muted, "text-[10.5px] mb-1")}>Diagnóstico do dia</p>
-                  <p className={cn("font-heading font-semibold text-[15px] lg:text-[16px] leading-snug", C.text)}>
-                    {diagnosticoTexto}
-                  </p>
-                  {(fichasRevisar > 0 || precosAtualizar > 0) && (
-                    <p className={cn(T.body, C.muted, "text-[13px] mt-1.5")}>
-                      <span className="font-semibold text-[#0F172A]">Prioridade:</span>{" "}
-                      {[
-                        fichasRevisar > 0 && `revisar ${fichasRevisar} ficha${fichasRevisar > 1 ? "s" : ""} técnica${fichasRevisar > 1 ? "s" : ""}`,
-                        precosAtualizar > 0 && `atualizar ${precosAtualizar} preço${precosAtualizar > 1 ? "s" : ""}`,
-                      ].filter(Boolean).join(" e ")}.
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Ações */}
-              <div className="flex gap-2.5 shrink-0 w-full lg:w-auto">
-                {fichasRevisar > 0 && (
-                  <button
-                    onClick={() => navigate("/fichas/pizzas")}
-                    className="flex-1 lg:flex-none px-4 py-2.5 rounded-xl bg-slate-900 text-white font-semibold text-[13px] hover:bg-slate-800 transition-colors flex items-center justify-center gap-2"
-                  >
-                    <ClipboardList size={14} /> Revisar fichas
-                  </button>
                 )}
-                {precosAtualizar > 0 && (
-                  <button
-                    onClick={() => navigate("/precificacao/pizzas")}
+              />
+              <div className="flex-1 p-6 lg:p-7 flex flex-col lg:flex-row gap-6 items-start lg:items-center">
+                <div className="flex items-start gap-4 flex-1 min-w-0">
+                  <div
                     className={cn(
-                      "flex-1 lg:flex-none px-4 py-2.5 rounded-xl font-semibold text-[13px] transition-colors flex items-center justify-center gap-2 border",
-                      diagnosticoTone === "danger"
-                        ? "bg-rose-50 border-rose-200 text-rose-700 hover:bg-rose-100"
-                        : "bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100",
+                      "w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 ring-1 ring-white/60",
+                      diagnosticoTone === "danger" ? "bg-rose-50 text-rose-600"
+                      : diagnosticoTone === "warning" ? "bg-amber-50 text-amber-600"
+                      : "bg-emerald-50 text-emerald-600",
                     )}
                   >
-                    <Tag size={14} /> Atualizar preços
+                    <Activity size={20} />
+                  </div>
+                  <div className="min-w-0 space-y-1.5">
+                    <p className={cn(T.label, C.muted, "text-[10.5px]")}>Diagnóstico do dia</p>
+                    <p className={cn("font-heading font-bold text-[16px] lg:text-[17px] leading-snug", C.text)}>
+                      {problema}
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 mt-2">
+                      <p className={cn(T.body, "text-[13px]", C.muted)}>
+                        <span className="font-semibold text-[#0F172A]">Causa:</span> {causa}
+                      </p>
+                      <p className={cn(T.body, "text-[13px]", C.muted)}>
+                        <span className="font-semibold text-[#0F172A]">Próxima ação:</span> {acaoPrincipal}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-2.5 shrink-0 w-full lg:w-auto">
+                  <button
+                    onClick={() => navigate(rotaCorrigir)}
+                    className={cn(
+                      "flex-1 lg:flex-none px-5 py-2.5 rounded-xl font-semibold text-[13px] transition-all flex items-center justify-center gap-2 text-white active:scale-[0.98]",
+                      diagnosticoTone === "danger"
+                        ? "bg-gradient-to-br from-rose-600 to-rose-700 hover:brightness-110 shadow-[0_8px_20px_-8px_rgba(225,29,72,0.55)]"
+                        : diagnosticoTone === "warning"
+                        ? "bg-gradient-to-br from-amber-500 to-orange-600 hover:brightness-110 shadow-[0_8px_20px_-8px_rgba(217,119,6,0.55)]"
+                        : "bg-gradient-to-br from-blue-600 to-blue-700 hover:brightness-110 shadow-[0_8px_20px_-8px_rgba(37,99,235,0.55)]",
+                    )}
+                  >
+                    <Zap size={14} /> Corrigir prioridade
                   </button>
-                )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
+
 
 
       {/* ─── ROW 2 — 4 KPIs ─────────────────────────────────── */}
