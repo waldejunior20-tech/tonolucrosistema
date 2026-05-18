@@ -1,6 +1,5 @@
 import { format, isToday, isYesterday, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { ArrowDownRight, ArrowUpRight, Receipt } from "lucide-react";
 import { formatMoney } from "@/components/MoneyInput";
 import type { DiaMovimento } from "@/hooks/useMovimentosCaixa";
 
@@ -11,12 +10,14 @@ function dateLabel(s: string) {
   return format(d, "EEE, dd 'de' MMM", { locale: ptBR });
 }
 
+const COLS = "grid grid-cols-[180px_140px_120px_140px] gap-4";
+
 export function MovimentosTimeline({ movimentos, isLoading }: { movimentos: DiaMovimento[]; isLoading: boolean }) {
   if (isLoading) {
     return (
-      <div className="space-y-1.5">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="h-12 rounded-lg bg-muted/40 animate-pulse" />
+      <div className="max-w-[900px] space-y-1">
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="h-10 rounded bg-muted/40 animate-pulse" />
         ))}
       </div>
     );
@@ -24,64 +25,61 @@ export function MovimentosTimeline({ movimentos, isLoading }: { movimentos: DiaM
 
   if (movimentos.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-border/60 p-8 text-center">
+      <div className="max-w-[900px] rounded-xl border border-dashed border-border/60 p-8 text-center">
         <p className="text-sm text-muted-foreground">Nenhum movimento no período.</p>
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border border-border/50 bg-card overflow-hidden divide-y divide-border/40">
-      {movimentos.map((d) => (
+    <div className="max-w-[900px] rounded-xl border border-border/50 bg-card overflow-hidden">
+      {/* Header */}
+      <div className={`${COLS} px-4 py-2.5 bg-slate-50/60 border-b border-slate-200/70`}>
+        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Data</span>
+        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 text-right">Entradas</span>
+        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 text-right">Taxas</span>
+        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 text-right">Saídas</span>
+      </div>
+
+      {/* Rows */}
+      {movimentos.map((d, i) => (
         <div
           key={d.data}
-          className="grid grid-cols-[minmax(180px,1.2fr)_1fr_1fr_1fr] items-center gap-3 px-4 py-2.5 hover:bg-muted/30 transition-colors"
+          className={`${COLS} items-center px-4 py-2.5 hover:bg-slate-50/50 transition-colors`}
+          style={i < movimentos.length - 1 ? { borderBottom: "1px solid #f1f5f9" } : undefined}
         >
-          {/* Data */}
+          {/* Coluna 1 — Data/Dia */}
           <div className="min-w-0">
             <p className="text-[13px] font-semibold text-foreground capitalize leading-tight">{dateLabel(d.data)}</p>
-            <p className="text-[10.5px] text-muted-foreground tabular-nums">{format(parseISO(d.data), "dd/MM/yyyy")}</p>
+            <p className="text-[10.5px] text-muted-foreground tabular-nums leading-tight mt-0.5">
+              {format(parseISO(d.data), "dd/MM/yyyy")}
+            </p>
           </div>
 
-          <Cell icon={ArrowUpRight} label="Entrou" value={d.entrada} tone="success" />
-          <Cell icon={Receipt} label="Taxa" value={d.taxas} tone="warning" prefix="-" />
-          <Cell icon={ArrowDownRight} label="Saiu" value={d.saida} tone="destructive" />
+          {/* Coluna 2 — Entradas */}
+          <Value value={d.entrada} color="#16a34a" />
+
+          {/* Coluna 3 — Taxas */}
+          <Value value={d.taxas} color="#854d0e" prefix="-" />
+
+          {/* Coluna 4 — Saídas */}
+          <Value value={d.saida} color="#991b1b" />
         </div>
       ))}
     </div>
   );
 }
 
-function Cell({
-  icon: Icon, label, value, tone, prefix = "",
-}: { icon: any; label: string; value: number; tone: "success" | "warning" | "destructive"; prefix?: string }) {
-  // Ocultação de zeros: cell vazio limpo (sem traço cinza)
+function Value({ value, color, prefix = "" }: { value: number; color: string; prefix?: string }) {
   if (value <= 0) {
-    return <div aria-hidden />;
+    return <span className="text-center text-slate-300 text-finance-mono text-[13px] select-none">—</span>;
   }
-
-  // Paleta premium de alta legibilidade
-  const palette = {
-    success:     { color: "#16a34a", bg: "bg-emerald-50",  ring: "text-emerald-600" },
-    warning:     { color: "#854d0e", bg: "bg-amber-50",    ring: "text-amber-700" },
-    destructive: { color: "#991b1b", bg: "bg-rose-50",     ring: "text-rose-700" },
-  } as const;
-  const p = palette[tone];
-
   return (
-    <div className="flex items-center gap-2 min-w-0">
-      <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${p.bg} ${p.ring}`}>
-        <Icon size={13} />
-      </div>
-      <div className="min-w-0">
-        <p className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold leading-tight">{label}</p>
-        <p
-          className="text-[13px] sm:text-[14px] tabular-nums leading-tight text-finance-mono"
-          style={{ color: p.color, fontWeight: 700 }}
-        >
-          {prefix}{formatMoney(value)}
-        </p>
-      </div>
-    </div>
+    <span
+      className="text-right text-finance-mono text-[13.5px] tabular-nums leading-tight"
+      style={{ color, fontWeight: 600 }}
+    >
+      {prefix}{formatMoney(value)}
+    </span>
   );
 }
