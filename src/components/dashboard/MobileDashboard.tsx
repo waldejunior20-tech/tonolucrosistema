@@ -305,7 +305,7 @@ export function MobileDashboard() {
           <button
             onClick={() => navigate("/automacao/alertas")}
             aria-label="Notificações"
-            className="relative w-11 h-11 rounded-full bg-white/15 backdrop-blur flex items-center justify-center active:scale-95 transition-transform shrink-0 ring-1 ring-white/20"
+            className="relative w-11 h-11 rounded-full bg-white/15 backdrop-blur flex items-center justify-center active:scale-95 transition-transform shrink-0 ring-1 ring-white/20 text-center"
           >
             <Bell size={20} strokeWidth={2.2} />
             {notifCount > 0 && (
