@@ -522,26 +522,57 @@ export default function PrecificacaoPizzas() {
           </Card>
         )}
 
-        {/* ═══ HERO + Stats ═══ */}
-        <PageHero
-          label="CMV Médio das Pizzas"
-          value={indicators.avgCmv}
-          unit="PERCENT"
-          status={
-            indicators.avgCmv > 40 ? "danger" :
-            indicators.avgCmv > 35 ? "warning" :
-            indicators.avgCmv >= 25 ? "success" : "neutral"
-          }
-          context={cmvMessage(indicators.avgCmv)}
-        />
+        {/* ═══ Banner Contextual — conecta o caixa do mês à precificação ═══ */}
+        {lucroMes < 0 ? (
+          <div className="rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-gradient-to-r from-red-700 to-red-600 text-white shadow-lg">
+            <div>
+              <h2 className="text-3xl font-extrabold tracking-tight font-mono">
+                Caixa Negativo: {formatMoney(lucroMes)}
+              </h2>
+              <p className="text-sm opacity-90 mt-1">
+                {affectedCount > 0
+                  ? `⚠️ ${affectedCount} ${affectedCount === 1 ? "pizza usa" : "pizzas usam"} insumos com alta no mercado e ${affectedCount === 1 ? "está sufocando" : "estão sufocando"} o lucro operacional.`
+                  : "⚠️ Revise sua precificação — o CMV médio está consumindo a margem do mês."}
+              </p>
+            </div>
+            {affectedCount > 0 && (
+              <button
+                onClick={() => setShowOnlyAffected((v) => !v)}
+                className="bg-white text-red-700 hover:bg-red-50 transition-colors px-4 py-2.5 rounded-lg font-bold text-sm whitespace-nowrap shadow"
+              >
+                {showOnlyAffected ? "Mostrar Todas" : "Corrigir Preços Afetados"}
+              </button>
+            )}
+          </div>
+        ) : (
+          <PageHero
+            label="CMV Médio das Pizzas"
+            value={indicators.avgCmv}
+            unit="PERCENT"
+            status={
+              indicators.avgCmv > 40 ? "danger" :
+              indicators.avgCmv > 35 ? "warning" :
+              indicators.avgCmv >= 25 ? "success" : "neutral"
+            }
+            context={cmvMessage(indicators.avgCmv)}
+          />
+        )}
 
         <StatCardGrid cols={3}>
-          <StatCard
-            icon={TrendingDown}
-            tone={indicators.foraMetaCount > 0 ? "down" : "up"}
-            label="Precisam de atenção"
-            value={<span>{indicators.foraMetaCount}</span>}
-          />
+          <button
+            type="button"
+            onClick={() => setShowOnlyAffected((v) => !v)}
+            disabled={affectedCount === 0}
+            className="text-left rounded-2xl focus:outline-none focus:ring-2 focus:ring-destructive/40 disabled:cursor-default"
+            title={affectedCount > 0 ? "Filtrar apenas pizzas com insumos em alta" : "Nenhuma pizza afetada"}
+          >
+            <StatCard
+              icon={TrendingDown}
+              tone={affectedCount > 0 ? "down" : "up"}
+              label={showOnlyAffected ? "Filtrando afetadas" : "Comprometem a meta"}
+              value={<span>{affectedCount > 0 ? affectedCount : indicators.foraMetaCount}</span>}
+            />
+          </button>
           <StatCard
             icon={Activity}
             tone="neutral"
