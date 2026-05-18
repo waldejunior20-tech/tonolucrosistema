@@ -294,7 +294,10 @@ export default function InsumosComprados() {
           {<Money value={Number(insumo.preco_pago)} />}
         </TableCell>
         <TableCell className="text-right text-slate-700 tabular-nums whitespace-nowrap py-3">
-          {formatQuantidade(Number(insumo.quantidade), insumo.unidade)}
+          {new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 3 }).format(Number(insumo.quantidade))}
+        </TableCell>
+        <TableCell className="text-center text-slate-500 text-[12.5px] uppercase tracking-wide py-3">
+          {insumo.unidade ?? "—"}
         </TableCell>
         <TableCell className="text-right tabular-nums whitespace-nowrap py-3">
           {variacao === null || Math.abs(variacao) < 0.5 ? (
@@ -309,20 +312,17 @@ export default function InsumosComprados() {
             </span>
           )}
         </TableCell>
-        <TableCell className="text-left text-slate-600 text-[13px] py-3 leading-snug">
-          <span className="line-clamp-2">{insumo.fornecedor ?? "—"}</span>
-        </TableCell>
-        <TableCell className="text-center text-slate-500 tabular-nums whitespace-nowrap text-[13px] py-3">
-          {insumo.data_compra
-            ? new Date(insumo.data_compra + "T00:00:00").toLocaleDateString("pt-BR")
-            : "—"}
-        </TableCell>
         <TableCell className="text-center tabular-nums py-3">
           {usado > 0 ? (
             <span className="text-emerald-600 font-bold tabular-nums">{usado}</span>
           ) : (
             <span className="text-slate-300 text-sm">—</span>
           )}
+        </TableCell>
+        <TableCell className="text-right text-slate-500 tabular-nums whitespace-nowrap text-[13px] py-3">
+          {insumo.data_compra
+            ? new Date(insumo.data_compra + "T00:00:00").toLocaleDateString("pt-BR")
+            : "—"}
         </TableCell>
         <TableCell className="py-3">
           <div className="flex items-center justify-center gap-0.5">
@@ -369,11 +369,11 @@ export default function InsumosComprados() {
         <TableHead className={cn(HEAD, "text-left w-[140px]")}>Categoria</TableHead>
       )}
       <TableHead className={cn(HEAD, "text-right w-[120px]")}>Preço atual</TableHead>
-      <TableHead className={cn(HEAD, "text-right w-[120px]")}>Quantidade</TableHead>
+      <TableHead className={cn(HEAD, "text-right w-[110px]")}>Qtd. base</TableHead>
+      <TableHead className={cn(HEAD, "text-center w-[80px]")}>Unidade</TableHead>
       <TableHead className={cn(HEAD, "text-right w-[110px]")}>Variação</TableHead>
-      <TableHead className={cn(HEAD, "text-left w-[180px]")}>Último fornecedor</TableHead>
-      <TableHead className={cn(HEAD, "text-center w-[120px]")}>Última compra</TableHead>
       <TableHead className={cn(HEAD, "text-center w-[90px]")}>Em fichas</TableHead>
+      <TableHead className={cn(HEAD, "text-right w-[130px]")}>Última atualização</TableHead>
       <TableHead className={cn(HEAD, "text-center w-[130px] pr-4")}>Ações</TableHead>
     </TableRow>
   );
@@ -382,7 +382,7 @@ export default function InsumosComprados() {
     <div className="space-y-6 page-enter">
       <InsumosCategoryTabs />
       
-      <PageHeader title="Insumos Comprados" description="Cadastro atual dos ingredientes que montam suas fichas técnicas. O preço é atualizado pela compra mais recente.">
+      <PageHeader title="Insumos Comprados" description="Banco de insumos usados nas fichas técnicas. O preço atual é atualizado pela compra mais recente.">
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) resetForm(); setDialogOpen(open); }}>
           <DialogTrigger asChild>
             <Button className="btn-action-add gap-2">
