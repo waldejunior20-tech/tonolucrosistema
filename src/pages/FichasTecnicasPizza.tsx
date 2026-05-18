@@ -630,7 +630,39 @@ export default function FichasTecnicasPizza() {
     setBuscaEmbalagemTermo("");
   };
 
-  const filteredFichas = filtroTipo === "todos" ? fichas : fichas.filter((f) => f.tipo === filtroTipo);
+  const filteredFichas = (filtroTipo === "todos" ? fichas : fichas.filter((f) => f.tipo === filtroTipo))
+    .filter((f) => matchesSearch(f.nome, searchTerm) || matchesSearch(f.tipo, searchTerm));
+
+  const allVisibleSelected = filteredFichas.length > 0 && filteredFichas.every((f) => selectedIds.has(f.id));
+  const toggleSelectAll = () => {
+    if (allVisibleSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredFichas.map((f) => f.id)));
+    }
+  };
+  const toggleSelectOne = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+  const handleBulkDelete = () => {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) return;
+    if (!confirm(`🗑️ Excluir ${ids.length} ficha${ids.length === 1 ? "" : "s"}? Essa ação não pode ser desfeita.`)) return;
+    ids.forEach((id) => deleteMutation.mutate(id));
+    setSelectedIds(new Set());
+  };
+  const handleBulkRecalc = () => {
+    queryClient.invalidateQueries({ queryKey: ["fichas-tecnicas-pizza"] });
+    queryClient.invalidateQueries({ queryKey: ["insumos-comprados"] });
+    queryClient.invalidateQueries({ queryKey: ["insumos-proprios"] });
+    toast.success(`Margens recalculadas para ${selectedIds.size} ficha${selectedIds.size === 1 ? "" : "s"}.`);
+    setSelectedIds(new Set());
+  };
 
   const getFilteredInsumos = (tipo: string) => {
     if (tipo === "comprado") {
