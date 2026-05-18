@@ -29,6 +29,8 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { PageHero } from "@/components/layout/PageHero";
 import { StatCard, StatCardGrid } from "@/components/layout/StatCardGrid";
 import { PrecificacaoCategoryTabs } from "@/components/precificacao/PrecificacaoCategoryTabs";
+import { useDashboardData } from "@/hooks/useDashboardData";
+import { usePriceAlerts } from "@/hooks/usePriceAlerts";
 
 // ─── Types ───────────────────────────────────────────────────────────
 interface FichaPizza {
