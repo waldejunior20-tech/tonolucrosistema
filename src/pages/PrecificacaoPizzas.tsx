@@ -832,11 +832,12 @@ export default function PrecificacaoPizzas() {
                                               });
                                             }, 100);
                                           }}
-                                          className="inline-flex items-center justify-center h-6 px-1.5 rounded-md bg-emerald-100 hover:bg-emerald-200 text-emerald-700 text-[10px] font-bold leading-none transition-colors"
+                                          className="inline-flex items-center justify-center h-6 w-6 rounded-md bg-emerald-100 hover:bg-emerald-200 text-emerald-700 transition-colors"
                                           title="Aplicar preço sugerido"
                                         >
-                                          ⚡
+                                          <Zap className="h-3 w-3" strokeWidth={2.5} />
                                         </button>
+
                                       )}
                                     </div>
                                   </div>
