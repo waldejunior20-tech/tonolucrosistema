@@ -499,7 +499,7 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
               <Plus className="mr-1 h-4 w-4" /> Nova Ficha
             </Button>
           </DialogTrigger>
-          <DialogContent className="!max-w-none w-screen h-screen sm:rounded-none p-6 sm:p-10 flex flex-col overflow-y-auto border-0">
+          <DialogContent className="!max-w-[1040px] w-[96vw] h-[90vh] max-h-[820px] rounded-3xl p-6 sm:p-8 gap-0 flex flex-col overflow-y-auto border border-stone-200 shadow-[0_20px_50px_rgba(0,0,0,0.15)] bg-white">
             <DialogHeader>
               <DialogTitle>{editingId ? "Editar Ficha Técnica" : "Nova Ficha Técnica"}</DialogTitle>
             </DialogHeader>
