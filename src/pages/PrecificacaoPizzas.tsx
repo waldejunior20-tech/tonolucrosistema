@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
-import { Cog, Save, AlertTriangle, Check, TrendingUp, TrendingDown, Activity, ChevronDown, Info } from "lucide-react";
+import { Cog, Save, AlertTriangle, Check, TrendingUp, TrendingDown, Activity, ChevronDown, Info, Zap } from "lucide-react";
 import { formatMoney } from "@/components/MoneyInput";
 import { Money } from "@/components/Money";
 import {
