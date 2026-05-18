@@ -861,7 +861,144 @@ export default function FichasTecnicasPizza() {
                     }
 
                     return (
-                      <div className="w-full rounded-lg border border-slate-200 overflow-visible bg-white">
+                      <>
+                      {/* MOBILE: cards empilhados */}
+                      <div className="md:hidden space-y-3">
+                        {normais.map(({ ing, idx }) => {
+                          const tipoInsumo = normalizarTipoInsumo(ing.tipo_insumo);
+                          const insumoId = tipoInsumo === "comprado" ? ing.insumo_comprado_id : ing.insumo_proprio_id;
+                          const custoUnit = tipoInsumo === "comprado"
+                            ? (custoCompradoMap.get(insumoId) ?? 0)
+                            : (custoProprioMap.get(insumoId) ?? 0);
+                          const fromBase = !!ing.db_id && ingredientesBaseIds.has(ing.db_id);
+                          const insumoCompradoSel = insumosComprados.find((i) => i.id === ing.insumo_comprado_id);
+                          const insumoProprioSel = insumosProprios.find((i) => i.id === ing.insumo_proprio_id);
+                          const familiaCompra = insumoCompradoSel
+                            ? (["kg","g"].includes(insumoCompradoSel.unidade) ? "peso"
+                              : ["L","ml"].includes(insumoCompradoSel.unidade) ? "volume" : "un")
+                            : null;
+                          const familiaUso = ["kg","g"].includes(ing.unidade) ? "peso"
+                            : ["L","ml"].includes(ing.unidade) ? "volume" : "un";
+                          const mismatchUnidade = tipoInsumo === "comprado" && familiaCompra && ing.unidade && familiaCompra !== familiaUso;
+                          const nomeInsumo = ing.nome_display || insumoCompradoSel?.nome || insumoProprioSel?.nome || "";
+                          const categoriaInsumo = (insumoCompradoSel as any)?.categoria ?? (insumoProprioSel as any)?.categoria ?? null;
+                          const sug = ing.qtd_p > 0 ? sugerir(nomeInsumo, ing.qtd_p, categoriaInsumo) : { qtdM: 0, qtdG: 0 };
+                          const isDoce = form.tipo === "doce";
+                          const sugM = isDoce ? Math.round((sug.qtdM * 0.8) / 5) * 5 : sug.qtdM;
+                          const sugG = isDoce ? Math.round((sug.qtdG * 0.8) / 5) * 5 : sug.qtdG;
+                          const podeSugerir = ing.qtd_p > 0 && (ing.qtd_m === 0 || ing.qtd_g === 0) && (sugM > 0 || sugG > 0);
+                          const aplicarSugestao = () => {
+                            if (ing.qtd_m === 0 && sugM > 0) updateIngrediente(idx, "qtd_m", sugM);
+                            if (ing.qtd_g === 0 && sugG > 0) updateIngrediente(idx, "qtd_g", sugG);
+                          };
+                          const renderQtdMobile = (qtdKey: "qtd_p" | "qtd_m" | "qtd_g", label: string, qtdVal: number, ph?: number) => (
+                            <div className="space-y-1">
+                              <div className="flex items-baseline justify-between">
+                                <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">{label}</span>
+                                <Money value={custoUnit * converterQuantidade(qtdVal, ing.unidade)} className="text-[11px] font-semibold text-slate-600 tabular-nums" />
+                              </div>
+                              <Input
+                                type="number" step="0.01" min="0" inputMode="decimal"
+                                className="h-11 w-full text-center text-base font-semibold tabular-nums rounded-md border border-slate-300 bg-white text-slate-900 shadow-sm focus-visible:border-blue-500 focus-visible:ring-1 focus-visible:ring-blue-500"
+                                value={qtdVal || ""}
+                                onChange={(e) => updateIngrediente(idx, qtdKey, parseFloat(e.target.value) || 0)}
+                                onBlur={() => autoSaveIngredienteQtd(ing, qtdKey, ing[qtdKey])}
+                                placeholder={ph && ph > 0 ? `~${ph}` : label}
+                              />
+                            </div>
+                          );
+                          return (
+                            <div key={`m-${idx}`} className={cn(
+                              "rounded-xl border border-slate-200 bg-white p-3.5 space-y-3 shadow-sm",
+                              fromBase && "border-l-4 border-l-success",
+                            )}>
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                                  {fromBase && <Sparkles className="h-4 w-4 text-success shrink-0" />}
+                                  <span className="text-sm font-semibold text-slate-900 truncate">
+                                    {ing.nome_display || "Sem insumo"}
+                                  </span>
+                                </div>
+                                <Button type="button" variant="ghost" size="icon" className="h-9 w-9 shrink-0 -mr-1" onClick={() => removeIngrediente(idx)}>
+                                  <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-2">
+                                <Select value={normalizarTipoInsumo(ing.tipo_insumo)} onValueChange={(v) => updateIngrediente(idx, "tipo_insumo", v)}>
+                                  <SelectTrigger className="h-11 text-sm"><SelectValue /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="comprado">Comprado</SelectItem>
+                                    <SelectItem value="proprio">Produzido</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <Select value={ing.unidade} onValueChange={(v) => updateIngrediente(idx, "unidade", v)}>
+                                  <SelectTrigger className="h-11 text-sm"><SelectValue placeholder="Unidade" /></SelectTrigger>
+                                  <SelectContent>
+                                    {UNIDADES.map((u) => <SelectItem key={u} value={u}>{u}</SelectItem>)}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              {!hasInsumoSelected(ing) && (
+                                <Popover open={buscaAberta === idx} onOpenChange={(o) => { if (!o) setBuscaAberta(null); }}>
+                                  <PopoverAnchor asChild>
+                                    <div className="relative">
+                                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
+                                      <Input
+                                        placeholder="Buscar insumo..."
+                                        className="pl-9 h-11 text-sm w-full"
+                                        value={buscaAberta === idx ? buscaIngrediente : ""}
+                                        onFocus={() => { if (buscaAberta !== idx) { setBuscaAberta(idx); setBuscaIngrediente(""); } }}
+                                        onChange={(e) => { setBuscaAberta(idx); setBuscaIngrediente(e.target.value); }}
+                                      />
+                                    </div>
+                                  </PopoverAnchor>
+                                  <PopoverContent align="start" sideOffset={4} onOpenAutoFocus={(e) => e.preventDefault()}
+                                    onInteractOutside={(e) => { const t = e.target as HTMLElement; if (t.closest('input')) e.preventDefault(); }}
+                                    className="p-1 w-[var(--radix-popover-trigger-width)] max-h-64 overflow-y-auto rounded-xl shadow-lg">
+                                    {getFilteredInsumos(ing.tipo_insumo).length === 0 ? (
+                                      <p className="p-2 text-xs text-muted-foreground">Nenhum insumo encontrado.</p>
+                                    ) : (
+                                      getFilteredInsumos(ing.tipo_insumo).map((item) => (
+                                        <button key={item.id} type="button"
+                                          className="w-full text-left px-3 py-2.5 text-sm rounded-md hover:bg-accent hover:text-primary transition-colors truncate"
+                                          onMouseDown={(e) => { e.preventDefault(); selectInsumo(idx, item.id, item.nome, ing.tipo_insumo); }}>
+                                          <span className="font-medium">{item.nome}</span>
+                                        </button>
+                                      ))
+                                    )}
+                                  </PopoverContent>
+                                </Popover>
+                              )}
+
+                              {mismatchUnidade && (
+                                <p className="flex items-center gap-1 text-[11px] text-warning">
+                                  <AlertTriangle className="h-3 w-3" />
+                                  Comprado em <strong>{insumoCompradoSel?.unidade}</strong>, usando em <strong>{ing.unidade}</strong>
+                                </p>
+                              )}
+
+                              <div className="grid grid-cols-3 gap-2">
+                                {renderQtdMobile("qtd_p", "P", ing.qtd_p)}
+                                {renderQtdMobile("qtd_m", "M", ing.qtd_m, sugM)}
+                                {renderQtdMobile("qtd_g", "G", ing.qtd_g, sugG)}
+                              </div>
+
+                              {podeSugerir && (
+                                <Button type="button" variant="outline" size="sm" onClick={aplicarSugestao}
+                                  className="w-full h-10 gap-1.5 text-xs text-primary border-primary/30">
+                                  <Sparkles className="h-3.5 w-3.5" />
+                                  Aplicar sugestão M {sugM}{ing.unidade} · G {sugG}{ing.unidade}
+                                </Button>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* DESKTOP: tabela densa */}
+                      <div className="hidden md:block w-full rounded-lg border border-slate-200 overflow-visible bg-white">
                         <Table className="table-fixed w-full">
                           <TableHeader>
                             <TableRow className="!bg-slate-50/60 border-b border-slate-200 hover:!bg-slate-50/60">
