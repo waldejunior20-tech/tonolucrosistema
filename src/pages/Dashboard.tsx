@@ -1012,7 +1012,7 @@ export default function Dashboard() {
                 })}
               </div>
               <button
-                onClick={() => navigate("/financeiro/contas-pagar")}
+                onClick={() => navigate("/financeiro/contas-a-pagar")}
                 className="mt-5 text-[13px] font-bold text-blue-600 hover:text-blue-700 flex items-center gap-2"
               >
                 Ver todas as contas <ArrowRight size={14} />
@@ -1030,7 +1030,7 @@ export default function Dashboard() {
                 </p>
               </div>
               <button
-                onClick={() => navigate("/financeiro/contas-pagar")}
+                onClick={() => navigate("/financeiro/contas-a-pagar")}
                 className="mt-3 text-[12.5px] font-semibold text-slate-500 hover:text-blue-700 flex items-center gap-1.5 self-center transition-colors"
               >
                 Ver calendário financeiro <ArrowRight size={13} />
