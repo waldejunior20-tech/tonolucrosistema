@@ -356,27 +356,20 @@ export default function FinanceiroDRE() {
         </div>
       </PageHeader>
 
-      {/* Top 3 KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="card-premium dre-card">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Entrou</p>
-          <p className="text-2xl font-bold text-foreground">{fmt(calc.totalEntrou)}</p>
-        </div>
-        <div className="card-premium dre-card">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Saiu</p>
-          <p className="text-2xl font-bold text-foreground">{fmt(calc.totalSaiu)}</p>
-        </div>
-        <div className={cn("card-premium dre-card", calc.sobrou >= 0 ? "border-success/30" : "border-destructive/30")}>
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
-            {calc.sobrou >= 0 ? "Sobrou" : "Faltou"}
-          </p>
-          <p className={cn("text-2xl font-bold", calc.sobrou >= 0 ? "text-success" : "text-destructive")}>
-            {fmt(Math.abs(calc.sobrou))}
-          </p>
-          <p className={cn("text-xs font-semibold mt-1", calc.sobrou >= 0 ? "text-success" : "text-destructive")}>
-            {calc.sobrouPct.toFixed(1)}% de margem
-          </p>
-        </div>
+      {/* Top 3 KPIs — Glassmorphism premium */}
+      <div
+        className="grid grid-cols-1 sm:grid-cols-3"
+        style={{ gap: "20px", marginTop: "8px" }}
+      >
+        <GlassStat label="Entrou" value={calc.totalEntrou} icon={TrendingUp} variant="positive" />
+        <GlassStat label="Saiu" value={calc.totalSaiu} icon={TrendingDown} variant="negative" />
+        <GlassStat
+          label={calc.sobrou >= 0 ? "Sobrou" : "Faltou"}
+          value={Math.abs(calc.sobrou)}
+          icon={Wallet}
+          variant={calc.sobrou >= 0 ? "positive" : "negative"}
+          subtitle={`${calc.sobrouPct.toFixed(1)}% de margem`}
+        />
       </div>
 
       {/* Custo dos Ingredientes + Meta do Mês */}
