@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
-import { Pencil, Trash2, Plus, Search, X, Check, BookOpen } from "lucide-react";
+import { Pencil, Trash2, Plus, Search, X, Check, BookOpen, ArrowLeft, Sandwich, UtensilsCrossed, IceCream, GlassWater, Leaf, Soup, Coffee, Beer, Wine, Star, Gem, Salad, Flame, Snowflake, Sparkles } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 import { formatMoney, formatQty } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
