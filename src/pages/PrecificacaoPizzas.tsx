@@ -426,7 +426,7 @@ export default function PrecificacaoPizzas() {
     if (cmv > 40) return { bg: '#fef2f2', text: '#991b1b', border: 'rgba(153, 27, 27, 0.1)', glow: 'hsl(var(--destructive) / 0.25)' };
     if (cmv > 35) return { bg: '#fefce8', text: '#854d0e', border: 'rgba(133, 77, 14, 0.1)', glow: 'hsl(var(--warning) / 0.25)' };
     if (cmv < 25) return { bg: '#eff6ff', text: '#1e40af', border: 'rgba(37, 99, 235, 0.1)', glow: 'hsl(var(--info, 217 91% 60%) / 0.25)' };
-    return { bg: 'hsl(var(--success))', text: 'hsl(var(--primary-foreground))', glow: 'hsl(var(--success) / 0.25)' };
+    return { bg: '#f0fdf4', text: '#166534', border: 'rgba(22, 101, 52, 0.1)', glow: 'hsl(var(--success) / 0.25)' };
   };
 
   // Health dot for card header — mesmas faixas Abrasel
