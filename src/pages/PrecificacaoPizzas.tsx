@@ -531,20 +531,7 @@ export default function PrecificacaoPizzas() {
         >
           {/* Card 1 — Alerta de caixa (destaque) */}
           {lucroMes < 0 && (
-            <div
-              className="flex flex-col transition-transform hover:-translate-y-0.5"
-              style={{
-                background: "rgba(255, 255, 255, 0.45)",
-                backdropFilter: "blur(20px)",
-                WebkitBackdropFilter: "blur(20px)",
-                borderRadius: "20px",
-                border: "1px solid rgba(255, 255, 255, 0.4)",
-                borderLeft: "4px solid #dc2626",
-                boxShadow:
-                  "0 8px 32px 0 rgba(220, 38, 38, 0.08), inset 0 0 12px rgba(220, 38, 38, 0.05)",
-                padding: "18px 20px",
-              }}
-            >
+            <div className="glass-card glass-red flex flex-col p-5">
               <div className="flex items-center gap-2">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100/70">
                   <AlertTriangle className="h-4.5 w-4.5 text-red-700" strokeWidth={2.5} />
@@ -577,19 +564,10 @@ export default function PrecificacaoPizzas() {
             type="button"
             onClick={() => setShowOnlyAffected((v) => !v)}
             disabled={affectedCount === 0}
-            className="text-left flex flex-col transition-transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-destructive/40 disabled:cursor-default disabled:hover:translate-y-0"
-            style={{
-              background: "rgba(255, 255, 255, 0.45)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              borderRadius: "20px",
-              border: "1px solid rgba(255, 255, 255, 0.4)",
-              borderLeft: `4px solid ${affectedCount > 0 ? "#dc2626" : "#94a3b8"}`,
-              boxShadow: affectedCount > 0
-                ? "0 8px 32px 0 rgba(220, 38, 38, 0.08), inset 0 0 12px rgba(220, 38, 38, 0.05)"
-                : "0 8px 32px 0 rgba(100, 116, 139, 0.08), inset 0 0 12px rgba(100, 116, 139, 0.04)",
-              padding: "18px 20px",
-            }}
+            className={cn(
+              "text-left glass-card flex flex-col p-5 focus:outline-none focus:ring-2 focus:ring-destructive/40 disabled:cursor-default",
+              affectedCount > 0 ? "glass-red" : "glass-neutral",
+            )}
           >
             <div
               className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.08em]"
@@ -610,20 +588,7 @@ export default function PrecificacaoPizzas() {
           </button>
 
           {/* Card 3 — Total + Meta de CMV */}
-          <div
-            className="transition-transform hover:-translate-y-0.5"
-            style={{
-              background: "rgba(255, 255, 255, 0.45)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              borderRadius: "20px",
-              border: "1px solid rgba(255, 255, 255, 0.4)",
-              borderLeft: "4px solid #2563eb",
-              boxShadow:
-                "0 8px 32px 0 rgba(37, 99, 235, 0.08), inset 0 0 12px rgba(37, 99, 235, 0.05)",
-              padding: "18px 20px",
-            }}
-          >
+          <div className="glass-card glass-blue p-5">
             <div className="grid grid-cols-2 gap-4 h-full">
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.08em]" style={{ color: "#2563eb" }}>
