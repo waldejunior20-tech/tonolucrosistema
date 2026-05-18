@@ -393,6 +393,14 @@
   .fade-up-d1 { animation-delay: 50ms; }
   .fade-up-d2 { animation-delay: 100ms; }
   .fade-up-d3 { animation-delay: 150ms; }
+
+  /* ═══ Global page background — premium light gradient ═══ */
+  .page-bg {
+    background:
+      radial-gradient(1200px 600px at 0% -10%, rgba(59,130,246,0.08), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(99,102,241,0.06), transparent 60%),
+      linear-gradient(180deg, #f6f8fb 0%, #eef2f7 100%);
+  }
   .fade-up-d4 { animation-delay: 200ms; }
 
   .stagger-fade-in > * {
