@@ -726,42 +726,8 @@ export default function PrecificacaoPizzas() {
                     <CollapsibleContent className="data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
                       <div className="border-t border-border/40" />
                       <div className="p-4 md:p-6">
-                        <div
-                          className="rounded-2xl p-4 md:p-6 border border-border/60"
-                          style={{ background: "rgba(248, 250, 252, 0.7)" }}
-                        >
-                          <div
-                            className="grid gap-3 md:gap-4"
-                            style={{ gridTemplateColumns: "minmax(150px, 180px) repeat(3, minmax(0, 1fr))" }}
-                          >
-                            {/* ─── Coluna de Rótulos (esquerda, fixa) ─── */}
-                            <div className="hidden md:flex flex-col">
-                              <div className="h-9" /> {/* spacer header */}
-                              <div className="h-[38px] flex items-center text-[13px] font-medium text-muted-foreground">CMV Atual</div>
-                              <div className="h-[38px] flex items-center text-[13px] font-medium text-muted-foreground">Custo do Insumo</div>
-                              <div className="h-[38px] flex items-center text-[13px] font-medium text-muted-foreground">Sugerido por Meta</div>
-                              <div className="h-[38px] flex items-center text-[13px] font-medium text-muted-foreground">Sobra Real (Lucro)</div>
-                              <div className="h-[38px] flex items-center text-[13px] font-medium text-muted-foreground">Preço Limite (Zero Lucro)</div>
-                              <div className="h-[38px] flex items-center mt-2 text-[13px] font-bold text-foreground">Preço de Venda</div>
-                              {activeApps.length > 0 && (
-                                <>
-                                  <div className="h-px bg-border/40 my-3" />
-                                  <div className="h-[38px] flex items-center text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
-                                    Delivery Apps
-                                  </div>
-                                  {activeApps.map((app) => (
-                                    <div
-                                      key={app.key}
-                                      className="h-[38px] flex items-center text-[13px] font-medium text-muted-foreground"
-                                    >
-                                      {app.label}
-                                    </div>
-                                  ))}
-                                </>
-                              )}
-                            </div>
-
-                            {/* ─── Colunas P / M / G ─── */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+                            {/* ─── 3 Glass Cards: P / M / G ─── */}
                             {sizes.map((s, sizeIdx) => {
                               const custo = custos[s];
                               const sug = sugeridos[s];
@@ -774,7 +740,7 @@ export default function PrecificacaoPizzas() {
                               const sobraPct = preco > 0 ? (sobra / preco) * 100 : 0;
                               const sobraPositiva = sobra > 0;
                               const precoZero = calcPrecoZero(custo);
-                              const cmvAlert = cmv > 35;
+                              const pill = getCmvPillStyle(cmv);
                               const inputValue =
                                 localPrices[ficha.id]?.[s] !== undefined
                                   ? localPrices[ficha.id][s]
@@ -785,180 +751,187 @@ export default function PrecificacaoPizzas() {
                               return (
                                 <div
                                   key={s}
-                                  className="fade-up flex flex-col min-w-0"
-                                  style={{ animationDelay: `${sizeIdx * 50}ms` }}
+                                  className="group relative aspect-square min-h-[360px] rounded-3xl border border-white/40 bg-white/40 backdrop-blur-xl shadow-[0_10px_40px_-12px_rgba(15,23,42,0.18)] hover:shadow-[0_20px_60px_-12px_rgba(15,23,42,0.28)] hover:-translate-y-1 hover:scale-[1.015] transition-all duration-300 p-5 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-500 fill-mode-both"
+                                  style={{ animationDelay: `${sizeIdx * 90}ms` }}
                                 >
-                                  {/* Header: apenas o nome do tamanho, alinhado à direita para casar com a coluna de valores */}
-                                  <div className="h-9 flex items-center justify-end">
-                                    <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
-                                      Tamanho {sizeLabels[s]}
-                                    </span>
-                                  </div>
+                                  {/* Iridescent sheen */}
+                                  <div
+                                    aria-hidden
+                                    className="pointer-events-none absolute inset-0 rounded-3xl opacity-60"
+                                    style={{
+                                      background:
+                                        "linear-gradient(135deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 45%, rgba(255,255,255,0) 60%, rgba(255,255,255,0.25) 100%)",
+                                    }}
+                                  />
+                                  <div
+                                    aria-hidden
+                                    className="pointer-events-none absolute -top-16 -right-16 h-40 w-40 rounded-full blur-3xl opacity-40 group-hover:opacity-60 transition-opacity"
+                                    style={{ background: preco > 0 ? glowColor : "hsl(var(--primary) / 0.3)" }}
+                                  />
 
-                                  {/* Row: CMV Atual (mobile-only label inline) */}
-                                  <div className="h-[38px] flex items-center justify-between gap-2 text-[13px] font-semibold text-foreground">
-                                    <span className="md:hidden text-muted-foreground font-medium">CMV</span>
-                                    <span className="text-finance-mono">{preco > 0 ? fmtPct(cmv) : "—"}</span>
-                                  </div>
-
-                                  {/* Row: Custo */}
-                                  <div className="h-[38px] flex items-center justify-between gap-2 text-[13px]">
-                                    <span className="md:hidden text-muted-foreground font-medium">Custo</span>
-                                    <Money value={custo} className="text-[13px] text-muted-foreground font-semibold" symbolScale={0.6} />
-                                  </div>
-
-                                  {/* Row: Sugerido + ⚡ aplicar */}
-                                  <div className="h-[38px] flex items-center justify-between gap-2">
-                                    <span className="md:hidden text-muted-foreground font-medium text-[13px]">Sugerido</span>
-                                    <div className="flex items-center gap-2 min-w-0">
-                                      <Money value={sug} className="text-[13px] text-emerald-700 font-bold" symbolScale={0.6} />
-                                      {sug > 0 && (
-                                        <button
-                                          type="button"
-                                          onClick={() => {
-                                            const formatted = formatMoney(sug);
-                                            handlePriceChange(ficha.id, s, formatted);
-                                            // dispara o save imediato
-                                            autoSavePrice(ficha.id, s, formatted);
-                                            setTimeout(() => {
-                                              setLocalPrices((prev) => {
-                                                const copy = { ...prev };
-                                                if (copy[ficha.id]) {
-                                                  delete copy[ficha.id][s];
-                                                  if (!copy[ficha.id].p && !copy[ficha.id].m && !copy[ficha.id].g)
-                                                    delete copy[ficha.id];
-                                                }
-                                                return copy;
-                                              });
-                                            }, 100);
-                                          }}
-                                          className="inline-flex items-center justify-center h-6 w-6 rounded-md bg-emerald-100 hover:bg-emerald-200 text-emerald-700 transition-colors"
-                                          title="Aplicar preço sugerido"
-                                        >
-                                          <Zap className="h-3 w-3" strokeWidth={2.5} />
-                                        </button>
-
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  {/* Row: Sobra Real */}
-                                  <div className="h-[38px] flex items-center justify-between gap-2">
-                                    <span className="md:hidden text-muted-foreground font-medium text-[13px]">
-                                      {sobraPositiva ? "Lucro" : "Prejuízo"}
-                                    </span>
-                                    <div
-                                      className="flex items-baseline gap-1 text-finance-mono text-[13px] font-bold"
-                                      style={{ color: sobraPositiva ? "hsl(var(--success))" : "hsl(var(--destructive))" }}
-                                    >
-                                      <Money value={sobra} className="text-[13px]" symbolScale={0.6} />
-                                      {preco > 0 && (
-                                        <span className="text-[11px] opacity-80">({sobraPct.toFixed(0)}%)</span>
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  {/* Row: Preço Limite (Zero Lucro) */}
-                                  <div className="h-[38px] flex items-center justify-between gap-2">
-                                    <span className="md:hidden text-muted-foreground font-medium text-[13px]">Preço Zero</span>
-                                    <Money value={precoZero} className="text-[13px] text-muted-foreground font-semibold" symbolScale={0.6} />
-                                  </div>
-
-                                  {/* Row: Preço de Venda (input ao vivo) */}
-                                  <div className="mt-2 relative">
-                                    <input
-                                      type="text"
-                                      className="input-glow-focus text-finance-mono w-full rounded-lg outline-none text-center"
-                                      style={{
-                                        height: "44px",
-                                        fontSize: "17px",
-                                        fontWeight: 800,
-                                        fontFeatureSettings: "'tnum'",
-                                        color: "hsl(var(--foreground))",
-                                        background: "#ffffff",
-                                        border: `2px solid ${preco > 0 ? borderColor : "hsl(var(--primary))"}`,
-                                        boxShadow: preco > 0 ? `0 0 10px ${glowColor}` : "0 1px 2px rgba(0,0,0,0.04)",
-                                      }}
-                                      onFocus={(e) => {
-                                        e.currentTarget.select();
-                                        if (localPrices[ficha.id]?.[s] === undefined) {
-                                          handlePriceChange(
-                                            ficha.id,
-                                            s,
-                                            String(ficha[`preco_venda_${s}` as keyof FichaPizza] ?? "")
-                                          );
-                                        }
-                                      }}
-                                      onBlur={() => handlePriceBlur(ficha.id, s, ficha)}
-                                      value={inputValue}
-                                      onChange={(e) => handlePriceChange(ficha.id, s, e.target.value)}
-                                      placeholder="R$ 0,00"
-                                    />
-                                    {savedFields[fieldKey] && (
-                                      <Check className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary animate-in fade-in duration-200" />
-                                    )}
-                                    {belowSuggested && !savedFields[fieldKey] && (
-                                      <span
-                                        className="absolute -right-1 -top-2 text-warning"
-                                        title="Preço abaixo do sugerido"
-                                      >
-                                        <AlertTriangle className="h-3.5 w-3.5" />
+                                  <div className="relative flex flex-col h-full">
+                                    {/* Header: Tamanho + CMV pill */}
+                                    <div className="flex items-center justify-between mb-3">
+                                      <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                                        Tamanho {sizeLabels[s]}
                                       </span>
+                                      {preco > 0 ? (
+                                        <span
+                                          className="text-finance-mono text-[10.5px] font-semibold px-2 py-0.5 rounded-full"
+                                          style={{ background: pill.bg, color: pill.text }}
+                                        >
+                                          {fmtPct(cmv)}
+                                        </span>
+                                      ) : (
+                                        <span className="text-muted-foreground/40 text-finance-mono text-xs">—</span>
+                                      )}
+                                    </div>
+
+                                    {/* Rows: label + value */}
+                                    <div className="flex-1 flex flex-col gap-2 text-[13px]">
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-muted-foreground font-medium">CMV Atual</span>
+                                        <span className="text-finance-mono font-semibold text-foreground">{preco > 0 ? fmtPct(cmv) : "—"}</span>
+                                      </div>
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-muted-foreground font-medium">Custo do Insumo</span>
+                                        <Money value={custo} className="text-muted-foreground font-semibold" symbolScale={0.6} />
+                                      </div>
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-muted-foreground font-medium">Sugerido por Meta</span>
+                                        <div className="flex items-center gap-2">
+                                          <Money value={sug} className="text-emerald-700 font-bold" symbolScale={0.6} />
+                                          {sug > 0 && (
+                                            <button
+                                              type="button"
+                                              onClick={() => {
+                                                const formatted = formatMoney(sug);
+                                                handlePriceChange(ficha.id, s, formatted);
+                                                autoSavePrice(ficha.id, s, formatted);
+                                                setTimeout(() => {
+                                                  setLocalPrices((prev) => {
+                                                    const copy = { ...prev };
+                                                    if (copy[ficha.id]) {
+                                                      delete copy[ficha.id][s];
+                                                      if (!copy[ficha.id].p && !copy[ficha.id].m && !copy[ficha.id].g)
+                                                        delete copy[ficha.id];
+                                                    }
+                                                    return copy;
+                                                  });
+                                                }, 100);
+                                              }}
+                                              className="inline-flex items-center justify-center h-6 w-6 rounded-md bg-emerald-100 hover:bg-emerald-200 text-emerald-700 transition-colors"
+                                              title="Aplicar preço sugerido"
+                                            >
+                                              <Zap className="h-3 w-3" strokeWidth={2.5} />
+                                            </button>
+                                          )}
+                                        </div>
+                                      </div>
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-muted-foreground font-medium">{sobraPositiva ? "Sobra Real (Lucro)" : "Prejuízo"}</span>
+                                        <div
+                                          className="flex items-baseline gap-1 text-finance-mono font-bold"
+                                          style={{ color: sobraPositiva ? "hsl(var(--success))" : "hsl(var(--destructive))" }}
+                                        >
+                                          <Money value={sobra} symbolScale={0.6} />
+                                          {preco > 0 && (
+                                            <span className="text-[11px] opacity-80">({sobraPct.toFixed(0)}%)</span>
+                                          )}
+                                        </div>
+                                      </div>
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-muted-foreground font-medium">Preço Limite</span>
+                                        <Money value={precoZero} className="text-muted-foreground font-semibold" symbolScale={0.6} />
+                                      </div>
+                                    </div>
+
+                                    {/* Preço de Venda input */}
+                                    <div className="mt-4 pt-3 border-t border-white/50">
+                                      <div className="flex items-center justify-between mb-2">
+                                        <span className="text-[12px] font-bold text-foreground">Preço de Venda</span>
+                                      </div>
+                                      <div className="relative">
+                                        <input
+                                          type="text"
+                                          className="input-glow-focus text-finance-mono w-full rounded-xl outline-none text-center"
+                                          style={{
+                                            height: "48px",
+                                            fontSize: "18px",
+                                            fontWeight: 800,
+                                            fontFeatureSettings: "'tnum'",
+                                            color: "hsl(var(--foreground))",
+                                            background: "rgba(255,255,255,0.85)",
+                                            border: `2px solid ${preco > 0 ? borderColor : "hsl(var(--primary))"}`,
+                                            boxShadow: preco > 0 ? `0 0 12px ${glowColor}` : "0 1px 2px rgba(0,0,0,0.04)",
+                                          }}
+                                          onFocus={(e) => {
+                                            e.currentTarget.select();
+                                            if (localPrices[ficha.id]?.[s] === undefined) {
+                                              handlePriceChange(
+                                                ficha.id,
+                                                s,
+                                                String(ficha[`preco_venda_${s}` as keyof FichaPizza] ?? "")
+                                              );
+                                            }
+                                          }}
+                                          onBlur={() => handlePriceBlur(ficha.id, s, ficha)}
+                                          value={inputValue}
+                                          onChange={(e) => handlePriceChange(ficha.id, s, e.target.value)}
+                                          placeholder="R$ 0,00"
+                                        />
+                                        {savedFields[fieldKey] && (
+                                          <Check className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary animate-in fade-in duration-200" />
+                                        )}
+                                        {belowSuggested && !savedFields[fieldKey] && (
+                                          <span
+                                            className="absolute -right-1 -top-2 text-warning"
+                                            title="Preço abaixo do sugerido"
+                                          >
+                                            <AlertTriangle className="h-3.5 w-3.5" />
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+
+                                    {/* Delivery Apps */}
+                                    {activeApps.length > 0 && (
+                                      <div className="mt-3 pt-3 border-t border-white/50">
+                                        <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1.5">
+                                          Delivery Apps
+                                        </div>
+                                        <div className="flex flex-col gap-1.5">
+                                          {activeApps.map((app) => {
+                                            const appPrice = preco > 0 ? calcAppPrice(preco, app.taxa) : 0;
+                                            const appCmv = calcCmv(custo, appPrice);
+                                            const appPill = getCmvPillStyle(appCmv);
+                                            return (
+                                              <div key={app.key} className="flex items-center justify-between text-[12px]">
+                                                <span className="text-muted-foreground font-medium">{app.label}</span>
+                                                {appPrice > 0 ? (
+                                                  <div className="flex items-center gap-1.5">
+                                                    <Money value={appPrice} className="text-foreground font-semibold" symbolScale={0.6} />
+                                                    <span
+                                                      className="text-finance-mono text-[10px] px-1.5 py-0.5 rounded-full"
+                                                      style={{ background: appPill.bg, color: appPill.text }}
+                                                    >
+                                                      {fmtPct(appCmv)}
+                                                    </span>
+                                                  </div>
+                                                ) : (
+                                                  <span className="text-muted-foreground/40 text-finance-mono text-[11px]">—</span>
+                                                )}
+                                              </div>
+                                            );
+                                          })}
+                                        </div>
+                                      </div>
                                     )}
                                   </div>
-
-                                  {/* Delivery Apps (alinhado em rows) */}
-                                  {activeApps.length > 0 && (
-                                    <>
-                                      <div className="h-px bg-border/40 my-3" />
-                                      <div className="h-[38px] flex items-center justify-between md:justify-end gap-2">
-                                        <span className="md:hidden text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
-                                          Apps
-                                        </span>
-                                      </div>
-                                      {activeApps.map((app) => {
-                                        const appPrice = preco > 0 ? calcAppPrice(preco, app.taxa) : 0;
-                                        const appCmv = calcCmv(custo, appPrice);
-                                        const appPill = getCmvPillStyle(appCmv);
-                                        return (
-                                          <div
-                                            key={app.key}
-                                            className="h-[38px] flex items-center justify-between gap-2"
-                                          >
-                                            <span className="md:hidden text-muted-foreground font-medium text-[13px]">
-                                              {app.label}
-                                            </span>
-                                            <div className="flex items-center gap-2">
-                                              {appPrice > 0 ? (
-                                                <>
-                                                  <Money
-                                                    value={appPrice}
-                                                    className="text-[13px] text-foreground font-semibold"
-                                                    symbolScale={0.6}
-                                                  />
-                                                  <span
-                                                    className="text-finance-mono text-[10px] px-1.5 py-0.5 rounded-full"
-                                                    style={{ background: appPill.bg, color: appPill.text }}
-                                                  >
-                                                    {fmtPct(appCmv)}
-                                                  </span>
-                                                </>
-                                              ) : (
-                                                <span className="text-muted-foreground/40 text-finance-mono text-[11px]">
-                                                  —
-                                                </span>
-                                              )}
-                                            </div>
-                                          </div>
-                                        );
-                                      })}
-                                    </>
-                                  )}
                                 </div>
                               );
                             })}
                           </div>
-                        </div>
                       </div>
                     </CollapsibleContent>
                   </div>
