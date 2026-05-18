@@ -29,6 +29,8 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { PageHero } from "@/components/layout/PageHero";
 import { StatCard, StatCardGrid } from "@/components/layout/StatCardGrid";
 import { PrecificacaoCategoryTabs } from "@/components/precificacao/PrecificacaoCategoryTabs";
+import { useDashboardData } from "@/hooks/useDashboardData";
+import { usePriceAlerts } from "@/hooks/usePriceAlerts";
 
 // ─── Types ───────────────────────────────────────────────────────────
 interface FichaPizza {
@@ -243,6 +245,47 @@ export default function PrecificacaoPizzas() {
     const avgCmv = count > 0 ? totalCmv / count : 0;
     return { avgCmv, foraMetaCount };
   }, [fichas, pizzaCustos, getPreco]);
+
+  // ─── Caixa do mês + Alertas de Insumos ──────────────────────────
+  const { lucroMes = 0 } = useDashboardData() as any;
+  const { data: priceAlerts = [] } = usePriceAlerts();
+  const [showOnlyAffected, setShowOnlyAffected] = useState(false);
+
+  // Mapa nome(lower) → alerta (variação)
+  const alertByNome = useMemo(() => {
+    const m = new Map<string, { nome: string; variacaoPct: number }>();
+    (priceAlerts as any[]).forEach((a) => {
+      m.set(String(a.nome).trim().toLowerCase(), { nome: a.nome, variacaoPct: a.variacaoPct });
+    });
+    return m;
+  }, [priceAlerts]);
+
+  // insumo_id → alerta (resolvendo via nome)
+  const alertByInsumoId = useMemo(() => {
+    const m = new Map<string, { nome: string; variacaoPct: number }>();
+    insumosComprados.forEach((ic) => {
+      const a = alertByNome.get(String(ic.nome).trim().toLowerCase());
+      if (a) m.set(ic.id, a);
+    });
+    return m;
+  }, [insumosComprados, alertByNome]);
+
+  // Para cada ficha → pior alerta entre os insumos usados
+  const fichaTopAlert = useMemo(() => {
+    const map = new Map<string, { nome: string; variacaoPct: number }>();
+    fichas.forEach((f) => {
+      const ings = ingredientes.filter((i) => i.ficha_id === f.id);
+      let worst: { nome: string; variacaoPct: number } | null = null;
+      ings.forEach((ing) => {
+        const a = ing.insumo_comprado_id ? alertByInsumoId.get(ing.insumo_comprado_id) : null;
+        if (a && (!worst || a.variacaoPct > worst.variacaoPct)) worst = a;
+      });
+      if (worst) map.set(f.id, worst);
+    });
+    return map;
+  }, [fichas, ingredientes, alertByInsumoId]);
+
+  const affectedCount = fichaTopAlert.size;
 
   // ─── Save config ─────────────────────────────────────────────────
   const configMutation = useMutation({
@@ -479,26 +522,57 @@ export default function PrecificacaoPizzas() {
           </Card>
         )}
 
-        {/* ═══ HERO + Stats ═══ */}
-        <PageHero
-          label="CMV Médio das Pizzas"
-          value={indicators.avgCmv}
-          unit="PERCENT"
-          status={
-            indicators.avgCmv > 40 ? "danger" :
-            indicators.avgCmv > 35 ? "warning" :
-            indicators.avgCmv >= 25 ? "success" : "neutral"
-          }
-          context={cmvMessage(indicators.avgCmv)}
-        />
+        {/* ═══ Banner Contextual — conecta o caixa do mês à precificação ═══ */}
+        {lucroMes < 0 ? (
+          <div className="rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-gradient-to-r from-red-700 to-red-600 text-white shadow-lg">
+            <div>
+              <h2 className="text-3xl font-extrabold tracking-tight font-mono">
+                Caixa Negativo: {formatMoney(lucroMes)}
+              </h2>
+              <p className="text-sm opacity-90 mt-1">
+                {affectedCount > 0
+                  ? `⚠️ ${affectedCount} ${affectedCount === 1 ? "pizza usa" : "pizzas usam"} insumos com alta no mercado e ${affectedCount === 1 ? "está sufocando" : "estão sufocando"} o lucro operacional.`
+                  : "⚠️ Revise sua precificação — o CMV médio está consumindo a margem do mês."}
+              </p>
+            </div>
+            {affectedCount > 0 && (
+              <button
+                onClick={() => setShowOnlyAffected((v) => !v)}
+                className="bg-white text-red-700 hover:bg-red-50 transition-colors px-4 py-2.5 rounded-lg font-bold text-sm whitespace-nowrap shadow"
+              >
+                {showOnlyAffected ? "Mostrar Todas" : "Corrigir Preços Afetados"}
+              </button>
+            )}
+          </div>
+        ) : (
+          <PageHero
+            label="CMV Médio das Pizzas"
+            value={indicators.avgCmv}
+            unit="PERCENT"
+            status={
+              indicators.avgCmv > 40 ? "danger" :
+              indicators.avgCmv > 35 ? "warning" :
+              indicators.avgCmv >= 25 ? "success" : "neutral"
+            }
+            context={cmvMessage(indicators.avgCmv)}
+          />
+        )}
 
         <StatCardGrid cols={3}>
-          <StatCard
-            icon={TrendingDown}
-            tone={indicators.foraMetaCount > 0 ? "down" : "up"}
-            label="Precisam de atenção"
-            value={<span>{indicators.foraMetaCount}</span>}
-          />
+          <button
+            type="button"
+            onClick={() => setShowOnlyAffected((v) => !v)}
+            disabled={affectedCount === 0}
+            className="text-left rounded-2xl focus:outline-none focus:ring-2 focus:ring-destructive/40 disabled:cursor-default"
+            title={affectedCount > 0 ? "Filtrar apenas pizzas com insumos em alta" : "Nenhuma pizza afetada"}
+          >
+            <StatCard
+              icon={TrendingDown}
+              tone={affectedCount > 0 ? "down" : "up"}
+              label={showOnlyAffected ? "Filtrando afetadas" : "Comprometem a meta"}
+              value={<span>{affectedCount > 0 ? affectedCount : indicators.foraMetaCount}</span>}
+            />
+          </button>
           <StatCard
             icon={Activity}
             tone="neutral"
@@ -552,7 +626,9 @@ export default function PrecificacaoPizzas() {
               </Button>
             </div>
           ) : (
-            fichas.map((ficha, rowIndex) => {
+            fichas
+              .filter((f) => !showOnlyAffected || fichaTopAlert.has(f.id))
+              .map((ficha, rowIndex) => {
               const custos = pizzaCustos[ficha.id] ?? { p: 0, m: 0, g: 0 };
               const precos = { p: getPreco(ficha.id, "p", ficha), m: getPreco(ficha.id, "m", ficha), g: getPreco(ficha.id, "g", ficha) };
               const cmvs = { p: calcCmv(custos.p, precos.p), m: calcCmv(custos.m, precos.m), g: calcCmv(custos.g, precos.g) };
@@ -560,6 +636,7 @@ export default function PrecificacaoPizzas() {
               const hasAlert = cmvs.p > 40 || cmvs.m > 40 || cmvs.g > 40;
               const isOpen = expandedCards[ficha.id] ?? false;
               const health = getHealthColor(cmvs, precos);
+              const insumoAlert = fichaTopAlert.get(ficha.id);
 
               return (
                 <Collapsible
@@ -592,7 +669,17 @@ export default function PrecificacaoPizzas() {
                           />
                           <div>
                             <h3 className="text-table-row-title text-lg leading-tight">{ficha.nome}</h3>
-                            <span className="text-mini-label">{tipoLabel(ficha.tipo)}</span>
+                            <div className="flex flex-wrap items-center gap-2 mt-0.5">
+                              <span className="text-mini-label">{tipoLabel(ficha.tipo)}</span>
+                              {insumoAlert && (
+                                <span
+                                  className="text-[11px] font-semibold px-2 py-0.5 rounded-md border border-red-300 bg-red-50 text-red-700"
+                                  title={`${insumoAlert.nome} subiu ${insumoAlert.variacaoPct.toFixed(1)}% na última compra`}
+                                >
+                                  ⚠ {insumoAlert.nome} (+{insumoAlert.variacaoPct.toFixed(1)}%)
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
 
