@@ -10,7 +10,7 @@ import { MoneyInput } from "@/components/MoneyInput";
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
 import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
-import { Plus, Target, AlertTriangle, TrendingUp, TrendingDown } from "lucide-react";
+import { Plus, Target, AlertTriangle, TrendingUp, TrendingDown, Wallet, type LucideIcon } from "lucide-react";
 import { HealthStatus } from "@/components/HealthStatus";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { FinanceiroCategoryTabs } from "@/components/financeiro/FinanceiroCategoryTabs";
@@ -356,27 +356,20 @@ export default function FinanceiroDRE() {
         </div>
       </PageHeader>
 
-      {/* Top 3 KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="card-premium dre-card">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Entrou</p>
-          <p className="text-2xl font-bold text-foreground">{fmt(calc.totalEntrou)}</p>
-        </div>
-        <div className="card-premium dre-card">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Saiu</p>
-          <p className="text-2xl font-bold text-foreground">{fmt(calc.totalSaiu)}</p>
-        </div>
-        <div className={cn("card-premium dre-card", calc.sobrou >= 0 ? "border-success/30" : "border-destructive/30")}>
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
-            {calc.sobrou >= 0 ? "Sobrou" : "Faltou"}
-          </p>
-          <p className={cn("text-2xl font-bold", calc.sobrou >= 0 ? "text-success" : "text-destructive")}>
-            {fmt(Math.abs(calc.sobrou))}
-          </p>
-          <p className={cn("text-xs font-semibold mt-1", calc.sobrou >= 0 ? "text-success" : "text-destructive")}>
-            {calc.sobrouPct.toFixed(1)}% de margem
-          </p>
-        </div>
+      {/* Top 3 KPIs — Glassmorphism premium */}
+      <div
+        className="grid grid-cols-1 sm:grid-cols-3"
+        style={{ gap: "20px", marginTop: "8px" }}
+      >
+        <GlassStat label="Entrou" value={calc.totalEntrou} icon={TrendingUp} variant="positive" />
+        <GlassStat label="Saiu" value={calc.totalSaiu} icon={TrendingDown} variant="negative" />
+        <GlassStat
+          label={calc.sobrou >= 0 ? "Sobrou" : "Faltou"}
+          value={Math.abs(calc.sobrou)}
+          icon={Wallet}
+          variant={calc.sobrou >= 0 ? "positive" : "negative"}
+          subtitle={`${calc.sobrouPct.toFixed(1)}% de margem`}
+        />
       </div>
 
       {/* Custo dos Ingredientes + Meta do Mês */}
@@ -696,6 +689,85 @@ export default function FinanceiroDRE() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
+  );
+}
+
+/** Card glass premium — mesmo efeito vidro do Caixa Diário */
+function GlassStat({
+  label,
+  value,
+  icon: Icon,
+  variant,
+  subtitle,
+}: {
+  label: string;
+  value: number;
+  icon: LucideIcon;
+  variant: "positive" | "negative" | "neutral";
+  subtitle?: string;
+}) {
+  const cfg = {
+    positive: {
+      borderLeft: "#2563eb",
+      icon: "#2563eb",
+      text: "#1e3a8a",
+      boxShadow:
+        "0 8px 32px 0 rgba(37, 99, 235, 0.08), inset 0 0 12px rgba(37, 99, 235, 0.05)",
+    },
+    negative: {
+      borderLeft: "#dc2626",
+      icon: "#dc2626",
+      text: "#7f1d1d",
+      boxShadow:
+        "0 8px 32px 0 rgba(220, 38, 38, 0.08), inset 0 0 12px rgba(220, 38, 38, 0.05)",
+    },
+    neutral: {
+      borderLeft: "#94a3b8",
+      icon: "#64748b",
+      text: "#1e293b",
+      boxShadow:
+        "0 8px 32px 0 rgba(100, 116, 139, 0.08), inset 0 0 12px rgba(100, 116, 139, 0.04)",
+    },
+  }[variant];
+
+  return (
+    <div
+      style={{
+        background: "rgba(255, 255, 255, 0.45)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        borderRadius: "20px",
+        border: "1px solid rgba(255, 255, 255, 0.4)",
+        borderLeft: `4px solid ${cfg.borderLeft}`,
+        boxShadow: cfg.boxShadow,
+        padding: "18px 20px",
+      }}
+      className="flex flex-col gap-2 transition-transform hover:-translate-y-0.5"
+    >
+      <div className="flex items-center gap-1.5">
+        <Icon size={14} strokeWidth={2.5} style={{ color: cfg.icon }} />
+        <span
+          className="text-[11px] uppercase tracking-[0.08em]"
+          style={{ color: cfg.icon, fontWeight: 700 }}
+        >
+          {label}
+        </span>
+      </div>
+      <div
+        style={{ color: cfg.text, fontWeight: 700 }}
+        className="text-[22px] leading-tight text-finance-mono"
+      >
+        <Money value={value} symbolScale={0.55} className="text-[22px] leading-tight" />
+      </div>
+      {subtitle && (
+        <span
+          className="text-[11px] font-semibold"
+          style={{ color: cfg.icon, opacity: 0.85 }}
+        >
+          {subtitle}
+        </span>
+      )}
     </div>
   );
 }
