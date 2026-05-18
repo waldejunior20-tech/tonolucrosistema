@@ -251,14 +251,24 @@ export default function PrecificacaoPizzas() {
   const { data: priceAlerts = [] } = usePriceAlerts();
   const [showOnlyAffected, setShowOnlyAffected] = useState(false);
 
-  // Mapa insumo_id → alerta (variação >= threshold)
-  const alertByInsumoId = useMemo(() => {
+  // Mapa nome(lower) → alerta (variação)
+  const alertByNome = useMemo(() => {
     const m = new Map<string, { nome: string; variacaoPct: number }>();
     (priceAlerts as any[]).forEach((a) => {
-      if (a.insumoId) m.set(a.insumoId, { nome: a.nome, variacaoPct: a.variacaoPct });
+      m.set(String(a.nome).trim().toLowerCase(), { nome: a.nome, variacaoPct: a.variacaoPct });
     });
     return m;
   }, [priceAlerts]);
+
+  // insumo_id → alerta (resolvendo via nome)
+  const alertByInsumoId = useMemo(() => {
+    const m = new Map<string, { nome: string; variacaoPct: number }>();
+    insumosComprados.forEach((ic) => {
+      const a = alertByNome.get(String(ic.nome).trim().toLowerCase());
+      if (a) m.set(ic.id, a);
+    });
+    return m;
+  }, [insumosComprados, alertByNome]);
 
   // Para cada ficha → pior alerta entre os insumos usados
   const fichaTopAlert = useMemo(() => {
