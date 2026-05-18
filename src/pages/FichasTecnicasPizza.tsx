@@ -1110,7 +1110,7 @@ export default function FichasTecnicasPizza() {
                         {caixaId && (
                           <div className="flex items-center justify-between text-xs">
                             <span className="text-slate-500 truncate font-medium" title={caixaNome}>{caixaNome}</span>
-                            <span className="font-semibold text-slate-900 tabular-nums font-mono">R$ {fmt(custo)}</span>
+                            <Money value={custo} className="font-semibold text-slate-900" />
                           </div>
                         )}
                       </div>
