@@ -725,7 +725,7 @@ export default function FichasTecnicasPizza() {
               <Plus className="h-4 w-4" /> Nova Ficha
             </Button>
           </DialogTrigger>
-          <DialogContent className="!max-w-[1040px] w-[96vw] h-[90vh] max-h-[820px] rounded-3xl p-0 gap-0 flex flex-col overflow-hidden border border-stone-200 shadow-[0_20px_50px_rgba(0,0,0,0.15)] bg-white">
+          <DialogContent className="!max-w-[1040px] w-screen h-[100dvh] max-h-[100dvh] rounded-none sm:w-[96vw] sm:h-[90vh] sm:max-h-[820px] sm:rounded-3xl p-0 gap-0 flex flex-col overflow-hidden border border-stone-200 shadow-[0_20px_50px_rgba(0,0,0,0.15)] bg-white pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
             {/* HEADER: Nome + AI badge */}
             <DialogHeader className="border-b border-stone-200 shrink-0">
               <div className="w-full px-6 pt-6 pb-4">
