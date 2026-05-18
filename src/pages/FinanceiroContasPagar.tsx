@@ -459,7 +459,7 @@ export default function FinanceiroContasPagar() {
                     {c.numero_parcela}/{c.total_parcelas}
                   </TableCell>
                   <TableCell className="text-right font-mono text-sm">{fmt(Number(c.valor))}</TableCell>
-                  <TableCell className="text-center text-sm">{formatDate(c.data_vencimento)}</TableCell>
+                  <TableCell className="text-center text-sm font-bold">{formatDate(c.data_vencimento)}</TableCell>
                   <TableCell className="text-center">{statusBadge(c.status)}</TableCell>
                   <TableCell>
                     <div className="flex items-center justify-center gap-1">
