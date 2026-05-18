@@ -196,13 +196,23 @@ Deno.serve(async (req) => {
   const origem = payload.origem ?? "manual";
 
   // Normaliza itens (precisa antes do hash)
+  // Detecta se dados estão COMPLETOS para atualizar custo unitário do insumo.
+  // Regra: precisa de nome + quantidade>0 informada + unidade informada + preço total>0.
+  // Se incompleto: registra apenas saída de caixa + auditoria, NÃO toca o banco mestre.
   const itensNorm = itens.map((it) => {
     const nome = (it.nome ?? "Item sem nome").toString().trim();
-    const quantidade = toNumber(it.quantidade) || 1;
-    const unidade = normalizarUnidade(it.unidade);
+    const qtdRaw = toNumber(it.quantidade);
+    const unidRaw = (it.unidade ?? "").toString().trim();
     const preco_total = toNumber(it.preco_total ?? it.preco_pago);
+    const quantidade = qtdRaw || 1;
+    const unidade = normalizarUnidade(it.unidade);
     const preco_unitario = toNumber(it.preco_unitario) || (preco_total / quantidade);
-    return { nome, categoriaRaw: it.categoria ?? "", quantidade, unidade, preco_total, preco_unitario };
+    const dadosCompletos =
+      nome.length > 0 && qtdRaw > 0 && unidRaw.length > 0 && preco_total > 0;
+    return {
+      nome, categoriaRaw: it.categoria ?? "",
+      quantidade, unidade, preco_total, preco_unitario, dadosCompletos,
+    };
   });
 
   const valor_total = toNumber(payload.valor_total) ||
