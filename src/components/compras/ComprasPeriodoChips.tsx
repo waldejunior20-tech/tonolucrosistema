@@ -5,23 +5,19 @@ import { ptBR } from "date-fns/locale";
 import { format } from "date-fns";
 import { useState } from "react";
 import type { DateRange } from "react-day-picker";
+import { SectionTabs } from "@/components/layout/SectionTabs";
 import { cn } from "@/lib/utils";
 
 export type PeriodoValue = "7" | "30" | "este_mes" | "custom";
-
-const CHIPS: { value: PeriodoValue; label: string }[] = [
-  { value: "7", label: "7 dias" },
-  { value: "30", label: "30 dias" },
-  { value: "este_mes", label: "Este mês" },
-];
 
 interface Props {
   periodo: PeriodoValue;
   customRange?: DateRange;
   onChange: (p: PeriodoValue, range?: DateRange) => void;
+  onDark?: boolean;
 }
 
-export function ComprasPeriodoChips({ periodo, customRange, onChange }: Props) {
+export function ComprasPeriodoChips({ periodo, customRange, onChange, onDark = true }: Props) {
   const [open, setOpen] = useState(false);
 
   const customLabel =
@@ -34,32 +30,31 @@ export function ComprasPeriodoChips({ periodo, customRange, onChange }: Props) {
       : "Personalizado";
 
   return (
-    <div className="inline-flex items-center gap-0.5 p-1 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
-      {CHIPS.map((c) => {
-        const active = periodo === c.value;
-        return (
-          <button
-            key={c.value}
-            onClick={() => onChange(c.value)}
-            className={cn(
-              "shrink-0 h-8 px-3.5 rounded-lg text-[12.5px] font-semibold transition-all",
-              active
-                ? "bg-white text-blue-700 shadow-[0_2px_8px_rgba(0,0,0,0.12)]"
-                : "text-white/80 hover:text-white hover:bg-white/10"
-            )}
-          >
-            {c.label}
-          </button>
-        );
-      })}
+    <div className="inline-flex items-center gap-2">
+      <SectionTabs
+        size="sm"
+        onDark={onDark}
+        value={periodo}
+        onChange={(v) => onChange(v as PeriodoValue)}
+        items={[
+          { label: "7 dias", value: "7" },
+          { label: "30 dias", value: "30" },
+          { label: "Este mês", value: "este_mes" },
+        ]}
+      />
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <button
+            type="button"
             className={cn(
-              "shrink-0 h-8 px-3.5 rounded-lg text-[12.5px] font-semibold transition-all inline-flex items-center gap-1.5",
+              "inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl border text-[13px] font-semibold transition-all",
               periodo === "custom"
-                ? "bg-white text-blue-700 shadow-[0_2px_8px_rgba(0,0,0,0.12)]"
-                : "text-white/80 hover:text-white hover:bg-white/10"
+                ? onDark
+                  ? "bg-white text-blue-700 border-white shadow-[0_2px_8px_rgba(0,0,0,0.12)]"
+                  : "bg-white text-blue-600 border-blue-200 shadow-[0_6px_18px_rgba(37,99,235,0.12)]"
+                : onDark
+                ? "bg-white/10 text-white/85 border-white/25 hover:bg-white/15"
+                : "bg-white text-slate-600 border-slate-200 hover:text-slate-900"
             )}
           >
             <CalendarIcon className="h-3.5 w-3.5" />
