@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Money } from "@/components/Money";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PageHero } from "@/components/layout/PageHero";
-import { StatCard, StatCardGrid } from "@/components/layout/StatCardGrid";
+// StatCard removido — usamos GlassStat inline para o efeito de vidro premium
 import { FinanceiroCategoryTabs } from "@/components/financeiro/FinanceiroCategoryTabs";
 import { LancarReceitaDialog } from "@/components/caixa/LancarReceitaDialog";
 import { LancarDespesaDialog } from "@/components/caixa/LancarDespesaDialog";
