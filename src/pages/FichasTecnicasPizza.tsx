@@ -728,23 +728,25 @@ export default function FichasTecnicasPizza() {
           <DialogContent className="!max-w-[1040px] w-screen h-[100dvh] max-h-[100dvh] rounded-none sm:w-[96vw] sm:h-[90vh] sm:max-h-[820px] sm:rounded-3xl p-0 gap-0 flex flex-col overflow-hidden border border-stone-200 shadow-[0_20px_50px_rgba(0,0,0,0.15)] bg-white pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
             {/* HEADER: Nome + AI badge */}
             <DialogHeader className="border-b border-stone-200 shrink-0">
-              <div className="w-full px-6 pt-6 pb-4">
+              <div className="w-full px-4 sm:px-6 pt-5 sm:pt-6 pb-4">
                 <DialogTitle asChild>
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                     <div className="min-w-0">
-                      <h2 className="text-xl font-bold text-stone-900 tracking-tight truncate">
+                      <h2 className="text-lg sm:text-xl font-bold text-stone-900 tracking-tight break-words">
                         {form.nome || (editingId ? "Sem nome" : "Nova ficha")}
                       </h2>
-                      <span className="inline-block mt-1 px-2.5 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold">
-                        ✨ Proporções Inteligentes Ativas
+                      <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 text-[10px] sm:text-xs font-semibold">
+                        <Sparkles className="h-3 w-3" />
+                        <span className="hidden sm:inline">Proporções Inteligentes Ativas</span>
+                        <span className="sm:hidden">Proporções IA</span>
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex items-center gap-2 sm:shrink-0">
                       {form.numero_ficha && (
                         <span className="text-xs font-medium text-stone-500">{form.numero_ficha}</span>
                       )}
                       <Select value={form.tipo} onValueChange={(v) => setForm({ ...form, tipo: v })}>
-                        <SelectTrigger className="h-8 w-[140px] text-xs font-medium border-stone-200 bg-transparent text-stone-700">
+                        <SelectTrigger className="h-11 sm:h-8 flex-1 sm:flex-none sm:w-[140px] text-sm sm:text-xs font-medium border-stone-200 bg-transparent text-stone-700">
                           <SelectValue placeholder="Tipo" />
                         </SelectTrigger>
                         <SelectContent>
@@ -761,16 +763,16 @@ export default function FichasTecnicasPizza() {
 
             {/* COST-STRIP: P · M · G */}
             <div className="shrink-0 border-b border-stone-200 bg-stone-50/60">
-              <div className="w-full px-6 py-3 flex items-center gap-6">
+              <div className="w-full px-4 sm:px-6 py-3 flex items-center justify-between sm:justify-start gap-3 sm:gap-6 flex-wrap">
                 {[
                   { label: "P", dim: "25cm", value: custoForm.custoP },
                   { label: "M", dim: "30cm", value: custoForm.custoM },
                   { label: "G", dim: "35cm", value: custoForm.custoG },
                 ].map((c, i) => (
-                  <div key={c.label} className="flex items-baseline gap-2">
-                    {i > 0 && <span className="text-stone-300">·</span>}
+                  <div key={c.label} className="flex items-baseline gap-1.5 sm:gap-2">
+                    {i > 0 && <span className="hidden sm:inline text-stone-300">·</span>}
                     <span className="text-xs font-semibold text-stone-700 uppercase tracking-wider">{c.label}</span>
-                    <span className="text-xs font-medium text-stone-500 tabular-nums">{c.dim}</span>
+                    <span className="hidden sm:inline text-xs font-medium text-stone-500 tabular-nums">{c.dim}</span>
                     <Money value={c.value} className="text-sm font-bold text-stone-900" />
                   </div>
                 ))}
