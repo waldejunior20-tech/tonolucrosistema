@@ -20,6 +20,8 @@ import { ComprasGraficoFornecedor } from "@/components/compras/ComprasGraficoFor
 import { CompraCard, type CompraGrupo } from "@/components/compras/CompraCard";
 import { CupomCompraSheet, type CupomItem } from "@/components/compras/CupomCompraSheet";
 import { Money } from "@/components/Money";
+import { HeroStatusCard } from "@/components/layout/HeroStatusCard";
+import { AlertBanner } from "@/components/layout/AlertBanner";
 
 
 type Row = {
