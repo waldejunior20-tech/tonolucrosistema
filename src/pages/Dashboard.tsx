@@ -34,18 +34,13 @@ const C = {
 
 // Glassmorphism premium sutil — fundo translúcido, blur, borda luminosa,
 // reflexo interno e sombra suave. Mantém legibilidade total.
-const GLASS =
-  "bg-white/65 backdrop-blur-xl border border-white/70 " +
-  "shadow-[0_1px_0_rgba(255,255,255,0.9)_inset,0_1px_2px_rgba(15,23,42,0.04),0_10px_28px_-14px_rgba(15,23,42,0.12),0_28px_60px_-30px_rgba(37,99,235,0.10)]";
-const GLASS_DANGER =
-  "bg-white/65 backdrop-blur-xl border border-rose-200/70 " +
-  "shadow-[0_1px_0_rgba(255,255,255,0.9)_inset,0_10px_28px_-14px_rgba(225,29,72,0.18),0_28px_60px_-30px_rgba(225,29,72,0.20)]";
-const GLASS_SUCCESS =
-  "bg-white/65 backdrop-blur-xl border border-blue-200/70 " +
-  "shadow-[0_1px_0_rgba(255,255,255,0.9)_inset,0_10px_28px_-14px_rgba(37,99,235,0.18),0_28px_60px_-30px_rgba(37,99,235,0.18)]";
-const GLASS_WARN =
-  "bg-white/65 backdrop-blur-xl border border-amber-200/70 " +
-  "shadow-[0_1px_0_rgba(255,255,255,0.9)_inset,0_10px_28px_-14px_rgba(217,119,6,0.18),0_28px_60px_-30px_rgba(217,119,6,0.20)]";
+const GLASS_BASE =
+  "bg-white/70 backdrop-blur-xl " +
+  "shadow-[0_1px_0_rgba(255,255,255,0.9)_inset,0_1px_2px_rgba(15,23,42,0.04),0_8px_20px_-12px_rgba(15,23,42,0.10)]";
+const GLASS = GLASS_BASE + " border border-slate-200/70";
+const GLASS_DANGER = GLASS_BASE + " border border-rose-200/70";
+const GLASS_SUCCESS = GLASS_BASE + " border border-blue-200/70";
+const GLASS_WARN = GLASS_BASE + " border border-amber-200/70";
 
 const fmtBRL = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
