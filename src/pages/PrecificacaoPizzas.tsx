@@ -84,6 +84,7 @@ export default function PrecificacaoPizzas() {
   const [configForm, setConfigForm] = useState<ConfigPrecificacao | null>(null);
   const [savedFields, setSavedFields] = useState<Record<string, boolean>>({});
   const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
+  const [mobileSize, setMobileSize] = useState<Record<string, "p" | "m" | "g">>({});
 
   const toggleCard = (id: string) => {
     setExpandedCards((prev) => ({ ...prev, [id]: !prev[id] }));
