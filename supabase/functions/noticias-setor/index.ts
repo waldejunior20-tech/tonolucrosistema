@@ -115,6 +115,41 @@ async function fetchFeed(feed: { url: string; fonte: string }): Promise<Noticia[
   }
 }
 
+async function fetchNewsApi(): Promise<Noticia[]> {
+  const apiKey = Deno.env.get("NEWSAPI_KEY");
+  if (!apiKey) return [];
+  try {
+    const q = encodeURIComponent('restaurante OR abrasel OR "food service" OR gastronomia');
+    const url = `https://newsapi.org/v2/everything?q=${q}&language=pt&sortBy=publishedAt&pageSize=10&apiKey=${apiKey}`;
+    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) {
+      console.error("NewsAPI status:", res.status);
+      return [];
+    }
+    const json = await res.json();
+    const articles = (json.articles || []) as any[];
+    return articles.map((a, idx) => {
+      const titulo = stripHtml(a.title || "");
+      const resumo = stripHtml(a.description || "");
+      const { statusVendas, badgeTexto } = classificar(titulo, resumo);
+      return {
+        id: `newsapi-${idx}-${(a.url || "").slice(-20)}`,
+        titulo,
+        fonte: a.source?.name || "NewsAPI",
+        linkFonte: a.url,
+        statusVendas,
+        badgeTexto,
+        tempo: tempoRelativo(a.publishedAt),
+        pubDate: a.publishedAt,
+        resumo: resumo.slice(0, 220),
+      } as Noticia;
+    });
+  } catch (e) {
+    console.error("Falha NewsAPI:", (e as Error).message);
+    return [];
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
