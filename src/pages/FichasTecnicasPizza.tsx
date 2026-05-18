@@ -18,7 +18,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger, PopoverAnchor } from "@/components/ui/popover";
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
-import { Pencil, Trash2, Plus, Filter, Search, X, Check, Pizza, AlertTriangle, Package, Sparkles } from "lucide-react";
+import { Pencil, Trash2, Plus, Filter, Search, X, Check, Pizza, AlertTriangle, Package, Sparkles, ArrowLeft, Star, Gem, Cookie, CircleDot } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
@@ -107,11 +107,12 @@ const normalizarTipoInsumo = (tipo: string) => tipo === "produzido" ? "proprio" 
 
 export default function FichasTecnicasPizza() {
   const queryClient = useQueryClient();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [filtroTipo, setFiltroTipo] = useState("todos");
+  const [categoria, setCategoria] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const { sugerir } = useSugestaoQuantidade();
@@ -120,10 +121,28 @@ export default function FichasTecnicasPizza() {
     const tipo = searchParams.get("tipo");
     if (tipo && TIPOS.includes(tipo)) {
       setFiltroTipo(tipo);
+      setCategoria(tipo);
+    } else if (tipo === "bordas") {
+      setFiltroTipo("todos");
+      setCategoria("bordas");
     } else {
       setFiltroTipo("todos");
+      setCategoria(null);
     }
   }, [searchParams]);
+
+  const selecionarCategoria = (cat: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("tipo", cat);
+    setSearchParams(params, { replace: false });
+  };
+  const voltarCategorias = () => {
+    const params = new URLSearchParams(searchParams);
+    params.delete("tipo");
+    setSearchParams(params, { replace: false });
+    setSelectedIds(new Set());
+    setSearchTerm("");
+  };
   const [autoOpenedEditId, setAutoOpenedEditId] = useState<string | null>(null);
   const [buscaIngrediente, setBuscaIngrediente] = useState("");
   const [buscaAberta, setBuscaAberta] = useState<number | null>(null);
@@ -685,11 +704,21 @@ export default function FichasTecnicasPizza() {
   const hasInsumoSelected = (ing: IngredienteForm) =>
     normalizarTipoInsumo(ing.tipo_insumo) === "comprado" ? !!ing.insumo_comprado_id : !!ing.insumo_proprio_id;
 
+  const CATEGORIAS_PIZZA = [
+    { id: "tradicional", label: "Tradicionais", icon: Pizza, hint: "Massa, molho e clássicos" },
+    { id: "especial", label: "Especiais", icon: Star, hint: "Combinações autorais" },
+    { id: "premium", label: "Premium", icon: Gem, hint: "Ingredientes nobres" },
+    { id: "doce", label: "Doces", icon: Cookie, hint: "Sobremesa em pizza" },
+    { id: "bordas", label: "Bordas Recheadas", icon: CircleDot, hint: "P · M · G" },
+  ];
+  const countByTipo = (tipo: string) => fichas.filter((f) => f.tipo === tipo).length;
+  const categoriaAtiva = CATEGORIAS_PIZZA.find((c) => c.id === categoria);
+
   return (
     <div className="space-y-6 page-enter">
       <FichasCategoryTabs />
       {/* Header */}
-      <PageHeader title="Fichas Técnicas de Pizza" description="Gerencie suas receitas de pizza com custos por tamanho.">
+      <PageHeader title="Fichas Técnicas de Pizza" description={categoriaAtiva ? `Gerenciando: ${categoriaAtiva.label}` : "Selecione um grupo para gerenciar as receitas e custos por tamanho."}>
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) resetForm(); setDialogOpen(open); }}>
           <DialogTrigger asChild>
             <Button className="btn-hot-cta gap-2 px-4">
@@ -1331,7 +1360,44 @@ export default function FichasTecnicasPizza() {
         </Dialog>
       </PageHeader>
 
-      {/* Filtros: busca instantânea + tipo */}
+      {/* TELA 1: Grid de Categorias */}
+      {!categoria && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 fade-up">
+          {CATEGORIAS_PIZZA.map(({ id, label, icon: Icon, hint }) => {
+            const count = id === "bordas" ? null : countByTipo(id);
+            return (
+              <button
+                key={id}
+                onClick={() => selecionarCategoria(id)}
+                className="group text-left bg-card border border-border rounded-2xl p-5 h-[148px] flex flex-col justify-between transition-all duration-200 hover:border-primary hover:-translate-y-0.5 hover:shadow-[0_12px_24px_-10px_hsl(var(--primary)/0.25)]"
+              >
+                <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                  <Icon className="h-5 w-5" strokeWidth={2.2} />
+                </div>
+                <div>
+                  <div className="text-base font-bold text-foreground">{label}</div>
+                  <div className="text-xs text-muted-foreground mt-0.5">
+                    {count === null ? hint : `${count} ${count === 1 ? "receita" : "receitas"}`}
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* TELA 2: Conteúdo da Categoria */}
+      {categoria && (
+        <>
+          <button
+            onClick={voltarCategorias}
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" /> Voltar para Categorias
+          </button>
+
+      {/* Filtros: busca instantânea + tipo (oculto em "bordas") */}
+      {categoria !== "bordas" && (<>
       <div className="flex flex-col sm:flex-row sm:items-center gap-3">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
@@ -1467,9 +1533,12 @@ export default function FichasTecnicasPizza() {
           </Table>
         </div>
       )}
+      </>)}
 
-      {/* Bordas Recheadas (P · M · G) */}
-      <BordasSection />
+          {/* Bordas Recheadas (P · M · G) — somente na categoria "bordas" */}
+          {categoria === "bordas" && <BordasSection />}
+        </>
+      )}
     </div>
   );
 }
