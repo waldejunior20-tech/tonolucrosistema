@@ -725,26 +725,28 @@ export default function FichasTecnicasPizza() {
               <Plus className="h-4 w-4" /> Nova Ficha
             </Button>
           </DialogTrigger>
-          <DialogContent className="!max-w-[1040px] w-[96vw] h-[90vh] max-h-[820px] rounded-3xl p-0 gap-0 flex flex-col overflow-hidden border border-stone-200 shadow-[0_20px_50px_rgba(0,0,0,0.15)] bg-white">
+          <DialogContent className="!max-w-[1040px] w-screen h-[100dvh] max-h-[100dvh] rounded-none sm:w-[96vw] sm:h-[90vh] sm:max-h-[820px] sm:rounded-3xl p-0 gap-0 flex flex-col overflow-hidden border border-stone-200 shadow-[0_20px_50px_rgba(0,0,0,0.15)] bg-white pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
             {/* HEADER: Nome + AI badge */}
             <DialogHeader className="border-b border-stone-200 shrink-0">
-              <div className="w-full px-6 pt-6 pb-4">
+              <div className="w-full px-4 sm:px-6 pt-5 sm:pt-6 pb-4">
                 <DialogTitle asChild>
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                     <div className="min-w-0">
-                      <h2 className="text-xl font-bold text-stone-900 tracking-tight truncate">
+                      <h2 className="text-lg sm:text-xl font-bold text-stone-900 tracking-tight break-words">
                         {form.nome || (editingId ? "Sem nome" : "Nova ficha")}
                       </h2>
-                      <span className="inline-block mt-1 px-2.5 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold">
-                        ✨ Proporções Inteligentes Ativas
+                      <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 text-[10px] sm:text-xs font-semibold">
+                        <Sparkles className="h-3 w-3" />
+                        <span className="hidden sm:inline">Proporções Inteligentes Ativas</span>
+                        <span className="sm:hidden">Proporções IA</span>
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex items-center gap-2 sm:shrink-0">
                       {form.numero_ficha && (
                         <span className="text-xs font-medium text-stone-500">{form.numero_ficha}</span>
                       )}
                       <Select value={form.tipo} onValueChange={(v) => setForm({ ...form, tipo: v })}>
-                        <SelectTrigger className="h-8 w-[140px] text-xs font-medium border-stone-200 bg-transparent text-stone-700">
+                        <SelectTrigger className="h-11 sm:h-8 flex-1 sm:flex-none sm:w-[140px] text-sm sm:text-xs font-medium border-stone-200 bg-transparent text-stone-700">
                           <SelectValue placeholder="Tipo" />
                         </SelectTrigger>
                         <SelectContent>
@@ -761,16 +763,16 @@ export default function FichasTecnicasPizza() {
 
             {/* COST-STRIP: P · M · G */}
             <div className="shrink-0 border-b border-stone-200 bg-stone-50/60">
-              <div className="w-full px-6 py-3 flex items-center gap-6">
+              <div className="w-full px-4 sm:px-6 py-3 flex items-center justify-between sm:justify-start gap-3 sm:gap-6 flex-wrap">
                 {[
                   { label: "P", dim: "25cm", value: custoForm.custoP },
                   { label: "M", dim: "30cm", value: custoForm.custoM },
                   { label: "G", dim: "35cm", value: custoForm.custoG },
                 ].map((c, i) => (
-                  <div key={c.label} className="flex items-baseline gap-2">
-                    {i > 0 && <span className="text-stone-300">·</span>}
+                  <div key={c.label} className="flex items-baseline gap-1.5 sm:gap-2">
+                    {i > 0 && <span className="hidden sm:inline text-stone-300">·</span>}
                     <span className="text-xs font-semibold text-stone-700 uppercase tracking-wider">{c.label}</span>
-                    <span className="text-xs font-medium text-stone-500 tabular-nums">{c.dim}</span>
+                    <span className="hidden sm:inline text-xs font-medium text-stone-500 tabular-nums">{c.dim}</span>
                     <Money value={c.value} className="text-sm font-bold text-stone-900" />
                   </div>
                 ))}
@@ -778,8 +780,8 @@ export default function FichasTecnicasPizza() {
             </div>
 
             <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
-              <div className="flex-1 overflow-y-auto">
-                <div className="w-full px-5 py-8 space-y-10">
+              <div className="flex-1 overflow-y-auto overscroll-contain">
+                <div className="w-full px-4 sm:px-5 py-6 sm:py-8 space-y-8 sm:space-y-10">
                 {editingId ? (
                   <BaseSelector
                     tipoFicha="pizza"
@@ -807,8 +809,8 @@ export default function FichasTecnicasPizza() {
                 )}
 
                 {/* Dados principais — inputs minimalistas (tipo já está no header) */}
-                <div className="grid grid-cols-3 gap-6">
-                  <div className="col-span-2 space-y-1.5">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+                  <div className="sm:col-span-2 space-y-1.5">
                     <Label htmlFor="nome" className="text-xs font-medium uppercase tracking-wider text-slate-500">Nome da Pizza</Label>
                     <Input
                       id="nome"
@@ -816,7 +818,7 @@ export default function FichasTecnicasPizza() {
                       value={form.nome}
                       onChange={(e) => setForm({ ...form, nome: e.target.value })}
                       onBlur={() => setTouched(t => ({ ...t, nome: true }))}
-                      className={cn("h-10 text-sm font-medium border-slate-200", fieldErrorClass(nomeInvalid))}
+                      className={cn("h-11 sm:h-10 text-base sm:text-sm font-medium border-slate-200", fieldErrorClass(nomeInvalid))}
                     />
                     <FieldError show={nomeInvalid} />
                   </div>
@@ -827,17 +829,17 @@ export default function FichasTecnicasPizza() {
                       placeholder="FT-001"
                       value={form.numero_ficha}
                       onChange={(e) => setForm({ ...form, numero_ficha: e.target.value })}
-                      className="h-10 text-sm font-medium border-slate-200"
+                      className="h-11 sm:h-10 text-base sm:text-sm font-medium border-slate-200"
                     />
                   </div>
                 </div>
 
                 {/* INGREDIENTES — TABELA DENSA */}
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <h3 className="text-base font-semibold text-slate-900 tracking-tight">Ingredientes</h3>
-                    <Button type="button" size="sm" className="btn-action-add gap-1.5 h-9 px-3 text-xs font-medium" onClick={addIngrediente}>
-                      <Plus className="h-3.5 w-3.5" /> Adicionar Ingrediente
+                    <Button type="button" size="sm" className="btn-action-add gap-1.5 h-11 sm:h-9 w-full sm:w-auto px-3 text-sm sm:text-xs font-medium" onClick={addIngrediente}>
+                      <Plus className="h-4 w-4 sm:h-3.5 sm:w-3.5" /> Adicionar Ingrediente
                     </Button>
                   </div>
 
@@ -859,7 +861,144 @@ export default function FichasTecnicasPizza() {
                     }
 
                     return (
-                      <div className="w-full rounded-lg border border-slate-200 overflow-visible bg-white">
+                      <>
+                      {/* MOBILE: cards empilhados */}
+                      <div className="md:hidden space-y-3">
+                        {normais.map(({ ing, idx }) => {
+                          const tipoInsumo = normalizarTipoInsumo(ing.tipo_insumo);
+                          const insumoId = tipoInsumo === "comprado" ? ing.insumo_comprado_id : ing.insumo_proprio_id;
+                          const custoUnit = tipoInsumo === "comprado"
+                            ? (custoCompradoMap.get(insumoId) ?? 0)
+                            : (custoProprioMap.get(insumoId) ?? 0);
+                          const fromBase = !!ing.db_id && ingredientesBaseIds.has(ing.db_id);
+                          const insumoCompradoSel = insumosComprados.find((i) => i.id === ing.insumo_comprado_id);
+                          const insumoProprioSel = insumosProprios.find((i) => i.id === ing.insumo_proprio_id);
+                          const familiaCompra = insumoCompradoSel
+                            ? (["kg","g"].includes(insumoCompradoSel.unidade) ? "peso"
+                              : ["L","ml"].includes(insumoCompradoSel.unidade) ? "volume" : "un")
+                            : null;
+                          const familiaUso = ["kg","g"].includes(ing.unidade) ? "peso"
+                            : ["L","ml"].includes(ing.unidade) ? "volume" : "un";
+                          const mismatchUnidade = tipoInsumo === "comprado" && familiaCompra && ing.unidade && familiaCompra !== familiaUso;
+                          const nomeInsumo = ing.nome_display || insumoCompradoSel?.nome || insumoProprioSel?.nome || "";
+                          const categoriaInsumo = (insumoCompradoSel as any)?.categoria ?? (insumoProprioSel as any)?.categoria ?? null;
+                          const sug = ing.qtd_p > 0 ? sugerir(nomeInsumo, ing.qtd_p, categoriaInsumo) : { qtdM: 0, qtdG: 0 };
+                          const isDoce = form.tipo === "doce";
+                          const sugM = isDoce ? Math.round((sug.qtdM * 0.8) / 5) * 5 : sug.qtdM;
+                          const sugG = isDoce ? Math.round((sug.qtdG * 0.8) / 5) * 5 : sug.qtdG;
+                          const podeSugerir = ing.qtd_p > 0 && (ing.qtd_m === 0 || ing.qtd_g === 0) && (sugM > 0 || sugG > 0);
+                          const aplicarSugestao = () => {
+                            if (ing.qtd_m === 0 && sugM > 0) updateIngrediente(idx, "qtd_m", sugM);
+                            if (ing.qtd_g === 0 && sugG > 0) updateIngrediente(idx, "qtd_g", sugG);
+                          };
+                          const renderQtdMobile = (qtdKey: "qtd_p" | "qtd_m" | "qtd_g", label: string, qtdVal: number, ph?: number) => (
+                            <div className="space-y-1">
+                              <div className="flex items-baseline justify-between">
+                                <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">{label}</span>
+                                <Money value={custoUnit * converterQuantidade(qtdVal, ing.unidade)} className="text-[11px] font-semibold text-slate-600 tabular-nums" />
+                              </div>
+                              <Input
+                                type="number" step="0.01" min="0" inputMode="decimal"
+                                className="h-11 w-full text-center text-base font-semibold tabular-nums rounded-md border border-slate-300 bg-white text-slate-900 shadow-sm focus-visible:border-blue-500 focus-visible:ring-1 focus-visible:ring-blue-500"
+                                value={qtdVal || ""}
+                                onChange={(e) => updateIngrediente(idx, qtdKey, parseFloat(e.target.value) || 0)}
+                                onBlur={() => autoSaveIngredienteQtd(ing, qtdKey, ing[qtdKey])}
+                                placeholder={ph && ph > 0 ? `~${ph}` : label}
+                              />
+                            </div>
+                          );
+                          return (
+                            <div key={`m-${idx}`} className={cn(
+                              "rounded-xl border border-slate-200 bg-white p-3.5 space-y-3 shadow-sm",
+                              fromBase && "border-l-4 border-l-success",
+                            )}>
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                                  {fromBase && <Sparkles className="h-4 w-4 text-success shrink-0" />}
+                                  <span className="text-sm font-semibold text-slate-900 truncate">
+                                    {ing.nome_display || "Sem insumo"}
+                                  </span>
+                                </div>
+                                <Button type="button" variant="ghost" size="icon" className="h-9 w-9 shrink-0 -mr-1" onClick={() => removeIngrediente(idx)}>
+                                  <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-2">
+                                <Select value={normalizarTipoInsumo(ing.tipo_insumo)} onValueChange={(v) => updateIngrediente(idx, "tipo_insumo", v)}>
+                                  <SelectTrigger className="h-11 text-sm"><SelectValue /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="comprado">Comprado</SelectItem>
+                                    <SelectItem value="proprio">Produzido</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <Select value={ing.unidade} onValueChange={(v) => updateIngrediente(idx, "unidade", v)}>
+                                  <SelectTrigger className="h-11 text-sm"><SelectValue placeholder="Unidade" /></SelectTrigger>
+                                  <SelectContent>
+                                    {UNIDADES.map((u) => <SelectItem key={u} value={u}>{u}</SelectItem>)}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              {!hasInsumoSelected(ing) && (
+                                <Popover open={buscaAberta === idx} onOpenChange={(o) => { if (!o) setBuscaAberta(null); }}>
+                                  <PopoverAnchor asChild>
+                                    <div className="relative">
+                                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
+                                      <Input
+                                        placeholder="Buscar insumo..."
+                                        className="pl-9 h-11 text-sm w-full"
+                                        value={buscaAberta === idx ? buscaIngrediente : ""}
+                                        onFocus={() => { if (buscaAberta !== idx) { setBuscaAberta(idx); setBuscaIngrediente(""); } }}
+                                        onChange={(e) => { setBuscaAberta(idx); setBuscaIngrediente(e.target.value); }}
+                                      />
+                                    </div>
+                                  </PopoverAnchor>
+                                  <PopoverContent align="start" sideOffset={4} onOpenAutoFocus={(e) => e.preventDefault()}
+                                    onInteractOutside={(e) => { const t = e.target as HTMLElement; if (t.closest('input')) e.preventDefault(); }}
+                                    className="p-1 w-[var(--radix-popover-trigger-width)] max-h-64 overflow-y-auto rounded-xl shadow-lg">
+                                    {getFilteredInsumos(ing.tipo_insumo).length === 0 ? (
+                                      <p className="p-2 text-xs text-muted-foreground">Nenhum insumo encontrado.</p>
+                                    ) : (
+                                      getFilteredInsumos(ing.tipo_insumo).map((item) => (
+                                        <button key={item.id} type="button"
+                                          className="w-full text-left px-3 py-2.5 text-sm rounded-md hover:bg-accent hover:text-primary transition-colors truncate"
+                                          onMouseDown={(e) => { e.preventDefault(); selectInsumo(idx, item.id, item.nome, ing.tipo_insumo); }}>
+                                          <span className="font-medium">{item.nome}</span>
+                                        </button>
+                                      ))
+                                    )}
+                                  </PopoverContent>
+                                </Popover>
+                              )}
+
+                              {mismatchUnidade && (
+                                <p className="flex items-center gap-1 text-[11px] text-warning">
+                                  <AlertTriangle className="h-3 w-3" />
+                                  Comprado em <strong>{insumoCompradoSel?.unidade}</strong>, usando em <strong>{ing.unidade}</strong>
+                                </p>
+                              )}
+
+                              <div className="grid grid-cols-3 gap-2">
+                                {renderQtdMobile("qtd_p", "P", ing.qtd_p)}
+                                {renderQtdMobile("qtd_m", "M", ing.qtd_m, sugM)}
+                                {renderQtdMobile("qtd_g", "G", ing.qtd_g, sugG)}
+                              </div>
+
+                              {podeSugerir && (
+                                <Button type="button" variant="outline" size="sm" onClick={aplicarSugestao}
+                                  className="w-full h-10 gap-1.5 text-xs text-primary border-primary/30">
+                                  <Sparkles className="h-3.5 w-3.5" />
+                                  Aplicar sugestão M {sugM}{ing.unidade} · G {sugG}{ing.unidade}
+                                </Button>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* DESKTOP: tabela densa */}
+                      <div className="hidden md:block w-full rounded-lg border border-slate-200 overflow-visible bg-white">
                         <Table className="table-fixed w-full">
                           <TableHeader>
                             <TableRow className="!bg-slate-50/60 border-b border-slate-200 hover:!bg-slate-50/60">
@@ -1058,6 +1197,7 @@ export default function FichasTecnicasPizza() {
                           </TableBody>
                         </Table>
                       </div>
+                      </>
                     );
                   })()}
                 </div>
@@ -1200,7 +1340,7 @@ export default function FichasTecnicasPizza() {
                         </div>
                       )}
 
-                      <div className="grid grid-cols-3 gap-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
                         {renderCaixaSlot("p", "P", "25cm", ing.caixa_p_id, ing.caixa_p_nome)}
                         {renderCaixaSlot("m", "M", "30cm", ing.caixa_m_id, ing.caixa_m_nome)}
                         {renderCaixaSlot("g", "G", "35cm", ing.caixa_g_id, ing.caixa_g_nome)}
@@ -1285,34 +1425,34 @@ export default function FichasTecnicasPizza() {
 
               {/* STICKY FOOTER */}
               <div className="border-t border-slate-200 bg-white shrink-0">
-                <div className="w-full px-5 h-16 flex items-center justify-between gap-6">
-                  <div className="flex items-center divide-x divide-slate-200">
+                <div className="w-full px-4 sm:px-5 py-3 sm:py-0 sm:h-16 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-6">
+                  <div className="flex items-center justify-between sm:justify-start sm:divide-x sm:divide-slate-200 gap-2 sm:gap-0">
                     {[
                       { l: "P", v: custoForm.custoP },
                       { l: "M", v: custoForm.custoM },
                       { l: "G", v: custoForm.custoG },
                     ].map((t) => (
-                      <div key={t.l} className="flex items-baseline gap-2 px-5 first:pl-0 last:pr-0">
-                        <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Total {t.l}</span>
-                        <Money value={t.v} className="text-base font-semibold text-slate-900 tabular-nums" />
+                      <div key={t.l} className="flex items-baseline gap-1.5 sm:gap-2 sm:px-5 first:pl-0 last:pr-0">
+                        <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-slate-400">Total {t.l}</span>
+                        <Money value={t.v} className="text-sm sm:text-base font-semibold text-slate-900 tabular-nums" />
                       </div>
                     ))}
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 w-full sm:w-auto">
                     {form.ingredientes.length > 0 && (
                       <Button
                         type="button"
                         variant="outline"
                         size="sm"
-                        className="h-10 gap-1.5"
+                        className="h-11 sm:h-10 gap-1.5 hidden sm:inline-flex"
                         onClick={() => setSalvarBaseOpen(true)}
                       >
                         <Sparkles className="h-4 w-4" />
                         Salvar como base
                       </Button>
                     )}
-                    <Button type="button" variant="outline" size="sm" className="h-10 px-4" onClick={resetForm}>Cancelar</Button>
-                    <Button type="submit" size="sm" className="h-10 px-6" disabled={insertMutation.isPending || updateMutation.isPending || (!editingId && !formIsValid)} >
+                    <Button type="button" variant="outline" size="sm" className="h-11 sm:h-10 px-4 flex-1 sm:flex-none" onClick={resetForm}>Cancelar</Button>
+                    <Button type="submit" size="sm" className="h-11 sm:h-10 px-6 flex-1 sm:flex-none" disabled={insertMutation.isPending || updateMutation.isPending || (!editingId && !formIsValid)} >
                       {editingId ? "Salvar" : "Cadastrar"}
                     </Button>
                   </div>
