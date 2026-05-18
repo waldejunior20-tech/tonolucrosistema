@@ -7,6 +7,7 @@ import {
   TrendingUp, TrendingDown, AlertTriangle, Sparkles, ChefHat,
   Plus, FileUp, Tag, ArrowRight, CheckCircle2, ArrowUpRight, ArrowDownRight,
   Flame, ShieldAlert, ClipboardList, Zap, Receipt, Bell, Wallet, Activity,
+  Pizza, Coffee, Cake, Sandwich, UtensilsCrossed,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useDashboardData } from "@/hooks/useDashboardData";
