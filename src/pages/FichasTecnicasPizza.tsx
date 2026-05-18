@@ -704,11 +704,21 @@ export default function FichasTecnicasPizza() {
   const hasInsumoSelected = (ing: IngredienteForm) =>
     normalizarTipoInsumo(ing.tipo_insumo) === "comprado" ? !!ing.insumo_comprado_id : !!ing.insumo_proprio_id;
 
+  const CATEGORIAS_PIZZA = [
+    { id: "tradicional", label: "Tradicionais", icon: Pizza, hint: "Massa, molho e clássicos" },
+    { id: "especial", label: "Especiais", icon: Star, hint: "Combinações autorais" },
+    { id: "premium", label: "Premium", icon: Gem, hint: "Ingredientes nobres" },
+    { id: "doce", label: "Doces", icon: Cookie, hint: "Sobremesa em pizza" },
+    { id: "bordas", label: "Bordas Recheadas", icon: CircleDot, hint: "P · M · G" },
+  ];
+  const countByTipo = (tipo: string) => fichas.filter((f) => f.tipo === tipo).length;
+  const categoriaAtiva = CATEGORIAS_PIZZA.find((c) => c.id === categoria);
+
   return (
     <div className="space-y-6 page-enter">
       <FichasCategoryTabs />
       {/* Header */}
-      <PageHeader title="Fichas Técnicas de Pizza" description="Gerencie suas receitas de pizza com custos por tamanho.">
+      <PageHeader title="Fichas Técnicas de Pizza" description={categoriaAtiva ? `Gerenciando: ${categoriaAtiva.label}` : "Selecione um grupo para gerenciar as receitas e custos por tamanho."}>
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) resetForm(); setDialogOpen(open); }}>
           <DialogTrigger asChild>
             <Button className="btn-hot-cta gap-2 px-4">
