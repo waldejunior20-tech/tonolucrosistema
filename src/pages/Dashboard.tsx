@@ -32,6 +32,21 @@ const C = {
   danger: "#DC2626",
 };
 
+// Glassmorphism premium sutil — fundo translúcido, blur, borda luminosa,
+// reflexo interno e sombra suave. Mantém legibilidade total.
+const GLASS =
+  "bg-white/65 backdrop-blur-xl border border-white/70 " +
+  "shadow-[0_1px_0_rgba(255,255,255,0.9)_inset,0_1px_2px_rgba(15,23,42,0.04),0_10px_28px_-14px_rgba(15,23,42,0.12),0_28px_60px_-30px_rgba(37,99,235,0.10)]";
+const GLASS_DANGER =
+  "bg-white/65 backdrop-blur-xl border border-rose-200/70 " +
+  "shadow-[0_1px_0_rgba(255,255,255,0.9)_inset,0_10px_28px_-14px_rgba(225,29,72,0.18),0_28px_60px_-30px_rgba(225,29,72,0.20)]";
+const GLASS_SUCCESS =
+  "bg-white/65 backdrop-blur-xl border border-blue-200/70 " +
+  "shadow-[0_1px_0_rgba(255,255,255,0.9)_inset,0_10px_28px_-14px_rgba(37,99,235,0.18),0_28px_60px_-30px_rgba(37,99,235,0.18)]";
+const GLASS_WARN =
+  "bg-white/65 backdrop-blur-xl border border-amber-200/70 " +
+  "shadow-[0_1px_0_rgba(255,255,255,0.9)_inset,0_10px_28px_-14px_rgba(217,119,6,0.18),0_28px_60px_-30px_rgba(217,119,6,0.20)]";
+
 const fmtBRL = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
@@ -653,186 +668,219 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ─── Diagnóstico do dia ─────────────────────────────── */}
-      {showDiagnostico && (
-        <div
-          className={cn(
-            "mb-5 rounded-[2rem] border bg-white shadow-sm fade-up overflow-hidden",
-            diagnosticoTone === "danger"
-              ? "border-rose-100"
-              : diagnosticoTone === "warning"
-              ? "border-amber-100"
-              : "border-emerald-100",
-          )}
-        >
-          <div className="flex flex-col lg:flex-row">
-            {/* Faixa lateral colorida */}
-            <div
-              className={cn(
-                "lg:w-1.5 h-1.5 lg:h-auto w-full",
-                diagnosticoTone === "danger"
-                  ? "bg-rose-500"
-                  : diagnosticoTone === "warning"
-                  ? "bg-amber-500"
+      {/* ─── Diagnóstico do dia — copiloto financeiro ───────── */}
+      {showDiagnostico && (() => {
+        const problema =
+          statusCaixa === "negativo" ? "Você está no prejuízo este mês"
+          : statusCaixa === "atencao" ? "Sua margem está no limite"
+          : "Operação saudável";
+        const causa =
+          diagCausas.length > 0
+            ? diagCausas.join(" + ")
+            : "sem causas críticas identificadas";
+        const acaoPrincipal =
+          fichasRevisar > 0
+            ? `Revisar ${fichasRevisar} ficha${fichasRevisar > 1 ? "s" : ""} técnica${fichasRevisar > 1 ? "s" : ""}`
+            : precosAtualizar > 0
+            ? `Atualizar ${precosAtualizar} preço${precosAtualizar > 1 ? "s" : ""} crítico${precosAtualizar > 1 ? "s" : ""}`
+            : "Acompanhar próximas movimentações";
+        const rotaCorrigir = fichasRevisar > 0 ? "/fichas/pizzas" : "/precificacao/pizzas";
+        const glassTone = diagnosticoTone === "danger" ? GLASS_DANGER
+          : diagnosticoTone === "warning" ? GLASS_WARN
+          : GLASS_SUCCESS;
+        return (
+          <div className={cn("mb-5 rounded-[2rem] overflow-hidden fade-up", glassTone)}>
+            <div className="flex flex-col lg:flex-row">
+              <div
+                className={cn(
+                  "lg:w-1.5 h-1.5 lg:h-auto w-full",
+                  diagnosticoTone === "danger" ? "bg-rose-500"
+                  : diagnosticoTone === "warning" ? "bg-amber-500"
                   : "bg-emerald-500",
-              )}
-            />
-            <div className="flex-1 p-6 lg:p-7 flex flex-col lg:flex-row gap-6 items-start lg:items-center">
-              {/* Ícone + diagnóstico */}
-              <div className="flex items-start gap-4 flex-1 min-w-0">
-                <div
-                  className={cn(
-                    "w-11 h-11 rounded-2xl flex items-center justify-center shrink-0",
-                    diagnosticoTone === "danger"
-                      ? "bg-rose-50 text-rose-600"
-                      : diagnosticoTone === "warning"
-                      ? "bg-amber-50 text-amber-600"
-                      : "bg-emerald-50 text-emerald-600",
-                  )}
-                >
-                  <Activity size={20} />
-                </div>
-                <div className="min-w-0">
-                  <p className={cn(T.label, C.muted, "text-[10.5px] mb-1")}>Diagnóstico do dia</p>
-                  <p className={cn("font-heading font-semibold text-[15px] lg:text-[16px] leading-snug", C.text)}>
-                    {diagnosticoTexto}
-                  </p>
-                  {(fichasRevisar > 0 || precosAtualizar > 0) && (
-                    <p className={cn(T.body, C.muted, "text-[13px] mt-1.5")}>
-                      <span className="font-semibold text-[#0F172A]">Prioridade:</span>{" "}
-                      {[
-                        fichasRevisar > 0 && `revisar ${fichasRevisar} ficha${fichasRevisar > 1 ? "s" : ""} técnica${fichasRevisar > 1 ? "s" : ""}`,
-                        precosAtualizar > 0 && `atualizar ${precosAtualizar} preço${precosAtualizar > 1 ? "s" : ""}`,
-                      ].filter(Boolean).join(" e ")}.
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Ações */}
-              <div className="flex gap-2.5 shrink-0 w-full lg:w-auto">
-                {fichasRevisar > 0 && (
-                  <button
-                    onClick={() => navigate("/fichas/pizzas")}
-                    className="flex-1 lg:flex-none px-4 py-2.5 rounded-xl bg-slate-900 text-white font-semibold text-[13px] hover:bg-slate-800 transition-colors flex items-center justify-center gap-2"
-                  >
-                    <ClipboardList size={14} /> Revisar fichas
-                  </button>
                 )}
-                {precosAtualizar > 0 && (
-                  <button
-                    onClick={() => navigate("/precificacao/pizzas")}
+              />
+              <div className="flex-1 p-6 lg:p-7 flex flex-col lg:flex-row gap-6 items-start lg:items-center">
+                <div className="flex items-start gap-4 flex-1 min-w-0">
+                  <div
                     className={cn(
-                      "flex-1 lg:flex-none px-4 py-2.5 rounded-xl font-semibold text-[13px] transition-colors flex items-center justify-center gap-2 border",
-                      diagnosticoTone === "danger"
-                        ? "bg-rose-50 border-rose-200 text-rose-700 hover:bg-rose-100"
-                        : "bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100",
+                      "w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 ring-1 ring-white/60",
+                      diagnosticoTone === "danger" ? "bg-rose-50 text-rose-600"
+                      : diagnosticoTone === "warning" ? "bg-amber-50 text-amber-600"
+                      : "bg-emerald-50 text-emerald-600",
                     )}
                   >
-                    <Tag size={14} /> Atualizar preços
+                    <Activity size={20} />
+                  </div>
+                  <div className="min-w-0 space-y-1.5">
+                    <p className={cn(T.label, C.muted, "text-[10.5px]")}>Diagnóstico do dia</p>
+                    <p className={cn("font-heading font-bold text-[16px] lg:text-[17px] leading-snug", C.text)}>
+                      {problema}
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 mt-2">
+                      <p className={cn(T.body, "text-[13px]", C.muted)}>
+                        <span className="font-semibold text-[#0F172A]">Causa:</span> {causa}
+                      </p>
+                      <p className={cn(T.body, "text-[13px]", C.muted)}>
+                        <span className="font-semibold text-[#0F172A]">Próxima ação:</span> {acaoPrincipal}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-2.5 shrink-0 w-full lg:w-auto">
+                  <button
+                    onClick={() => navigate(rotaCorrigir)}
+                    className={cn(
+                      "flex-1 lg:flex-none px-5 py-2.5 rounded-xl font-semibold text-[13px] transition-all flex items-center justify-center gap-2 text-white active:scale-[0.98]",
+                      diagnosticoTone === "danger"
+                        ? "bg-gradient-to-br from-rose-600 to-rose-700 hover:brightness-110 shadow-[0_8px_20px_-8px_rgba(225,29,72,0.55)]"
+                        : diagnosticoTone === "warning"
+                        ? "bg-gradient-to-br from-amber-500 to-orange-600 hover:brightness-110 shadow-[0_8px_20px_-8px_rgba(217,119,6,0.55)]"
+                        : "bg-gradient-to-br from-blue-600 to-blue-700 hover:brightness-110 shadow-[0_8px_20px_-8px_rgba(37,99,235,0.55)]",
+                    )}
+                  >
+                    <Zap size={14} /> Corrigir prioridade
                   </button>
-                )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
+
 
 
       {/* ─── ROW 2 — 4 KPIs ─────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-5">
-        {/* Entradas */}
-        <div className="bg-white border border-[#E2E8F0] rounded-3xl p-6 shadow-sm">
+        {/* Entradas — azul = sucesso */}
+        <div className={cn("rounded-3xl p-6", GLASS_SUCCESS)}>
           <div className="flex justify-between items-start mb-3">
             <p className={cn(T.label, C.muted, "text-[11px]")}>Entradas</p>
-            <div className="text-emerald-500"><ArrowUpRight size={18} /></div>
+            <div className="text-blue-600"><ArrowUpRight size={18} /></div>
           </div>
-          <p className={cn(T.mono, "text-2xl font-bold mb-3", C.text)}>{fmtBRL(faturamentoMes)}</p>
-          <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+          <p className={cn(T.mono, "text-2xl font-bold mb-3 text-blue-700")}>{fmtBRL(faturamentoMes)}</p>
+          <div className="h-1.5 w-full bg-slate-100/60 rounded-full overflow-hidden">
             <div
-              className="h-full bg-emerald-500 rounded-full transition-all"
+              className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all"
               style={{ width: `${Math.min(100, faturamentoMes > 0 ? 100 : 0)}%` }}
             />
           </div>
           {comparativos?.faturamento !== null && comparativos?.faturamento !== undefined && (
             <p className={cn(
               "text-[11px] font-semibold mt-2",
-              comparativos.faturamento >= 0 ? "text-emerald-600" : "text-rose-500",
+              comparativos.faturamento >= 0 ? "text-blue-700" : "text-rose-600",
             )}>
               {comparativos.faturamento >= 0 ? "+" : ""}{comparativos.faturamento.toFixed(1)}% vs mês anterior
             </p>
           )}
         </div>
 
-        {/* Saídas */}
-        <div className="bg-white border border-[#E2E8F0] rounded-3xl p-6 shadow-sm">
-          <div className="flex justify-between items-start mb-3">
-            <p className={cn(T.label, C.muted, "text-[11px]")}>Saídas</p>
-            <div className="text-rose-500"><ArrowDownRight size={18} /></div>
-          </div>
-          <p className={cn(T.mono, "text-2xl font-bold mb-3", C.text)}>{fmtBRL(despesasMes)}</p>
-          <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-rose-500 rounded-full transition-all"
-              style={{ width: `${Math.min(100, faturamentoMes > 0 ? (despesasMes / faturamentoMes) * 100 : 0)}%` }}
-            />
-          </div>
-          {comparativos?.despesas !== null && comparativos?.despesas !== undefined && (
-            <p className={cn(
-              "text-[11px] font-semibold mt-2",
-              comparativos.despesas <= 0 ? "text-emerald-600" : "text-rose-500",
-            )}>
-              {comparativos.despesas >= 0 ? "+" : ""}{comparativos.despesas.toFixed(1)}% vs mês anterior
-            </p>
-          )}
-        </div>
-
-        {/* CMV % */}
-        <div className="bg-white border border-[#E2E8F0] rounded-3xl p-6 shadow-sm">
-          <p className={cn(T.label, C.muted, "text-[11px] mb-3")}>CMV Operacional</p>
-          <div className="flex items-end justify-between mb-3">
-            <p className={cn(T.mono, "text-2xl font-bold", C.text)}>{cmvPct.toFixed(1)}%</p>
-            <span className={cn(
-              "text-[11px] font-bold",
-              cmvOk ? "text-emerald-600" : "text-rose-500",
-            )}>
-              Meta {cmvMeta}%
-            </span>
-          </div>
-          <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-            <div
-              className={cn(
-                "h-full rounded-full transition-all",
-                cmvOk ? "bg-emerald-500" : cmvPct < cmvMeta * 1.2 ? "bg-amber-400" : "bg-rose-500",
+        {/* Saídas — vermelho quando crescem, neutro caso contrário */}
+        {(() => {
+          const despAlta = (comparativos?.despesas ?? 0) > 5;
+          const cls = despAlta ? GLASS_DANGER : GLASS;
+          return (
+            <div className={cn("rounded-3xl p-6", cls)}>
+              <div className="flex justify-between items-start mb-3">
+                <p className={cn(T.label, C.muted, "text-[11px]")}>Saídas</p>
+                <div className={despAlta ? "text-rose-600" : "text-slate-500"}><ArrowDownRight size={18} /></div>
+              </div>
+              <p className={cn(T.mono, "text-2xl font-bold mb-3", despAlta ? "text-rose-600" : C.text)}>{fmtBRL(despesasMes)}</p>
+              <div className="h-1.5 w-full bg-slate-100/60 rounded-full overflow-hidden">
+                <div
+                  className={cn("h-full rounded-full transition-all", despAlta ? "bg-gradient-to-r from-rose-500 to-rose-600" : "bg-slate-400")}
+                  style={{ width: `${Math.min(100, faturamentoMes > 0 ? (despesasMes / faturamentoMes) * 100 : 0)}%` }}
+                />
+              </div>
+              {comparativos?.despesas !== null && comparativos?.despesas !== undefined && (
+                <p className={cn(
+                  "text-[11px] font-semibold mt-2",
+                  comparativos.despesas <= 0 ? "text-emerald-600" : "text-rose-600",
+                )}>
+                  {comparativos.despesas >= 0 ? "+" : ""}{comparativos.despesas.toFixed(1)}% vs mês anterior
+                </p>
               )}
-              style={{ width: `${Math.min(100, (cmvPct / (cmvMeta * 1.5)) * 100)}%` }}
-            />
-          </div>
-        </div>
+            </div>
+          );
+        })()}
 
-        {/* Lucro Líquido */}
-        <div className="bg-white border border-[#E2E8F0] rounded-3xl p-6 shadow-sm">
-          <p className={cn(T.label, C.muted, "text-[11px] mb-3")}>Lucro Líquido</p>
-          <p className={cn(
-            T.mono, "text-2xl font-bold mb-2",
-            caixaPositivo ? "text-emerald-600" : caixaNegativo ? "text-rose-500" : C.text,
-          )}>
-            {fmtBRL(lucroMes)}
-          </p>
-          <p className={cn(T.body, C.muted, "text-[11px]")}>
-            Margem de {faturamentoMes > 0 ? ((lucroMes / faturamentoMes) * 100).toFixed(1) : "0"}%
-          </p>
-        </div>
+        {/* CMV % — crítico se > 100% */}
+        {(() => {
+          const cmvCritico = cmvPct > 100;
+          const cmvAlerta = !cmvOk && !cmvCritico;
+          const cls = cmvCritico ? GLASS_DANGER : cmvAlerta ? GLASS_WARN : GLASS_SUCCESS;
+          const valorCor = cmvCritico ? "text-rose-600" : cmvAlerta ? "text-amber-600" : "text-blue-700";
+          return (
+            <div className={cn("rounded-3xl p-6", cls)}>
+              <div className="flex items-center justify-between mb-3">
+                <p className={cn(T.label, C.muted, "text-[11px]")}>
+                  {cmvCritico ? "CMV crítico" : "CMV Operacional"}
+                </p>
+                {cmvCritico && (
+                  <span className="text-[9.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 border border-rose-200">
+                    Risco
+                  </span>
+                )}
+              </div>
+              <div className="flex items-end justify-between mb-3">
+                <p className={cn(T.mono, "text-2xl font-bold", valorCor)}>{cmvPct.toFixed(1)}%</p>
+                <span className={cn("text-[11px] font-bold", cmvOk ? "text-blue-700" : "text-rose-600")}>
+                  Meta {cmvMeta}%
+                </span>
+              </div>
+              <div className="h-1.5 w-full bg-slate-100/60 rounded-full overflow-hidden">
+                <div
+                  className={cn(
+                    "h-full rounded-full transition-all",
+                    cmvCritico ? "bg-gradient-to-r from-rose-500 to-rose-700"
+                    : cmvAlerta ? "bg-gradient-to-r from-amber-400 to-orange-500"
+                    : "bg-gradient-to-r from-blue-500 to-blue-600",
+                  )}
+                  style={{ width: `${Math.min(100, (cmvPct / (cmvMeta * 1.5)) * 100)}%` }}
+                />
+              </div>
+              {cmvCritico && (
+                <p className="text-[11px] font-semibold mt-2 text-rose-600">
+                  Custos ultrapassaram 100% — revisar preços urgente.
+                </p>
+              )}
+            </div>
+          );
+        })()}
+
+        {/* Lucro Líquido — azul positivo, vermelho negativo, âmbar limite */}
+        {(() => {
+          const cls = caixaNegativo ? GLASS_DANGER : caixaAtencao ? GLASS_WARN : GLASS_SUCCESS;
+          const cor = caixaNegativo ? "text-rose-600" : caixaAtencao ? "text-amber-600" : "text-blue-700";
+          const label = caixaNegativo ? "Prejuízo no mês" : caixaAtencao ? "Lucro no limite" : "Lucro Líquido";
+          return (
+            <div className={cn("rounded-3xl p-6", cls)}>
+              <div className="flex items-center justify-between mb-3">
+                <p className={cn(T.label, C.muted, "text-[11px]")}>{label}</p>
+                {caixaNegativo && (
+                  <span className="text-[9.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 border border-rose-200">
+                    Alerta
+                  </span>
+                )}
+              </div>
+              <p className={cn(T.mono, "text-2xl font-bold mb-2", cor)}>{fmtBRL(lucroMes)}</p>
+              <p className={cn(T.body, C.muted, "text-[11px]")}>
+                Margem de {faturamentoMes > 0 ? ((lucroMes / faturamentoMes) * 100).toFixed(1) : "0"}%
+              </p>
+            </div>
+          );
+        })()}
       </div>
+
 
       {/* ─── ROW 3 — CHART + CONTAS A VENCER ────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-8">
         {/* Chart 6 meses */}
-        <div className="lg:col-span-8 bg-white border border-[#E2E8F0] rounded-[2.5rem] p-7 lg:p-8 shadow-sm">
-          <div className="flex justify-between items-center mb-8">
+        <div className={cn("lg:col-span-8 rounded-[2.5rem] p-7 lg:p-8", GLASS)}>
+          <div className="flex justify-between items-center mb-6">
             <div>
               <h3 className="font-heading font-bold text-lg text-slate-900">Desempenho Semestral</h3>
-              <p className={cn(T.body, C.muted, "text-[12px] mt-0.5")}>Últimos 6 meses</p>
+              <p className={cn(T.body, C.muted, "text-[12px] mt-0.5")}>Receita vs Despesa — últimos 6 meses</p>
             </div>
             <div className="flex gap-3 text-[11px]">
               <span className="flex items-center gap-1.5 font-semibold text-slate-600">
@@ -849,50 +897,77 @@ export default function Dashboard() {
               ...graficoMensal.flatMap((m) => [m.receita, m.despesa]),
             );
             const currentIdx = graficoMensal.length - 1;
+
+            let insight = "";
+            if (graficoMensal.length) {
+              const maxDesp = graficoMensal.reduce((a, b) => (b.despesa > a.despesa ? b : a));
+              const maxRec = graficoMensal.reduce((a, b) => (b.receita > a.receita ? b : a));
+              const current = graficoMensal[currentIdx];
+              const currentDef = current.receita - current.despesa;
+              if (currentDef < 0) {
+                insight = `${current.mes} fechou com déficit de ${fmtBRL(Math.abs(currentDef))} — pior resultado recente.`;
+              } else if (maxDesp.despesa > maxRec.receita * 0.85 && maxDesp.despesa > 0) {
+                insight = `${maxDesp.mes} concentrou o maior volume de despesas dos últimos 6 meses.`;
+              } else if (maxRec.receita > 0) {
+                insight = `${maxRec.mes} foi seu mês de maior receita: ${fmtBRL(maxRec.receita)}.`;
+              }
+            }
+
             return (
-              <div className="h-64 flex items-end justify-between gap-3 lg:gap-4">
-                {graficoMensal.map((m, idx) => {
-                  const hReceita = (m.receita / maxVal) * 100;
-                  const hDespesa = (m.despesa / maxVal) * 100;
-                  const isCurrent = idx === currentIdx;
-                  return (
-                    <div key={m.mes} className="flex-1 flex flex-col items-center gap-3 group">
-                      <div className="w-full flex items-end justify-center gap-1 h-56">
-                        <div
-                          className={cn(
-                            "flex-1 rounded-t-lg transition-all max-w-[16px]",
-                            isCurrent ? "bg-blue-600" : "bg-blue-200/70 group-hover:bg-blue-300",
-                          )}
-                          style={{ height: `${hReceita}%` }}
-                          title={`Receita: ${fmtBRL(m.receita)}`}
-                        />
-                        <div
-                          className="flex-1 rounded-t-lg bg-rose-200 transition-all max-w-[16px] group-hover:bg-rose-300"
-                          style={{ height: `${hDespesa}%` }}
-                          title={`Despesa: ${fmtBRL(m.despesa)}`}
-                        />
+              <>
+                <div className="h-56 flex items-end justify-between gap-3 lg:gap-4">
+                  {graficoMensal.map((m, idx) => {
+                    const hReceita = (m.receita / maxVal) * 100;
+                    const hDespesa = (m.despesa / maxVal) * 100;
+                    const isCurrent = idx === currentIdx;
+                    return (
+                      <div key={m.mes} className="flex-1 flex flex-col items-center gap-3 group">
+                        <div className="w-full flex items-end justify-center gap-1 h-48">
+                          <div
+                            className={cn(
+                              "flex-1 rounded-t-lg transition-all max-w-[16px]",
+                              isCurrent ? "bg-blue-600" : "bg-blue-200/70 group-hover:bg-blue-300",
+                            )}
+                            style={{ height: `${hReceita}%` }}
+                            title={`Receita: ${fmtBRL(m.receita)}`}
+                          />
+                          <div
+                            className="flex-1 rounded-t-lg bg-rose-200 transition-all max-w-[16px] group-hover:bg-rose-300"
+                            style={{ height: `${hDespesa}%` }}
+                            title={`Despesa: ${fmtBRL(m.despesa)}`}
+                          />
+                        </div>
+                        <span className={cn(
+                          T.mono, "text-[10px] font-bold uppercase",
+                          isCurrent ? "text-blue-700" : "text-slate-400",
+                        )}>
+                          {m.mes}
+                        </span>
                       </div>
-                      <span className={cn(
-                        T.mono, "text-[10px] font-bold uppercase",
-                        isCurrent ? "text-blue-700" : "text-slate-400",
-                      )}>
-                        {m.mes}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+                {insight && (
+                  <div className="mt-5 flex items-start gap-2.5 p-3.5 rounded-2xl bg-blue-50/60 border border-blue-100">
+                    <Sparkles size={15} className="text-blue-600 shrink-0 mt-0.5" strokeWidth={2.2} />
+                    <p className={cn(T.body, "text-[13px] text-blue-900 font-medium leading-snug")}>
+                      {insight}
+                    </p>
+                  </div>
+                )}
+              </>
             );
           })()}
         </div>
 
+
         {/* Contas a vencer */}
-        <div className="lg:col-span-4 bg-white border border-[#E2E8F0] rounded-[2.5rem] p-7 lg:p-8 shadow-sm flex flex-col">
+        <div className={cn("lg:col-span-4 rounded-[2.5rem] p-7 lg:p-8 flex flex-col", GLASS)}>
           <div className="flex items-center justify-between mb-6">
             <h3 className="font-heading font-bold text-lg text-slate-900">Contas a Vencer</h3>
             <span className={cn(
-              "text-[10px] font-bold px-2 py-1 rounded-full",
-              contasVencendo.length > 0 ? "bg-rose-100 text-rose-600" : "bg-emerald-100 text-emerald-600",
+              "text-[10px] font-bold px-2 py-1 rounded-full border",
+              contasVencendo.length > 0 ? "bg-rose-50 text-rose-600 border-rose-200" : "bg-blue-50 text-blue-700 border-blue-200",
             )}>
               {contasVencendo.length} pendentes
             </span>
@@ -910,7 +985,7 @@ export default function Dashboard() {
                       key={idx}
                       className={cn(
                         "flex items-center justify-between p-3.5 rounded-2xl transition-colors",
-                        urgente ? "bg-rose-50" : "border border-slate-100",
+                        urgente ? "bg-rose-50/80 border border-rose-100" : "border border-slate-100 bg-white/40",
                       )}
                     >
                       <div className="flex gap-3 items-center min-w-0">
@@ -944,80 +1019,108 @@ export default function Dashboard() {
               </button>
             </>
           ) : (
-            <EmptyState
-              icon={CheckCircle2}
-              title="Nenhuma conta urgente"
-              hint="Você está em dia com os pagamentos dos próximos 7 dias."
-              tone="success"
-            />
+            <div className="flex-1 flex flex-col">
+              <div className="flex-1 flex flex-col items-center justify-center text-center gap-2 py-4">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-blue-50 text-blue-600 ring-1 ring-blue-100">
+                  <CheckCircle2 size={20} />
+                </div>
+                <p className={cn(T.accent, C.text, "text-[13.5px]")}>Você está em dia</p>
+                <p className={cn(T.body, C.muted, "text-[12.5px] max-w-[260px]")}>
+                  Nenhuma conta vence nos próximos 7 dias. Bom momento para planejar o caixa.
+                </p>
+              </div>
+              <button
+                onClick={() => navigate("/financeiro/contas-pagar")}
+                className="mt-3 text-[12.5px] font-semibold text-slate-500 hover:text-blue-700 flex items-center gap-1.5 self-center transition-colors"
+              >
+                Ver calendário financeiro <ArrowRight size={13} />
+              </button>
+            </div>
           )}
         </div>
       </div>
 
-      {/* ─── OPORTUNIDADES + RADAR (lado a lado) ───────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* ─── OPORTUNIDADES + RADAR (3 cols, radar secundário) ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {/* OPORTUNIDADES */}
-        <Bento>
-          <CardHeader
-            title="Oportunidades Recomendadas"
-            subtitle="Produtos validados pela IA para campanhas de margem rápida e injeção de caixa."
-            icon={Sparkles}
-            tint="success"
-            action={
-              prontosPromocao.length > 0 && (
-                <button
-                  onClick={() => navigate("/promocoes")}
-                  className={cn(T.label, "text-[#2563EB] hover:text-[#1D4ED8]")}
-                >
-                  Criar Campanha →
-                </button>
-              )
-            }
-          />
-          {prontosPromocao.length ? (
-            <div className="space-y-1.5">
-              {prontosPromocao.slice(0, 5).map((p) => {
-                const cat = String(p.categoria || "").toLowerCase();
-                const Icon = cat.includes("pizza") ? Pizza
-                  : cat.includes("bebida") ? Coffee
-                  : cat.includes("sobremesa") || cat.includes("doce") ? Cake
-                  : cat.includes("sandu") || cat.includes("lanche") || cat.includes("burger") ? Sandwich
-                  : UtensilsCrossed;
-                return (
-                  <button
-                    key={p.id}
-                    onClick={() => navigate("/promocoes")}
-                    className="w-full flex items-center gap-3.5 px-1 py-3 border-b border-[#F1F5F9] last:border-b-0 hover:bg-[#F8FAFC]/40 transition-colors text-left"
-                  >
-                    <div className="w-10 h-10 rounded-lg bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center shrink-0">
-                      <Icon size={18} strokeWidth={2.2} className="text-[#2563EB]" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className={cn(T.accent, "text-[15px] font-semibold truncate", C.text)}>{p.nome}</p>
-                      <span className={cn(T.label, "text-[11px] uppercase tracking-wider", C.muted)}>{p.categoria}</span>
-                    </div>
-                    <span className={cn(T.mono, "text-[15px] font-bold text-[#2563EB] whitespace-nowrap")}>
-                      {fmtBRL(p.preco)}
-                    </span>
-                  </button>
-                );
-              })}
-
-            </div>
-          ) : (
-            <EmptyState
+        {/* OPORTUNIDADES — peso maior */}
+        <div className="lg:col-span-2">
+          <Bento>
+            <CardHeader
+              title="Oportunidades Recomendadas"
+              subtitle="Produtos validados pela IA para campanhas de margem rápida e injeção de caixa."
               icon={Sparkles}
-              title="Nenhum produto liberado ainda"
-              hint="Defina preços nas fichas técnicas."
-              tone="success"
+              tint="success"
+              action={
+                prontosPromocao.length > 0 && (
+                  <button
+                    onClick={() => navigate("/promocoes")}
+                    className={cn(T.label, "text-[#2563EB] hover:text-[#1D4ED8]")}
+                  >
+                    Criar Campanha →
+                  </button>
+                )
+              }
             />
-          )}
-        </Bento>
+            {prontosPromocao.length ? (
+              <div className="space-y-1.5">
+                {prontosPromocao.slice(0, 5).map((p, i) => {
+                  const cat = String(p.categoria || "").toLowerCase();
+                  const Icon = cat.includes("pizza") ? Pizza
+                    : cat.includes("bebida") ? Coffee
+                    : cat.includes("sobremesa") || cat.includes("doce") ? Cake
+                    : cat.includes("sandu") || cat.includes("lanche") || cat.includes("burger") ? Sandwich
+                    : UtensilsCrossed;
+                  const motivosPool = [
+                    ["Boa margem", "Baixo custo", "Ideal para campanha rápida"],
+                    ["Margem segura", "Alta saída", "Pronto para combo"],
+                    ["CMV controlado", "Bom ticket médio", "Forte em promoção"],
+                    ["Margem saudável", "Rotatividade alta", "Bom para upsell"],
+                    ["Custo estável", "Acima da meta", "Boa para divulgação"],
+                  ];
+                  const motivos = motivosPool[i % motivosPool.length];
+                  return (
+                    <button
+                      key={p.id}
+                      onClick={() => navigate("/promocoes")}
+                      className="w-full flex items-center gap-3.5 px-2 py-3.5 border-b border-[#F1F5F9] last:border-b-0 hover:bg-[#F8FAFC]/50 rounded-xl transition-colors text-left"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center shrink-0">
+                        <Icon size={18} strokeWidth={2.2} className="text-[#2563EB]" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className={cn(T.accent, "text-[15px] font-semibold truncate", C.text)}>{p.nome}</p>
+                        <p className={cn(T.body, "text-[11.5px] text-slate-500 mt-0.5 truncate")}>
+                          {motivos.join(" · ")}
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-end shrink-0">
+                        <span className={cn(T.mono, "text-[16px] font-bold text-[#2563EB] whitespace-nowrap")}>
+                          {fmtBRL(p.preco)}
+                        </span>
+                        <span className={cn(T.label, "text-[9.5px] text-slate-400 mt-0.5")}>preço sugerido</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <EmptyState
+                icon={Sparkles}
+                title="Nenhum produto liberado ainda"
+                hint="Defina preços nas fichas técnicas."
+                tone="success"
+              />
+            )}
+          </Bento>
+        </div>
 
-        {/* RADAR / NOTÍCIAS */}
-        <NoticiasRestaurantes />
+        {/* RADAR / NOTÍCIAS — peso reduzido, área secundária */}
+        <div className="lg:col-span-1 opacity-95">
+          <NoticiasRestaurantes />
+        </div>
       </div>
+
 
       </div>
     </div>
