@@ -912,7 +912,7 @@ export default function FichasTecnicasPizza() {
                                   <TableCell className="align-middle !py-3 !px-4 overflow-visible relative">
                                     <div className="flex items-center gap-3 w-full">
                                       <Select value={normalizarTipoInsumo(ing.tipo_insumo)} onValueChange={(v) => updateIngrediente(idx, "tipo_insumo", v)}>
-                                        <SelectTrigger className="h-9 w-[110px] shrink-0 text-xs px-2.5"><SelectValue /></SelectTrigger>
+                                        <SelectTrigger className="h-10 w-[120px] shrink-0 text-xs px-2.5"><SelectValue /></SelectTrigger>
                                         <SelectContent>
                                           <SelectItem value="comprado">Comprado</SelectItem>
                                           <SelectItem value="proprio">Produzido</SelectItem>
@@ -920,7 +920,7 @@ export default function FichasTecnicasPizza() {
                                       </Select>
                                       <div className="flex-1 relative min-w-0">
                                         {hasInsumoSelected(ing) ? (
-                                          <div className="flex items-center gap-1.5 h-9 px-3 rounded-md bg-muted/40">
+                                          <div className="flex items-center gap-1.5 h-10 px-3 rounded-md bg-muted/40">
                                             <span className="text-sm font-medium text-foreground truncate" title={ing.nome_display}>{ing.nome_display}</span>
                                             {fromBase && (
                                               <Sparkles className="h-3.5 w-3.5 text-success shrink-0" aria-label="da base" />
@@ -933,10 +933,10 @@ export default function FichasTecnicasPizza() {
                                           <Popover open={buscaAberta === idx} onOpenChange={(o) => { if (!o) setBuscaAberta(null); }}>
                                             <PopoverAnchor asChild>
                                               <div className="relative">
-                                                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none z-10" />
+                                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
                                                 <Input
                                                   placeholder="Buscar insumo..."
-                                                  className="pl-8 h-9 text-sm w-full"
+                                                  className="pl-9 h-10 text-sm w-full"
                                                   value={buscaAberta === idx ? buscaIngrediente : ""}
                                                   onFocus={() => { if (buscaAberta !== idx) { setBuscaAberta(idx); setBuscaIngrediente(""); } }}
                                                   onChange={(e) => { setBuscaAberta(idx); setBuscaIngrediente(e.target.value); }}
