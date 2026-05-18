@@ -1197,6 +1197,7 @@ export default function FichasTecnicasPizza() {
                           </TableBody>
                         </Table>
                       </div>
+                      </>
                     );
                   })()}
                 </div>
