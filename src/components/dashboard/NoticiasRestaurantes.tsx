@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { RefreshCw, Loader2 } from "lucide-react";
+import { RefreshCw, Loader2, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface NoticiaRestaurante {
@@ -28,8 +28,13 @@ const tagClass = (status: string) => {
   }
 };
 
+const PORTAIS = [
+  { nome: "Portal Abrasel Nacional", url: "https://abrasel.com.br/noticias/" },
+  { nome: "Portal ANR Consultas", url: "https://anrbrasil.org.br/new/category/noticias/" },
+];
+
 export function NoticiasRestaurantes() {
-  const { data: noticias = [], isLoading, isError, refetch, isFetching } = useQuery({
+  const { data: noticias = [], isLoading, isError, refetch, isFetching, dataUpdatedAt } = useQuery({
     queryKey: ["noticias-setor", "v3"],
     queryFn: fetchNoticias,
     staleTime: 1000 * 60 * 10,
@@ -37,25 +42,48 @@ export function NoticiasRestaurantes() {
     refetchOnMount: "always",
   });
 
+  const horaAtualizado = dataUpdatedAt
+    ? new Date(dataUpdatedAt).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
+    : "--:--";
+
   return (
     <div className="w-full bg-white border border-slate-200 rounded-2xl p-6 shadow-sm font-sans">
-      <div className="flex items-start justify-between mb-5">
-        <div>
-          <h3 className="m-0 text-base font-bold text-slate-900 flex items-center gap-2">
+      <div className="flex items-start justify-between mb-5 gap-4">
+        <div className="flex-1">
+          <h3 className="m-0 text-base font-bold text-slate-900 flex items-center gap-2 flex-wrap">
             Radar do Dono de Restaurante
             <span className="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">LIVE MARKET</span>
           </h3>
           <p className="mt-1 text-xs text-slate-500">
-            Notícias reais do setor — Food Service, Abrasel e Forbes Gastronomia
+            Notícias reais do setor — Food Service News, Mercado&amp;Consumo, ABRASEL e Forbes Gastronomia
           </p>
         </div>
-        <button
-          onClick={() => refetch()}
-          disabled={isFetching}
-          className="p-2 hover:bg-slate-100 border border-slate-200 rounded-lg text-slate-600 disabled:opacity-50"
-        >
-          <RefreshCw size={14} className={isFetching ? "animate-spin text-blue-600" : ""} />
-        </button>
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-[11px] text-slate-500">Atualizado às {horaAtualizado}</span>
+          <button
+            onClick={() => refetch()}
+            disabled={isFetching}
+            className="p-2 hover:bg-slate-100 border border-slate-200 rounded-lg text-slate-600 disabled:opacity-50"
+          >
+            <RefreshCw size={14} className={isFetching ? "animate-spin text-blue-600" : ""} />
+          </button>
+        </div>
+      </div>
+
+      {/* Portais fixos */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {PORTAIS.map((p) => (
+          <a
+            key={p.nome}
+            href={p.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg px-3 py-1.5"
+          >
+            {p.nome}
+            <ExternalLink size={12} className="text-slate-400" />
+          </a>
+        ))}
       </div>
 
       {isLoading && (
