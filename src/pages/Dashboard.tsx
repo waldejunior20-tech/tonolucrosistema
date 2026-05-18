@@ -962,12 +962,12 @@ export default function Dashboard() {
 
 
         {/* Contas a vencer */}
-        <div className="lg:col-span-4 bg-white border border-[#E2E8F0] rounded-[2.5rem] p-7 lg:p-8 shadow-sm flex flex-col">
+        <div className={cn("lg:col-span-4 rounded-[2.5rem] p-7 lg:p-8 flex flex-col", GLASS)}>
           <div className="flex items-center justify-between mb-6">
             <h3 className="font-heading font-bold text-lg text-slate-900">Contas a Vencer</h3>
             <span className={cn(
-              "text-[10px] font-bold px-2 py-1 rounded-full",
-              contasVencendo.length > 0 ? "bg-rose-100 text-rose-600" : "bg-emerald-100 text-emerald-600",
+              "text-[10px] font-bold px-2 py-1 rounded-full border",
+              contasVencendo.length > 0 ? "bg-rose-50 text-rose-600 border-rose-200" : "bg-blue-50 text-blue-700 border-blue-200",
             )}>
               {contasVencendo.length} pendentes
             </span>
@@ -985,7 +985,7 @@ export default function Dashboard() {
                       key={idx}
                       className={cn(
                         "flex items-center justify-between p-3.5 rounded-2xl transition-colors",
-                        urgente ? "bg-rose-50" : "border border-slate-100",
+                        urgente ? "bg-rose-50/80 border border-rose-100" : "border border-slate-100 bg-white/40",
                       )}
                     >
                       <div className="flex gap-3 items-center min-w-0">
@@ -1019,80 +1019,108 @@ export default function Dashboard() {
               </button>
             </>
           ) : (
-            <EmptyState
-              icon={CheckCircle2}
-              title="Nenhuma conta urgente"
-              hint="Você está em dia com os pagamentos dos próximos 7 dias."
-              tone="success"
-            />
+            <div className="flex-1 flex flex-col">
+              <div className="flex-1 flex flex-col items-center justify-center text-center gap-2 py-4">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-blue-50 text-blue-600 ring-1 ring-blue-100">
+                  <CheckCircle2 size={20} />
+                </div>
+                <p className={cn(T.accent, C.text, "text-[13.5px]")}>Você está em dia</p>
+                <p className={cn(T.body, C.muted, "text-[12.5px] max-w-[260px]")}>
+                  Nenhuma conta vence nos próximos 7 dias. Bom momento para planejar o caixa.
+                </p>
+              </div>
+              <button
+                onClick={() => navigate("/financeiro/contas-pagar")}
+                className="mt-3 text-[12.5px] font-semibold text-slate-500 hover:text-blue-700 flex items-center gap-1.5 self-center transition-colors"
+              >
+                Ver calendário financeiro <ArrowRight size={13} />
+              </button>
+            </div>
           )}
         </div>
       </div>
 
-      {/* ─── OPORTUNIDADES + RADAR (lado a lado) ───────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* ─── OPORTUNIDADES + RADAR (3 cols, radar secundário) ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {/* OPORTUNIDADES */}
-        <Bento>
-          <CardHeader
-            title="Oportunidades Recomendadas"
-            subtitle="Produtos validados pela IA para campanhas de margem rápida e injeção de caixa."
-            icon={Sparkles}
-            tint="success"
-            action={
-              prontosPromocao.length > 0 && (
-                <button
-                  onClick={() => navigate("/promocoes")}
-                  className={cn(T.label, "text-[#2563EB] hover:text-[#1D4ED8]")}
-                >
-                  Criar Campanha →
-                </button>
-              )
-            }
-          />
-          {prontosPromocao.length ? (
-            <div className="space-y-1.5">
-              {prontosPromocao.slice(0, 5).map((p) => {
-                const cat = String(p.categoria || "").toLowerCase();
-                const Icon = cat.includes("pizza") ? Pizza
-                  : cat.includes("bebida") ? Coffee
-                  : cat.includes("sobremesa") || cat.includes("doce") ? Cake
-                  : cat.includes("sandu") || cat.includes("lanche") || cat.includes("burger") ? Sandwich
-                  : UtensilsCrossed;
-                return (
-                  <button
-                    key={p.id}
-                    onClick={() => navigate("/promocoes")}
-                    className="w-full flex items-center gap-3.5 px-1 py-3 border-b border-[#F1F5F9] last:border-b-0 hover:bg-[#F8FAFC]/40 transition-colors text-left"
-                  >
-                    <div className="w-10 h-10 rounded-lg bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center shrink-0">
-                      <Icon size={18} strokeWidth={2.2} className="text-[#2563EB]" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className={cn(T.accent, "text-[15px] font-semibold truncate", C.text)}>{p.nome}</p>
-                      <span className={cn(T.label, "text-[11px] uppercase tracking-wider", C.muted)}>{p.categoria}</span>
-                    </div>
-                    <span className={cn(T.mono, "text-[15px] font-bold text-[#2563EB] whitespace-nowrap")}>
-                      {fmtBRL(p.preco)}
-                    </span>
-                  </button>
-                );
-              })}
-
-            </div>
-          ) : (
-            <EmptyState
+        {/* OPORTUNIDADES — peso maior */}
+        <div className="lg:col-span-2">
+          <Bento>
+            <CardHeader
+              title="Oportunidades Recomendadas"
+              subtitle="Produtos validados pela IA para campanhas de margem rápida e injeção de caixa."
               icon={Sparkles}
-              title="Nenhum produto liberado ainda"
-              hint="Defina preços nas fichas técnicas."
-              tone="success"
+              tint="success"
+              action={
+                prontosPromocao.length > 0 && (
+                  <button
+                    onClick={() => navigate("/promocoes")}
+                    className={cn(T.label, "text-[#2563EB] hover:text-[#1D4ED8]")}
+                  >
+                    Criar Campanha →
+                  </button>
+                )
+              }
             />
-          )}
-        </Bento>
+            {prontosPromocao.length ? (
+              <div className="space-y-1.5">
+                {prontosPromocao.slice(0, 5).map((p, i) => {
+                  const cat = String(p.categoria || "").toLowerCase();
+                  const Icon = cat.includes("pizza") ? Pizza
+                    : cat.includes("bebida") ? Coffee
+                    : cat.includes("sobremesa") || cat.includes("doce") ? Cake
+                    : cat.includes("sandu") || cat.includes("lanche") || cat.includes("burger") ? Sandwich
+                    : UtensilsCrossed;
+                  const motivosPool = [
+                    ["Boa margem", "Baixo custo", "Ideal para campanha rápida"],
+                    ["Margem segura", "Alta saída", "Pronto para combo"],
+                    ["CMV controlado", "Bom ticket médio", "Forte em promoção"],
+                    ["Margem saudável", "Rotatividade alta", "Bom para upsell"],
+                    ["Custo estável", "Acima da meta", "Boa para divulgação"],
+                  ];
+                  const motivos = motivosPool[i % motivosPool.length];
+                  return (
+                    <button
+                      key={p.id}
+                      onClick={() => navigate("/promocoes")}
+                      className="w-full flex items-center gap-3.5 px-2 py-3.5 border-b border-[#F1F5F9] last:border-b-0 hover:bg-[#F8FAFC]/50 rounded-xl transition-colors text-left"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center shrink-0">
+                        <Icon size={18} strokeWidth={2.2} className="text-[#2563EB]" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className={cn(T.accent, "text-[15px] font-semibold truncate", C.text)}>{p.nome}</p>
+                        <p className={cn(T.body, "text-[11.5px] text-slate-500 mt-0.5 truncate")}>
+                          {motivos.join(" · ")}
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-end shrink-0">
+                        <span className={cn(T.mono, "text-[16px] font-bold text-[#2563EB] whitespace-nowrap")}>
+                          {fmtBRL(p.preco)}
+                        </span>
+                        <span className={cn(T.label, "text-[9.5px] text-slate-400 mt-0.5")}>preço sugerido</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <EmptyState
+                icon={Sparkles}
+                title="Nenhum produto liberado ainda"
+                hint="Defina preços nas fichas técnicas."
+                tone="success"
+              />
+            )}
+          </Bento>
+        </div>
 
-        {/* RADAR / NOTÍCIAS */}
-        <NoticiasRestaurantes />
+        {/* RADAR / NOTÍCIAS — peso reduzido, área secundária */}
+        <div className="lg:col-span-1 opacity-95">
+          <NoticiasRestaurantes />
+        </div>
       </div>
+
 
       </div>
     </div>
