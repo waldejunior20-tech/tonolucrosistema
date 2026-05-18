@@ -19,7 +19,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
 import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
-import { Pencil, Trash2, Plus, Filter, Package, ChevronDown, LayoutGrid, List, History, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { Pencil, Trash2, Plus, Filter, Package, ChevronDown, LayoutGrid, List, History, TrendingUp, TrendingDown, Minus, AlertTriangle } from "lucide-react";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 import { MoneyInput, QuantityInput, formatMoney, formatQuantidade } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -267,71 +267,69 @@ export default function InsumosComprados() {
       <TableRow
         key={insumo.id}
         className={cn(
-          "border-b border-border/40 transition-colors hover:bg-primary/5",
-          idx % 2 === 0 ? "bg-card" : "bg-muted/20",
-          highlightId === insumo.id && "bg-primary/15 animate-pulse",
+          "border-b border-slate-100 transition-colors hover:bg-slate-50/70 h-14",
+          highlightId === insumo.id && "bg-primary/10",
         )}
       >
-        <TableCell className="font-bold text-foreground">
-          <div className="flex items-center gap-2">
-            <span>{insumo.nome}</span>
+        <TableCell className="text-left font-semibold text-slate-900 text-[13.5px] leading-tight py-3">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="break-words">{insumo.nome}</span>
             {isDup(insumo.nome) && (
               <span
-                className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/30"
+                className="inline-flex items-center gap-1 h-5 px-1.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-semibold tracking-wide tabular-nums"
                 title="Existe outro insumo com o mesmo nome — considere mesclar"
               >
-                ⚠ DUPLICADO
+                <AlertTriangle className="h-3 w-3" strokeWidth={2.4} />
+                DUPLICADO
               </span>
             )}
           </div>
         </TableCell>
         {viewMode === "list" && (
-          <TableCell>
+          <TableCell className="py-3">
             <CategoryBadge categoria={insumo.categoria} />
           </TableCell>
         )}
-        <TableCell className="text-right tabular-nums font-bold text-foreground">
+        <TableCell className="text-right font-bold text-slate-900 tabular-nums whitespace-nowrap py-3">
           {<Money value={Number(insumo.preco_pago)} />}
         </TableCell>
-        <TableCell className="text-right tabular-nums text-foreground">
+        <TableCell className="text-right text-slate-700 tabular-nums whitespace-nowrap py-3">
           {formatQuantidade(Number(insumo.quantidade), insumo.unidade)}
         </TableCell>
-        <TableCell className="text-right tabular-nums">
-          {variacao === null ? (
-            <span className="text-muted-foreground text-xs">—</span>
-          ) : Math.abs(variacao) < 0.5 ? (
-            <span className="inline-flex items-center gap-1 text-muted-foreground text-xs">
-              <Minus className="h-3 w-3" /> estável
-            </span>
+        <TableCell className="text-right tabular-nums whitespace-nowrap py-3">
+          {variacao === null || Math.abs(variacao) < 0.5 ? (
+            <span className="text-slate-300 text-sm">—</span>
           ) : variacao > 0 ? (
-            <span className="inline-flex items-center gap-1 text-rose-600 dark:text-rose-400 text-xs font-bold">
+            <span className="inline-flex items-center gap-1 text-rose-600 text-[12.5px] font-semibold tabular-nums">
               <TrendingUp className="h-3 w-3" /> +{variacao.toFixed(1)}%
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 text-xs font-bold">
+            <span className="inline-flex items-center gap-1 text-emerald-600 text-[12.5px] font-semibold tabular-nums">
               <TrendingDown className="h-3 w-3" /> {variacao.toFixed(1)}%
             </span>
           )}
         </TableCell>
-        <TableCell className="text-muted-foreground">{insumo.fornecedor ?? "—"}</TableCell>
-        <TableCell className="text-muted-foreground tabular-nums">
+        <TableCell className="text-left text-slate-600 text-[13px] py-3 leading-snug">
+          <span className="line-clamp-2">{insumo.fornecedor ?? "—"}</span>
+        </TableCell>
+        <TableCell className="text-center text-slate-500 tabular-nums whitespace-nowrap text-[13px] py-3">
           {insumo.data_compra
             ? new Date(insumo.data_compra + "T00:00:00").toLocaleDateString("pt-BR")
             : "—"}
         </TableCell>
-        <TableCell className="text-center tabular-nums">
+        <TableCell className="text-center tabular-nums py-3">
           {usado > 0 ? (
-            <span className="text-emerald-600 dark:text-emerald-400 font-bold">{usado}</span>
+            <span className="text-emerald-600 font-bold tabular-nums">{usado}</span>
           ) : (
-            <span className="text-muted-foreground text-xs">—</span>
+            <span className="text-slate-300 text-sm">—</span>
           )}
         </TableCell>
-        <TableCell>
-          <div className="flex gap-1">
+        <TableCell className="py-3">
+          <div className="flex items-center justify-center gap-0.5">
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
+              className="h-8 w-8 rounded-full text-slate-500 hover:bg-slate-100 hover:text-slate-900"
               onClick={() => handleEdit(insumo)}
               aria-label="Editar"
             >
@@ -341,7 +339,7 @@ export default function InsumosComprados() {
               asChild
               variant="ghost"
               size="icon"
-              className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
+              className="h-8 w-8 rounded-full text-slate-500 hover:bg-slate-100 hover:text-slate-900"
               aria-label="Ver histórico"
             >
               <Link to={`/compras/historico?insumo=${encodeURIComponent(insumo.nome)}`}>
@@ -351,7 +349,7 @@ export default function InsumosComprados() {
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive"
+              className="h-8 w-8 rounded-full text-slate-500 hover:bg-rose-50 hover:text-rose-600"
               onClick={() => deleteMutation.mutate(insumo.id)}
               aria-label="Excluir"
             >
@@ -363,19 +361,20 @@ export default function InsumosComprados() {
     );
   };
 
+  const HEAD = "h-10 bg-slate-50/80 text-slate-500 uppercase text-[11px] font-bold tracking-[0.06em] py-0";
   const headerCells = (
-    <TableRow className="bg-muted/40 hover:bg-muted/40 border-b border-border/60">
-      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Nome</TableHead>
+    <TableRow className="border-b border-slate-200 hover:bg-slate-50/80">
+      <TableHead className={cn(HEAD, "text-left pl-4")}>Nome</TableHead>
       {viewMode === "list" && (
-        <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Categoria</TableHead>
+        <TableHead className={cn(HEAD, "text-left w-[140px]")}>Categoria</TableHead>
       )}
-      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider text-right">Preço atual</TableHead>
-      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider text-right">Quantidade</TableHead>
-      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider text-right">Variação</TableHead>
-      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Último fornecedor</TableHead>
-      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider">Última compra</TableHead>
-      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider text-center">Em fichas</TableHead>
-      <TableHead className="font-bold text-foreground uppercase text-[11px] tracking-wider w-[120px]">Ações</TableHead>
+      <TableHead className={cn(HEAD, "text-right w-[120px]")}>Preço atual</TableHead>
+      <TableHead className={cn(HEAD, "text-right w-[120px]")}>Quantidade</TableHead>
+      <TableHead className={cn(HEAD, "text-right w-[110px]")}>Variação</TableHead>
+      <TableHead className={cn(HEAD, "text-left w-[180px]")}>Último fornecedor</TableHead>
+      <TableHead className={cn(HEAD, "text-center w-[120px]")}>Última compra</TableHead>
+      <TableHead className={cn(HEAD, "text-center w-[90px]")}>Em fichas</TableHead>
+      <TableHead className={cn(HEAD, "text-center w-[130px] pr-4")}>Ações</TableHead>
     </TableRow>
   );
 
