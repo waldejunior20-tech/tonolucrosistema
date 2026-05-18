@@ -653,6 +653,92 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* ─── Diagnóstico do dia ─────────────────────────────── */}
+      {showDiagnostico && (
+        <div
+          className={cn(
+            "mb-5 rounded-[2rem] border bg-white shadow-sm fade-up overflow-hidden",
+            diagnosticoTone === "danger"
+              ? "border-rose-100"
+              : diagnosticoTone === "warning"
+              ? "border-amber-100"
+              : "border-emerald-100",
+          )}
+        >
+          <div className="flex flex-col lg:flex-row">
+            {/* Faixa lateral colorida */}
+            <div
+              className={cn(
+                "lg:w-1.5 h-1.5 lg:h-auto w-full",
+                diagnosticoTone === "danger"
+                  ? "bg-rose-500"
+                  : diagnosticoTone === "warning"
+                  ? "bg-amber-500"
+                  : "bg-emerald-500",
+              )}
+            />
+            <div className="flex-1 p-6 lg:p-7 flex flex-col lg:flex-row gap-6 items-start lg:items-center">
+              {/* Ícone + diagnóstico */}
+              <div className="flex items-start gap-4 flex-1 min-w-0">
+                <div
+                  className={cn(
+                    "w-11 h-11 rounded-2xl flex items-center justify-center shrink-0",
+                    diagnosticoTone === "danger"
+                      ? "bg-rose-50 text-rose-600"
+                      : diagnosticoTone === "warning"
+                      ? "bg-amber-50 text-amber-600"
+                      : "bg-emerald-50 text-emerald-600",
+                  )}
+                >
+                  <Activity size={20} />
+                </div>
+                <div className="min-w-0">
+                  <p className={cn(T.label, C.muted, "text-[10.5px] mb-1")}>Diagnóstico do dia</p>
+                  <p className={cn("font-heading font-semibold text-[15px] lg:text-[16px] leading-snug", C.text)}>
+                    {diagnosticoTexto}
+                  </p>
+                  {(fichasRevisar > 0 || precosAtualizar > 0) && (
+                    <p className={cn(T.body, C.muted, "text-[13px] mt-1.5")}>
+                      <span className="font-semibold text-[#0F172A]">Prioridade:</span>{" "}
+                      {[
+                        fichasRevisar > 0 && `revisar ${fichasRevisar} ficha${fichasRevisar > 1 ? "s" : ""} técnica${fichasRevisar > 1 ? "s" : ""}`,
+                        precosAtualizar > 0 && `atualizar ${precosAtualizar} preço${precosAtualizar > 1 ? "s" : ""}`,
+                      ].filter(Boolean).join(" e ")}.
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Ações */}
+              <div className="flex gap-2.5 shrink-0 w-full lg:w-auto">
+                {fichasRevisar > 0 && (
+                  <button
+                    onClick={() => navigate("/fichas/pizzas")}
+                    className="flex-1 lg:flex-none px-4 py-2.5 rounded-xl bg-slate-900 text-white font-semibold text-[13px] hover:bg-slate-800 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <ClipboardList size={14} /> Revisar fichas
+                  </button>
+                )}
+                {precosAtualizar > 0 && (
+                  <button
+                    onClick={() => navigate("/precificacao/pizzas")}
+                    className={cn(
+                      "flex-1 lg:flex-none px-4 py-2.5 rounded-xl font-semibold text-[13px] transition-colors flex items-center justify-center gap-2 border",
+                      diagnosticoTone === "danger"
+                        ? "bg-rose-50 border-rose-200 text-rose-700 hover:bg-rose-100"
+                        : "bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100",
+                    )}
+                  >
+                    <Tag size={14} /> Atualizar preços
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+
       {/* ─── ROW 2 — 4 KPIs ─────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-5">
         {/* Entradas */}
