@@ -145,6 +145,8 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <AppRoutes />
+            <InstallPrompt />
+            <UpdateToast />
           </BrowserRouter>
         </TooltipProvider>
       </ThemeProvider>
