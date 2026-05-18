@@ -690,15 +690,15 @@ export default function PrecificacaoPizzas() {
                             const cmv = cmvs[s];
                             const pill = getCmvPillStyle(cmv);
                             return (
-                              <div key={s} className="flex flex-col items-end gap-0.5 min-w-[78px]">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">
+                              <div key={s} className="flex flex-col items-center justify-center text-center gap-1 min-w-[88px]">
+                                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
                                   {sizeLabels[s]}
                                 </span>
                                 {preco > 0 ? (
                                   <>
-                                    <Money value={preco} className="text-[16px] font-bold text-foreground leading-none" symbolScale={0.55} />
+                                    <Money value={preco} className="text-[16px] font-extrabold text-slate-900 leading-none tabular-nums my-1" symbolScale={0.55} />
                                     <span
-                                      className="inline-block text-finance-mono text-[10.5px] font-semibold px-2 py-0.5 rounded-full mt-0.5"
+                                      className="inline-flex items-center justify-center text-finance-mono text-[10.5px] font-semibold px-2 py-0.5 rounded-full tabular-nums"
                                       style={{ background: pill.bg, color: pill.text }}
                                     >
                                       {fmtPct(cmv)}
