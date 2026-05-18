@@ -785,25 +785,11 @@ export default function PrecificacaoPizzas() {
                                   className="fade-up flex flex-col min-w-0"
                                   style={{ animationDelay: `${sizeIdx * 50}ms` }}
                                 >
-                                  {/* Header: Tamanho + CMV badge ao vivo */}
-                                  <div className="h-9 flex items-center justify-between gap-2">
+                                  {/* Header: apenas o nome do tamanho, alinhado à direita para casar com a coluna de valores */}
+                                  <div className="h-9 flex items-center justify-end">
                                     <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
                                       Tamanho {sizeLabels[s]}
                                     </span>
-                                    {preco > 0 ? (
-                                      <span
-                                        className={cn(
-                                          "text-finance-mono text-[11px] font-bold px-2 py-0.5 rounded-md transition-colors",
-                                          cmvAlert
-                                            ? "bg-red-50 text-red-600 border border-red-200"
-                                            : "bg-blue-50 text-blue-600 border border-blue-100"
-                                        )}
-                                      >
-                                        {fmtPct(cmv)}
-                                      </span>
-                                    ) : (
-                                      <span className="text-muted-foreground/40 text-finance-mono text-[11px]">—</span>
-                                    )}
                                   </div>
 
                                   {/* Row: CMV Atual (mobile-only label inline) */}
