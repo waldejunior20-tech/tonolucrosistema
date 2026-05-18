@@ -310,20 +310,6 @@ export default function InsumosHistoricoCompras() {
         }
       />
 
-            <div className="flex-shrink-0">
-              <ComprasPeriodoChips
-                periodo={periodo}
-                customRange={customRange}
-                onChange={(p, r) => {
-                  setPeriodo(p);
-                  if (p === "custom") setCustomRange(r);
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Gráfico por fornecedor */}
       <ComprasGraficoFornecedor
         rows={filtered}
@@ -333,34 +319,21 @@ export default function InsumosHistoricoCompras() {
 
       {/* Alerta preços bloqueados — acionável */}
       {precosBloqueados30d > 0 && (
-        <div
-          className="flex items-center gap-3 rounded-xl p-3.5 fade-up"
-          style={{
-            background:
-              "linear-gradient(135deg, rgba(251,191,36,0.12), rgba(245,158,11,0.08))",
-            border: "1px solid rgba(245,158,11,0.35)",
-            boxShadow:
-              "0 1px 0 rgba(255,255,255,0.6) inset, 0 6px 20px -8px rgba(245,158,11,0.25)",
-          }}
-        >
-          <div className="shrink-0 h-9 w-9 rounded-lg bg-amber-100 border border-amber-200 inline-flex items-center justify-center">
-            <ShieldAlert className="h-4 w-4 text-amber-700" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[13px] font-semibold text-amber-900">
-              <span className="tabular-nums">{precosBloqueados30d}</span> aumento{precosBloqueados30d === 1 ? "" : "s"} suspeito{precosBloqueados30d === 1 ? "" : "s"} bloqueado{precosBloqueados30d === 1 ? "" : "s"}
-            </p>
-            <p className="text-[11.5px] text-amber-800/80 mt-0.5">
-              Detectamos variações fora do padrão nos últimos 30 dias. Revise para confirmar ou liberar.
-            </p>
-          </div>
-          <button
-            type="button"
-            className="shrink-0 inline-flex items-center gap-1.5 h-8 px-3 rounded-lg bg-white text-amber-800 text-[12px] font-bold border border-amber-200 hover:bg-amber-50 hover:border-amber-300 transition-all shadow-sm"
-          >
-            Ver suspeitas
-          </button>
-        </div>
+        <AlertBanner
+          tone="warning"
+          icon={ShieldAlert}
+          title={
+            <>
+              <span className="tabular-nums">{precosBloqueados30d}</span> aumento
+              {precosBloqueados30d === 1 ? "" : "s"} suspeito
+              {precosBloqueados30d === 1 ? "" : "s"} bloqueado
+              {precosBloqueados30d === 1 ? "" : "s"}
+            </>
+          }
+          description="Detectamos variações fora do padrão nos últimos 30 dias. Revise para confirmar ou liberar."
+          actionLabel="Ver suspeitas"
+          onAction={() => {}}
+        />
       )}
 
       {/* Busca + Lista — glass sutil */}
