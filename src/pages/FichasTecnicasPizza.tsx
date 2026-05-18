@@ -1465,9 +1465,7 @@ export default function FichasTecnicasPizza() {
                 </TableHead>
                 <TableHead>Nome</TableHead>
                 <TableHead>Tipo</TableHead>
-                <TableHead className="text-right">Custo P</TableHead>
-                <TableHead className="text-right">Custo M</TableHead>
-                <TableHead className="text-right">Custo G</TableHead>
+                <TableHead className="text-right">Custos</TableHead>
                 <TableHead className="w-[120px]">Ações</TableHead>
               </TableRow>
             </TableHeader>
