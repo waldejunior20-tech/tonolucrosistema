@@ -1533,8 +1533,10 @@ export default function FichasTecnicasPizza() {
         </div>
       )}
 
-      {/* Bordas Recheadas (P · M · G) */}
-      <BordasSection />
+          {/* Bordas Recheadas (P · M · G) — somente na categoria "bordas" */}
+          {categoria === "bordas" && <BordasSection />}
+        </>
+      )}
     </div>
   );
 }
