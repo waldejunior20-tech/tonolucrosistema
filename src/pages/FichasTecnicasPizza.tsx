@@ -1331,23 +1331,54 @@ export default function FichasTecnicasPizza() {
         </Dialog>
       </PageHeader>
 
-      {/* Filtro */}
-      <div className="flex items-center gap-3">
-        <Filter className="h-4 w-4 text-muted-foreground" />
-        <Select value={filtroTipo} onValueChange={setFiltroTipo}>
-          <SelectTrigger className="w-[220px]">
-            <SelectValue placeholder="Filtrar por tipo" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="todos">Todos os tipos</SelectItem>
-            {TIPOS.map((t) => (
-              <SelectItem key={t} value={t}>
-                {t.charAt(0).toUpperCase() + t.slice(1)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      {/* Filtros: busca instantânea + tipo */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <Input
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Filtrar receitas por nome ou tipo..."
+            className="pl-9"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <Filter className="h-4 w-4 text-muted-foreground" />
+          <Select value={filtroTipo} onValueChange={setFiltroTipo}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Filtrar por tipo" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todos os tipos</SelectItem>
+              {TIPOS.map((t) => (
+                <SelectItem key={t} value={t}>
+                  {t.charAt(0).toUpperCase() + t.slice(1)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
+
+      {/* Bulk actions bar */}
+      {selectedIds.size > 0 && (
+        <div className="flex items-center justify-between gap-3 px-4 py-3 rounded-lg bg-primary/5 border border-primary/20 fade-up">
+          <span className="text-sm font-medium text-primary">
+            {selectedIds.size} {selectedIds.size === 1 ? "item selecionado" : "itens selecionados"}
+          </span>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => setSelectedIds(new Set())}>
+              Limpar
+            </Button>
+            <Button variant="outline" size="sm" className="text-destructive hover:text-destructive border-destructive/30 hover:bg-destructive/5" onClick={handleBulkDelete}>
+              <Trash2 className="h-4 w-4" /> Excluir
+            </Button>
+            <Button size="sm" onClick={handleBulkRecalc}>
+              <Sparkles className="h-4 w-4" /> Recalcular Margem
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Tabela */}
       {isLoading ? (
@@ -1359,8 +1390,15 @@ export default function FichasTecnicasPizza() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="">Nome</TableHead>
-                <TableHead className="">Tipo</TableHead>
+                <TableHead className="w-[44px]">
+                  <Checkbox
+                    checked={allVisibleSelected}
+                    onCheckedChange={toggleSelectAll}
+                    aria-label="Selecionar todas as fichas"
+                  />
+                </TableHead>
+                <TableHead>Nome</TableHead>
+                <TableHead>Tipo</TableHead>
                 <TableHead className="text-right">Custo P</TableHead>
                 <TableHead className="text-right">Custo M</TableHead>
                 <TableHead className="text-right">Custo G</TableHead>
@@ -1370,12 +1408,21 @@ export default function FichasTecnicasPizza() {
             <TableBody>
               {filteredFichas.map((ficha) => {
                 const custos = calcularCustosFicha(ficha.id);
+                const isSelected = selectedIds.has(ficha.id);
                 return (
                   <TableRow
                     key={ficha.id}
+                    data-state={isSelected ? "selected" : undefined}
                     className="group cursor-pointer transition-all duration-150"
                     onClick={() => handleEdit(ficha)}
                   >
+                    <TableCell className="w-[44px]" onClick={(e) => e.stopPropagation()}>
+                      <Checkbox
+                        checked={isSelected}
+                        onCheckedChange={() => toggleSelectOne(ficha.id)}
+                        aria-label={`Selecionar ${ficha.nome}`}
+                      />
+                    </TableCell>
                     <TableCell className="font-medium text-foreground group-hover:text-primary transition-colors">
                       {ficha.nome}
                     </TableCell>
