@@ -1696,6 +1696,69 @@ export type Database = {
         }
         Relationships: []
       }
+      insumo_discriminadores: {
+        Row: {
+          descricao: string | null
+          grupo: string
+          token: string
+        }
+        Insert: {
+          descricao?: string | null
+          grupo: string
+          token: string
+        }
+        Update: {
+          descricao?: string | null
+          grupo?: string
+          token?: string
+        }
+        Relationships: []
+      }
+      insumo_match_sugestoes: {
+        Row: {
+          created_at: string
+          id: string
+          insumo_candidato_id: string
+          insumo_novo_id: string
+          motivo: string | null
+          nome_original: string
+          resolved_at: string | null
+          resolved_by: string | null
+          score: number
+          status: string
+          unidade_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          insumo_candidato_id: string
+          insumo_novo_id: string
+          motivo?: string | null
+          nome_original: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          score: number
+          status?: string
+          unidade_id: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          insumo_candidato_id?: string
+          insumo_novo_id?: string
+          motivo?: string | null
+          nome_original?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          score?: number
+          status?: string
+          unidade_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       insumo_stopwords: {
         Row: {
           token: string
@@ -3718,6 +3781,7 @@ export type Database = {
         Returns: string
       }
       dias_ate: { Args: { p_data: string }; Returns: number }
+      discriminadores_presentes: { Args: { p_nome: string }; Returns: string[] }
       emoji_urgencia: { Args: { p_dias: number }; Returns: string }
       encontrar_match_insumo: {
         Args: { p_min_score?: number; p_nome: string; p_unidade_id: string }
@@ -3886,6 +3950,16 @@ export type Database = {
           insumo_id: string
           nome_match: string
           similarity_score: number
+        }[]
+      }
+      match_insumo_seguro: {
+        Args: { p_nome: string; p_unidade_id: string }
+        Returns: {
+          confianca: string
+          insumo_id: string
+          motivo: string
+          nome_match: string
+          score: number
         }[]
       }
       normalizar_cnpj: { Args: { p_cnpj: string }; Returns: string }
