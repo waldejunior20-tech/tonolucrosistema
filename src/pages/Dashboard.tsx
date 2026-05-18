@@ -1055,7 +1055,7 @@ export default function Dashboard() {
             />
             {prontosPromocao.length ? (
               <div className="space-y-1.5">
-                {prontosPromocao.slice(0, 5).map((p, i) => {
+                {prontosPromocao.slice(0, 3).map((p, i) => {
                   const cat = String(p.categoria || "").toLowerCase();
                   const Icon = cat.includes("pizza") ? Pizza
                     : cat.includes("bebida") ? Coffee
