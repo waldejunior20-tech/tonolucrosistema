@@ -326,16 +326,41 @@ Deno.serve(async (req) => {
       if (CATEGORIAS_INSUMO.has(it.categoriaRaw)) categoria = it.categoriaRaw;
     }
 
-    // Localiza canônico existente (case-insensitive por nome + unidade_id)
-    const { data: canonExist } = await supabase
-      .from("insumos_comprados")
-      .select("id, preco_pago, preco_medio, quantidade, total_compras")
-      .eq("unidade_id", unidade_id)
-      .ilike("nome", it.nome)
-      .limit(1)
-      .maybeSingle();
+    // === LOOKUP NO BANCO MESTRE (anti-duplicata) ===
+    // 1) match fuzzy normalizado por nome (encontrar_match_insumo já normaliza)
+    let insumo_id: string | null = null;
+    let canonExist: any = null;
+    let nomeCanonicoExistente: string | null = null;
+    try {
+      const { data: matches } = await supabase.rpc("encontrar_match_insumo", {
+        p_nome: it.nome, p_unidade_id: unidade_id, p_min_score: 0.55,
+      });
+      if (Array.isArray(matches) && matches.length > 0) {
+        insumo_id = matches[0].insumo_id;
+        nomeCanonicoExistente = matches[0].nome_match;
+      }
+    } catch (_) { /* fallback abaixo */ }
 
-    let insumo_id: string | null = canonExist?.id ?? null;
+    // 2) fallback: ilike exato (legado)
+    if (!insumo_id) {
+      const { data: exato } = await supabase
+        .from("insumos_comprados")
+        .select("id, nome")
+        .eq("unidade_id", unidade_id)
+        .ilike("nome", it.nome)
+        .limit(1)
+        .maybeSingle();
+      if (exato) { insumo_id = exato.id; nomeCanonicoExistente = exato.nome; }
+    }
+
+    if (insumo_id) {
+      const { data: c } = await supabase
+        .from("insumos_comprados")
+        .select("id, nome, preco_pago, preco_medio, quantidade, total_compras")
+        .eq("id", insumo_id).maybeSingle();
+      canonExist = c;
+      nomeCanonicoExistente = c?.nome ?? nomeCanonicoExistente;
+    }
 
     // Avalia preço suspeito ANTES de inserir histórico (para auditoria)
     let bloqueado = false;
@@ -358,21 +383,39 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Cria canônico se não existe (sempre com o preço da compra; trigger não bloqueia 1ª compra)
+    // 3) Não existe → cria canônico com NOME LIMPO (normalizado)
     if (!insumo_id) {
+      let nomeLimpo = it.nome;
+      try {
+        const { data: norm } = await supabase.rpc("normalizar_nome_insumo", { nome: it.nome });
+        if (typeof norm === "string" && norm.trim().length > 0) {
+          // Capitaliza primeira letra para ficar como nome canônico de exibição
+          nomeLimpo = norm.trim().replace(/\b\w/g, (c) => c.toUpperCase());
+        }
+      } catch (_) { /* mantém original */ }
+
       const { data: novo, error: novoErr } = await supabase
         .from("insumos_comprados")
         .insert({
           user_id, unidade_id,
-          nome: it.nome, categoria,
+          nome: nomeLimpo, categoria,
           quantidade: it.quantidade, unidade: it.unidade,
           preco_pago: it.preco_total,
           fornecedor, data_compra: dataCompra,
         })
-        .select("id")
+        .select("id, nome")
         .single();
       if (novoErr) { erros.push(`canon ${it.nome}: ${novoErr.message}`); continue; }
       insumo_id = novo.id;
+      nomeCanonicoExistente = novo.nome;
+    }
+
+    // 4) Salva nome ORIGINAL da nota como alias (se diferente do canônico)
+    if (insumo_id && it.nome && nomeCanonicoExistente &&
+        it.nome.trim().toLowerCase() !== nomeCanonicoExistente.trim().toLowerCase()) {
+      await supabase.from("insumo_aliases_manuais").insert({
+        insumo_id, unidade_id, alias_padrao: it.nome.trim(),
+      }).select().single().then(() => {}, () => { /* ignora duplicado/erro */ });
     }
 
     // Insere histórico (trigger faz idempotência + atualiza canônico OU bloqueia)
