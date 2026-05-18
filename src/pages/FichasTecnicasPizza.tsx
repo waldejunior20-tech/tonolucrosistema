@@ -664,7 +664,7 @@ export default function FichasTecnicasPizza() {
           <DialogContent className="!max-w-[960px] w-[95vw] h-[88vh] max-h-[860px] rounded-2xl p-0 gap-0 flex flex-col overflow-hidden border border-slate-200 shadow-2xl">
             {/* HEADER UNIFICADO: Nome · Nº ficha · Tipo */}
             <DialogHeader className="border-b border-slate-200/70 shrink-0">
-              <div className="mx-auto w-full max-w-6xl px-8 pt-6 pb-4">
+              <div className="w-full px-5 pt-6 pb-4">
                 <DialogTitle asChild>
                   <div className="flex items-center gap-3 flex-wrap">
                     <span className="text-xl font-semibold text-slate-900 tracking-tight">
@@ -694,7 +694,7 @@ export default function FichasTecnicasPizza() {
 
             {/* COST-STRIP: P · M · G — tipografia uniforme Linear-style */}
             <div className="shrink-0 border-b border-slate-200/70 bg-slate-50/30">
-              <div className="mx-auto w-full max-w-6xl px-8 py-2.5 flex items-center gap-6">
+              <div className="w-full px-5 py-2.5 flex items-center gap-6">
                 {[
                   { label: "P", dim: "25cm", value: custoForm.custoP },
                   { label: "M", dim: "30cm", value: custoForm.custoM },
@@ -712,7 +712,7 @@ export default function FichasTecnicasPizza() {
 
             <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
               <div className="flex-1 overflow-y-auto">
-                <div className="mx-auto w-full max-w-6xl px-8 py-8 space-y-10">
+                <div className="w-full px-5 py-8 space-y-10">
                 {editingId ? (
                   <BaseSelector
                     tipoFicha="pizza"
@@ -1198,7 +1198,7 @@ export default function FichasTecnicasPizza() {
 
               {/* STICKY FOOTER */}
               <div className="border-t border-slate-200 bg-white shrink-0">
-                <div className="mx-auto w-full max-w-6xl px-8 h-16 flex items-center justify-between gap-6">
+                <div className="w-full px-5 h-16 flex items-center justify-between gap-6">
                   <div className="flex items-center divide-x divide-slate-200">
                     {[
                       { l: "P", v: custoForm.custoP },
