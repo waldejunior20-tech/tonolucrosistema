@@ -970,10 +970,10 @@ export default function FichasTecnicasPizza() {
 
                                   {/* BLOCO 3 — CUSTOS mono uniforme, alinhado à direita */}
                                   <TableCell className="align-middle !py-3 !px-4 text-right">
-                                    <div className="inline-flex flex-col items-end gap-0.5 font-mono text-sm text-slate-600 tabular-nums leading-tight">
-                                      <div className="flex items-baseline gap-2"><span className="text-xs text-slate-400">P</span><span className="font-semibold text-slate-900 min-w-[72px] text-right">R$ {fmt(custoUnit * converterQuantidade(ing.qtd_p, ing.unidade))}</span></div>
-                                      <div className="flex items-baseline gap-2"><span className="text-xs text-slate-400">M</span><span className="font-semibold text-slate-900 min-w-[72px] text-right">R$ {fmt(custoUnit * converterQuantidade(ing.qtd_m, ing.unidade))}</span></div>
-                                      <div className="flex items-baseline gap-2"><span className="text-xs text-slate-400">G</span><span className="font-semibold text-slate-900 min-w-[72px] text-right">R$ {fmt(custoUnit * converterQuantidade(ing.qtd_g, ing.unidade))}</span></div>
+                                    <div className="inline-flex flex-col items-end gap-0.5 text-sm leading-tight">
+                                      <div className="flex items-baseline gap-2"><span className="text-xs text-slate-400">P</span><Money value={custoUnit * converterQuantidade(ing.qtd_p, ing.unidade)} className="font-semibold text-slate-900 min-w-[72px] justify-end" /></div>
+                                      <div className="flex items-baseline gap-2"><span className="text-xs text-slate-400">M</span><Money value={custoUnit * converterQuantidade(ing.qtd_m, ing.unidade)} className="font-semibold text-slate-900 min-w-[72px] justify-end" /></div>
+                                      <div className="flex items-baseline gap-2"><span className="text-xs text-slate-400">G</span><Money value={custoUnit * converterQuantidade(ing.qtd_g, ing.unidade)} className="font-semibold text-slate-900 min-w-[72px] justify-end" /></div>
                                     </div>
                                   </TableCell>
 
@@ -1110,7 +1110,7 @@ export default function FichasTecnicasPizza() {
                         {caixaId && (
                           <div className="flex items-center justify-between text-xs">
                             <span className="text-slate-500 truncate font-medium" title={caixaNome}>{caixaNome}</span>
-                            <span className="font-semibold text-slate-900 tabular-nums font-mono">R$ {fmt(custo)}</span>
+                            <Money value={custo} className="font-semibold text-slate-900" />
                           </div>
                         )}
                       </div>
