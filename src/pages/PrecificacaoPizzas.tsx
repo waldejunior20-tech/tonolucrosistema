@@ -531,8 +531,14 @@ export default function PrecificacaoPizzas() {
           {/* Card 1 — Alerta de caixa (destaque) */}
           {lucroMes < 0 && (
             <div
-              className="rounded-2xl bg-[#fef2f2] shadow-sm flex flex-col p-5"
-              style={{ borderLeft: "4px solid #dc2626" }}
+              className="rounded-2xl shadow-sm flex flex-col p-5"
+              style={{
+                background: "linear-gradient(135deg, rgba(254, 226, 226, 0.4) 0%, rgba(254, 226, 226, 0.15) 100%)",
+                backdropFilter: "blur(8px)",
+                WebkitBackdropFilter: "blur(8px)",
+                border: "1px solid rgba(220, 38, 38, 0.15)",
+                borderLeft: "4px solid #dc2626",
+              }}
             >
               <div className="flex items-center gap-2">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100">
