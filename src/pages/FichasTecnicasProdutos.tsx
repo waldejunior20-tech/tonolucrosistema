@@ -80,6 +80,33 @@ const CATEGORIA_LABELS: Record<string, string> = {
   bebida: "Bebidas",
 };
 
+type SubcatDef = { id: string; label: string; icon: any; hint: string };
+const SUBCATEGORIAS: Record<string, SubcatDef[]> = {
+  sanduiche: [
+    { id: "tradicional", label: "Tradicionais", icon: Sandwich,    hint: "Clássicos do cardápio" },
+    { id: "especial",    label: "Especiais",    icon: Star,        hint: "Combinações da casa" },
+    { id: "premium",     label: "Premium",      icon: Gem,         hint: "Ingredientes nobres" },
+    { id: "vegano",      label: "Veganos",      icon: Leaf,        hint: "Sem ingredientes animais" },
+  ],
+  prato: [
+    { id: "executivo",   label: "Executivos",   icon: UtensilsCrossed, hint: "Prato do dia" },
+    { id: "a_la_carte",  label: "À la carte",   icon: Flame,           hint: "Especialidades" },
+    { id: "massa",       label: "Massas",       icon: Soup,            hint: "Pastas e molhos" },
+    { id: "salada",      label: "Saladas",      icon: Salad,           hint: "Opções leves" },
+  ],
+  sobremesa: [
+    { id: "gelada",      label: "Geladas",      icon: Snowflake,   hint: "Mousses, sorvetes" },
+    { id: "quente",      label: "Quentes",      icon: Flame,       hint: "Petit gâteau e cia" },
+    { id: "especial",    label: "Especiais",    icon: Sparkles,    hint: "Receitas autorais" },
+  ],
+  bebida: [
+    { id: "suco",         label: "Sucos",        icon: GlassWater,  hint: "Naturais e polpa" },
+    { id: "refrigerante", label: "Refrigerantes",icon: Coffee,      hint: "Latas e garrafas" },
+    { id: "drink",        label: "Drinks",       icon: Wine,        hint: "Coquetelaria" },
+    { id: "cerveja",      label: "Cervejas",     icon: Beer,        hint: "Chopps e long necks" },
+  ],
+};
+
 interface Props {
   categoria: string;
 }
