@@ -876,11 +876,11 @@ export default function Dashboard() {
       {/* ─── ROW 3 — CHART + CONTAS A VENCER ────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-8">
         {/* Chart 6 meses */}
-        <div className="lg:col-span-8 bg-white border border-[#E2E8F0] rounded-[2.5rem] p-7 lg:p-8 shadow-sm">
-          <div className="flex justify-between items-center mb-8">
+        <div className={cn("lg:col-span-8 rounded-[2.5rem] p-7 lg:p-8", GLASS)}>
+          <div className="flex justify-between items-center mb-6">
             <div>
               <h3 className="font-heading font-bold text-lg text-slate-900">Desempenho Semestral</h3>
-              <p className={cn(T.body, C.muted, "text-[12px] mt-0.5")}>Últimos 6 meses</p>
+              <p className={cn(T.body, C.muted, "text-[12px] mt-0.5")}>Receita vs Despesa — últimos 6 meses</p>
             </div>
             <div className="flex gap-3 text-[11px]">
               <span className="flex items-center gap-1.5 font-semibold text-slate-600">
@@ -897,42 +897,69 @@ export default function Dashboard() {
               ...graficoMensal.flatMap((m) => [m.receita, m.despesa]),
             );
             const currentIdx = graficoMensal.length - 1;
+
+            let insight = "";
+            if (graficoMensal.length) {
+              const maxDesp = graficoMensal.reduce((a, b) => (b.despesa > a.despesa ? b : a));
+              const maxRec = graficoMensal.reduce((a, b) => (b.receita > a.receita ? b : a));
+              const current = graficoMensal[currentIdx];
+              const currentDef = current.receita - current.despesa;
+              if (currentDef < 0) {
+                insight = `${current.mes} fechou com déficit de ${fmtBRL(Math.abs(currentDef))} — pior resultado recente.`;
+              } else if (maxDesp.despesa > maxRec.receita * 0.85 && maxDesp.despesa > 0) {
+                insight = `${maxDesp.mes} concentrou o maior volume de despesas dos últimos 6 meses.`;
+              } else if (maxRec.receita > 0) {
+                insight = `${maxRec.mes} foi seu mês de maior receita: ${fmtBRL(maxRec.receita)}.`;
+              }
+            }
+
             return (
-              <div className="h-64 flex items-end justify-between gap-3 lg:gap-4">
-                {graficoMensal.map((m, idx) => {
-                  const hReceita = (m.receita / maxVal) * 100;
-                  const hDespesa = (m.despesa / maxVal) * 100;
-                  const isCurrent = idx === currentIdx;
-                  return (
-                    <div key={m.mes} className="flex-1 flex flex-col items-center gap-3 group">
-                      <div className="w-full flex items-end justify-center gap-1 h-56">
-                        <div
-                          className={cn(
-                            "flex-1 rounded-t-lg transition-all max-w-[16px]",
-                            isCurrent ? "bg-blue-600" : "bg-blue-200/70 group-hover:bg-blue-300",
-                          )}
-                          style={{ height: `${hReceita}%` }}
-                          title={`Receita: ${fmtBRL(m.receita)}`}
-                        />
-                        <div
-                          className="flex-1 rounded-t-lg bg-rose-200 transition-all max-w-[16px] group-hover:bg-rose-300"
-                          style={{ height: `${hDespesa}%` }}
-                          title={`Despesa: ${fmtBRL(m.despesa)}`}
-                        />
+              <>
+                <div className="h-56 flex items-end justify-between gap-3 lg:gap-4">
+                  {graficoMensal.map((m, idx) => {
+                    const hReceita = (m.receita / maxVal) * 100;
+                    const hDespesa = (m.despesa / maxVal) * 100;
+                    const isCurrent = idx === currentIdx;
+                    return (
+                      <div key={m.mes} className="flex-1 flex flex-col items-center gap-3 group">
+                        <div className="w-full flex items-end justify-center gap-1 h-48">
+                          <div
+                            className={cn(
+                              "flex-1 rounded-t-lg transition-all max-w-[16px]",
+                              isCurrent ? "bg-blue-600" : "bg-blue-200/70 group-hover:bg-blue-300",
+                            )}
+                            style={{ height: `${hReceita}%` }}
+                            title={`Receita: ${fmtBRL(m.receita)}`}
+                          />
+                          <div
+                            className="flex-1 rounded-t-lg bg-rose-200 transition-all max-w-[16px] group-hover:bg-rose-300"
+                            style={{ height: `${hDespesa}%` }}
+                            title={`Despesa: ${fmtBRL(m.despesa)}`}
+                          />
+                        </div>
+                        <span className={cn(
+                          T.mono, "text-[10px] font-bold uppercase",
+                          isCurrent ? "text-blue-700" : "text-slate-400",
+                        )}>
+                          {m.mes}
+                        </span>
                       </div>
-                      <span className={cn(
-                        T.mono, "text-[10px] font-bold uppercase",
-                        isCurrent ? "text-blue-700" : "text-slate-400",
-                      )}>
-                        {m.mes}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+                {insight && (
+                  <div className="mt-5 flex items-start gap-2.5 p-3.5 rounded-2xl bg-blue-50/60 border border-blue-100">
+                    <Sparkles size={15} className="text-blue-600 shrink-0 mt-0.5" strokeWidth={2.2} />
+                    <p className={cn(T.body, "text-[13px] text-blue-900 font-medium leading-snug")}>
+                      {insight}
+                    </p>
+                  </div>
+                )}
+              </>
             );
           })()}
         </div>
+
 
         {/* Contas a vencer */}
         <div className="lg:col-span-4 bg-white border border-[#E2E8F0] rounded-[2.5rem] p-7 lg:p-8 shadow-sm flex flex-col">
