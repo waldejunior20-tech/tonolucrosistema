@@ -41,6 +41,8 @@ import AutomacaoFichasWarnings from "@/pages/AutomacaoFichasWarnings";
 import AutomacaoSaude from "@/pages/AutomacaoSaude";
 import NotFound from "./pages/NotFound.tsx";
 import FichaPizzaEditorMock from "@/pages/FichaPizzaEditorMock";
+import { InstallPrompt } from "@/pwa/InstallPrompt";
+import { UpdateToast } from "@/pwa/UpdateToast";
 
 const queryClient = new QueryClient();
 
