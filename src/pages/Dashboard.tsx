@@ -400,6 +400,27 @@ export default function Dashboard() {
     return "Acompanhe o pulso do seu cardápio em tempo real.";
   })();
 
+  // ─── Diagnóstico do dia ──────────────────────────────────────
+  const diagnosticoTone: "danger" | "warning" | "success" =
+    statusCaixa === "negativo" ? "danger" : statusCaixa === "atencao" ? "warning" : "success";
+  const topInsumos = priceAlerts.slice(0, 3).map((p) => p.nome);
+  const entradaBaixa = comparativos?.faturamento != null && comparativos.faturamento < -10;
+  const diagCausas: string[] = [];
+  if (topInsumos.length) diagCausas.push(`aumento em ${topInsumos.join(", ")}`);
+  if (entradaBaixa) diagCausas.push("baixa entrada no mês");
+  if (perderamMargem.length >= 3) diagCausas.push(`${perderamMargem.length} produtos perdendo margem`);
+  const fichasRevisar = perderamMargem.length;
+  const precosAtualizar = priceAlerts.filter((p) => p.variacaoPct >= 10).length;
+  const diagnosticoTexto =
+    statusCaixa === "negativo"
+      ? `Seu caixa está negativo${diagCausas.length ? ` por causa de ${diagCausas.join(" e ")}` : ""}.`
+      : statusCaixa === "atencao"
+      ? `Sua margem está no limite${diagCausas.length ? ` por causa de ${diagCausas.join(" e ")}` : ""}.`
+      : diagCausas.length
+      ? `Caixa positivo, mas atenção: ${diagCausas.join(" e ")}.`
+      : `Caixa saudável. Operação rodando dentro da meta.`;
+  const showDiagnostico = hasFaturamento && (statusCaixa !== "positivo" || diagCausas.length > 0);
+
   // Central de Alertas — combina priceAlerts, profitAlerts e warnings
   const centralAlertas: {
     id: string; icon: any; title: string; message: string;
