@@ -10,9 +10,11 @@ import { MoneyInput } from "@/components/MoneyInput";
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
 import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
-import { Plus, Target, AlertTriangle, TrendingUp, TrendingDown, Wallet, type LucideIcon } from "lucide-react";
+import { Plus, Target, AlertTriangle, TrendingUp, TrendingDown, Wallet } from "lucide-react";
 import { HealthStatus } from "@/components/HealthStatus";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { PageHero } from "@/components/layout/PageHero";
+import { StatCard, StatCardGrid } from "@/components/layout/StatCardGrid";
 import { FinanceiroCategoryTabs } from "@/components/financeiro/FinanceiroCategoryTabs";
 import { Money } from "@/components/Money";
 
@@ -335,42 +337,56 @@ export default function FinanceiroDRE() {
 
   const anos = Array.from({ length: 5 }, (_, i) => now.getFullYear() - 2 + i);
 
+  const periodSelector = (
+    <div className="flex items-center gap-2 bg-white/15 border border-white/25 backdrop-blur-sm p-1 rounded-lg">
+      <Select value={String(mes)} onValueChange={(v) => setMes(Number(v))}>
+        <SelectTrigger className="w-[120px] h-8 border-none bg-transparent shadow-none text-white font-semibold"><SelectValue /></SelectTrigger>
+        <SelectContent>
+          {MESES.map((m, i) => (<SelectItem key={i} value={String(i + 1)}>{m}</SelectItem>))}
+        </SelectContent>
+      </Select>
+      <div className="w-px h-4 bg-white/30" />
+      <Select value={String(ano)} onValueChange={(v) => setAno(Number(v))}>
+        <SelectTrigger className="w-[80px] h-8 border-none bg-transparent shadow-none text-white font-semibold"><SelectValue /></SelectTrigger>
+        <SelectContent>
+          {anos.map((a) => (<SelectItem key={a} value={String(a)}>{a}</SelectItem>))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+
   return (
     <div className="space-y-6 page-enter">
       <FinanceiroCategoryTabs />
-      <PageHeader title="Resumo do Mês" description="Veja quanto entrou, quanto saiu e quanto sobrou.">
-        <div className="flex items-center gap-2 bg-muted p-1 rounded-lg border">
-          <Select value={String(mes)} onValueChange={(v) => setMes(Number(v))}>
-            <SelectTrigger className="w-[120px] h-8 border-none bg-transparent shadow-none"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {MESES.map((m, i) => (<SelectItem key={i} value={String(i + 1)}>{m}</SelectItem>))}
-            </SelectContent>
-          </Select>
-          <div className="w-px h-4 bg-border" />
-          <Select value={String(ano)} onValueChange={(v) => setAno(Number(v))}>
-            <SelectTrigger className="w-[80px] h-8 border-none bg-transparent shadow-none"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {anos.map((a) => (<SelectItem key={a} value={String(a)}>{a}</SelectItem>))}
-            </SelectContent>
-          </Select>
-        </div>
-      </PageHeader>
+      <PageHeader title="Resumo do Mês" description="Veja quanto entrou, quanto saiu e quanto sobrou." />
 
-      {/* Top 3 KPIs — Glassmorphism premium */}
-      <div
-        className="grid grid-cols-1 sm:grid-cols-3"
-        style={{ gap: "20px", marginTop: "8px" }}
-      >
-        <GlassStat label="Entrou" value={calc.totalEntrou} icon={TrendingUp} variant="positive" />
-        <GlassStat label="Saiu" value={calc.totalSaiu} icon={TrendingDown} variant="negative" />
-        <GlassStat
+      <PageHero
+        label={calc.sobrou >= 0 ? "SOBROU NO MÊS" : "FALTOU NO MÊS"}
+        value={Math.abs(calc.sobrou)}
+        status={calc.sobrou < 0 ? "danger" : "neutral"}
+        context={
+          calc.sobrou < 0 ? (
+            <span className="inline-flex items-center gap-1.5">
+              <AlertTriangle size={14} /> Margem negativa de {calc.sobrouPct.toFixed(1)}%
+            </span>
+          ) : (
+            `Margem de ${calc.sobrouPct.toFixed(1)}% sobre o faturamento`
+          )
+        }
+        rightSlot={periodSelector}
+      />
+
+      {/* Top 3 KPIs */}
+      <StatCardGrid cols={3}>
+        <StatCard label="Entrou" value={calc.totalEntrou} icon={TrendingUp} tone="up" />
+        <StatCard label="Saiu" value={calc.totalSaiu} icon={TrendingDown} tone="down" />
+        <StatCard
           label={calc.sobrou >= 0 ? "Sobrou" : "Faltou"}
           value={Math.abs(calc.sobrou)}
           icon={Wallet}
-          variant={calc.sobrou >= 0 ? "positive" : "negative"}
-          subtitle={`${calc.sobrouPct.toFixed(1)}% de margem`}
+          tone={calc.sobrou >= 0 ? "up" : "down"}
         />
-      </div>
+      </StatCardGrid>
 
       {/* Custo dos Ingredientes + Meta do Mês */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -693,81 +709,3 @@ export default function FinanceiroDRE() {
   );
 }
 
-/** Card glass premium — mesmo efeito vidro do Caixa Diário */
-function GlassStat({
-  label,
-  value,
-  icon: Icon,
-  variant,
-  subtitle,
-}: {
-  label: string;
-  value: number;
-  icon: LucideIcon;
-  variant: "positive" | "negative" | "neutral";
-  subtitle?: string;
-}) {
-  const cfg = {
-    positive: {
-      borderLeft: "#2563eb",
-      icon: "#2563eb",
-      text: "#1e3a8a",
-      boxShadow:
-        "0 8px 32px 0 rgba(37, 99, 235, 0.08), inset 0 0 12px rgba(37, 99, 235, 0.05)",
-    },
-    negative: {
-      borderLeft: "#dc2626",
-      icon: "#dc2626",
-      text: "#7f1d1d",
-      boxShadow:
-        "0 8px 32px 0 rgba(220, 38, 38, 0.08), inset 0 0 12px rgba(220, 38, 38, 0.05)",
-    },
-    neutral: {
-      borderLeft: "#94a3b8",
-      icon: "#64748b",
-      text: "#1e293b",
-      boxShadow:
-        "0 8px 32px 0 rgba(100, 116, 139, 0.08), inset 0 0 12px rgba(100, 116, 139, 0.04)",
-    },
-  }[variant];
-
-  return (
-    <div
-      style={{
-        background: "rgba(255, 255, 255, 0.45)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        borderRadius: "20px",
-        border: "1px solid rgba(255, 255, 255, 0.4)",
-        borderLeft: `4px solid ${cfg.borderLeft}`,
-        boxShadow: cfg.boxShadow,
-        padding: "18px 20px",
-      }}
-      className="flex flex-col gap-2 transition-transform hover:-translate-y-0.5"
-    >
-      <div className="flex items-center gap-1.5">
-        <Icon size={14} strokeWidth={2.5} style={{ color: cfg.icon }} />
-        <span
-          className="text-[11px] uppercase tracking-[0.08em]"
-          style={{ color: cfg.icon, fontWeight: 700 }}
-        >
-          {label}
-        </span>
-      </div>
-      <div
-        style={{ color: cfg.text, fontWeight: 700 }}
-        className="text-[22px] leading-tight text-finance-mono"
-      >
-        <Money value={value} symbolScale={0.55} className="text-[22px] leading-tight" />
-      </div>
-      {subtitle && (
-        <span
-          className="text-[11px] font-semibold"
-          style={{ color: cfg.icon, opacity: 0.85 }}
-        >
-          {subtitle}
-        </span>
-      )}
-    </div>
-  );
-}
