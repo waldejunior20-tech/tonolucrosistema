@@ -532,24 +532,28 @@ export default function PrecificacaoPizzas() {
           {/* Card 1 — Alerta de caixa (destaque) */}
           {lucroMes < 0 && (
             <div
-              className="rounded-2xl shadow-sm flex flex-col p-5"
+              className="flex flex-col transition-transform hover:-translate-y-0.5"
               style={{
-                background: "linear-gradient(135deg, rgba(254, 226, 226, 0.4) 0%, rgba(254, 226, 226, 0.1) 100%)",
-                backdropFilter: "blur(12px)",
-                WebkitBackdropFilter: "blur(12px)",
-                border: "1px solid rgba(220, 38, 38, 0.2)",
+                background: "rgba(255, 255, 255, 0.45)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+                borderRadius: "20px",
+                border: "1px solid rgba(255, 255, 255, 0.4)",
                 borderLeft: "4px solid #dc2626",
+                boxShadow:
+                  "0 8px 32px 0 rgba(220, 38, 38, 0.08), inset 0 0 12px rgba(220, 38, 38, 0.05)",
+                padding: "18px 20px",
               }}
             >
               <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100/70">
                   <AlertTriangle className="h-4.5 w-4.5 text-red-700" strokeWidth={2.5} />
                 </div>
-                <span className="text-[10.5px] font-bold uppercase tracking-wider text-red-700">
+                <span className="text-[11px] font-bold uppercase tracking-[0.08em] text-red-700">
                   Caixa negativo
                 </span>
               </div>
-              <div className="mt-3 text-finance-mono text-[34px] font-extrabold leading-none tabular-nums text-red-700">
+              <div className="mt-3 text-finance-mono text-[34px] font-extrabold leading-none tabular-nums" style={{ color: "#7f1d1d" }}>
                 {formatMoney(lucroMes)}
               </div>
               <p className="mt-2 text-[12.5px] text-slate-700 leading-snug flex-1">
@@ -573,15 +577,30 @@ export default function PrecificacaoPizzas() {
             type="button"
             onClick={() => setShowOnlyAffected((v) => !v)}
             disabled={affectedCount === 0}
-            className="text-left rounded-2xl border border-slate-200 bg-white shadow-sm p-5 hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-destructive/40 disabled:cursor-default disabled:hover:bg-white"
+            className="text-left flex flex-col transition-transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-destructive/40 disabled:cursor-default disabled:hover:translate-y-0"
+            style={{
+              background: "rgba(255, 255, 255, 0.45)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              borderRadius: "20px",
+              border: "1px solid rgba(255, 255, 255, 0.4)",
+              borderLeft: `4px solid ${affectedCount > 0 ? "#dc2626" : "#94a3b8"}`,
+              boxShadow: affectedCount > 0
+                ? "0 8px 32px 0 rgba(220, 38, 38, 0.08), inset 0 0 12px rgba(220, 38, 38, 0.05)"
+                : "0 8px 32px 0 rgba(100, 116, 139, 0.08), inset 0 0 12px rgba(100, 116, 139, 0.04)",
+              padding: "18px 20px",
+            }}
           >
-            <div className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-wider text-slate-500">
-              <TrendingDown className={cn("h-3.5 w-3.5", affectedCount > 0 ? "text-red-600" : "text-slate-400")} />
+            <div
+              className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.08em]"
+              style={{ color: affectedCount > 0 ? "#dc2626" : "#64748b" }}
+            >
+              <TrendingDown className="h-3.5 w-3.5" strokeWidth={2.5} />
               {showOnlyAffected ? "Filtrando afetadas" : "Comprometem a meta"}
             </div>
             <div
               className="mt-3 text-[32px] font-extrabold leading-none tabular-nums"
-              style={{ color: affectedCount > 0 ? "#b91c1c" : "#0f172a" }}
+              style={{ color: affectedCount > 0 ? "#7f1d1d" : "#1e293b" }}
             >
               {affectedCount > 0 ? affectedCount : indicators.foraMetaCount}
             </div>
@@ -591,23 +610,36 @@ export default function PrecificacaoPizzas() {
           </button>
 
           {/* Card 3 — Total + Meta de CMV */}
-          <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-5">
+          <div
+            className="transition-transform hover:-translate-y-0.5"
+            style={{
+              background: "rgba(255, 255, 255, 0.45)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              borderRadius: "20px",
+              border: "1px solid rgba(255, 255, 255, 0.4)",
+              borderLeft: "4px solid #2563eb",
+              boxShadow:
+                "0 8px 32px 0 rgba(37, 99, 235, 0.08), inset 0 0 12px rgba(37, 99, 235, 0.05)",
+              padding: "18px 20px",
+            }}
+          >
             <div className="grid grid-cols-2 gap-4 h-full">
               <div className="flex flex-col">
-                <div className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-wider text-slate-500">
-                  <Activity className="h-3.5 w-3.5 text-slate-400" />
+                <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.08em]" style={{ color: "#2563eb" }}>
+                  <Activity className="h-3.5 w-3.5" strokeWidth={2.5} />
                   Total de pizzas
                 </div>
-                <div className="mt-3 text-[32px] font-extrabold leading-none tabular-nums text-[#0f172a]">
+                <div className="mt-3 text-[32px] font-extrabold leading-none tabular-nums" style={{ color: "#1e3a8a" }}>
                   {fichas.length}
                 </div>
               </div>
-              <div className="flex flex-col border-l border-slate-200 pl-4">
-                <div className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-wider text-slate-500">
-                  <Cog className="h-3.5 w-3.5 text-slate-400" />
+              <div className="flex flex-col border-l border-white/50 pl-4">
+                <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.08em]" style={{ color: "#2563eb" }}>
+                  <Cog className="h-3.5 w-3.5" strokeWidth={2.5} />
                   Meta de CMV
                 </div>
-                <div className="mt-3 text-[32px] font-extrabold leading-none tabular-nums text-[#0f172a]">
+                <div className="mt-3 text-[32px] font-extrabold leading-none tabular-nums" style={{ color: "#1e3a8a" }}>
                   {cmvMeta.toFixed(0)}%
                 </div>
               </div>
