@@ -836,10 +836,10 @@ export default function FichasTecnicasPizza() {
 
                 {/* INGREDIENTES — TABELA DENSA */}
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <h3 className="text-base font-semibold text-slate-900 tracking-tight">Ingredientes</h3>
-                    <Button type="button" size="sm" className="btn-action-add gap-1.5 h-9 px-3 text-xs font-medium" onClick={addIngrediente}>
-                      <Plus className="h-3.5 w-3.5" /> Adicionar Ingrediente
+                    <Button type="button" size="sm" className="btn-action-add gap-1.5 h-11 sm:h-9 w-full sm:w-auto px-3 text-sm sm:text-xs font-medium" onClick={addIngrediente}>
+                      <Plus className="h-4 w-4 sm:h-3.5 sm:w-3.5" /> Adicionar Ingrediente
                     </Button>
                   </div>
 
