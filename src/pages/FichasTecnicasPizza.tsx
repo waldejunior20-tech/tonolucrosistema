@@ -1187,19 +1187,19 @@ export default function FichasTecnicasPizza() {
                       onClick={() => {
                         const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
                         if (!SR) {
-                          toast({ title: "Ditado não suportado", description: "Seu navegador não suporta reconhecimento de voz.", variant: "destructive" });
+                          toast.error("Ditado não suportado", { description: "Seu navegador não suporta reconhecimento de voz." });
                           return;
                         }
                         const rec = new SR();
                         rec.lang = "pt-BR";
                         rec.interimResults = false;
                         rec.continuous = false;
-                        toast({ title: "🎙️ Ouvindo...", description: "Fale o modo de preparo." });
+                        toast("🎙️ Ouvindo...", { description: "Fale o modo de preparo." });
                         rec.onresult = (e: any) => {
                           const txt = e.results[0][0].transcript;
                           setForm((f) => ({ ...f, modo_preparo: (f.modo_preparo ? f.modo_preparo + "\n" : "") + txt }));
                         };
-                        rec.onerror = () => toast({ title: "Erro no ditado", variant: "destructive" });
+                        rec.onerror = () => toast.error("Erro no ditado");
                         rec.start();
                       }}
                       className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 text-blue-600 border border-blue-200 text-xs font-semibold hover:bg-blue-100 transition"
