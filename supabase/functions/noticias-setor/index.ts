@@ -160,10 +160,21 @@ Deno.serve(async (req) => {
       });
     }
 
-    const results = await Promise.all(FEEDS.map(fetchFeed));
-    const all = results.flat();
-    all.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
-    const noticias = all.slice(0, 10);
+    const [rssResults, newsApiResults] = await Promise.all([
+      Promise.all(FEEDS.map(fetchFeed)).then((r) => r.flat()),
+      fetchNewsApi(),
+    ]);
+    const all = [...rssResults, ...newsApiResults];
+    // Dedup por título normalizado
+    const seen = new Set<string>();
+    const unique = all.filter((n) => {
+      const key = n.titulo.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 80);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    unique.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
+    const noticias = unique.slice(0, 10);
 
     cache = { at: Date.now(), data: noticias };
 
