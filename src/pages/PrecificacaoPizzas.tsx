@@ -709,7 +709,8 @@ export default function PrecificacaoPizzas() {
                         </div>
 
                         {/* Quick price + CMV summary — hierarquia: preço herói, CMV em pílula sutil */}
-                        <div className="flex items-center gap-6">
+                        <div className="flex items-center gap-4">
+                          <div className="grid grid-cols-3 gap-4">
                           {sizes.map((s) => {
                             const preco = precos[s];
                             const cmv = cmvs[s];
@@ -735,6 +736,7 @@ export default function PrecificacaoPizzas() {
                               </div>
                             );
                           })}
+                          </div>
 
                           <ChevronDown
                             className={cn(
