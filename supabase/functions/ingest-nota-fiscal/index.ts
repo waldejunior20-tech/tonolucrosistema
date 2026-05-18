@@ -196,13 +196,23 @@ Deno.serve(async (req) => {
   const origem = payload.origem ?? "manual";
 
   // Normaliza itens (precisa antes do hash)
+  // Detecta se dados estão COMPLETOS para atualizar custo unitário do insumo.
+  // Regra: precisa de nome + quantidade>0 informada + unidade informada + preço total>0.
+  // Se incompleto: registra apenas saída de caixa + auditoria, NÃO toca o banco mestre.
   const itensNorm = itens.map((it) => {
     const nome = (it.nome ?? "Item sem nome").toString().trim();
-    const quantidade = toNumber(it.quantidade) || 1;
-    const unidade = normalizarUnidade(it.unidade);
+    const qtdRaw = toNumber(it.quantidade);
+    const unidRaw = (it.unidade ?? "").toString().trim();
     const preco_total = toNumber(it.preco_total ?? it.preco_pago);
+    const quantidade = qtdRaw || 1;
+    const unidade = normalizarUnidade(it.unidade);
     const preco_unitario = toNumber(it.preco_unitario) || (preco_total / quantidade);
-    return { nome, categoriaRaw: it.categoria ?? "", quantidade, unidade, preco_total, preco_unitario };
+    const dadosCompletos =
+      nome.length > 0 && qtdRaw > 0 && unidRaw.length > 0 && preco_total > 0;
+    return {
+      nome, categoriaRaw: it.categoria ?? "",
+      quantidade, unidade, preco_total, preco_unitario, dadosCompletos,
+    };
   });
 
   const valor_total = toNumber(payload.valor_total) ||
@@ -276,13 +286,20 @@ Deno.serve(async (req) => {
   const runId = run?.id;
   const startedAt = Date.now();
 
-  // 3. Separa insumos vs despesas-serviço
+  // 3. Separa insumos vs despesas-serviço vs compras incompletas
+  // - Insumos completos: atualizam canônico via histórico
+  // - Despesas/serviço: vão direto para lancamentos_financeiros
+  // - Compras incompletas (sem qtd/unidade): só saída de caixa + auditoria
   const insumosRows: typeof itensNorm = [];
   const despesasRows: { nome: string; valor: number; categoria: string }[] = [];
+  const comprasIncompletas: { nome: string; valor: number; categoria: string }[] = [];
   for (const it of itensNorm) {
     if (ehDespesaServico(it.nome, it.categoriaRaw)) {
       const cat = it.categoriaRaw && !CATEGORIAS_INSUMO.has(it.categoriaRaw) ? it.categoriaRaw : "Outros";
       despesasRows.push({ nome: it.nome, valor: it.preco_total, categoria: cat });
+    } else if (!it.dadosCompletos) {
+      const cat = CATEGORIAS_INSUMO.has(it.categoriaRaw) ? it.categoriaRaw : "Outros Insumos";
+      comprasIncompletas.push({ nome: it.nome, valor: it.preco_total, categoria: cat });
     } else {
       insumosRows.push(it);
     }
@@ -440,21 +457,42 @@ Deno.serve(async (req) => {
     await supabase.from("lancamentos_financeiros").insert(lancs);
   }
 
+  // Lança compras incompletas como saída de caixa (custo do insumo NÃO é atualizado)
+  const totalIncompletas = comprasIncompletas.reduce((s, r) => s + r.valor, 0);
+  if (comprasIncompletas.length > 0) {
+    const lancs = comprasIncompletas.map((r) => ({
+      user_id, unidade_id,
+      tipo: "despesa", categoria: "Insumos",
+      subcategoria: CAT_TO_SUB[r.categoria as string] ?? "Outros Insumos",
+      descricao: `Compra: ${r.nome}${fornecedor ? ` - ${fornecedor}` : ""} (custo não atualizado)`,
+      valor: r.valor, data_lancamento: dataCompra, pago: true,
+      classificacao_origem: "compra_incompleta", nota_fiscal_id,
+    }));
+    await supabase.from("lancamentos_financeiros").insert(lancs);
+  }
+
   // 6. auditoria_importacao
-  const totalDespesa = insumosRows.reduce((s, r) => s + r.preco_total, 0) + totalDespesasServico;
+  const totalDespesa = insumosRows.reduce((s, r) => s + r.preco_total, 0)
+    + totalDespesasServico + totalIncompletas;
   const status: string = erros.length > 0 ? "parcial" : "processado";
 
   await supabase.from("auditoria_importacao").insert({
     user_id, unidade_id, nota_fiscal_id, origem,
     itens_lidos: itensNorm.length,
     enviados_insumos: itens_salvos - itens_revisao,
-    enviados_financeiro: despesasRows.length,
+    enviados_financeiro: despesasRows.length + comprasIncompletas.length,
     pendentes_revisao: itens_revisao,
     precos_bloqueados,
     fichas_impactadas,
     detalhes: {
       status, documento_hash, fornecedor, valor_total,
       total_despesa: totalDespesa,
+      compras_incompletas: comprasIncompletas.length > 0
+        ? comprasIncompletas.map((c) => ({
+            nome: c.nome, valor: c.valor, categoria: c.categoria,
+            motivo: "dados_incompletos_custo_nao_atualizado",
+          }))
+        : undefined,
       erros: erros.length > 0 ? erros : undefined,
     },
   });
@@ -475,6 +513,10 @@ Deno.serve(async (req) => {
   }
 
   // 7. retorno
+  const partes: string[] = [];
+  if (itens_salvos > 0) partes.push(`${itens_salvos} insumo(s) com custo atualizado`);
+  if (comprasIncompletas.length > 0) partes.push(`${comprasIncompletas.length} compra(s) registrada(s) sem atualizar custo (dados incompletos)`);
+  if (precos_bloqueados.length > 0) partes.push(`${precos_bloqueados.length} com preço suspeito em revisão`);
   return jsonResponse({
     status,
     nota_fiscal_id,
@@ -482,10 +524,9 @@ Deno.serve(async (req) => {
     total_itens: itensNorm.length,
     itens_salvos,
     itens_bloqueados: precos_bloqueados.length,
+    compras_incompletas: comprasIncompletas.length,
     fichas_impactadas: fichas_impactadas.length,
-    mensagem_usuario: precos_bloqueados.length > 0
-      ? `${itens_salvos} itens salvos, ${precos_bloqueados.length} com preço suspeito enviados para revisão.`
-      : `${itens_salvos} itens importados com sucesso.`,
+    mensagem_usuario: partes.length > 0 ? partes.join(" · ") : "Nada processado.",
     ...(erros.length > 0 ? { erros } : {}),
   });
 });
