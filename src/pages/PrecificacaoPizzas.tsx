@@ -790,21 +790,21 @@ export default function PrecificacaoPizzas() {
                                     {/* Rows: label + value — grid rítmica com tipografia uniforme */}
                                     <div className="flex-1 flex flex-col gap-2.5 text-[13px] leading-none">
                                       <div className="grid grid-cols-[1fr_auto] items-center gap-3">
-                                        <span className="text-slate-500 font-semibold">CMV Atual</span>
-                                        <span className="text-finance-mono font-bold text-slate-900 tabular-nums text-right">{preco > 0 ? fmtPct(cmv) : "—"}</span>
+                                        <span className="text-[#475569] font-semibold">CMV Atual</span>
+                                        <span className="text-finance-mono font-bold text-slate-900 tabular-nums text-right justify-self-end">{preco > 0 ? fmtPct(cmv) : "—"}</span>
                                       </div>
                                       <div className="grid grid-cols-[1fr_auto] items-center gap-3">
-                                        <span className="text-slate-500 font-semibold">Custo do Insumo</span>
+                                        <span className="text-[#475569] font-semibold">Custo do Insumo</span>
                                         <Money value={custo} className="text-slate-900 font-bold tabular-nums text-right justify-self-end" symbolScale={0.6} />
                                       </div>
                                       <div className="grid grid-cols-[1fr_auto] items-center gap-3">
-                                        <span className="text-slate-500 font-semibold">Sugerido por Meta</span>
-                                        <Money value={sug} className="text-emerald-700 font-extrabold tabular-nums text-right justify-self-end" symbolScale={0.6} />
+                                        <span className="text-[#475569] font-bold">Sugerido por Meta</span>
+                                        <Money value={sug} className="text-emerald-700 font-bold tabular-nums text-right justify-self-end" symbolScale={0.6} />
                                       </div>
                                       <div className="grid grid-cols-[1fr_auto] items-center gap-3">
-                                        <span className="text-slate-500 font-semibold">{sobraPositiva ? "Sobra Real (Lucro)" : "Prejuízo"}</span>
+                                        <span className="text-[#475569] font-bold">{sobraPositiva ? "Sobra Real (Lucro)" : "Prejuízo"}</span>
                                         <div
-                                          className="flex items-baseline gap-1 text-finance-mono font-extrabold tabular-nums justify-self-end"
+                                          className="flex items-baseline gap-1 text-finance-mono font-bold tabular-nums justify-self-end text-right"
                                           style={{ color: sobraPositiva ? "hsl(var(--success))" : "hsl(var(--destructive))" }}
                                         >
                                           <Money value={sobra} symbolScale={0.6} />
@@ -814,13 +814,13 @@ export default function PrecificacaoPizzas() {
                                         </div>
                                       </div>
                                       <div className="grid grid-cols-[1fr_auto] items-center gap-3">
-                                        <span className="text-slate-500 font-semibold">Preço Limite</span>
+                                        <span className="text-[#475569] font-semibold">Preço Limite</span>
                                         <Money value={precoZero} className="text-slate-900 font-bold tabular-nums text-right justify-self-end" symbolScale={0.6} />
                                       </div>
                                     </div>
 
                                     {/* Preço de Venda input */}
-                                    <div className="mt-4 pt-3 border-t border-white/50">
+                                    <div className="mt-6 pt-3 border-t border-white/50">
                                       <div className="flex items-center justify-center mb-2">
                                         <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-700">Preço de Venda</span>
                                       </div>
