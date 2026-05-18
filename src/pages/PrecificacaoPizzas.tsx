@@ -831,8 +831,8 @@ export default function PrecificacaoPizzas() {
                                       </span>
                                       {preco > 0 ? (
                                         <span
-                                          className="absolute right-0 top-1/2 -translate-y-1/2 text-finance-mono text-[10.5px] font-bold px-2 py-0.5 rounded-full tabular-nums"
-                                          style={{ background: pill.bg, color: pill.text }}
+                                          className="absolute right-0 top-1/2 -translate-y-1/2 text-finance-mono text-[10.5px] tabular-nums"
+                                          style={{ background: pill.bg, color: pill.text, border: `1px solid ${pill.border}`, borderRadius: '6px', padding: '4px 10px', fontWeight: 700 }}
                                         >
                                           {fmtPct(cmv)}
                                         </span>
