@@ -294,7 +294,10 @@ export default function InsumosComprados() {
           {<Money value={Number(insumo.preco_pago)} />}
         </TableCell>
         <TableCell className="text-right text-slate-700 tabular-nums whitespace-nowrap py-3">
-          {formatQuantidade(Number(insumo.quantidade), insumo.unidade)}
+          {new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 3 }).format(Number(insumo.quantidade))}
+        </TableCell>
+        <TableCell className="text-center text-slate-500 text-[12.5px] uppercase tracking-wide py-3">
+          {insumo.unidade ?? "—"}
         </TableCell>
         <TableCell className="text-right tabular-nums whitespace-nowrap py-3">
           {variacao === null || Math.abs(variacao) < 0.5 ? (
@@ -309,20 +312,17 @@ export default function InsumosComprados() {
             </span>
           )}
         </TableCell>
-        <TableCell className="text-left text-slate-600 text-[13px] py-3 leading-snug">
-          <span className="line-clamp-2">{insumo.fornecedor ?? "—"}</span>
-        </TableCell>
-        <TableCell className="text-center text-slate-500 tabular-nums whitespace-nowrap text-[13px] py-3">
-          {insumo.data_compra
-            ? new Date(insumo.data_compra + "T00:00:00").toLocaleDateString("pt-BR")
-            : "—"}
-        </TableCell>
         <TableCell className="text-center tabular-nums py-3">
           {usado > 0 ? (
             <span className="text-emerald-600 font-bold tabular-nums">{usado}</span>
           ) : (
             <span className="text-slate-300 text-sm">—</span>
           )}
+        </TableCell>
+        <TableCell className="text-right text-slate-500 tabular-nums whitespace-nowrap text-[13px] py-3">
+          {insumo.data_compra
+            ? new Date(insumo.data_compra + "T00:00:00").toLocaleDateString("pt-BR")
+            : "—"}
         </TableCell>
         <TableCell className="py-3">
           <div className="flex items-center justify-center gap-0.5">
