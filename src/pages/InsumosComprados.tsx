@@ -382,7 +382,7 @@ export default function InsumosComprados() {
     <div className="space-y-6 page-enter">
       <InsumosCategoryTabs />
       
-      <PageHeader title="Insumos Comprados" description="Cadastro atual dos ingredientes que montam suas fichas técnicas. O preço é atualizado pela compra mais recente.">
+      <PageHeader title="Insumos Comprados" description="Banco de insumos usados nas fichas técnicas. O preço atual é atualizado pela compra mais recente.">
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) resetForm(); setDialogOpen(open); }}>
           <DialogTrigger asChild>
             <Button className="btn-action-add gap-2">
