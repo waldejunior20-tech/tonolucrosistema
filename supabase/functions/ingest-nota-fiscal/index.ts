@@ -286,13 +286,20 @@ Deno.serve(async (req) => {
   const runId = run?.id;
   const startedAt = Date.now();
 
-  // 3. Separa insumos vs despesas-serviço
+  // 3. Separa insumos vs despesas-serviço vs compras incompletas
+  // - Insumos completos: atualizam canônico via histórico
+  // - Despesas/serviço: vão direto para lancamentos_financeiros
+  // - Compras incompletas (sem qtd/unidade): só saída de caixa + auditoria
   const insumosRows: typeof itensNorm = [];
   const despesasRows: { nome: string; valor: number; categoria: string }[] = [];
+  const comprasIncompletas: { nome: string; valor: number; categoria: string }[] = [];
   for (const it of itensNorm) {
     if (ehDespesaServico(it.nome, it.categoriaRaw)) {
       const cat = it.categoriaRaw && !CATEGORIAS_INSUMO.has(it.categoriaRaw) ? it.categoriaRaw : "Outros";
       despesasRows.push({ nome: it.nome, valor: it.preco_total, categoria: cat });
+    } else if (!it.dadosCompletos) {
+      const cat = CATEGORIAS_INSUMO.has(it.categoriaRaw) ? it.categoriaRaw : "Outros Insumos";
+      comprasIncompletas.push({ nome: it.nome, valor: it.preco_total, categoria: cat });
     } else {
       insumosRows.push(it);
     }
