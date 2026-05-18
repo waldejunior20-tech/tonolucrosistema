@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { Plus, Minus, TrendingUp, TrendingDown, Receipt, AlertTriangle, CheckCircle2, type LucideIcon } from "lucide-react";
+import { Plus, Minus, TrendingUp, TrendingDown, Receipt, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Money } from "@/components/Money";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { PageHero } from "@/components/layout/PageHero";
 // StatCard removido — usamos GlassStat inline para o efeito de vidro premium
 import { FinanceiroCategoryTabs } from "@/components/financeiro/FinanceiroCategoryTabs";
 import { LancarReceitaDialog } from "@/components/caixa/LancarReceitaDialog";
