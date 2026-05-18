@@ -1340,7 +1340,7 @@ export default function FichasTecnicasPizza() {
                         </div>
                       )}
 
-                      <div className="grid grid-cols-3 gap-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
                         {renderCaixaSlot("p", "P", "25cm", ing.caixa_p_id, ing.caixa_p_nome)}
                         {renderCaixaSlot("m", "M", "30cm", ing.caixa_m_id, ing.caixa_m_nome)}
                         {renderCaixaSlot("g", "G", "35cm", ing.caixa_g_id, ing.caixa_g_nome)}
