@@ -260,66 +260,55 @@ export default function InsumosHistoricoCompras() {
 
   return (
     <div
-      className="space-y-4 page-enter pb-6 -m-4 sm:-m-6 p-4 sm:p-6 min-h-screen"
-      style={{
-        background:
-          "radial-gradient(1200px 600px at 0% -10%, rgba(59,130,246,0.08), transparent 60%), radial-gradient(900px 500px at 100% 0%, rgba(99,102,241,0.06), transparent 60%), linear-gradient(180deg, #f6f8fb 0%, #eef2f7 100%)",
-      }}
+      className="space-y-4 page-enter pb-6 -m-4 sm:-m-6 p-4 sm:p-6 min-h-screen page-bg"
     >
       <PageHeader
         title="Histórico de Compras"
         description="Tudo que entrou em insumos, embalagens e despesas."
       />
 
-      {/* Hero premium — gradiente azul profundo + glow */}
-      <div className="relative rounded-2xl overflow-hidden fade-up shadow-[0_20px_50px_-20px_rgba(37,99,235,0.45),0_4px_12px_-4px_rgba(37,99,235,0.25)]">
-        {/* Camada base — gradiente diagonal */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%)",
-          }}
-        />
-        {/* Glow superior */}
-        <div className="absolute -top-24 -right-16 h-64 w-64 rounded-full bg-white/15 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-20 -left-10 h-48 w-48 rounded-full bg-indigo-300/20 blur-3xl pointer-events-none" />
-        {/* Highlight superior (vidro) */}
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
-
-        <div className="relative p-5 sm:p-6 text-white">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-            <div className="flex flex-col gap-1 min-w-0">
-              <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/75">
-                {periodoLabel}
+      <HeroStatusCard
+        tone="positive"
+        eyebrow={periodoLabel}
+        value={
+          <Money
+            value={totalPeriodo}
+            onDark
+            className="text-[32px] sm:text-[44px] leading-none font-semibold"
+            symbolScale={0.5}
+          />
+        }
+        meta={
+          <>
+            <span>
+              {compras.length} {compras.length === 1 ? "compra" : "compras"} ·{" "}
+              {filtered.length} {filtered.length === 1 ? "item" : "itens"}
+            </span>
+            {variacaoPct !== null && (
+              <span
+                className={
+                  "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[12px] font-semibold backdrop-blur-sm " +
+                  (variacaoPct >= 0
+                    ? "bg-amber-400/25 text-amber-50 ring-1 ring-amber-200/40"
+                    : "bg-emerald-400/25 text-emerald-50 ring-1 ring-emerald-200/40")
+                }
+              >
+                {variacaoPct >= 0 ? "▲" : "▼"} {Math.abs(variacaoPct).toFixed(1)}% vs. período anterior
               </span>
-              <div className="mt-0.5">
-                <Money
-                  value={totalPeriodo}
-                  onDark
-                  className="text-[32px] sm:text-[44px] leading-none font-semibold"
-                  symbolScale={0.5}
-                />
-              </div>
-              <div className="text-[13px] text-white/85 mt-2 flex items-center flex-wrap gap-2">
-                <span>
-                  {compras.length} {compras.length === 1 ? "compra" : "compras"} ·{" "}
-                  {filtered.length} {filtered.length === 1 ? "item" : "itens"}
-                </span>
-                {variacaoPct !== null && (
-                  <span
-                    className={
-                      "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[12px] font-semibold backdrop-blur-sm " +
-                      (variacaoPct >= 0
-                        ? "bg-amber-400/25 text-amber-50 ring-1 ring-amber-200/40"
-                        : "bg-emerald-400/25 text-emerald-50 ring-1 ring-emerald-200/40")
-                    }
-                  >
-                    {variacaoPct >= 0 ? "▲" : "▼"} {Math.abs(variacaoPct).toFixed(1)}% vs. período anterior
-                  </span>
-                )}
-              </div>
-            </div>
+            )}
+          </>
+        }
+        actions={
+          <ComprasPeriodoChips
+            periodo={periodo}
+            customRange={customRange}
+            onChange={(p, r) => {
+              setPeriodo(p);
+              if (p === "custom") setCustomRange(r);
+            }}
+          />
+        }
+      />
 
             <div className="flex-shrink-0">
               <ComprasPeriodoChips
