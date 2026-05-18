@@ -1106,8 +1106,8 @@ export default function Dashboard() {
           </Bento>
         </div>
 
-        {/* RADAR / NOTÍCIAS — peso reduzido, área secundária */}
-        <div className="lg:col-span-1 opacity-95">
+        {/* RADAR / NOTÍCIAS — 50% */}
+        <div>
           <NoticiasRestaurantes />
         </div>
       </div>
