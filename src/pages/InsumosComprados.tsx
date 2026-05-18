@@ -291,7 +291,7 @@ export default function InsumosComprados() {
           </TableCell>
         )}
         <TableCell className="text-right font-bold text-slate-900 tabular-nums whitespace-nowrap py-3">
-          {<Money value={Number(insumo.preco_pago)} />}
+          {<Money value={Number(insumo.quantidade) > 0 ? Number(insumo.preco_pago) / Number(insumo.quantidade) : Number(insumo.preco_pago)} />}
         </TableCell>
         <TableCell className="text-right text-slate-700 tabular-nums whitespace-nowrap py-3">
           {new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 3 }).format(Number(insumo.quantidade))}
