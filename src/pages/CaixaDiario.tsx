@@ -148,7 +148,7 @@ function GlassStat({
 }: {
   label: string;
   value: number;
-  icon: React.ComponentType<{ size?: number; strokeWidth?: number; style?: React.CSSProperties }>;
+  icon: LucideIcon;
   variant: "positive" | "negative" | "neutral";
 }) {
   const cfg = {
