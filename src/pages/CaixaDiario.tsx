@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Minus, TrendingUp, TrendingDown, Receipt, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { Plus, Minus, TrendingUp, TrendingDown, Receipt, AlertTriangle, CheckCircle2, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Money } from "@/components/Money";
 import { PageHeader } from "@/components/layout/PageHeader";
