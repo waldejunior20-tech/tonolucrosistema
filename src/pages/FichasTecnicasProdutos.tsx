@@ -126,8 +126,6 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
   const formIsValid = !Object.values(errors).some(Boolean);
   const showErr = (field: keyof typeof errors) => submitted && errors[field];
 
-  const label = CATEGORIA_LABELS[categoria] || categoria;
-
   const [searchParams, setSearchParams] = useSearchParams();
   const [subcategoria, setSubcategoria] = useState<string | null>(null);
 
