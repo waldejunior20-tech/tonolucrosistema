@@ -246,6 +246,37 @@ export default function PrecificacaoPizzas() {
     return { avgCmv, foraMetaCount };
   }, [fichas, pizzaCustos, getPreco]);
 
+  // ─── Caixa do mês + Alertas de Insumos ──────────────────────────
+  const { lucroMes = 0 } = useDashboardData() as any;
+  const { data: priceAlerts = [] } = usePriceAlerts();
+  const [showOnlyAffected, setShowOnlyAffected] = useState(false);
+
+  // Mapa insumo_id → alerta (variação >= threshold)
+  const alertByInsumoId = useMemo(() => {
+    const m = new Map<string, { nome: string; variacaoPct: number }>();
+    (priceAlerts as any[]).forEach((a) => {
+      if (a.insumoId) m.set(a.insumoId, { nome: a.nome, variacaoPct: a.variacaoPct });
+    });
+    return m;
+  }, [priceAlerts]);
+
+  // Para cada ficha → pior alerta entre os insumos usados
+  const fichaTopAlert = useMemo(() => {
+    const map = new Map<string, { nome: string; variacaoPct: number }>();
+    fichas.forEach((f) => {
+      const ings = ingredientes.filter((i) => i.ficha_id === f.id);
+      let worst: { nome: string; variacaoPct: number } | null = null;
+      ings.forEach((ing) => {
+        const a = ing.insumo_comprado_id ? alertByInsumoId.get(ing.insumo_comprado_id) : null;
+        if (a && (!worst || a.variacaoPct > worst.variacaoPct)) worst = a;
+      });
+      if (worst) map.set(f.id, worst);
+    });
+    return map;
+  }, [fichas, ingredientes, alertByInsumoId]);
+
+  const affectedCount = fichaTopAlert.size;
+
   // ─── Save config ─────────────────────────────────────────────────
   const configMutation = useMutation({
     mutationFn: async (c: ConfigPrecificacao) => {
