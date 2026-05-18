@@ -910,9 +910,9 @@ export default function FichasTecnicasPizza() {
                                 >
                                   {/* BLOCO 1 — INSUMO: tipo + busca (flex-1) + unidade */}
                                   <TableCell className="align-middle !py-3 !px-4 overflow-visible relative">
-                                    <div className="flex items-center gap-2 w-full">
+                                    <div className="flex items-center gap-3 w-full">
                                       <Select value={normalizarTipoInsumo(ing.tipo_insumo)} onValueChange={(v) => updateIngrediente(idx, "tipo_insumo", v)}>
-                                        <SelectTrigger className="h-8 w-[88px] shrink-0 text-[11px] px-2"><SelectValue /></SelectTrigger>
+                                        <SelectTrigger className="h-9 w-[110px] shrink-0 text-xs px-2.5"><SelectValue /></SelectTrigger>
                                         <SelectContent>
                                           <SelectItem value="comprado">Comprado</SelectItem>
                                           <SelectItem value="proprio">Produzido</SelectItem>
@@ -920,23 +920,23 @@ export default function FichasTecnicasPizza() {
                                       </Select>
                                       <div className="flex-1 relative min-w-0">
                                         {hasInsumoSelected(ing) ? (
-                                          <div className="flex items-center gap-1 h-8 px-2 rounded-md bg-muted/30">
-                                            <span className="text-xs font-medium text-foreground truncate" title={ing.nome_display}>{ing.nome_display}</span>
+                                          <div className="flex items-center gap-1.5 h-9 px-3 rounded-md bg-muted/40">
+                                            <span className="text-sm font-medium text-foreground truncate" title={ing.nome_display}>{ing.nome_display}</span>
                                             {fromBase && (
-                                              <Sparkles className="h-3 w-3 text-success shrink-0" aria-label="da base" />
+                                              <Sparkles className="h-3.5 w-3.5 text-success shrink-0" aria-label="da base" />
                                             )}
-                                            <Button type="button" variant="ghost" size="icon" className="h-5 w-5 shrink-0 opacity-0 group-hover:opacity-100 ml-auto" onClick={() => clearInsumoSelection(idx)}>
-                                              <X className="h-3 w-3" />
+                                            <Button type="button" variant="ghost" size="icon" className="h-6 w-6 shrink-0 opacity-0 group-hover:opacity-100 ml-auto" onClick={() => clearInsumoSelection(idx)}>
+                                              <X className="h-3.5 w-3.5" />
                                             </Button>
                                           </div>
                                         ) : (
                                           <Popover open={buscaAberta === idx} onOpenChange={(o) => { if (!o) setBuscaAberta(null); }}>
                                             <PopoverAnchor asChild>
                                               <div className="relative">
-                                                <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground pointer-events-none z-10" />
+                                                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none z-10" />
                                                 <Input
-                                                  placeholder="Buscar ingrediente..."
-                                                  className="pl-7 h-8 text-xs w-full"
+                                                  placeholder="Buscar insumo..."
+                                                  className="pl-8 h-9 text-sm w-full"
                                                   value={buscaAberta === idx ? buscaIngrediente : ""}
                                                   onFocus={() => { if (buscaAberta !== idx) { setBuscaAberta(idx); setBuscaIngrediente(""); } }}
                                                   onChange={(e) => { setBuscaAberta(idx); setBuscaIngrediente(e.target.value); }}
@@ -951,13 +951,13 @@ export default function FichasTecnicasPizza() {
                                                 const target = e.target as HTMLElement;
                                                 if (target.closest('input')) e.preventDefault();
                                               }}
-                                              className="p-0 w-[var(--radix-popover-trigger-width)] max-h-56 overflow-y-auto"
+                                              className="p-1 w-[var(--radix-popover-trigger-width)] max-h-56 overflow-y-auto rounded-xl shadow-lg"
                                             >
                                               {getFilteredInsumos(ing.tipo_insumo).length === 0 ? (
                                                 <p className="p-2 text-xs text-muted-foreground">Nenhum insumo encontrado.</p>
                                               ) : (
                                                 getFilteredInsumos(ing.tipo_insumo).map((item) => (
-                                                  <button key={item.id} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors"
+                                                  <button key={item.id} type="button" className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-accent hover:text-primary transition-colors truncate"
                                                     onMouseDown={(e) => { e.preventDefault(); selectInsumo(idx, item.id, item.nome, ing.tipo_insumo); }}>
                                                     <span className="font-medium">{item.nome}</span>
                                                   </button>
@@ -968,7 +968,7 @@ export default function FichasTecnicasPizza() {
                                         )}
                                       </div>
                                       <Select value={ing.unidade} onValueChange={(v) => updateIngrediente(idx, "unidade", v)}>
-                                        <SelectTrigger className="h-8 w-[68px] shrink-0 text-[11px] px-2"><SelectValue placeholder="Un" /></SelectTrigger>
+                                        <SelectTrigger className="h-9 w-[72px] shrink-0 text-xs px-2"><SelectValue placeholder="Un" /></SelectTrigger>
                                         <SelectContent>
                                           {UNIDADES.map((u) => <SelectItem key={u} value={u}>{u}</SelectItem>)}
                                         </SelectContent>
