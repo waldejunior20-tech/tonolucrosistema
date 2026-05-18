@@ -790,7 +790,10 @@ export default function PrecificacaoPizzas() {
                               return (
                                 <div
                                   key={s}
-                                  className="group relative aspect-square min-h-[360px] rounded-3xl border border-white/40 bg-white/40 backdrop-blur-xl shadow-[0_10px_40px_-12px_rgba(15,23,42,0.18)] hover:shadow-[0_20px_60px_-12px_rgba(15,23,42,0.28)] hover:-translate-y-1 hover:scale-[1.015] transition-all duration-300 p-5 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-500 fill-mode-both"
+                                  className={cn(
+                                    "group relative aspect-square min-h-[360px] rounded-3xl border border-white/40 bg-white/40 backdrop-blur-xl shadow-[0_10px_40px_-12px_rgba(15,23,42,0.18)] hover:shadow-[0_20px_60px_-12px_rgba(15,23,42,0.28)] hover:-translate-y-1 hover:scale-[1.015] transition-all duration-300 p-5 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-500 fill-mode-both",
+                                    (mobileSize[ficha.id] ?? "p") !== s && "hidden md:flex",
+                                  )}
                                   style={{ animationDelay: `${sizeIdx * 90}ms` }}
                                 >
                                   {/* Iridescent sheen */}
