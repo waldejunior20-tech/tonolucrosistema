@@ -808,9 +808,6 @@ export default function PrecificacaoPizzas() {
                                           style={{ color: sobraPositiva ? "#15803d" : "hsl(var(--destructive))" }}
                                         >
                                           <Money value={sobra} symbolScale={0.6} />
-                                          {preco > 0 && (
-                                            <span className="text-[11px] font-bold opacity-80">({sobraPct.toFixed(0)}%)</span>
-                                          )}
                                         </div>
                                       </div>
                                       <div className="grid grid-cols-[1fr_auto] items-center gap-3">
