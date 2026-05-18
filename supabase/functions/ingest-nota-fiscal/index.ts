@@ -457,21 +457,42 @@ Deno.serve(async (req) => {
     await supabase.from("lancamentos_financeiros").insert(lancs);
   }
 
+  // Lança compras incompletas como saída de caixa (custo do insumo NÃO é atualizado)
+  const totalIncompletas = comprasIncompletas.reduce((s, r) => s + r.valor, 0);
+  if (comprasIncompletas.length > 0) {
+    const lancs = comprasIncompletas.map((r) => ({
+      user_id, unidade_id,
+      tipo: "despesa", categoria: "Insumos",
+      subcategoria: CAT_TO_SUB[r.categoria as string] ?? "Outros Insumos",
+      descricao: `Compra: ${r.nome}${fornecedor ? ` - ${fornecedor}` : ""} (custo não atualizado)`,
+      valor: r.valor, data_lancamento: dataCompra, pago: true,
+      classificacao_origem: "compra_incompleta", nota_fiscal_id,
+    }));
+    await supabase.from("lancamentos_financeiros").insert(lancs);
+  }
+
   // 6. auditoria_importacao
-  const totalDespesa = insumosRows.reduce((s, r) => s + r.preco_total, 0) + totalDespesasServico;
+  const totalDespesa = insumosRows.reduce((s, r) => s + r.preco_total, 0)
+    + totalDespesasServico + totalIncompletas;
   const status: string = erros.length > 0 ? "parcial" : "processado";
 
   await supabase.from("auditoria_importacao").insert({
     user_id, unidade_id, nota_fiscal_id, origem,
     itens_lidos: itensNorm.length,
     enviados_insumos: itens_salvos - itens_revisao,
-    enviados_financeiro: despesasRows.length,
+    enviados_financeiro: despesasRows.length + comprasIncompletas.length,
     pendentes_revisao: itens_revisao,
     precos_bloqueados,
     fichas_impactadas,
     detalhes: {
       status, documento_hash, fornecedor, valor_total,
       total_despesa: totalDespesa,
+      compras_incompletas: comprasIncompletas.length > 0
+        ? comprasIncompletas.map((c) => ({
+            nome: c.nome, valor: c.valor, categoria: c.categoria,
+            motivo: "dados_incompletos_custo_nao_atualizado",
+          }))
+        : undefined,
       erros: erros.length > 0 ? erros : undefined,
     },
   });
