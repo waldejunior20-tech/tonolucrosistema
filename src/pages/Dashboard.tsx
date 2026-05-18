@@ -312,8 +312,39 @@ export default function Dashboard() {
   // Derived
   const lucroMes = faturamentoMes - despesasMes;
   const dataHoje = format(new Date(), "EEEE, d 'de' MMMM", { locale: ptBR });
-  const caixaPositivo = lucroMes > 0;
+  // Threshold de atenção: margem abaixo de 3% do faturamento (mín R$ 500)
+  const atencaoThreshold = Math.max(faturamentoMes * 0.03, 500);
+  const caixaAtencao = faturamentoMes > 0 && lucroMes >= 0 && lucroMes < atencaoThreshold;
   const caixaNegativo = lucroMes < 0;
+  const caixaPositivo = lucroMes > 0 && !caixaAtencao;
+  const statusCaixa: "positivo" | "negativo" | "atencao" =
+    caixaNegativo ? "negativo" : caixaAtencao ? "atencao" : "positivo";
+  const heroTitulo =
+    statusCaixa === "negativo" ? "Caixa negativo"
+    : statusCaixa === "atencao" ? "No limite"
+    : "Tô no lucro";
+  const heroGradient =
+    statusCaixa === "negativo"
+      ? "bg-gradient-to-br from-rose-600 to-rose-700"
+      : statusCaixa === "atencao"
+      ? "bg-gradient-to-br from-amber-500 to-orange-600"
+      : "bg-gradient-to-br from-blue-600 to-blue-700";
+  const heroShadow =
+    statusCaixa === "negativo"
+      ? "shadow-[0_30px_80px_-30px_rgba(225,29,72,0.45)]"
+      : statusCaixa === "atencao"
+      ? "shadow-[0_30px_80px_-30px_rgba(234,88,12,0.45)]"
+      : "shadow-[0_30px_80px_-30px_rgba(37,99,235,0.45)]";
+  const heroBtnText =
+    statusCaixa === "negativo" ? "text-rose-700"
+    : statusCaixa === "atencao" ? "text-orange-700"
+    : "text-blue-700";
+  const heroBadge =
+    statusCaixa === "negativo"
+      ? { label: "Negativo", cls: "bg-white/15 text-white border-white/30" }
+      : statusCaixa === "atencao"
+      ? { label: "Atenção", cls: "bg-amber-100/25 text-amber-50 border-amber-200/40" }
+      : { label: "Positivo", cls: "bg-emerald-400/20 text-emerald-100 border-emerald-300/40" };
   const hasFaturamento = faturamentoMes > 0 || despesasMes > 0;
   const cmvOk = cmvPct <= cmvMeta;
 
@@ -487,14 +518,13 @@ export default function Dashboard() {
 
       {/* ─── ROW 1 — HERO CAIXA DO MÊS + PARA VOCÊ AGORA ───── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-5">
-        {/* Hero card — azul (ou vermelho se devedor) */}
+        {/* Hero card — azul / vermelho / âmbar conforme status */}
         <div
           className={cn(
             "lg:col-span-8 rounded-[2.5rem] p-8 lg:p-10 text-white relative overflow-hidden flex flex-col justify-between min-h-[280px] lg:min-h-[340px]",
-            "shadow-[0_30px_80px_-30px_rgba(37,99,235,0.45)] fade-up",
-            caixaNegativo
-              ? "bg-gradient-to-br from-rose-600 to-rose-700"
-              : "bg-gradient-to-br from-blue-600 to-blue-700",
+            "fade-up",
+            heroShadow,
+            heroGradient,
           )}
         >
           {/* Decor blurs */}
@@ -502,10 +532,18 @@ export default function Dashboard() {
           <div className="absolute bottom-0 left-1/3 w-64 h-64 rounded-full blur-[100px] opacity-30 bg-white/10 pointer-events-none" />
 
           <div className="relative z-10">
-            <p className="text-white/75 font-semibold uppercase tracking-[0.2em] text-[11px] mb-3 flex items-center gap-2">
-              Caixa do Mês
-              <span className="w-1.5 h-1.5 rounded-full bg-white/80 animate-pulse" />
-            </p>
+            <div className="flex items-center gap-3 mb-3 flex-wrap">
+              <p className="text-white/75 font-semibold uppercase tracking-[0.2em] text-[11px] flex items-center gap-2">
+                {heroTitulo}
+                <span className="w-1.5 h-1.5 rounded-full bg-white/80 animate-pulse" />
+              </p>
+              <span className={cn(
+                "px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border backdrop-blur-md",
+                heroBadge.cls,
+              )}>
+                {heroBadge.label}
+              </span>
+            </div>
             <div className="flex items-baseline gap-3 flex-wrap">
               <span className={cn(T.mono, "font-bold leading-none tracking-tight text-[44px] sm:text-[56px] lg:text-[72px]")}>
                 {fmtBRL(lucroMes)}
@@ -538,7 +576,10 @@ export default function Dashboard() {
             <div className="ml-auto self-end">
               <button
                 onClick={() => navigate("/financeiro/caixa-diario")}
-                className="px-5 py-2.5 rounded-xl bg-white text-blue-700 font-semibold text-[13px] hover:bg-blue-50 transition-colors flex items-center gap-2"
+                className={cn(
+                  "px-5 py-2.5 rounded-xl bg-white font-semibold text-[13px] hover:bg-white/90 transition-colors flex items-center gap-2",
+                  heroBtnText,
+                )}
               >
                 Abrir caixa <ArrowRight size={14} />
               </button>
