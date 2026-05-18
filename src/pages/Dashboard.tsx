@@ -312,8 +312,39 @@ export default function Dashboard() {
   // Derived
   const lucroMes = faturamentoMes - despesasMes;
   const dataHoje = format(new Date(), "EEEE, d 'de' MMMM", { locale: ptBR });
-  const caixaPositivo = lucroMes > 0;
+  // Threshold de atenção: margem abaixo de 3% do faturamento (mín R$ 500)
+  const atencaoThreshold = Math.max(faturamentoMes * 0.03, 500);
+  const caixaAtencao = faturamentoMes > 0 && lucroMes >= 0 && lucroMes < atencaoThreshold;
   const caixaNegativo = lucroMes < 0;
+  const caixaPositivo = lucroMes > 0 && !caixaAtencao;
+  const statusCaixa: "positivo" | "negativo" | "atencao" =
+    caixaNegativo ? "negativo" : caixaAtencao ? "atencao" : "positivo";
+  const heroTitulo =
+    statusCaixa === "negativo" ? "Caixa negativo"
+    : statusCaixa === "atencao" ? "No limite"
+    : "Tô no lucro";
+  const heroGradient =
+    statusCaixa === "negativo"
+      ? "bg-gradient-to-br from-rose-600 to-rose-700"
+      : statusCaixa === "atencao"
+      ? "bg-gradient-to-br from-amber-500 to-orange-600"
+      : "bg-gradient-to-br from-blue-600 to-blue-700";
+  const heroShadow =
+    statusCaixa === "negativo"
+      ? "shadow-[0_30px_80px_-30px_rgba(225,29,72,0.45)]"
+      : statusCaixa === "atencao"
+      ? "shadow-[0_30px_80px_-30px_rgba(234,88,12,0.45)]"
+      : "shadow-[0_30px_80px_-30px_rgba(37,99,235,0.45)]";
+  const heroBtnText =
+    statusCaixa === "negativo" ? "text-rose-700"
+    : statusCaixa === "atencao" ? "text-orange-700"
+    : "text-blue-700";
+  const heroBadge =
+    statusCaixa === "negativo"
+      ? { label: "Negativo", cls: "bg-white/15 text-white border-white/30" }
+      : statusCaixa === "atencao"
+      ? { label: "Atenção", cls: "bg-amber-100/25 text-amber-50 border-amber-200/40" }
+      : { label: "Positivo", cls: "bg-emerald-400/20 text-emerald-100 border-emerald-300/40" };
   const hasFaturamento = faturamentoMes > 0 || despesasMes > 0;
   const cmvOk = cmvPct <= cmvMeta;
 
