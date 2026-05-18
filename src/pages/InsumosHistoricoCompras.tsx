@@ -20,7 +20,7 @@ import { ComprasGraficoFornecedor } from "@/components/compras/ComprasGraficoFor
 import { CompraCard, type CompraGrupo } from "@/components/compras/CompraCard";
 import { CupomCompraSheet, type CupomItem } from "@/components/compras/CupomCompraSheet";
 import { Money } from "@/components/Money";
-import { PageHero } from "@/components/layout/PageHero";
+
 
 type Row = {
   id: string;
