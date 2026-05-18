@@ -513,6 +513,10 @@ Deno.serve(async (req) => {
   }
 
   // 7. retorno
+  const partes: string[] = [];
+  if (itens_salvos > 0) partes.push(`${itens_salvos} insumo(s) com custo atualizado`);
+  if (comprasIncompletas.length > 0) partes.push(`${comprasIncompletas.length} compra(s) registrada(s) sem atualizar custo (dados incompletos)`);
+  if (precos_bloqueados.length > 0) partes.push(`${precos_bloqueados.length} com preço suspeito em revisão`);
   return jsonResponse({
     status,
     nota_fiscal_id,
@@ -520,10 +524,9 @@ Deno.serve(async (req) => {
     total_itens: itensNorm.length,
     itens_salvos,
     itens_bloqueados: precos_bloqueados.length,
+    compras_incompletas: comprasIncompletas.length,
     fichas_impactadas: fichas_impactadas.length,
-    mensagem_usuario: precos_bloqueados.length > 0
-      ? `${itens_salvos} itens salvos, ${precos_bloqueados.length} com preço suspeito enviados para revisão.`
-      : `${itens_salvos} itens importados com sucesso.`,
+    mensagem_usuario: partes.length > 0 ? partes.join(" · ") : "Nada processado.",
     ...(erros.length > 0 ? { erros } : {}),
   });
 });
