@@ -809,8 +809,8 @@ export default function FichasTecnicasPizza() {
                 )}
 
                 {/* Dados principais — inputs minimalistas (tipo já está no header) */}
-                <div className="grid grid-cols-3 gap-6">
-                  <div className="col-span-2 space-y-1.5">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+                  <div className="sm:col-span-2 space-y-1.5">
                     <Label htmlFor="nome" className="text-xs font-medium uppercase tracking-wider text-slate-500">Nome da Pizza</Label>
                     <Input
                       id="nome"
@@ -818,7 +818,7 @@ export default function FichasTecnicasPizza() {
                       value={form.nome}
                       onChange={(e) => setForm({ ...form, nome: e.target.value })}
                       onBlur={() => setTouched(t => ({ ...t, nome: true }))}
-                      className={cn("h-10 text-sm font-medium border-slate-200", fieldErrorClass(nomeInvalid))}
+                      className={cn("h-11 sm:h-10 text-base sm:text-sm font-medium border-slate-200", fieldErrorClass(nomeInvalid))}
                     />
                     <FieldError show={nomeInvalid} />
                   </div>
@@ -829,7 +829,7 @@ export default function FichasTecnicasPizza() {
                       placeholder="FT-001"
                       value={form.numero_ficha}
                       onChange={(e) => setForm({ ...form, numero_ficha: e.target.value })}
-                      className="h-10 text-sm font-medium border-slate-200"
+                      className="h-11 sm:h-10 text-base sm:text-sm font-medium border-slate-200"
                     />
                   </div>
                 </div>
