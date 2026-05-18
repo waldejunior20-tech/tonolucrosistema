@@ -314,50 +314,55 @@ export default function InsumosHistoricoCompras() {
         </div>
       )}
 
-      {/* Busca */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Buscar por mercado, insumo..."
-          value={busca}
-          onChange={(e) => setBusca(e.target.value)}
-          className="pl-9 h-10 rounded-xl"
-        />
-      </div>
+      {/* Busca + Lista — um único card branco com sombra suave */}
+      <div className="rounded-2xl bg-card border border-border/60 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_-12px_rgba(15,23,42,0.08)] overflow-hidden">
+        <div className="p-3 border-b border-border/60">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar por mercado, insumo..."
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              className="pl-9 h-10 rounded-lg bg-background border-border/80 focus-visible:ring-1 focus-visible:ring-blue-500"
+            />
+          </div>
+        </div>
 
-      {/* Lista de compras agrupada por dia */}
-      {isLoading ? (
-        <div className="space-y-2">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <SkeletonCard key={i} />
-          ))}
-        </div>
-      ) : compras.length === 0 ? (
-        <EmptyState
-          icon={History}
-          title="Nenhuma compra encontrada"
-          description="Ajuste o período ou aguarde a próxima nota fiscal ser processada."
-        />
-      ) : (
-        <div className="space-y-5">
-          {comprasPorDia.map(([dia, lista]) => (
-            <div key={dia}>
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold mb-2 px-1">
-                {formatDayHeader(dia)}
-              </div>
-              <div className="space-y-2">
-                {lista.map((c) => (
-                  <CompraCard
-                    key={c.grupo.key}
-                    compra={c.grupo}
-                    onClick={() => setCupomKey(c.grupo.key)}
-                  />
-                ))}
-              </div>
+        <div className="p-3">
+          {isLoading ? (
+            <div className="space-y-2">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
             </div>
-          ))}
+          ) : compras.length === 0 ? (
+            <EmptyState
+              icon={History}
+              title="Nenhuma compra encontrada"
+              description="Ajuste o período ou aguarde a próxima nota fiscal ser processada."
+            />
+          ) : (
+            <div className="space-y-5">
+              {comprasPorDia.map(([dia, lista]) => (
+                <div key={dia}>
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold mb-2 px-1">
+                    {formatDayHeader(dia)}
+                  </div>
+                  <div className="space-y-2">
+                    {lista.map((c) => (
+                      <CompraCard
+                        key={c.grupo.key}
+                        compra={c.grupo}
+                        onClick={() => setCupomKey(c.grupo.key)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       {cupomData && (
         <CupomCompraSheet
