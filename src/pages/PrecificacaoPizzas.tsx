@@ -848,8 +848,8 @@ export default function PrecificacaoPizzas() {
 
                                     {/* Preço de Venda input */}
                                     <div className="mt-4 pt-3 border-t border-white/50">
-                                      <div className="flex items-center justify-between mb-2">
-                                        <span className="text-[12px] font-bold text-foreground">Preço de Venda</span>
+                                      <div className="flex items-center justify-center mb-2">
+                                        <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-700">Preço de Venda</span>
                                       </div>
                                       <div className="relative">
                                         <input
