@@ -498,3 +498,23 @@ label, .label {
   font-variant-numeric: tabular-nums;
 }
 
+/* ══════════════════════════════════════════════════
+   CARD BRANCO CONTEÚDO — sofisticado com hover
+   ══════════════════════════════════════════════════ */
+.card-branco-conteudo {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.2s ease;
+}
+
+.card-branco-conteudo:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px -4px rgba(15, 23, 42, 0.05),
+              0 4px 12px -5px rgba(15, 23, 42, 0.05);
+  border-color: #cbd5e1;
+}
+
