@@ -128,6 +128,34 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
 
   const label = CATEGORIA_LABELS[categoria] || categoria;
 
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [subcategoria, setSubcategoria] = useState<string | null>(null);
+
+  const subcatsDisponiveis = SUBCATEGORIAS[categoria] ?? [];
+  const subcatAtiva = subcatsDisponiveis.find((s) => s.id === subcategoria);
+
+  useEffect(() => {
+    const sub = searchParams.get("sub");
+    if (sub && subcatsDisponiveis.some((s) => s.id === sub)) {
+      setSubcategoria(sub);
+    } else {
+      setSubcategoria(null);
+    }
+  }, [searchParams, categoria]);
+
+  const selecionarSub = (sub: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("sub", sub);
+    setSearchParams(params);
+  };
+  const voltarSubs = () => {
+    const params = new URLSearchParams(searchParams);
+    params.delete("sub");
+    setSearchParams(params);
+  };
+
+  const label = CATEGORIA_LABELS[categoria] || categoria;
+
   // Queries
   const { data: fichas = [], isLoading } = useQuery({
     queryKey: ["fichas_tecnicas_produtos", categoria],
@@ -141,6 +169,12 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
       return data as FichaProduto[];
     },
   });
+
+  const fichasFiltradas = subcategoria
+    ? fichas.filter((f) => (f as any).subcategoria === subcategoria)
+    : fichas;
+  const countBySub = (subId: string) =>
+    fichas.filter((f) => (f as any).subcategoria === subId).length;
 
   const { data: todosIngredientes = [] } = useQuery({
     queryKey: ["fichas_tecnicas_produtos_ingredientes"],
