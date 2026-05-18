@@ -84,6 +84,7 @@ export default function PrecificacaoPizzas() {
   const [configForm, setConfigForm] = useState<ConfigPrecificacao | null>(null);
   const [savedFields, setSavedFields] = useState<Record<string, boolean>>({});
   const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
+  const [mobileSize, setMobileSize] = useState<Record<string, "p" | "m" | "g">>({});
 
   const toggleCard = (id: string) => {
     setExpandedCards((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -744,6 +745,26 @@ export default function PrecificacaoPizzas() {
                     <CollapsibleContent className="data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
                       <div className="border-t border-border/40" />
                       <div className="p-4 md:p-6">
+                        {/* Mobile segmented control (P/M/G) — visível só < md */}
+                        <div className="md:hidden mb-4 flex gap-1 p-1 rounded-xl bg-slate-200">
+                          {sizes.map((s) => {
+                            const active = (mobileSize[ficha.id] ?? "p") === s;
+                            return (
+                              <button
+                                key={s}
+                                type="button"
+                                onClick={() => setMobileSize((prev) => ({ ...prev, [ficha.id]: s }))}
+                                className={cn(
+                                  "flex-1 py-2.5 rounded-lg text-[13px] font-bold transition-all",
+                                  active ? "bg-white text-slate-900 shadow-sm" : "bg-transparent text-slate-600",
+                                )}
+                              >
+                                Tamanho {sizeLabels[s]}
+                              </button>
+                            );
+                          })}
+                        </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
                             {/* ─── 3 Glass Cards: P / M / G ─── */}
                             {sizes.map((s, sizeIdx) => {
@@ -769,7 +790,10 @@ export default function PrecificacaoPizzas() {
                               return (
                                 <div
                                   key={s}
-                                  className="group relative aspect-square min-h-[360px] rounded-3xl border border-white/40 bg-white/40 backdrop-blur-xl shadow-[0_10px_40px_-12px_rgba(15,23,42,0.18)] hover:shadow-[0_20px_60px_-12px_rgba(15,23,42,0.28)] hover:-translate-y-1 hover:scale-[1.015] transition-all duration-300 p-5 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-500 fill-mode-both"
+                                  className={cn(
+                                    "group relative aspect-square min-h-[360px] rounded-3xl border border-white/40 bg-white/40 backdrop-blur-xl shadow-[0_10px_40px_-12px_rgba(15,23,42,0.18)] hover:shadow-[0_20px_60px_-12px_rgba(15,23,42,0.28)] hover:-translate-y-1 hover:scale-[1.015] transition-all duration-300 p-5 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-500 fill-mode-both",
+                                    (mobileSize[ficha.id] ?? "p") !== s && "hidden md:flex",
+                                  )}
                                   style={{ animationDelay: `${sizeIdx * 90}ms` }}
                                 >
                                   {/* Iridescent sheen */}
