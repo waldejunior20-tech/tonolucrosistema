@@ -299,7 +299,7 @@ export default function InsumosComprados() {
       >
         <TableCell className="text-left font-semibold text-slate-900 text-[13.5px] leading-tight py-3">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="break-words">{insumo.nome}</span>
+            <span className="break-words uppercase">{insumo.nome}</span>
             {isDup(insumo.nome) && (
               <span
                 className="inline-flex items-center gap-1 h-5 px-1.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-semibold tracking-wide tabular-nums"
