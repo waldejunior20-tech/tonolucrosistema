@@ -449,7 +449,7 @@ export default function PrecificacaoPizzas() {
 
   return (
     <TooltipProvider>
-      <div className="space-y-6 page-enter glass-surface -mx-4 -my-4 px-4 py-4 sm:-mx-6 sm:px-6 rounded-2xl">
+      <div className="space-y-6 page-enter glass-surface">
         <PrecificacaoCategoryTabs />
         <PageHeader title="Precificação de Pizzas" description="Gestão de margem por tamanho · Terminal de precisão.">
           <button
