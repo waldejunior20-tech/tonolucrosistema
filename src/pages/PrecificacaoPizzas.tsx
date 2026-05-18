@@ -745,6 +745,26 @@ export default function PrecificacaoPizzas() {
                     <CollapsibleContent className="data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
                       <div className="border-t border-border/40" />
                       <div className="p-4 md:p-6">
+                        {/* Mobile segmented control (P/M/G) — visível só < md */}
+                        <div className="md:hidden mb-4 flex gap-1 p-1 rounded-xl bg-slate-200">
+                          {sizes.map((s) => {
+                            const active = (mobileSize[ficha.id] ?? "p") === s;
+                            return (
+                              <button
+                                key={s}
+                                type="button"
+                                onClick={() => setMobileSize((prev) => ({ ...prev, [ficha.id]: s }))}
+                                className={cn(
+                                  "flex-1 py-2.5 rounded-lg text-[13px] font-bold transition-all",
+                                  active ? "bg-white text-slate-900 shadow-sm" : "bg-transparent text-slate-600",
+                                )}
+                              >
+                                Tamanho {sizeLabels[s]}
+                              </button>
+                            );
+                          })}
+                        </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
                             {/* ─── 3 Glass Cards: P / M / G ─── */}
                             {sizes.map((s, sizeIdx) => {
