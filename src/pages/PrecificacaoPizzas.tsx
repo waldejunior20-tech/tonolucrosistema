@@ -422,10 +422,11 @@ export default function PrecificacaoPizzas() {
   // CMV pill colors — padrão Abrasel (alinhado com pricing-helpers.ts)
   // < 25% azul (margem alta) | 25-35% verde (ideal) | 35-40% amarelo (atenção) | > 40% vermelho (prejuízo)
   const getCmvPillStyle = (cmv: number) => {
-    if (cmv > 40) return { bg: 'hsl(var(--destructive))', text: 'hsl(var(--destructive-foreground))', glow: 'hsl(var(--destructive) / 0.25)' };
-    if (cmv > 35) return { bg: 'hsl(var(--warning))', text: 'hsl(var(--foreground))', glow: 'hsl(var(--warning) / 0.25)' };
-    if (cmv < 25) return { bg: 'hsl(var(--info, 217 91% 60%))', text: 'hsl(var(--primary-foreground))', glow: 'hsl(var(--info, 217 91% 60%) / 0.25)' };
-    return { bg: 'hsl(var(--success))', text: 'hsl(var(--primary-foreground))', glow: 'hsl(var(--success) / 0.25)' };
+    // Premium pastel palette — high-contrast dark text on soft backgrounds
+    if (cmv > 40) return { bg: '#fef2f2', text: '#991b1b', border: 'rgba(153, 27, 27, 0.1)', glow: 'hsl(var(--destructive) / 0.25)' };
+    if (cmv > 35) return { bg: '#fefce8', text: '#854d0e', border: 'rgba(133, 77, 14, 0.1)', glow: 'hsl(var(--warning) / 0.25)' };
+    if (cmv < 25) return { bg: '#eff6ff', text: '#1e40af', border: 'rgba(37, 99, 235, 0.1)', glow: 'hsl(var(--info, 217 91% 60%) / 0.25)' };
+    return { bg: '#f0fdf4', text: '#166534', border: 'rgba(22, 101, 52, 0.1)', glow: 'hsl(var(--success) / 0.25)' };
   };
 
   // Health dot for card header — mesmas faixas Abrasel
@@ -616,12 +617,12 @@ export default function PrecificacaoPizzas() {
 
 
         {/* ═══ Régua global FAIXAS DE CMV ═══ */}
-        <div className="flex flex-wrap items-center text-[11px] font-semibold" style={{ gap: "8px" }}>
-          <span className="text-slate-500 uppercase tracking-wider mr-1">Faixas de CMV:</span>
-          <span className="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">&lt; 25% Margem alta</span>
-          <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">25–35% Ideal</span>
-          <span className="px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">35–40% Atenção</span>
-          <span className="px-2.5 py-1 rounded-full bg-red-50 text-red-700 border border-red-200">&gt; 40% Prejuízo</span>
+        <div className="flex flex-wrap items-center text-[11px]" style={{ gap: "8px" }}>
+          <span className="text-slate-500 uppercase tracking-wider mr-1 font-semibold">Faixas de CMV:</span>
+          <span style={{ backgroundColor: '#eff6ff', color: '#1e40af', border: '1px solid rgba(37, 99, 235, 0.1)', borderRadius: '6px', padding: '4px 10px', fontWeight: 700 }}>&lt; 25% Margem alta</span>
+          <span style={{ backgroundColor: '#f0fdf4', color: '#166534', border: '1px solid rgba(22, 101, 52, 0.1)', borderRadius: '6px', padding: '4px 10px', fontWeight: 700 }}>25–35% Ideal</span>
+          <span style={{ backgroundColor: '#fefce8', color: '#854d0e', border: '1px solid rgba(133, 77, 14, 0.1)', borderRadius: '6px', padding: '4px 10px', fontWeight: 700 }}>35–40% Atenção</span>
+          <span style={{ backgroundColor: '#fef2f2', color: '#991b1b', border: '1px solid rgba(153, 27, 27, 0.1)', borderRadius: '6px', padding: '4px 10px', fontWeight: 700 }}>&gt; 40% Prejuízo</span>
           <Tooltip>
             <TooltipTrigger asChild>
               <button type="button" className="text-slate-400 hover:text-slate-700 transition-colors">
@@ -727,8 +728,8 @@ export default function PrecificacaoPizzas() {
                                   <>
                                     <Money value={preco} className="text-[16px] font-extrabold text-slate-900 leading-none tabular-nums my-1" symbolScale={0.55} />
                                     <span
-                                      className="inline-flex items-center justify-center text-finance-mono text-[10.5px] font-semibold px-2 py-0.5 rounded-full tabular-nums"
-                                      style={{ background: pill.bg, color: pill.text }}
+                                      className="inline-flex items-center justify-center text-finance-mono text-[10.5px] tabular-nums"
+                                      style={{ background: pill.bg, color: pill.text, border: `1px solid ${pill.border}`, borderRadius: '6px', padding: '4px 10px', fontWeight: 700 }}
                                     >
                                       {fmtPct(cmv)}
                                     </span>
@@ -830,8 +831,8 @@ export default function PrecificacaoPizzas() {
                                       </span>
                                       {preco > 0 ? (
                                         <span
-                                          className="absolute right-0 top-1/2 -translate-y-1/2 text-finance-mono text-[10.5px] font-bold px-2 py-0.5 rounded-full tabular-nums"
-                                          style={{ background: pill.bg, color: pill.text }}
+                                          className="absolute right-0 top-1/2 -translate-y-1/2 text-finance-mono text-[10.5px] tabular-nums"
+                                          style={{ background: pill.bg, color: pill.text, border: `1px solid ${pill.border}`, borderRadius: '6px', padding: '4px 10px', fontWeight: 700 }}
                                         >
                                           {fmtPct(cmv)}
                                         </span>
