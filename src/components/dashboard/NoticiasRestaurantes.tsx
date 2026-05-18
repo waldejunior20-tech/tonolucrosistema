@@ -44,10 +44,11 @@ export function NoticiasRestaurantes() {
   const {
     data: noticias = [], isLoading, isError, refetch, isFetching, dataUpdatedAt,
   } = useQuery({
-    queryKey: ["noticias-setor"],
+    queryKey: ["noticias-setor", "v2"],
     queryFn: fetchNoticias,
     staleTime: 1000 * 60 * 10,
     refetchInterval: 1000 * 60 * 15,
+    refetchOnMount: "always",
   });
 
   const ultimoRefresco = new Date(dataUpdatedAt || Date.now())

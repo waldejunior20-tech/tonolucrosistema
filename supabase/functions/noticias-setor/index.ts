@@ -15,9 +15,11 @@ interface Noticia {
 }
 
 const FEEDS: { url: string; fonte: string }[] = [
+  { url: "https://news.google.com/rss/search?q=food%20service%20restaurante%20Brasil&hl=pt-BR&gl=BR&ceid=BR:pt-419", fonte: "Google Notícias" },
+  { url: "https://news.google.com/rss/search?q=Abrasel%20restaurantes&hl=pt-BR&gl=BR&ceid=BR:pt-419", fonte: "Google Notícias" },
+  { url: "https://news.google.com/rss/search?q=gastronomia%20restaurantes%20Brasil&hl=pt-BR&gl=BR&ceid=BR:pt-419", fonte: "Google Notícias" },
+  { url: "https://www.mercadoeconsumo.com.br/feed/", fonte: "Mercado&Consumo" },
   { url: "https://www.foodservicenews.com.br/feed/", fonte: "Food Service News" },
-  { url: "https://www.mercadoeconsumo.com.br/categoria/food-service/feed/", fonte: "Mercado&Consumo" },
-  { url: "https://abrasel.com.br/noticias/feed/", fonte: "ABRASEL" },
   { url: "https://forbes.com.br/forbeslife/gastronomia/feed/", fonte: "Forbes Gastronomia" },
 ];
 
@@ -164,11 +166,11 @@ Deno.serve(async (req) => {
       Promise.all(FEEDS.map(fetchFeed)).then((r) => r.flat()),
       fetchNewsApi(),
     ]);
-    const all = [...rssResults, ...newsApiResults];
+    const all = [...rssResults, ...newsApiResults].filter((n) => n.titulo && n.linkFonte);
     // Dedup por título normalizado
     const seen = new Set<string>();
     const unique = all.filter((n) => {
-      const key = n.titulo.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 80);
+      const key = n.titulo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "").slice(0, 80);
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
@@ -176,7 +178,7 @@ Deno.serve(async (req) => {
     unique.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
     const noticias = unique.slice(0, 10);
 
-    cache = { at: Date.now(), data: noticias };
+    if (noticias.length > 0) cache = { at: Date.now(), data: noticias };
 
     return new Response(JSON.stringify({ noticias, cached: false }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
