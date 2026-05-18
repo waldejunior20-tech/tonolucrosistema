@@ -1425,34 +1425,34 @@ export default function FichasTecnicasPizza() {
 
               {/* STICKY FOOTER */}
               <div className="border-t border-slate-200 bg-white shrink-0">
-                <div className="w-full px-5 h-16 flex items-center justify-between gap-6">
-                  <div className="flex items-center divide-x divide-slate-200">
+                <div className="w-full px-4 sm:px-5 py-3 sm:py-0 sm:h-16 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-6">
+                  <div className="flex items-center justify-between sm:justify-start sm:divide-x sm:divide-slate-200 gap-2 sm:gap-0">
                     {[
                       { l: "P", v: custoForm.custoP },
                       { l: "M", v: custoForm.custoM },
                       { l: "G", v: custoForm.custoG },
                     ].map((t) => (
-                      <div key={t.l} className="flex items-baseline gap-2 px-5 first:pl-0 last:pr-0">
-                        <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Total {t.l}</span>
-                        <Money value={t.v} className="text-base font-semibold text-slate-900 tabular-nums" />
+                      <div key={t.l} className="flex items-baseline gap-1.5 sm:gap-2 sm:px-5 first:pl-0 last:pr-0">
+                        <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-slate-400">Total {t.l}</span>
+                        <Money value={t.v} className="text-sm sm:text-base font-semibold text-slate-900 tabular-nums" />
                       </div>
                     ))}
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 w-full sm:w-auto">
                     {form.ingredientes.length > 0 && (
                       <Button
                         type="button"
                         variant="outline"
                         size="sm"
-                        className="h-10 gap-1.5"
+                        className="h-11 sm:h-10 gap-1.5 hidden sm:inline-flex"
                         onClick={() => setSalvarBaseOpen(true)}
                       >
                         <Sparkles className="h-4 w-4" />
                         Salvar como base
                       </Button>
                     )}
-                    <Button type="button" variant="outline" size="sm" className="h-10 px-4" onClick={resetForm}>Cancelar</Button>
-                    <Button type="submit" size="sm" className="h-10 px-6" disabled={insertMutation.isPending || updateMutation.isPending || (!editingId && !formIsValid)} >
+                    <Button type="button" variant="outline" size="sm" className="h-11 sm:h-10 px-4 flex-1 sm:flex-none" onClick={resetForm}>Cancelar</Button>
+                    <Button type="submit" size="sm" className="h-11 sm:h-10 px-6 flex-1 sm:flex-none" disabled={insertMutation.isPending || updateMutation.isPending || (!editingId && !formIsValid)} >
                       {editingId ? "Salvar" : "Cadastrar"}
                     </Button>
                   </div>
