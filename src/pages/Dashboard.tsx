@@ -805,16 +805,14 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ─── BENTO GRID — SEÇÕES RICAS (mantido) ────────────── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 md:gap-5">
+      {/* ─── OPORTUNIDADES + RADAR (lado a lado) ───────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-6">
 
-        {/* RADAR DE LUCRO removido */}
-
-        {/* OPORTUNIDADES (col-span-4) — substitui status financeiro (já no hero) */}
-        <Bento className="lg:col-span-12">
+        {/* OPORTUNIDADES */}
+        <Bento>
           <CardHeader
-            title="Oportunidades"
-            subtitle="Produtos prontos pra campanha."
+            title="Oportunidades Recomendadas"
+            subtitle="Produtos validados pela IA para campanhas de margem rápida e injeção de caixa."
             icon={Sparkles}
             tint="success"
             action={
@@ -823,7 +821,7 @@ export default function Dashboard() {
                   onClick={() => navigate("/promocoes")}
                   className={cn(T.label, "text-[#2563EB] hover:text-[#1D4ED8]")}
                 >
-                  Criar →
+                  Criar Campanha →
                 </button>
               )
             }
@@ -859,10 +857,10 @@ export default function Dashboard() {
           )}
         </Bento>
 
+        {/* RADAR / NOTÍCIAS */}
+        <NoticiasRestaurantes />
       </div>
 
-      {/* ─── NOTÍCIAS DO SETOR ──────────────────────────────── */}
-      <NoticiasRestaurantes />
       </div>
     </div>
   );
