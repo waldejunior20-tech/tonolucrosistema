@@ -261,7 +261,7 @@ export default function InsumosHistoricoCompras() {
       className="space-y-4 page-enter pb-6 -m-4 sm:-m-6 p-4 sm:p-6 min-h-screen"
       style={{
         background:
-          "radial-gradient(1200px 600px at 0% -10%, rgba(59,130,246,0.08), transparent 60%), radial-gradient(900px 500px at 100% 0%, rgba(99,102,241,0.06), transparent 60%), linear-gradient(180deg, #f6f8fb 0%, #eef2ف7 100%)".replace("ف","f"),
+          "radial-gradient(1200px 600px at 0% -10%, rgba(59,130,246,0.08), transparent 60%), radial-gradient(900px 500px at 100% 0%, rgba(99,102,241,0.06), transparent 60%), linear-gradient(180deg, #f6f8fb 0%, #eef2f7 100%)",
       }}
     >
       <PageHeader
