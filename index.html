@@ -12,6 +12,9 @@
       content="Sistema completo de gestão, fichas técnicas, proporções inteligentes e precificação para pizzarias e food service."
     />
     <meta name="author" content="TôNoLucro" />
+    <meta name="robots" content="index, follow" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="canonical" href="https://tonolucrosistema.lovable.app/" />
 
     <!-- PWA -->
     <link rel="manifest" href="/manifest.webmanifest" />
@@ -33,17 +36,47 @@
 
     <!-- Open Graph / Twitter -->
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="TôNoLucro" />
     <meta property="og:title" content="TôNoLucro — Gestão para Pizzarias" />
     <meta
       property="og:description"
       content="Fichas técnicas, proporções inteligentes e precificação para pizzarias."
     />
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:url" content="https://tonolucrosistema.lovable.app/" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:image" content="https://tonolucrosistema.lovable.app/icon-512.png" />
+    <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="TôNoLucro" />
     <meta
       name="twitter:description"
       content="Sistema de gestão e precificação para food service"
     />
+    <meta name="twitter:image" content="https://tonolucrosistema.lovable.app/icon-512.png" />
+
+    <!-- Structured data: Organization + SoftwareApplication -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "name": "TôNoLucro",
+            "url": "https://tonolucrosistema.lovable.app/",
+            "logo": "https://tonolucrosistema.lovable.app/icon-512.png"
+          },
+          {
+            "@type": "SoftwareApplication",
+            "name": "TôNoLucro",
+            "applicationCategory": "BusinessApplication",
+            "operatingSystem": "Web, iOS, Android",
+            "description": "Sistema de gestão, fichas técnicas, proporções inteligentes e precificação para pizzarias e food service.",
+            "inLanguage": "pt-BR",
+            "url": "https://tonolucrosistema.lovable.app/",
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "BRL" }
+          }
+        ]
+      }
+    </script>
   </head>
 
   <body>
