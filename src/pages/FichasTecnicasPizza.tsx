@@ -1032,12 +1032,12 @@ export default function FichasTecnicasPizza() {
                                     </div>
                                   </TableCell>
 
-                                  {/* BLOCO 3 — CUSTOS mono uniforme, alinhado à direita */}
+                                  {/* BLOCO 3 — CUSTOS: valores empilhados, sem labels P/M/G */}
                                   <TableCell className="align-middle !py-3 !px-4 text-right">
-                                    <div className="inline-flex flex-col items-end gap-0.5 text-sm leading-tight">
-                                      <div className="flex items-baseline gap-2"><span className="text-xs text-slate-400">P</span><Money value={custoUnit * converterQuantidade(ing.qtd_p, ing.unidade)} className="font-semibold text-slate-900 min-w-[72px] justify-end" /></div>
-                                      <div className="flex items-baseline gap-2"><span className="text-xs text-slate-400">M</span><Money value={custoUnit * converterQuantidade(ing.qtd_m, ing.unidade)} className="font-semibold text-slate-900 min-w-[72px] justify-end" /></div>
-                                      <div className="flex items-baseline gap-2"><span className="text-xs text-slate-400">G</span><Money value={custoUnit * converterQuantidade(ing.qtd_g, ing.unidade)} className="font-semibold text-slate-900 min-w-[72px] justify-end" /></div>
+                                    <div className="flex flex-col justify-center items-end min-w-[80px] leading-tight">
+                                      <Money value={custoUnit * converterQuantidade(ing.qtd_p, ing.unidade)} className="text-[13px] font-semibold text-slate-600 py-0.5" />
+                                      <Money value={custoUnit * converterQuantidade(ing.qtd_m, ing.unidade)} className="text-[13px] font-semibold text-slate-600 py-0.5" />
+                                      <Money value={custoUnit * converterQuantidade(ing.qtd_g, ing.unidade)} className="text-[13px] font-semibold text-slate-600 py-0.5" />
                                     </div>
                                   </TableCell>
 
