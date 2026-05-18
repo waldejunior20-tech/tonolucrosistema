@@ -780,8 +780,8 @@ export default function FichasTecnicasPizza() {
             </div>
 
             <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
-              <div className="flex-1 overflow-y-auto">
-                <div className="w-full px-5 py-8 space-y-10">
+              <div className="flex-1 overflow-y-auto overscroll-contain">
+                <div className="w-full px-4 sm:px-5 py-6 sm:py-8 space-y-8 sm:space-y-10">
                 {editingId ? (
                   <BaseSelector
                     tipoFicha="pizza"
