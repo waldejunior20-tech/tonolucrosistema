@@ -19,7 +19,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
 import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
-import { Pencil, Trash2, Plus, Filter, Package, ChevronDown, LayoutGrid, List, History, TrendingUp, TrendingDown, Minus, AlertTriangle } from "lucide-react";
+import { Pencil, Trash2, Plus, Filter, Package, ChevronDown, LayoutGrid, List, History, TrendingUp, TrendingDown, Minus, AlertTriangle, Search, X } from "lucide-react";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 import { MoneyInput, QuantityInput, formatMoney, formatQuantidade } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -60,6 +60,8 @@ export default function InsumosComprados() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [filtroCategoria, setFiltroCategoria] = useState<string>("todas");
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [sortBy, setSortBy] = useState<"nome" | "preco" | "variacao" | "data">("nome");
   const [submitted, setSubmitted] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("grouped");
   const [collapsedCats, setCollapsedCats] = useState<Set<string>>(new Set());
@@ -206,9 +208,33 @@ export default function InsumosComprados() {
     setDialogOpen(true);
   };
 
-  const filtered = filtroCategoria === "todas"
+  const normalize = (s: string) =>
+    s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+  const searchNorm = normalize(searchTerm);
+  const filteredBase = filtroCategoria === "todas"
     ? insumos
     : insumos.filter((i) => i.categoria === filtroCategoria);
+  const filtered = useMemo(() => {
+    const arr = searchNorm
+      ? filteredBase.filter((i) =>
+          normalize(i.nome).includes(searchNorm) ||
+          normalize(i.categoria ?? "").includes(searchNorm) ||
+          normalize(i.fornecedor ?? "").includes(searchNorm),
+        )
+      : filteredBase;
+    const sorted = [...arr];
+    if (sortBy === "nome") {
+      sorted.sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+    } else if (sortBy === "preco") {
+      const unit = (i: Insumo) => Number(i.quantidade) > 0 ? Number(i.preco_pago) / Number(i.quantidade) : Number(i.preco_pago);
+      sorted.sort((a, b) => unit(b) - unit(a));
+    } else if (sortBy === "variacao") {
+      sorted.sort((a, b) => Math.abs(canonMap.get(b.id)?.variacao_pct ?? 0) - Math.abs(canonMap.get(a.id)?.variacao_pct ?? 0));
+    } else if (sortBy === "data") {
+      sorted.sort((a, b) => (b.data_compra ?? "").localeCompare(a.data_compra ?? ""));
+    }
+    return sorted;
+  }, [filteredBase, searchNorm, sortBy, canonMap]);
 
   // Mapa de duplicatas: nome normalizado -> contagem
   const dupCount = useMemo(() => {
@@ -452,18 +478,58 @@ export default function InsumosComprados() {
         </Dialog>
       </PageHeader>
 
-      {/* Filtro + Toggle de visualização */}
+      {/* Busca + Filtros + Toggle de visualização */}
       <div className="flex items-center gap-3 flex-wrap">
-        <Filter className="h-4 w-4 text-muted-foreground" />
-        <Select value={filtroCategoria} onValueChange={setFiltroCategoria}>
-          <SelectTrigger className="w-[220px]">
-            <SelectValue placeholder="Filtrar por categoria" />
+        <div className="relative w-full sm:w-[320px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Buscar por nome, categoria ou fornecedor…"
+            className="pl-9 pr-9 h-10"
+          />
+          {searchTerm && (
+            <button
+              type="button"
+              onClick={() => setSearchTerm("")}
+              className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 rounded-full hover:bg-muted flex items-center justify-center text-muted-foreground"
+              aria-label="Limpar busca"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Filter className="h-4 w-4 text-muted-foreground" />
+          <Select value={filtroCategoria} onValueChange={setFiltroCategoria}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Filtrar por categoria" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todas">Todas as categorias</SelectItem>
+              {CATEGORIAS.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Ordenar" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="todas">Todas as categorias</SelectItem>
-            {CATEGORIAS.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+            <SelectItem value="nome">Nome (A→Z)</SelectItem>
+            <SelectItem value="preco">Maior preço</SelectItem>
+            <SelectItem value="variacao">Maior variação</SelectItem>
+            <SelectItem value="data">Mais recentes</SelectItem>
           </SelectContent>
         </Select>
+
+        {(searchTerm || filtroCategoria !== "todas") && (
+          <span className="text-xs text-muted-foreground tabular-nums">
+            {filtered.length} {filtered.length === 1 ? "item" : "itens"}
+          </span>
+        )}
 
         <div className="ml-auto">
           <ToggleGroup
