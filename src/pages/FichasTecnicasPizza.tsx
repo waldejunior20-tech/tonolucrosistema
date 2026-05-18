@@ -661,50 +661,53 @@ export default function FichasTecnicasPizza() {
               <Plus className="h-4 w-4" /> Nova Ficha
             </Button>
           </DialogTrigger>
-          <DialogContent className="!max-w-[960px] w-[95vw] h-[88vh] max-h-[860px] rounded-2xl p-0 gap-0 flex flex-col overflow-hidden border border-slate-200 shadow-2xl">
-            {/* HEADER UNIFICADO: Nome · Nº ficha · Tipo */}
-            <DialogHeader className="border-b border-slate-200/70 shrink-0">
-              <div className="w-full px-5 pt-6 pb-4">
+          <DialogContent className="!max-w-[640px] w-[95vw] h-[88vh] max-h-[760px] rounded-3xl p-0 gap-0 flex flex-col overflow-hidden border border-stone-200 shadow-[0_20px_50px_rgba(0,0,0,0.15)] bg-white">
+            {/* HEADER: Nome + AI badge */}
+            <DialogHeader className="border-b border-stone-200 shrink-0">
+              <div className="w-full px-6 pt-6 pb-4">
                 <DialogTitle asChild>
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <span className="text-xl font-semibold text-slate-900 tracking-tight">
-                      {form.nome || (editingId ? "Sem nome" : "Nova ficha")}
-                    </span>
-                    {form.numero_ficha && (
-                      <>
-                        <span className="text-slate-300">·</span>
-                        <span className="text-xs font-medium text-slate-500">{form.numero_ficha}</span>
-                      </>
-                    )}
-                    <span className="text-slate-300">·</span>
-                    <Select value={form.tipo} onValueChange={(v) => setForm({ ...form, tipo: v })}>
-                      <SelectTrigger className="h-8 w-[160px] text-xs font-medium border-slate-200 bg-transparent text-slate-700">
-                        <SelectValue placeholder="Selecionar tipo" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {TIPOS.map((t) => (
-                          <SelectItem key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <h2 className="text-xl font-bold text-stone-900 tracking-tight truncate">
+                        {form.nome || (editingId ? "Sem nome" : "Nova ficha")}
+                      </h2>
+                      <span className="inline-block mt-1 px-2.5 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold">
+                        ✨ Proporções Inteligentes Ativas
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {form.numero_ficha && (
+                        <span className="text-xs font-medium text-stone-500">{form.numero_ficha}</span>
+                      )}
+                      <Select value={form.tipo} onValueChange={(v) => setForm({ ...form, tipo: v })}>
+                        <SelectTrigger className="h-8 w-[140px] text-xs font-medium border-stone-200 bg-transparent text-stone-700">
+                          <SelectValue placeholder="Tipo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {TIPOS.map((t) => (
+                            <SelectItem key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </DialogTitle>
               </div>
             </DialogHeader>
 
-            {/* COST-STRIP: P · M · G — tipografia uniforme Linear-style */}
-            <div className="shrink-0 border-b border-slate-200/70 bg-slate-50/30">
-              <div className="w-full px-5 py-2.5 flex items-center gap-6">
+            {/* COST-STRIP: P · M · G */}
+            <div className="shrink-0 border-b border-stone-200 bg-stone-50/60">
+              <div className="w-full px-6 py-3 flex items-center gap-6">
                 {[
                   { label: "P", dim: "25cm", value: custoForm.custoP },
                   { label: "M", dim: "30cm", value: custoForm.custoM },
                   { label: "G", dim: "35cm", value: custoForm.custoG },
                 ].map((c, i) => (
                   <div key={c.label} className="flex items-baseline gap-2">
-                    {i > 0 && <span className="text-slate-300">·</span>}
-                    <span className="text-xs font-semibold text-slate-700 uppercase tracking-wider">{c.label}</span>
-                    <span className="text-xs font-medium text-slate-500 tabular-nums">{c.dim}</span>
-                    <Money value={c.value} className="text-sm font-semibold text-slate-900" />
+                    {i > 0 && <span className="text-stone-300">·</span>}
+                    <span className="text-xs font-semibold text-stone-700 uppercase tracking-wider">{c.label}</span>
+                    <span className="text-xs font-medium text-stone-500 tabular-nums">{c.dim}</span>
+                    <Money value={c.value} className="text-sm font-bold text-stone-900" />
                   </div>
                 ))}
               </div>
