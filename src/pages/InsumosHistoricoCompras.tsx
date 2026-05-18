@@ -299,9 +299,9 @@ export default function InsumosHistoricoCompras() {
 
       {/* Alerta preços bloqueados */}
       {precosBloqueados30d > 0 && (
-        <div className="flex items-center gap-2 rounded-xl border border-amber-200 dark:border-amber-900/40 bg-amber-50 dark:bg-amber-950/20 p-3 text-xs">
-          <ShieldAlert className="h-4 w-4 text-amber-600 shrink-0" />
-          <span className="text-amber-900 dark:text-amber-200">
+        <div className="flex items-center gap-2 rounded-xl border border-warning/30 bg-warning/10 p-3 text-xs">
+          <ShieldAlert className="h-4 w-4 text-warning shrink-0" />
+          <span className="text-warning-foreground">
             <strong className="tabular-nums">{precosBloqueados30d}</strong> aumento(s)
             suspeito(s) bloqueado(s) nos últimos 30 dias
           </span>
