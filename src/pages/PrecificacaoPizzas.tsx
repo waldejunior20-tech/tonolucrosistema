@@ -736,6 +736,7 @@ export default function PrecificacaoPizzas() {
                               </div>
                             );
                           })}
+                          </div>
 
                           <ChevronDown
                             className={cn(
