@@ -24,7 +24,7 @@ export default function CaixaDiario() {
   const periodoData = useCaixaPeriodo(periodo);
   const { movimentos, isLoading } = useMovimentosCaixa(periodo, taxas);
 
-  const saldo = periodoData.totalLiquido - periodoData.totalGasto;
+  
 
   const periodSelector = (
     <div className="inline-flex items-center gap-1 p-1 rounded-lg bg-slate-100 border border-slate-200">
