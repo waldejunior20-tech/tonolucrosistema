@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
 import { Pencil, Trash2, Plus, Filter, Search, X, Check, Pizza, AlertTriangle, Package, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { FichasCategoryTabs } from "@/components/fichas/FichasCategoryTabs";
