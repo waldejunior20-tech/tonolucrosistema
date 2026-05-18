@@ -1032,10 +1032,10 @@ export default function Dashboard() {
       </div>
 
       {/* ─── OPORTUNIDADES + RADAR (3 cols, radar secundário) ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-        {/* OPORTUNIDADES — peso maior */}
-        <div className="lg:col-span-2">
+        {/* OPORTUNIDADES — 50% */}
+        <div>
           <Bento>
             <CardHeader
               title="Oportunidades Recomendadas"
@@ -1106,8 +1106,8 @@ export default function Dashboard() {
           </Bento>
         </div>
 
-        {/* RADAR / NOTÍCIAS — peso reduzido, área secundária */}
-        <div className="lg:col-span-1 opacity-95">
+        {/* RADAR / NOTÍCIAS — 50% */}
+        <div>
           <NoticiasRestaurantes />
         </div>
       </div>
