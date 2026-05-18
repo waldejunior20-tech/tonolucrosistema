@@ -271,8 +271,14 @@ export default function InsumosHistoricoCompras() {
             {compras.length} {compras.length === 1 ? "compra" : "compras"} ·{" "}
             {filtered.length} {filtered.length === 1 ? "item" : "itens"}
             {variacaoPct !== null && (
-              <span className={variacaoPct >= 0 ? "text-white/95" : "text-white/95"}>
-                {" · "}
+              <span
+                className={
+                  "ml-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[12px] font-semibold " +
+                  (variacaoPct >= 0
+                    ? "bg-amber-400/20 text-amber-100 ring-1 ring-amber-200/40"
+                    : "bg-emerald-400/20 text-emerald-100 ring-1 ring-emerald-200/40")
+                }
+              >
                 {variacaoPct >= 0 ? "▲" : "▼"} {Math.abs(variacaoPct).toFixed(1)}% vs. período anterior
               </span>
             )}
