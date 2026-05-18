@@ -14,9 +14,9 @@ function dateLabel(s: string) {
 export function MovimentosTimeline({ movimentos, isLoading }: { movimentos: DiaMovimento[]; isLoading: boolean }) {
   if (isLoading) {
     return (
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="h-20 rounded-xl bg-muted/40 animate-pulse" />
+          <div key={i} className="h-12 rounded-lg bg-muted/40 animate-pulse" />
         ))}
       </div>
     );
@@ -31,21 +31,21 @@ export function MovimentosTimeline({ movimentos, isLoading }: { movimentos: DiaM
   }
 
   return (
-    <div className="space-y-2">
+    <div className="rounded-xl border border-border/50 bg-card overflow-hidden divide-y divide-border/40">
       {movimentos.map((d) => (
         <div
           key={d.data}
-          className="rounded-xl border border-border/50 bg-card p-3.5 hover:border-primary/30 transition-colors"
+          className="grid grid-cols-[minmax(180px,1.2fr)_1fr_1fr_1fr] items-center gap-3 px-4 py-2.5 hover:bg-muted/30 transition-colors"
         >
-          <div className="flex items-center justify-between mb-2.5">
-            <p className="text-xs font-semibold text-foreground capitalize">{dateLabel(d.data)}</p>
-            <p className="text-[10px] text-muted-foreground tabular-nums">{format(parseISO(d.data), "dd/MM/yyyy")}</p>
+          {/* Data */}
+          <div className="min-w-0">
+            <p className="text-[13px] font-semibold text-foreground capitalize leading-tight">{dateLabel(d.data)}</p>
+            <p className="text-[10.5px] text-muted-foreground tabular-nums">{format(parseISO(d.data), "dd/MM/yyyy")}</p>
           </div>
-          <div className="grid grid-cols-3 gap-2">
-            <Cell icon={ArrowUpRight} label="Entrou" value={d.entrada} tone="success" />
-            <Cell icon={Receipt} label="Taxa" value={d.taxas} tone="warning" prefix="-" />
-            <Cell icon={ArrowDownRight} label="Saiu" value={d.saida} tone="destructive" />
-          </div>
+
+          <Cell icon={ArrowUpRight} label="Entrou" value={d.entrada} tone="success" />
+          <Cell icon={Receipt} label="Taxa" value={d.taxas} tone="warning" prefix="-" />
+          <Cell icon={ArrowDownRight} label="Saiu" value={d.saida} tone="destructive" />
         </div>
       ))}
     </div>
@@ -55,25 +55,31 @@ export function MovimentosTimeline({ movimentos, isLoading }: { movimentos: DiaM
 function Cell({
   icon: Icon, label, value, tone, prefix = "",
 }: { icon: any; label: string; value: number; tone: "success" | "warning" | "destructive"; prefix?: string }) {
-  const colorMap = {
-    success: "text-success",
-    warning: "text-warning",
-    destructive: "text-destructive",
+  // Ocultação de zeros: cell vazio limpo (sem traço cinza)
+  if (value <= 0) {
+    return <div aria-hidden />;
+  }
+
+  // Paleta premium de alta legibilidade
+  const palette = {
+    success:     { color: "#16a34a", bg: "bg-emerald-50",  ring: "text-emerald-600" },
+    warning:     { color: "#854d0e", bg: "bg-amber-50",    ring: "text-amber-700" },
+    destructive: { color: "#991b1b", bg: "bg-rose-50",     ring: "text-rose-700" },
   } as const;
-  const bgMap = {
-    success: "bg-success/10",
-    warning: "bg-warning/10",
-    destructive: "bg-destructive/10",
-  } as const;
+  const p = palette[tone];
+
   return (
-    <div className="flex items-center gap-2">
-      <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${bgMap[tone]} ${colorMap[tone]}`}>
+    <div className="flex items-center gap-2 min-w-0">
+      <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${p.bg} ${p.ring}`}>
         <Icon size={13} />
       </div>
       <div className="min-w-0">
-        <p className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold">{label}</p>
-        <p className={`text-xs sm:text-sm font-bold tabular-nums ${value > 0 ? colorMap[tone] : "text-muted-foreground/60"}`}>
-          {value > 0 ? `${prefix}${formatMoney(value)}` : "—"}
+        <p className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold leading-tight">{label}</p>
+        <p
+          className="text-[13px] sm:text-[14px] tabular-nums leading-tight text-finance-mono"
+          style={{ color: p.color, fontWeight: 700 }}
+        >
+          {prefix}{formatMoney(value)}
         </p>
       </div>
     </div>
