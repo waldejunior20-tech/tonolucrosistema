@@ -118,11 +118,14 @@ export default function CaixaDiario() {
         />
       )}
 
-      <StatCardGrid cols={3}>
-        <StatCard icon={TrendingUp} tone="up" label="Entrou" value={periodoData.totalGanho} />
-        <StatCard icon={Receipt} tone="warn" label="Taxas" value={periodoData.totalTaxas} />
-        <StatCard icon={TrendingDown} tone="down" label="Saiu" value={periodoData.totalGasto} />
-      </StatCardGrid>
+      <div
+        className="grid grid-cols-1 sm:grid-cols-3"
+        style={{ gap: "20px", marginTop: "24px" }}
+      >
+        <GlassStat label="Entrou" value={periodoData.totalGanho} icon={TrendingUp} variant="positive" />
+        <GlassStat label="Taxas" value={periodoData.totalTaxas} icon={Receipt} variant="neutral" />
+        <GlassStat label="Saiu" value={periodoData.totalGasto} icon={TrendingDown} variant="negative" />
+      </div>
 
       {/* Movimentos timeline — linhas compactas */}
       <div className="space-y-2.5">
