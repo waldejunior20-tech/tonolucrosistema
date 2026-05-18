@@ -968,7 +968,7 @@ export default function FichasTecnicasPizza() {
                                         )}
                                       </div>
                                       <Select value={ing.unidade} onValueChange={(v) => updateIngrediente(idx, "unidade", v)}>
-                                        <SelectTrigger className="h-9 w-[72px] shrink-0 text-xs px-2"><SelectValue placeholder="Un" /></SelectTrigger>
+                                        <SelectTrigger className="h-10 w-[96px] shrink-0 text-xs px-2.5"><SelectValue placeholder="Un" /></SelectTrigger>
                                         <SelectContent>
                                           {UNIDADES.map((u) => <SelectItem key={u} value={u}>{u}</SelectItem>)}
                                         </SelectContent>
