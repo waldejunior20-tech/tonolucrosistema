@@ -282,9 +282,10 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
         .insert({
           nome: data.nome,
           categoria,
+          subcategoria: subcategoria ?? null,
           numero_ficha: data.numero_ficha || null,
           modo_preparo: data.modo_preparo || null,
-        })
+        } as any)
         .select()
         .single();
       if (error) throw error;
