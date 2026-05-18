@@ -19,7 +19,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
 import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
-import { Pencil, Trash2, Plus, Filter, Package, ChevronDown, LayoutGrid, List, History, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { Pencil, Trash2, Plus, Filter, Package, ChevronDown, LayoutGrid, List, History, TrendingUp, TrendingDown, Minus, AlertTriangle } from "lucide-react";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
 import { MoneyInput, QuantityInput, formatMoney, formatQuantidade } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
