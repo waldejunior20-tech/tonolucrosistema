@@ -44,20 +44,33 @@ export function ComprasGraficoFornecedor({ rows, selectedFornecedor, onSelectFor
   if (data.items.length === 0) return null;
 
   return (
-    <div className="rounded-2xl border border-border/60 bg-card p-4 fade-up text-slate-400">
+    <div
+      className="relative rounded-2xl p-5 fade-up overflow-hidden"
+      style={{
+        background: "rgba(255,255,255,0.72)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        border: "1px solid rgba(255,255,255,0.7)",
+        boxShadow:
+          "0 1px 0 rgba(255,255,255,0.9) inset, 0 12px 32px -16px rgba(15,23,42,0.12), 0 2px 6px -2px rgba(15,23,42,0.06)",
+      }}
+    >
       {/* Toggle modo */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
-          Top {data.items.length} {modo === "fornecedor" ? "fornecedores" : "categorias"}
+      <div className="flex items-center justify-between mb-5">
+        <div>
+          <div className="text-[11px] uppercase tracking-[0.08em] text-slate-500 font-bold">
+            Top {data.items.length} {modo === "fornecedor" ? "fornecedores" : "categorias"}
+          </div>
+          <div className="text-[11px] text-slate-400 mt-0.5">Ordenado por gasto no período</div>
         </div>
-        <div className="inline-flex items-center bg-muted/40 rounded-full p-0.5 text-[11px] font-semibold">
+        <div className="inline-flex items-center bg-slate-100 rounded-lg p-0.5 text-[11.5px] font-semibold border border-slate-200/80">
           <button
             onClick={() => setModo("fornecedor")}
             className={cn(
-              "h-6 px-2.5 rounded-full inline-flex items-center gap-1 transition-all",
+              "h-7 px-3 rounded-md inline-flex items-center gap-1.5 transition-all",
               modo === "fornecedor"
-                ? "bg-card text-foreground shadow-sm"
-                : "text-muted-foreground"
+                ? "bg-white text-blue-700 shadow-sm"
+                : "text-slate-500 hover:text-slate-700"
             )}
           >
             <Store className="h-3 w-3" /> Fornecedor
@@ -65,10 +78,10 @@ export function ComprasGraficoFornecedor({ rows, selectedFornecedor, onSelectFor
           <button
             onClick={() => setModo("categoria")}
             className={cn(
-              "h-6 px-2.5 rounded-full inline-flex items-center gap-1 transition-all",
+              "h-7 px-3 rounded-md inline-flex items-center gap-1.5 transition-all",
               modo === "categoria"
-                ? "bg-card text-foreground shadow-sm"
-                : "text-muted-foreground"
+                ? "bg-white text-blue-700 shadow-sm"
+                : "text-slate-500 hover:text-slate-700"
             )}
           >
             <Tag className="h-3 w-3" /> Categoria
@@ -76,14 +89,31 @@ export function ComprasGraficoFornecedor({ rows, selectedFornecedor, onSelectFor
         </div>
       </div>
 
-      <div className="space-y-2.5">
-        {data.items.map((it) => {
+      <div className="space-y-3">
+        {data.items.map((it, idx) => {
           const isSelected =
             modo === "fornecedor" && selectedFornecedor === it.nome;
           const dimmed =
             modo === "fornecedor" &&
             selectedFornecedor !== null &&
             selectedFornecedor !== it.nome;
+          const rank = idx + 1;
+          const isLeader = rank === 1;
+
+          const rankStyle =
+            rank === 1
+              ? "bg-gradient-to-br from-amber-400 to-amber-500 text-white shadow-[0_2px_8px_rgba(245,158,11,0.35)]"
+              : rank === 2
+              ? "bg-gradient-to-br from-slate-300 to-slate-400 text-white"
+              : rank === 3
+              ? "bg-gradient-to-br from-orange-300 to-orange-400 text-white"
+              : "bg-slate-100 text-slate-500";
+
+          const barFill = isLeader
+            ? "bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400"
+            : isSelected
+            ? "bg-gradient-to-r from-blue-500 to-blue-400"
+            : "bg-gradient-to-r from-slate-400 to-slate-300";
 
           return (
             <button
@@ -93,32 +123,60 @@ export function ComprasGraficoFornecedor({ rows, selectedFornecedor, onSelectFor
                 onSelectFornecedor(isSelected ? null : it.nome);
               }}
               className={cn(
-                "w-full text-left group transition-opacity",
+                "w-full text-left group transition-all rounded-xl p-2.5 -mx-2.5",
                 dimmed && "opacity-40",
-                modo !== "fornecedor" && "cursor-default"
+                isLeader && "bg-blue-50/40 ring-1 ring-blue-100",
+                modo !== "fornecedor" && "cursor-default",
+                modo === "fornecedor" && !dimmed && "hover:bg-slate-50/80"
               )}
             >
-              <div className="flex items-center justify-between mb-1 gap-2">
-                <span className="text-[13px] font-semibold text-foreground truncate">
-                  {it.nome}
-                </span>
-                <span className="text-[12px] tabular-nums font-bold text-foreground shrink-0">
-                  {<Money value={it.valor} />}
-                </span>
-              </div>
-              <div className="relative h-2 rounded-full bg-muted/50 overflow-hidden">
+              <div className="flex items-center gap-3">
+                {/* Rank badge */}
                 <div
                   className={cn(
-                    "absolute inset-y-0 left-0 rounded-full transition-all",
-                    isSelected
-                      ? "bg-gradient-to-r from-primary to-primary/70"
-                      : "bg-gradient-to-r from-foreground/80 to-foreground/50"
+                    "shrink-0 h-7 w-7 rounded-full inline-flex items-center justify-center text-[11px] font-bold tabular-nums",
+                    rankStyle
                   )}
-                  style={{ width: `${Math.max(it.pct, 2)}%` }}
-                />
-              </div>
-              <div className="text-[10px] tabular-nums text-muted-foreground mt-0.5">
-                {it.pct.toFixed(1)}% do total
+                >
+                  {rank}º
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2 mb-1.5">
+                    <span
+                      className={cn(
+                        "text-[13.5px] font-semibold truncate",
+                        isLeader ? "text-slate-900" : "text-slate-700"
+                      )}
+                    >
+                      {it.nome}
+                    </span>
+                    <div className="flex items-baseline gap-2 shrink-0">
+                      <span
+                        className={cn(
+                          "text-[10.5px] tabular-nums font-bold uppercase tracking-wider",
+                          isLeader ? "text-blue-600" : "text-slate-400"
+                        )}
+                      >
+                        {it.pct.toFixed(1)}%
+                      </span>
+                      <span
+                        className={cn(
+                          "text-[13.5px] tabular-nums font-bold text-finance-mono",
+                          isLeader ? "text-slate-900" : "text-slate-700"
+                        )}
+                      >
+                        <Money value={it.valor} symbolScale={0.6} />
+                      </span>
+                    </div>
+                  </div>
+                  <div className="relative h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                    <div
+                      className={cn("absolute inset-y-0 left-0 rounded-full transition-all duration-500", barFill)}
+                      style={{ width: `${Math.max(it.pct, 2)}%` }}
+                    />
+                  </div>
+                </div>
               </div>
             </button>
           );
@@ -128,7 +186,7 @@ export function ComprasGraficoFornecedor({ rows, selectedFornecedor, onSelectFor
       {selectedFornecedor && (
         <button
           onClick={() => onSelectFornecedor(null)}
-          className="mt-3 text-[11px] text-primary font-semibold hover:underline"
+          className="mt-4 text-[11.5px] text-blue-600 font-semibold hover:underline"
         >
           ← Ver todos os fornecedores
         </button>

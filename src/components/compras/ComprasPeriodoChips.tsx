@@ -34,7 +34,7 @@ export function ComprasPeriodoChips({ periodo, customRange, onChange }: Props) {
       : "Personalizado";
 
   return (
-    <div className="flex items-center gap-2 overflow-x-auto -mx-1 px-1 py-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+    <div className="inline-flex items-center gap-0.5 p-1 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
       {CHIPS.map((c) => {
         const active = periodo === c.value;
         return (
@@ -42,10 +42,10 @@ export function ComprasPeriodoChips({ periodo, customRange, onChange }: Props) {
             key={c.value}
             onClick={() => onChange(c.value)}
             className={cn(
-              "shrink-0 h-9 px-4 rounded-full text-sm font-semibold transition-all border",
+              "shrink-0 h-8 px-3.5 rounded-lg text-[12.5px] font-semibold transition-all",
               active
-                ? "bg-foreground text-background border-foreground shadow-sm"
-                : "bg-card text-muted-foreground border-border/60 hover:border-border"
+                ? "bg-white text-blue-700 shadow-[0_2px_8px_rgba(0,0,0,0.12)]"
+                : "text-white/80 hover:text-white hover:bg-white/10"
             )}
           >
             {c.label}
@@ -56,10 +56,10 @@ export function ComprasPeriodoChips({ periodo, customRange, onChange }: Props) {
         <PopoverTrigger asChild>
           <button
             className={cn(
-              "shrink-0 h-9 px-4 rounded-full text-sm font-semibold transition-all border inline-flex items-center gap-1.5",
+              "shrink-0 h-8 px-3.5 rounded-lg text-[12.5px] font-semibold transition-all inline-flex items-center gap-1.5",
               periodo === "custom"
-                ? "bg-foreground text-background border-foreground shadow-sm"
-                : "bg-card text-muted-foreground border-border/60"
+                ? "bg-white text-blue-700 shadow-[0_2px_8px_rgba(0,0,0,0.12)]"
+                : "text-white/80 hover:text-white hover:bg-white/10"
             )}
           >
             <CalendarIcon className="h-3.5 w-3.5" />

@@ -20,7 +20,7 @@ import { ComprasGraficoFornecedor } from "@/components/compras/ComprasGraficoFor
 import { CompraCard, type CompraGrupo } from "@/components/compras/CompraCard";
 import { CupomCompraSheet, type CupomItem } from "@/components/compras/CupomCompraSheet";
 import { Money } from "@/components/Money";
-import { PageHero } from "@/components/layout/PageHero";
+
 
 type Row = {
   id: string;
@@ -257,44 +257,81 @@ export default function InsumosHistoricoCompras() {
       : `Últimos ${periodo} dias`;
 
   return (
-    <div className="space-y-4 page-enter pb-6">
+    <div
+      className="space-y-4 page-enter pb-6 -m-4 sm:-m-6 p-4 sm:p-6 min-h-screen"
+      style={{
+        background:
+          "radial-gradient(1200px 600px at 0% -10%, rgba(59,130,246,0.08), transparent 60%), radial-gradient(900px 500px at 100% 0%, rgba(99,102,241,0.06), transparent 60%), linear-gradient(180deg, #f6f8fb 0%, #eef2f7 100%)",
+      }}
+    >
       <PageHeader
         title="Histórico de Compras"
         description="Tudo que entrou em insumos, embalagens e despesas."
       />
 
-      <PageHero
-        label={periodoLabel}
-        value={totalPeriodo}
-        context={
-          <>
-            {compras.length} {compras.length === 1 ? "compra" : "compras"} ·{" "}
-            {filtered.length} {filtered.length === 1 ? "item" : "itens"}
-            {variacaoPct !== null && (
-              <span
-                className={
-                  "ml-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[12px] font-semibold " +
-                  (variacaoPct >= 0
-                    ? "bg-amber-400/20 text-amber-100 ring-1 ring-amber-200/40"
-                    : "bg-emerald-400/20 text-emerald-100 ring-1 ring-emerald-200/40")
-                }
-              >
-                {variacaoPct >= 0 ? "▲" : "▼"} {Math.abs(variacaoPct).toFixed(1)}% vs. período anterior
+      {/* Hero premium — gradiente azul profundo + glow */}
+      <div className="relative rounded-2xl overflow-hidden fade-up shadow-[0_20px_50px_-20px_rgba(37,99,235,0.45),0_4px_12px_-4px_rgba(37,99,235,0.25)]">
+        {/* Camada base — gradiente diagonal */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%)",
+          }}
+        />
+        {/* Glow superior */}
+        <div className="absolute -top-24 -right-16 h-64 w-64 rounded-full bg-white/15 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -left-10 h-48 w-48 rounded-full bg-indigo-300/20 blur-3xl pointer-events-none" />
+        {/* Highlight superior (vidro) */}
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+
+        <div className="relative p-5 sm:p-6 text-white">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <div className="flex flex-col gap-1 min-w-0">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-white/75">
+                {periodoLabel}
               </span>
-            )}
-          </>
-        }
-        rightSlot={
-          <ComprasPeriodoChips
-            periodo={periodo}
-            customRange={customRange}
-            onChange={(p, r) => {
-              setPeriodo(p);
-              if (p === "custom") setCustomRange(r);
-            }}
-          />
-        }
-      />
+              <div className="mt-0.5">
+                <Money
+                  value={totalPeriodo}
+                  onDark
+                  className="text-[32px] sm:text-[44px] leading-none font-semibold"
+                  symbolScale={0.5}
+                />
+              </div>
+              <div className="text-[13px] text-white/85 mt-2 flex items-center flex-wrap gap-2">
+                <span>
+                  {compras.length} {compras.length === 1 ? "compra" : "compras"} ·{" "}
+                  {filtered.length} {filtered.length === 1 ? "item" : "itens"}
+                </span>
+                {variacaoPct !== null && (
+                  <span
+                    className={
+                      "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[12px] font-semibold backdrop-blur-sm " +
+                      (variacaoPct >= 0
+                        ? "bg-amber-400/25 text-amber-50 ring-1 ring-amber-200/40"
+                        : "bg-emerald-400/25 text-emerald-50 ring-1 ring-emerald-200/40")
+                    }
+                  >
+                    {variacaoPct >= 0 ? "▲" : "▼"} {Math.abs(variacaoPct).toFixed(1)}% vs. período anterior
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="flex-shrink-0">
+              <ComprasPeriodoChips
+                periodo={periodo}
+                customRange={customRange}
+                onChange={(p, r) => {
+                  setPeriodo(p);
+                  if (p === "custom") setCustomRange(r);
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Gráfico por fornecedor */}
       <ComprasGraficoFornecedor
@@ -303,27 +340,58 @@ export default function InsumosHistoricoCompras() {
         onSelectFornecedor={setFornecedorFiltro}
       />
 
-      {/* Alerta preços bloqueados */}
+      {/* Alerta preços bloqueados — acionável */}
       {precosBloqueados30d > 0 && (
-        <div className="flex items-center gap-2 rounded-xl border border-warning/30 bg-warning/10 p-3 text-xs">
-          <ShieldAlert className="h-4 w-4 text-warning shrink-0" />
-          <span className="text-warning-foreground">
-            <strong className="tabular-nums">{precosBloqueados30d}</strong> aumento(s)
-            suspeito(s) bloqueado(s) nos últimos 30 dias
-          </span>
+        <div
+          className="flex items-center gap-3 rounded-xl p-3.5 fade-up"
+          style={{
+            background:
+              "linear-gradient(135deg, rgba(251,191,36,0.12), rgba(245,158,11,0.08))",
+            border: "1px solid rgba(245,158,11,0.35)",
+            boxShadow:
+              "0 1px 0 rgba(255,255,255,0.6) inset, 0 6px 20px -8px rgba(245,158,11,0.25)",
+          }}
+        >
+          <div className="shrink-0 h-9 w-9 rounded-lg bg-amber-100 border border-amber-200 inline-flex items-center justify-center">
+            <ShieldAlert className="h-4 w-4 text-amber-700" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[13px] font-semibold text-amber-900">
+              <span className="tabular-nums">{precosBloqueados30d}</span> aumento{precosBloqueados30d === 1 ? "" : "s"} suspeito{precosBloqueados30d === 1 ? "" : "s"} bloqueado{precosBloqueados30d === 1 ? "" : "s"}
+            </p>
+            <p className="text-[11.5px] text-amber-800/80 mt-0.5">
+              Detectamos variações fora do padrão nos últimos 30 dias. Revise para confirmar ou liberar.
+            </p>
+          </div>
+          <button
+            type="button"
+            className="shrink-0 inline-flex items-center gap-1.5 h-8 px-3 rounded-lg bg-white text-amber-800 text-[12px] font-bold border border-amber-200 hover:bg-amber-50 hover:border-amber-300 transition-all shadow-sm"
+          >
+            Ver suspeitas
+          </button>
         </div>
       )}
 
-      {/* Busca + Lista — um único card branco com sombra suave */}
-      <div className="rounded-2xl bg-card border border-border/60 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_-12px_rgba(15,23,42,0.08)] overflow-hidden">
-        <div className="p-3 border-b border-border/60">
+      {/* Busca + Lista — glass sutil */}
+      <div
+        className="rounded-2xl overflow-hidden fade-up"
+        style={{
+          background: "rgba(255,255,255,0.72)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          border: "1px solid rgba(255,255,255,0.7)",
+          boxShadow:
+            "0 1px 0 rgba(255,255,255,0.9) inset, 0 12px 32px -16px rgba(15,23,42,0.12), 0 2px 6px -2px rgba(15,23,42,0.06)",
+        }}
+      >
+        <div className="p-3 border-b border-slate-200/60">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <Input
               placeholder="Buscar por mercado, insumo..."
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
-              className="pl-9 h-10 rounded-lg bg-background border-border/80 focus-visible:ring-1 focus-visible:ring-blue-500"
+              className="pl-9 h-10 rounded-lg bg-white/80 border-slate-200 focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:border-blue-400"
             />
           </div>
         </div>
@@ -345,7 +413,7 @@ export default function InsumosHistoricoCompras() {
             <div className="space-y-5">
               {comprasPorDia.map(([dia, lista]) => (
                 <div key={dia}>
-                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold mb-2 px-1">
+                  <div className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-2 px-1">
                     {formatDayHeader(dia)}
                   </div>
                   <div className="space-y-2">
