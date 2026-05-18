@@ -799,13 +799,13 @@ export default function PrecificacaoPizzas() {
                                       </div>
                                       <div className="grid grid-cols-[1fr_auto] items-center gap-3">
                                         <span className="text-[#475569] font-bold">Sugerido por Meta</span>
-                                        <Money value={sug} className="text-emerald-700 font-bold tabular-nums text-right justify-self-end" symbolScale={0.6} />
+                                        <Money value={sug} className="font-bold tabular-nums text-right justify-self-end" style={{ color: "#15803d" }} symbolScale={0.6} />
                                       </div>
                                       <div className="grid grid-cols-[1fr_auto] items-center gap-3">
                                         <span className="text-[#475569] font-bold">{sobraPositiva ? "Sobra Real (Lucro)" : "Prejuízo"}</span>
                                         <div
                                           className="flex items-baseline gap-1 text-finance-mono font-bold tabular-nums justify-self-end text-right"
-                                          style={{ color: sobraPositiva ? "hsl(var(--success))" : "hsl(var(--destructive))" }}
+                                          style={{ color: sobraPositiva ? "#15803d" : "hsl(var(--destructive))" }}
                                         >
                                           <Money value={sobra} symbolScale={0.6} />
                                           {preco > 0 && (
