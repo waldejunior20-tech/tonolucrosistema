@@ -1,5 +1,5 @@
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { formatMoney, formatQuantidade } from "@/components/MoneyInput";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { formatQuantidade } from "@/components/MoneyInput";
 import { TrendingUp, TrendingDown, Minus, Receipt } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -15,7 +15,7 @@ export interface CupomItem {
   unidade_medida: string;
   preco_unitario: number;
   preco_total: number;
-  variacao_pct: number | null; // null = sem histórico
+  variacao_pct: number | null;
   insumo_id: string | null;
 }
 
@@ -35,25 +35,24 @@ export function CupomCompraSheet({ open, onOpenChange, fornecedor, data_compra, 
     : "";
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent
-        side="bottom"
-        className="rounded-t-3xl border-t border-border/60 p-0 max-h-[85vh] flex flex-col"
-      >
-        {/* Cupom header */}
-        <SheetHeader className="px-5 pt-5 pb-4 text-center bg-gradient-to-b from-muted/40 to-transparent rounded-t-3xl">
-          <div className="mx-auto h-12 w-12 rounded-2xl bg-card border border-border/60 flex items-center justify-center mb-2">
-            <Receipt className="h-6 w-6 text-primary" />
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-sm p-0 overflow-hidden rounded-2xl">
+        {/* Header */}
+        <DialogHeader className="px-5 pt-5 pb-3 text-center bg-gradient-to-b from-muted/40 to-transparent">
+          <div className="mx-auto h-10 w-10 rounded-xl bg-card border border-border/60 flex items-center justify-center mb-2">
+            <Receipt className="h-4 w-4 text-primary" />
           </div>
-          <SheetTitle className="text-lg font-bold leading-tight">{fornecedor}</SheetTitle>
-          <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
+          <DialogTitle className="text-sm font-bold leading-tight uppercase tracking-wide">
+            {fornecedor}
+          </DialogTitle>
+          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
             {dataLabel}
           </p>
-        </SheetHeader>
+        </DialogHeader>
 
-        {/* Itens (scroll) */}
-        <div className="flex-1 overflow-y-auto px-5 py-3">
-          <div className="border-y border-dashed border-border/60 py-1">
+        {/* Itens */}
+        <div className="max-h-[55vh] overflow-y-auto px-4 pb-2">
+          <div className="border-y border-dashed border-border/60">
             {itens.map((it) => (
               <button
                 key={it.id}
@@ -62,48 +61,44 @@ export function CupomCompraSheet({ open, onOpenChange, fornecedor, data_compra, 
                   onOpenChange(false);
                   navigate(`/insumos/historico-compras?insumo=${encodeURIComponent(it.nome)}`);
                 }}
-                className="w-full text-left py-3 border-b border-dashed border-border/40 last:border-b-0 hover:bg-muted/30 -mx-2 px-2 rounded-lg transition-colors"
+                className="w-full text-left py-2 border-b border-dashed border-border/40 last:border-b-0 hover:bg-muted/30 px-1 rounded transition-colors"
               >
-                <div className="flex items-start justify-between gap-2 mb-1">
-                  <div className="text-[13px] font-bold text-foreground leading-tight">
-                    {it.nome}
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[12px] font-bold text-foreground leading-tight truncate">
+                      {it.nome}
+                    </div>
+                    <div className="text-[10px] text-muted-foreground tabular-nums mt-0.5">
+                      {formatQuantidade(it.quantidade, it.unidade_medida)} ×{" "}
+                      <Money value={it.preco_unitario} />
+                    </div>
                   </div>
-                  <div className="text-[13px] tabular-nums font-bold text-foreground shrink-0">
-                    {<Money value={it.preco_total} />}
+                  <div className="flex flex-col items-end gap-0.5 shrink-0">
+                    <div className="text-[12px] tabular-nums font-bold text-foreground">
+                      <Money value={it.preco_total} />
+                    </div>
+                    <VariacaoBadge pct={it.variacao_pct} />
                   </div>
-                </div>
-
-                <div className="flex items-center justify-between gap-2">
-                  <div className="text-[11px] text-muted-foreground tabular-nums">
-                    {formatQuantidade(it.quantidade, it.unidade_medida)} ×{" "}
-                    {<Money value={it.preco_unitario} />}
-                  </div>
-                  <VariacaoBadge pct={it.variacao_pct} />
                 </div>
               </button>
             ))}
           </div>
+        </div>
 
-          {/* Total */}
-          <div className="flex items-center justify-between pt-4 pb-2">
-            <div className="text-[11px] uppercase tracking-wider font-bold text-muted-foreground">
-              Total
-            </div>
-            <div className="text-2xl font-bold tabular-nums text-foreground">
-              {<Money value={total} />}
-            </div>
+        {/* Total */}
+        <div className="flex items-center justify-between px-5 py-3 border-t border-border/60 bg-muted/20">
+          <div className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground">
+            Total
           </div>
-
-          <div className="flex items-center justify-center gap-1 pt-2">
-            {Array.from({ length: 30 }).map((_, i) => (
-              <div key={i} className="h-1 w-1 rounded-full bg-border/60" />
-            ))}
+          <div className="text-lg font-bold tabular-nums text-foreground">
+            <Money value={total} />
           </div>
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }
+
 
 function VariacaoBadge({ pct }: { pct: number | null }) {
   if (pct === null) {
