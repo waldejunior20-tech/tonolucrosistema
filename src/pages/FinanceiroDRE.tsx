@@ -335,42 +335,56 @@ export default function FinanceiroDRE() {
 
   const anos = Array.from({ length: 5 }, (_, i) => now.getFullYear() - 2 + i);
 
+  const periodSelector = (
+    <div className="flex items-center gap-2 bg-white/15 border border-white/25 backdrop-blur-sm p-1 rounded-lg">
+      <Select value={String(mes)} onValueChange={(v) => setMes(Number(v))}>
+        <SelectTrigger className="w-[120px] h-8 border-none bg-transparent shadow-none text-white font-semibold"><SelectValue /></SelectTrigger>
+        <SelectContent>
+          {MESES.map((m, i) => (<SelectItem key={i} value={String(i + 1)}>{m}</SelectItem>))}
+        </SelectContent>
+      </Select>
+      <div className="w-px h-4 bg-white/30" />
+      <Select value={String(ano)} onValueChange={(v) => setAno(Number(v))}>
+        <SelectTrigger className="w-[80px] h-8 border-none bg-transparent shadow-none text-white font-semibold"><SelectValue /></SelectTrigger>
+        <SelectContent>
+          {anos.map((a) => (<SelectItem key={a} value={String(a)}>{a}</SelectItem>))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+
   return (
     <div className="space-y-6 page-enter">
       <FinanceiroCategoryTabs />
-      <PageHeader title="Resumo do Mês" description="Veja quanto entrou, quanto saiu e quanto sobrou.">
-        <div className="flex items-center gap-2 bg-muted p-1 rounded-lg border">
-          <Select value={String(mes)} onValueChange={(v) => setMes(Number(v))}>
-            <SelectTrigger className="w-[120px] h-8 border-none bg-transparent shadow-none"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {MESES.map((m, i) => (<SelectItem key={i} value={String(i + 1)}>{m}</SelectItem>))}
-            </SelectContent>
-          </Select>
-          <div className="w-px h-4 bg-border" />
-          <Select value={String(ano)} onValueChange={(v) => setAno(Number(v))}>
-            <SelectTrigger className="w-[80px] h-8 border-none bg-transparent shadow-none"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {anos.map((a) => (<SelectItem key={a} value={String(a)}>{a}</SelectItem>))}
-            </SelectContent>
-          </Select>
-        </div>
-      </PageHeader>
+      <PageHeader title="Resumo do Mês" description="Veja quanto entrou, quanto saiu e quanto sobrou." />
 
-      {/* Top 3 KPIs — Glassmorphism premium */}
-      <div
-        className="grid grid-cols-1 sm:grid-cols-3"
-        style={{ gap: "20px", marginTop: "8px" }}
-      >
-        <GlassStat label="Entrou" value={calc.totalEntrou} icon={TrendingUp} variant="positive" />
-        <GlassStat label="Saiu" value={calc.totalSaiu} icon={TrendingDown} variant="negative" />
-        <GlassStat
+      <PageHero
+        label={calc.sobrou >= 0 ? "SOBROU NO MÊS" : "FALTOU NO MÊS"}
+        value={Math.abs(calc.sobrou)}
+        status={calc.sobrou < 0 ? "danger" : "neutral"}
+        context={
+          calc.sobrou < 0 ? (
+            <span className="inline-flex items-center gap-1.5">
+              <AlertTriangle size={14} /> Margem negativa de {calc.sobrouPct.toFixed(1)}%
+            </span>
+          ) : (
+            `Margem de ${calc.sobrouPct.toFixed(1)}% sobre o faturamento`
+          )
+        }
+        rightSlot={periodSelector}
+      />
+
+      {/* Top 3 KPIs */}
+      <StatCardGrid cols={3}>
+        <StatCard label="Entrou" value={calc.totalEntrou} icon={TrendingUp} tone="up" />
+        <StatCard label="Saiu" value={calc.totalSaiu} icon={TrendingDown} tone="down" />
+        <StatCard
           label={calc.sobrou >= 0 ? "Sobrou" : "Faltou"}
           value={Math.abs(calc.sobrou)}
           icon={Wallet}
-          variant={calc.sobrou >= 0 ? "positive" : "negative"}
-          subtitle={`${calc.sobrouPct.toFixed(1)}% de margem`}
+          tone={calc.sobrou >= 0 ? "up" : "down"}
         />
-      </div>
+      </StatCardGrid>
 
       {/* Custo dos Ingredientes + Meta do Mês */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
