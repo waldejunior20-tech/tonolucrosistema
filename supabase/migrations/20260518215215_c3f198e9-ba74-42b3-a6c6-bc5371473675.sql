@@ -1,0 +1,1 @@
+UPDATE public.insumos_comprados SET categoria = 'Embalagens' WHERE categoria = 'Hortifruti' AND (nome ILIKE '%embalagem%' OR nome ILIKE '%caixa%' OR nome ILIKE '%saco%' OR nome ILIKE '%bandeja%' OR nome ILIKE '%copo%' OR nome ILIKE '%marmita%' OR nome ILIKE '%pote%' OR nome ILIKE '%filme%' OR nome ILIKE '%guardanapo%');
