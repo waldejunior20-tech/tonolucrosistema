@@ -770,37 +770,37 @@ export default function PrecificacaoPizzas() {
                                   />
 
                                   <div className="relative flex flex-col h-full">
-                                    {/* Header: Tamanho + CMV pill */}
-                                    <div className="flex items-center justify-between mb-3">
-                                      <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                                    {/* Header: Tamanho centralizado + CMV pill absoluta */}
+                                    <div className="relative flex items-center justify-center mb-4 h-6">
+                                      <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-700">
                                         Tamanho {sizeLabels[s]}
                                       </span>
                                       {preco > 0 ? (
                                         <span
-                                          className="text-finance-mono text-[10.5px] font-semibold px-2 py-0.5 rounded-full"
+                                          className="absolute right-0 top-1/2 -translate-y-1/2 text-finance-mono text-[10.5px] font-bold px-2 py-0.5 rounded-full tabular-nums"
                                           style={{ background: pill.bg, color: pill.text }}
                                         >
                                           {fmtPct(cmv)}
                                         </span>
                                       ) : (
-                                        <span className="text-muted-foreground/40 text-finance-mono text-xs">—</span>
+                                        <span className="absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground/40 text-finance-mono text-xs">—</span>
                                       )}
                                     </div>
 
-                                    {/* Rows: label + value */}
-                                    <div className="flex-1 flex flex-col gap-2 text-[13px]">
-                                      <div className="flex items-center justify-between">
-                                        <span className="text-muted-foreground font-medium">CMV Atual</span>
-                                        <span className="text-finance-mono font-semibold text-foreground">{preco > 0 ? fmtPct(cmv) : "—"}</span>
+                                    {/* Rows: label + value — grid rítmica com tipografia uniforme */}
+                                    <div className="flex-1 flex flex-col gap-2.5 text-[13px] leading-none">
+                                      <div className="grid grid-cols-[1fr_auto] items-center gap-3">
+                                        <span className="text-slate-500 font-semibold">CMV Atual</span>
+                                        <span className="text-finance-mono font-bold text-slate-900 tabular-nums text-right">{preco > 0 ? fmtPct(cmv) : "—"}</span>
                                       </div>
-                                      <div className="flex items-center justify-between">
-                                        <span className="text-muted-foreground font-medium">Custo do Insumo</span>
-                                        <Money value={custo} className="text-muted-foreground font-semibold" symbolScale={0.6} />
+                                      <div className="grid grid-cols-[1fr_auto] items-center gap-3">
+                                        <span className="text-slate-500 font-semibold">Custo do Insumo</span>
+                                        <Money value={custo} className="text-slate-900 font-bold tabular-nums text-right justify-self-end" symbolScale={0.6} />
                                       </div>
-                                      <div className="flex items-center justify-between">
-                                        <span className="text-muted-foreground font-medium">Sugerido por Meta</span>
-                                        <div className="flex items-center gap-2">
-                                          <Money value={sug} className="text-emerald-700 font-bold" symbolScale={0.6} />
+                                      <div className="grid grid-cols-[1fr_auto] items-center gap-3">
+                                        <span className="text-slate-500 font-semibold">Sugerido por Meta</span>
+                                        <div className="flex items-center gap-2 justify-self-end">
+                                          <Money value={sug} className="text-emerald-700 font-extrabold tabular-nums" symbolScale={0.6} />
                                           {sug > 0 && (
                                             <button
                                               type="button"
@@ -828,21 +828,21 @@ export default function PrecificacaoPizzas() {
                                           )}
                                         </div>
                                       </div>
-                                      <div className="flex items-center justify-between">
-                                        <span className="text-muted-foreground font-medium">{sobraPositiva ? "Sobra Real (Lucro)" : "Prejuízo"}</span>
+                                      <div className="grid grid-cols-[1fr_auto] items-center gap-3">
+                                        <span className="text-slate-500 font-semibold">{sobraPositiva ? "Sobra Real (Lucro)" : "Prejuízo"}</span>
                                         <div
-                                          className="flex items-baseline gap-1 text-finance-mono font-bold"
+                                          className="flex items-baseline gap-1 text-finance-mono font-extrabold tabular-nums justify-self-end"
                                           style={{ color: sobraPositiva ? "hsl(var(--success))" : "hsl(var(--destructive))" }}
                                         >
                                           <Money value={sobra} symbolScale={0.6} />
                                           {preco > 0 && (
-                                            <span className="text-[11px] opacity-80">({sobraPct.toFixed(0)}%)</span>
+                                            <span className="text-[11px] font-bold opacity-80">({sobraPct.toFixed(0)}%)</span>
                                           )}
                                         </div>
                                       </div>
-                                      <div className="flex items-center justify-between">
-                                        <span className="text-muted-foreground font-medium">Preço Limite</span>
-                                        <Money value={precoZero} className="text-muted-foreground font-semibold" symbolScale={0.6} />
+                                      <div className="grid grid-cols-[1fr_auto] items-center gap-3">
+                                        <span className="text-slate-500 font-semibold">Preço Limite</span>
+                                        <Money value={precoZero} className="text-slate-900 font-bold tabular-nums text-right justify-self-end" symbolScale={0.6} />
                                       </div>
                                     </div>
 
