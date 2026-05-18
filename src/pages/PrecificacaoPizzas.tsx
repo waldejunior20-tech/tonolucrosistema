@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
-import { Cog, Save, AlertTriangle, Check, TrendingUp, TrendingDown, Activity, ChevronDown, Info } from "lucide-react";
+import { Cog, Save, AlertTriangle, Check, TrendingUp, TrendingDown, Activity, ChevronDown, Info, Zap } from "lucide-react";
 import { formatMoney } from "@/components/MoneyInput";
 import { Money } from "@/components/Money";
 import {
@@ -646,58 +646,60 @@ export default function PrecificacaoPizzas() {
                 >
                   <div
                     className={cn(
-                      "row-reveal rounded-xl overflow-hidden transition-all duration-300",
-                      hasAlert ? "shadow-[0_0_0_1px_hsl(var(--destructive)/0.08)]" : "",
-                      isOpen ? "shadow-lg" : "shadow-sm hover:shadow-md"
+                      "row-reveal rounded-2xl overflow-hidden transition-all duration-300 bg-card",
+                      hasAlert
+                        ? "border border-destructive/30 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_-12px_rgba(220,38,38,0.18)]"
+                        : "border border-border/60 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_-12px_rgba(15,23,42,0.08)] hover:shadow-[0_2px_4px_rgba(15,23,42,0.06),0_12px_28px_-12px_rgba(15,23,42,0.12)]"
                     )}
-                    style={{
-                      animationDelay: `${rowIndex * 60}ms`,
-                          background: 'rgba(211, 211, 211, 0.13)',
-                      backdropFilter: 'blur(10px)',
-                      border: hasAlert ? '1px solid hsl(var(--destructive) / 0.3)' : '1px solid rgba(255, 255, 255, 0.3)',
-                      borderRadius: '15px',
-                    }}
+                    style={{ animationDelay: `${rowIndex * 60}ms` }}
                   >
+                    {/* ── Insight Strip (blue card, lucide icon) — só aparece quando há alerta de insumo ── */}
+                    {insumoAlert && (
+                      <div className="flex items-center gap-2.5 px-6 py-2.5 bg-[#EFF6FF] border-b border-[#BFDBFE]">
+                        <AlertTriangle className="h-4 w-4 text-[#2563EB] flex-shrink-0" />
+                        <p className="text-[12.5px] text-slate-700 leading-tight">
+                          <span className="font-semibold text-slate-900">{insumoAlert.nome}</span>
+                          <span className="text-slate-600"> subiu </span>
+                          <span className="font-semibold text-[#2563EB] text-finance-mono">+{insumoAlert.variacaoPct.toFixed(1)}%</span>
+                          <span className="text-slate-600"> na última compra — revise o preço sugerido.</span>
+                        </p>
+                      </div>
+                    )}
+
                     {/* ── Collapsed Summary (always visible) ── */}
                     <CollapsibleTrigger asChild>
-                      <button className="w-full flex items-center justify-between px-6 py-4 hover:bg-secondary/30 transition-colors cursor-pointer text-left group">
-                        <div className="flex items-center gap-4">
+                      <button className="w-full flex items-center justify-between px-6 py-5 hover:bg-slate-50/60 transition-colors cursor-pointer text-left group">
+                        <div className="flex items-center gap-4 min-w-0">
                           {/* Health dot */}
                           <div
-                            className="h-3 w-3 rounded-full flex-shrink-0 transition-all"
+                            className="h-2.5 w-2.5 rounded-full flex-shrink-0 transition-all"
                             style={{ background: health.color, boxShadow: `0 0 8px ${health.glow}` }}
                           />
-                          <div>
-                            <h3 className="text-table-row-title text-lg leading-tight">{ficha.nome}</h3>
-                            <div className="flex flex-wrap items-center gap-2 mt-0.5">
-                              <span className="text-mini-label">{tipoLabel(ficha.tipo)}</span>
-                              {insumoAlert && (
-                                <span
-                                  className="text-[11px] font-semibold px-2 py-0.5 rounded-md border border-red-300 bg-red-50 text-red-700"
-                                  title={`${insumoAlert.nome} subiu ${insumoAlert.variacaoPct.toFixed(1)}% na última compra`}
-                                >
-                                  ⚠ {insumoAlert.nome} (+{insumoAlert.variacaoPct.toFixed(1)}%)
-                                </span>
-                              )}
-                            </div>
+                          <div className="min-w-0">
+                            <h3 className="text-table-row-title text-[17px] leading-tight truncate">{ficha.nome}</h3>
+                            <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground/80">
+                              {tipoLabel(ficha.tipo)}
+                            </span>
                           </div>
                         </div>
 
-                        {/* Quick price + CMV summary */}
-                        <div className="flex items-center gap-5">
+                        {/* Quick price + CMV summary — hierarquia: preço herói, CMV em pílula sutil */}
+                        <div className="flex items-center gap-6">
                           {sizes.map((s) => {
                             const preco = precos[s];
                             const cmv = cmvs[s];
                             const pill = getCmvPillStyle(cmv);
                             return (
-                              <div key={s} className="flex items-center gap-2">
-                                <span className="text-mini-label w-4">{sizeLabels[s]}</span>
+                              <div key={s} className="flex flex-col items-end gap-0.5 min-w-[78px]">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">
+                                  {sizeLabels[s]}
+                                </span>
                                 {preco > 0 ? (
                                   <>
-                                    <Money value={preco} className="text-sm text-foreground" symbolScale={0.6} />
+                                    <Money value={preco} className="text-[16px] font-bold text-foreground leading-none" symbolScale={0.55} />
                                     <span
-                                      className="inline-block text-finance-mono text-[11px] px-2.5 py-0.5 rounded-full"
-                                      style={{ background: pill.bg, color: pill.text, boxShadow: `0 2px 8px ${pill.glow}` }}
+                                      className="inline-block text-finance-mono text-[10.5px] font-semibold px-2 py-0.5 rounded-full mt-0.5"
+                                      style={{ background: pill.bg, color: pill.text }}
                                     >
                                       {fmtPct(cmv)}
                                     </span>
@@ -718,6 +720,7 @@ export default function PrecificacaoPizzas() {
                         </div>
                       </button>
                     </CollapsibleTrigger>
+
 
                     {/* ── Expanded Detail — Grid de alta performance (labels fixas + 3 colunas) ── */}
                     <CollapsibleContent className="data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
@@ -829,11 +832,12 @@ export default function PrecificacaoPizzas() {
                                               });
                                             }, 100);
                                           }}
-                                          className="inline-flex items-center justify-center h-6 px-1.5 rounded-md bg-emerald-100 hover:bg-emerald-200 text-emerald-700 text-[10px] font-bold leading-none transition-colors"
+                                          className="inline-flex items-center justify-center h-6 w-6 rounded-md bg-emerald-100 hover:bg-emerald-200 text-emerald-700 transition-colors"
                                           title="Aplicar preço sugerido"
                                         >
-                                          ⚡
+                                          <Zap className="h-3 w-3" strokeWidth={2.5} />
                                         </button>
+
                                       )}
                                     </div>
                                   </div>
