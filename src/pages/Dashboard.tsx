@@ -828,24 +828,33 @@ export default function Dashboard() {
           />
           {prontosPromocao.length ? (
             <div className="space-y-1.5">
-              {prontosPromocao.slice(0, 5).map((p) => (
-                <button
-                  key={p.id}
-                  onClick={() => navigate("/promocoes")}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-transparent hover:border-[#E2E8F0] hover:bg-[#F8FAFC] transition-all text-left"
-                >
-                  <div className="w-7 h-7 rounded-lg bg-[#ECFDF5] text-[#059669] flex items-center justify-center shrink-0">
-                    <Sparkles size={13} strokeWidth={2.4} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className={cn(T.accent, "text-[13.5px] truncate", C.text)}>{p.nome}</p>
-                    <span className={cn(T.label, "text-[10px]", C.muted)}>{p.categoria}</span>
-                  </div>
-                  <span className={cn(T.mono, "text-[13px] font-bold text-[#059669] whitespace-nowrap")}>
-                    {fmtBRL(p.preco)}
-                  </span>
-                </button>
-              ))}
+              {prontosPromocao.slice(0, 5).map((p) => {
+                const cat = String(p.categoria || "").toLowerCase();
+                const emoji = cat.includes("pizza") ? "🍕"
+                  : cat.includes("bebida") ? "🥤"
+                  : cat.includes("sobremesa") || cat.includes("doce") ? "🍰"
+                  : cat.includes("sandu") || cat.includes("lanche") || cat.includes("burger") ? "🍔"
+                  : "🍽️";
+                return (
+                  <button
+                    key={p.id}
+                    onClick={() => navigate("/promocoes")}
+                    className="w-full flex items-center gap-3.5 px-1 py-3 border-b border-[#F1F5F9] last:border-b-0 hover:bg-[#F8FAFC]/40 transition-colors text-left"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] flex items-center justify-center shrink-0 text-[18px]">
+                      {emoji}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className={cn(T.accent, "text-[15px] font-semibold truncate", C.text)}>{p.nome}</p>
+                      <span className={cn(T.label, "text-[11px] uppercase tracking-wider", C.muted)}>{p.categoria}</span>
+                    </div>
+                    <span className={cn(T.mono, "text-[15px] font-bold text-[#16A34A] whitespace-nowrap")}>
+                      {fmtBRL(p.preco)}
+                    </span>
+                  </button>
+                );
+              })}
+
             </div>
           ) : (
             <EmptyState
