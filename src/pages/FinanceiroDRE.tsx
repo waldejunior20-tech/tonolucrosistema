@@ -10,7 +10,7 @@ import { MoneyInput } from "@/components/MoneyInput";
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
 import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
-import { Plus, Target, AlertTriangle, TrendingUp, TrendingDown } from "lucide-react";
+import { Plus, Target, AlertTriangle, TrendingUp, TrendingDown, Wallet, type LucideIcon } from "lucide-react";
 import { HealthStatus } from "@/components/HealthStatus";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { FinanceiroCategoryTabs } from "@/components/financeiro/FinanceiroCategoryTabs";
