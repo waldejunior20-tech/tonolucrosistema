@@ -107,11 +107,12 @@ const normalizarTipoInsumo = (tipo: string) => tipo === "produzido" ? "proprio" 
 
 export default function FichasTecnicasPizza() {
   const queryClient = useQueryClient();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [filtroTipo, setFiltroTipo] = useState("todos");
+  const [categoria, setCategoria] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const { sugerir } = useSugestaoQuantidade();
@@ -120,10 +121,28 @@ export default function FichasTecnicasPizza() {
     const tipo = searchParams.get("tipo");
     if (tipo && TIPOS.includes(tipo)) {
       setFiltroTipo(tipo);
+      setCategoria(tipo);
+    } else if (tipo === "bordas") {
+      setFiltroTipo("todos");
+      setCategoria("bordas");
     } else {
       setFiltroTipo("todos");
+      setCategoria(null);
     }
   }, [searchParams]);
+
+  const selecionarCategoria = (cat: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("tipo", cat);
+    setSearchParams(params, { replace: false });
+  };
+  const voltarCategorias = () => {
+    const params = new URLSearchParams(searchParams);
+    params.delete("tipo");
+    setSearchParams(params, { replace: false });
+    setSelectedIds(new Set());
+    setSearchTerm("");
+  };
   const [autoOpenedEditId, setAutoOpenedEditId] = useState<string | null>(null);
   const [buscaIngrediente, setBuscaIngrediente] = useState("");
   const [buscaAberta, setBuscaAberta] = useState<number | null>(null);
