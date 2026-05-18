@@ -669,7 +669,17 @@ export default function PrecificacaoPizzas() {
                           />
                           <div>
                             <h3 className="text-table-row-title text-lg leading-tight">{ficha.nome}</h3>
-                            <span className="text-mini-label">{tipoLabel(ficha.tipo)}</span>
+                            <div className="flex flex-wrap items-center gap-2 mt-0.5">
+                              <span className="text-mini-label">{tipoLabel(ficha.tipo)}</span>
+                              {insumoAlert && (
+                                <span
+                                  className="text-[11px] font-semibold px-2 py-0.5 rounded-md border border-red-300 bg-red-50 text-red-700"
+                                  title={`${insumoAlert.nome} subiu ${insumoAlert.variacaoPct.toFixed(1)}% na última compra`}
+                                >
+                                  ⚠ {insumoAlert.nome} (+{insumoAlert.variacaoPct.toFixed(1)}%)
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
 
