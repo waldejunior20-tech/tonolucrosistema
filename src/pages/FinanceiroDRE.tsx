@@ -692,3 +692,82 @@ export default function FinanceiroDRE() {
     </div>
   );
 }
+
+/** Card glass premium — mesmo efeito vidro do Caixa Diário */
+function GlassStat({
+  label,
+  value,
+  icon: Icon,
+  variant,
+  subtitle,
+}: {
+  label: string;
+  value: number;
+  icon: LucideIcon;
+  variant: "positive" | "negative" | "neutral";
+  subtitle?: string;
+}) {
+  const cfg = {
+    positive: {
+      borderLeft: "#2563eb",
+      icon: "#2563eb",
+      text: "#1e3a8a",
+      boxShadow:
+        "0 8px 32px 0 rgba(37, 99, 235, 0.08), inset 0 0 12px rgba(37, 99, 235, 0.05)",
+    },
+    negative: {
+      borderLeft: "#dc2626",
+      icon: "#dc2626",
+      text: "#7f1d1d",
+      boxShadow:
+        "0 8px 32px 0 rgba(220, 38, 38, 0.08), inset 0 0 12px rgba(220, 38, 38, 0.05)",
+    },
+    neutral: {
+      borderLeft: "#94a3b8",
+      icon: "#64748b",
+      text: "#1e293b",
+      boxShadow:
+        "0 8px 32px 0 rgba(100, 116, 139, 0.08), inset 0 0 12px rgba(100, 116, 139, 0.04)",
+    },
+  }[variant];
+
+  return (
+    <div
+      style={{
+        background: "rgba(255, 255, 255, 0.45)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        borderRadius: "20px",
+        border: "1px solid rgba(255, 255, 255, 0.4)",
+        borderLeft: `4px solid ${cfg.borderLeft}`,
+        boxShadow: cfg.boxShadow,
+        padding: "18px 20px",
+      }}
+      className="flex flex-col gap-2 transition-transform hover:-translate-y-0.5"
+    >
+      <div className="flex items-center gap-1.5">
+        <Icon size={14} strokeWidth={2.5} style={{ color: cfg.icon }} />
+        <span
+          className="text-[11px] uppercase tracking-[0.08em]"
+          style={{ color: cfg.icon, fontWeight: 700 }}
+        >
+          {label}
+        </span>
+      </div>
+      <div
+        style={{ color: cfg.text, fontWeight: 700 }}
+        className="text-[22px] leading-tight text-finance-mono"
+      >
+        <Money value={value} symbolScale={0.55} className="text-[22px] leading-tight" />
+      </div>
+      {subtitle && (
+        <span
+          className="text-[11px] font-semibold"
+          style={{ color: cfg.icon, opacity: 0.85 }}
+        >
+          {subtitle}
+        </span>
+      )}
+    </div>
+  );
+}
