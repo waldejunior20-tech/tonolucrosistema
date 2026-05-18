@@ -1277,6 +1277,7 @@ export type Database = {
           nome: string
           numero_ficha: string | null
           preco_venda: number | null
+          subcategoria: string | null
           unidade_id: string | null
           updated_at: string
           user_id: string | null
@@ -1290,6 +1291,7 @@ export type Database = {
           nome: string
           numero_ficha?: string | null
           preco_venda?: number | null
+          subcategoria?: string | null
           unidade_id?: string | null
           updated_at?: string
           user_id?: string | null
@@ -1303,6 +1305,7 @@ export type Database = {
           nome?: string
           numero_ficha?: string | null
           preco_venda?: number | null
+          subcategoria?: string | null
           unidade_id?: string | null
           updated_at?: string
           user_id?: string | null
