@@ -1360,6 +1360,42 @@ export default function FichasTecnicasPizza() {
         </Dialog>
       </PageHeader>
 
+      {/* TELA 1: Grid de Categorias */}
+      {!categoria && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 fade-up">
+          {CATEGORIAS_PIZZA.map(({ id, label, icon: Icon, hint }) => {
+            const count = id === "bordas" ? null : countByTipo(id);
+            return (
+              <button
+                key={id}
+                onClick={() => selecionarCategoria(id)}
+                className="group text-left bg-card border border-border rounded-2xl p-5 h-[148px] flex flex-col justify-between transition-all duration-200 hover:border-primary hover:-translate-y-0.5 hover:shadow-[0_12px_24px_-10px_hsl(var(--primary)/0.25)]"
+              >
+                <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                  <Icon className="h-5 w-5" strokeWidth={2.2} />
+                </div>
+                <div>
+                  <div className="text-base font-bold text-foreground">{label}</div>
+                  <div className="text-xs text-muted-foreground mt-0.5">
+                    {count === null ? hint : `${count} ${count === 1 ? "receita" : "receitas"}`}
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* TELA 2: Conteúdo da Categoria */}
+      {categoria && (
+        <>
+          <button
+            onClick={voltarCategorias}
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" /> Voltar para Categorias
+          </button>
+
       {/* Filtros: busca instantânea + tipo */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3">
         <div className="relative flex-1 max-w-md">
