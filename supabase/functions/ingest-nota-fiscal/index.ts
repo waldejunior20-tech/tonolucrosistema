@@ -326,32 +326,38 @@ Deno.serve(async (req) => {
       if (CATEGORIAS_INSUMO.has(it.categoriaRaw)) categoria = it.categoriaRaw;
     }
 
-    // === LOOKUP NO BANCO MESTRE (anti-duplicata) ===
-    // 1) match fuzzy normalizado por nome (encontrar_match_insumo já normaliza)
+    // === LOOKUP NO BANCO MESTRE COM REGRA SEGURA ===
+    // match_insumo_seguro retorna: insumo_id, nome_match, score, confianca('alta'|'media'), motivo
+    // - alta  -> vínculo automático
+    // - media -> cria novo insumo + registra sugestão de vínculo
+    // - (sem retorno) -> baixa -> cria novo insumo limpo
     let insumo_id: string | null = null;
     let canonExist: any = null;
     let nomeCanonicoExistente: string | null = null;
+    let matchConfianca: "alta" | "media" | null = null;
+    let matchCandidatoId: string | null = null;
+    let matchScore: number | null = null;
+    let matchMotivo: string | null = null;
     try {
-      const { data: matches } = await supabase.rpc("encontrar_match_insumo", {
-        p_nome: it.nome, p_unidade_id: unidade_id, p_min_score: 0.55,
+      const { data: matches } = await supabase.rpc("match_insumo_seguro", {
+        p_nome: it.nome, p_unidade_id: unidade_id,
       });
       if (Array.isArray(matches) && matches.length > 0) {
-        insumo_id = matches[0].insumo_id;
-        nomeCanonicoExistente = matches[0].nome_match;
+        const m = matches[0];
+        matchScore = Number(m.score);
+        matchMotivo = m.motivo ?? null;
+        if (m.confianca === "alta") {
+          insumo_id = m.insumo_id;
+          nomeCanonicoExistente = m.nome_match;
+          matchConfianca = "alta";
+        } else if (m.confianca === "media") {
+          // não vincula automaticamente — apenas guarda o candidato p/ sugestão
+          matchConfianca = "media";
+          matchCandidatoId = m.insumo_id;
+          nomeCanonicoExistente = m.nome_match;
+        }
       }
-    } catch (_) { /* fallback abaixo */ }
-
-    // 2) fallback: ilike exato (legado)
-    if (!insumo_id) {
-      const { data: exato } = await supabase
-        .from("insumos_comprados")
-        .select("id, nome")
-        .eq("unidade_id", unidade_id)
-        .ilike("nome", it.nome)
-        .limit(1)
-        .maybeSingle();
-      if (exato) { insumo_id = exato.id; nomeCanonicoExistente = exato.nome; }
-    }
+    } catch (_) { /* fallback: nenhum match → trata como baixa */ }
 
     if (insumo_id) {
       const { data: c } = await supabase
