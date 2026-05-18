@@ -1533,6 +1533,7 @@ export default function FichasTecnicasPizza() {
           </Table>
         </div>
       )}
+      </>)}
 
           {/* Bordas Recheadas (P · M · G) — somente na categoria "bordas" */}
           {categoria === "bordas" && <BordasSection />}
