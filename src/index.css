@@ -518,3 +518,91 @@ label, .label {
   border-color: #cbd5e1;
 }
 
+
+/* ══════════════════════════════════════════════════
+   GLASSMORPHISM PREMIUM — SaaS financeiro
+   ══════════════════════════════════════════════════ */
+.glass-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.58);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow:
+    0 24px 70px rgba(15, 23, 42, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.70),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.25);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0.12) 28%,
+    rgba(255, 255, 255, 0) 55%
+  );
+}
+
+.glass-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.glass-card:hover {
+  transform: translateY(-2px);
+}
+
+.glass-red {
+  border-left: 5px solid #ef2929;
+  box-shadow:
+    0 24px 70px rgba(239, 41, 41, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.70),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.glass-red:hover {
+  box-shadow:
+    0 28px 80px rgba(239, 41, 41, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.70),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.glass-blue {
+  border-left: 5px solid #2563eb;
+  box-shadow:
+    0 24px 70px rgba(37, 99, 235, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.70),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.glass-blue:hover {
+  box-shadow:
+    0 28px 80px rgba(37, 99, 235, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.70),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.glass-neutral {
+  border-left: 5px solid #94a3b8;
+  box-shadow:
+    0 24px 70px rgba(100, 116, 139, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.70),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.25);
+}
+
+/* Fundo sutil para o vidro aparecer */
+.glass-surface {
+  background:
+    radial-gradient(1200px 600px at 0% 0%, rgba(37, 99, 235, 0.05), transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, rgba(239, 41, 41, 0.04), transparent 60%),
+    linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+}
