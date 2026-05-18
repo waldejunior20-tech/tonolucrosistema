@@ -4,8 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PercentInput, SmartMoneyInput, IntegerInput } from "@/components/SmartInputs";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
+import { FloatingField } from "@/components/ui/floating-field";
 
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
@@ -110,49 +110,47 @@ export default function Onboarding() {
 
           {/* Step 1 */}
           {step === 0 && (
-            <div className="space-y-5 animate-in fade-in duration-300">
-              <div className="space-y-2">
-                <Label>Nome do estabelecimento</Label>
+            <div className="space-y-3 animate-in fade-in duration-300">
+              <FloatingField label="Nome do estabelecimento">
                 <Input
                   value={nome}
                   onChange={(e) => setNome(e.target.value)}
                   placeholder="Ex: Pizzaria do João"
                 />
-              </div>
-              <div className="space-y-2">
-                <Label>Faturamento médio mensal</Label>
+              </FloatingField>
+              <FloatingField label="Faturamento médio mensal">
                 <SmartMoneyInput value={faturamento} onChange={setFaturamento} />
-              </div>
-              <div className="space-y-2">
-                <Label>Quantos funcionários?</Label>
+              </FloatingField>
+              <FloatingField label="Quantos funcionários?">
                 <IntegerInput
                   value={funcionarios}
                   onChange={setFuncionarios}
                   min={0}
                   placeholder="0"
                 />
-              </div>
+              </FloatingField>
             </div>
           )}
 
           {/* Step 2 */}
           {step === 1 && (
-            <div className="space-y-4 animate-in fade-in duration-300">
-              {[
-                { label: "Aluguel", value: aluguel, set: setAluguel },
-                { label: "Energia elétrica", value: energia, set: setEnergia },
-                { label: "Salários", value: salarios, set: setSalarios },
-                { label: "Internet", value: internet, set: setInternet },
-                { label: "Contador", value: contador, set: setContador },
-                { label: "Outros fixos", value: outrosFixos, set: setOutrosFixos },
-              ].map((item) => (
-                <div key={item.label} className="flex items-center gap-3">
-                  <Label className="w-36 text-sm shrink-0">{item.label}</Label>
-                  <SmartMoneyInput value={item.value} onChange={item.set} className="flex-1" />
-                </div>
-              ))}
-              <div className="flex items-center gap-3 pt-3 border-t border-border">
-                <span className="w-36 text-sm font-semibold text-foreground">Total</span>
+            <div className="space-y-3 animate-in fade-in duration-300">
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { label: "Aluguel", value: aluguel, set: setAluguel },
+                  { label: "Energia elétrica", value: energia, set: setEnergia },
+                  { label: "Salários", value: salarios, set: setSalarios },
+                  { label: "Internet", value: internet, set: setInternet },
+                  { label: "Contador", value: contador, set: setContador },
+                  { label: "Outros fixos", value: outrosFixos, set: setOutrosFixos },
+                ].map((item) => (
+                  <FloatingField key={item.label} label={item.label}>
+                    <SmartMoneyInput value={item.value} onChange={item.set} />
+                  </FloatingField>
+                ))}
+              </div>
+              <div className="flex items-center justify-between pt-3 border-t border-border">
+                <span className="text-sm font-semibold text-foreground">Total fixo mensal</span>
                 <span className="text-lg font-bold text-foreground">
                   {totalFixos.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                 </span>
@@ -162,37 +160,34 @@ export default function Onboarding() {
 
           {/* Step 3 */}
           {step === 2 && (
-            <div className="space-y-4 animate-in fade-in duration-300">
-              <div className="mb-4">
+            <div className="space-y-3 animate-in fade-in duration-300">
+              <div className="mb-2">
                 <p className="text-sm text-foreground font-medium mb-1">
                   Quanto % das suas vendas vem de cada forma de pagamento?
-                </p>
-                <p className="text-sm text-muted-foreground mb-2">
-                  Isso nos ajuda a calcular sua taxa média mensal.
                 </p>
                 <p className="text-xs text-muted-foreground bg-muted rounded-md px-3 py-2">
                   Ex: 30% PIX + 30% Débito + 28% Crédito + 12% iFood = 100%
                 </p>
               </div>
-              {[
-                { label: "Dinheiro / PIX", value: pctPix, set: setPctPix },
-                { label: "Débito", value: pctDebito, set: setPctDebito },
-                { label: "Crédito", value: pctCredito, set: setPctCredito },
-                { label: "iFood", value: pctIfood, set: setPctIfood },
-              ].map((item) => (
-                <div key={item.label} className="flex items-center gap-3">
-                  <Label className="w-36 text-sm shrink-0">{item.label}</Label>
-                  <PercentInput
-                    value={item.value}
-                    onChange={item.set}
-                    decimals={0}
-                    placeholder="0"
-                    className="flex-1"
-                  />
-                </div>
-              ))}
-              <div className="flex items-center gap-3 pt-3 border-t border-border">
-                <span className="w-36 text-sm font-semibold text-foreground">Total</span>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { label: "Dinheiro / PIX", value: pctPix, set: setPctPix },
+                  { label: "Débito", value: pctDebito, set: setPctDebito },
+                  { label: "Crédito", value: pctCredito, set: setPctCredito },
+                  { label: "iFood", value: pctIfood, set: setPctIfood },
+                ].map((item) => (
+                  <FloatingField key={item.label} label={item.label}>
+                    <PercentInput
+                      value={item.value}
+                      onChange={item.set}
+                      decimals={0}
+                      placeholder="0"
+                    />
+                  </FloatingField>
+                ))}
+              </div>
+              <div className="flex items-center justify-between pt-3 border-t border-border">
+                <span className="text-sm font-semibold text-foreground">Total</span>
                 <span className={`text-lg font-bold ${
                   Math.abs(totalPct - 100) <= 1 ? "text-success" : "text-destructive"
                 }`}>
@@ -206,7 +201,7 @@ export default function Onboarding() {
               )}
               {totalPct > 100 && (
                 <p className="text-sm text-destructive">
-                  Passou {(totalPct - 100).toFixed(0)}% — reduza alguma forma de pagamento
+                  Passou {(totalPct - 100).toFixed(0)}% — reduza alguma forma
                 </p>
               )}
             </div>
