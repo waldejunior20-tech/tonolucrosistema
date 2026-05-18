@@ -111,6 +111,8 @@ export default function FichasTecnicasPizza() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [filtroTipo, setFiltroTipo] = useState("todos");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const { sugerir } = useSugestaoQuantidade();
 
   useEffect(() => {
