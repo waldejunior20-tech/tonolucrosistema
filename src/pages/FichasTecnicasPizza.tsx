@@ -1142,19 +1142,14 @@ export default function FichasTecnicasPizza() {
                         {renderCaixaSlot("g", "G", "35cm", ing.caixa_g_id, ing.caixa_g_nome)}
                       </div>
 
-                      {/* EXTRAS DE EMBALAGEM — ketchup/maionese (só salgadas) e mesinha (todas) */}
-                      <div className="rounded-md border border-border bg-card p-3 space-y-2">
-                        <div className="flex items-center justify-between flex-wrap gap-1">
-                          <p className="text-sm font-bold">Extras</p>
-                          <p className="text-[10px] text-muted-foreground">
-                            Mesinha vai em todas. Ketchup e Maionese só nas salgadas.
-                          </p>
-                        </div>
-                        <div className="grid grid-cols-3 gap-2">
+                      {/* EXTRAS — pills com toggle */}
+                      <div className="space-y-2">
+                        <Label className="text-xs font-bold uppercase tracking-wider text-stone-900">Extras Disponíveis</Label>
+                        <div className="flex flex-wrap gap-2">
                           {[
-                            { label: "🍅 Ketchup", on: ketchupOn, terms: ketchupTerms, allowed: !isPizzaDoce, hint: isPizzaDoce ? "Só pizzas salgadas" : null },
-                            { label: "🥚 Maionese", on: maioneseOn, terms: maioneseTerms, allowed: !isPizzaDoce, hint: isPizzaDoce ? "Só pizzas salgadas" : null },
-                            { label: "🪑 Mesinha", on: mesinhaOn, terms: mesinhaTerms, allowed: true, hint: null },
+                            { label: "🍅 Ketchup", on: ketchupOn, terms: ketchupTerms, allowed: !isPizzaDoce },
+                            { label: "🥚 Maionese", on: maioneseOn, terms: maioneseTerms, allowed: !isPizzaDoce },
+                            { label: "🪑 Mesinha", on: mesinhaOn, terms: mesinhaTerms, allowed: true },
                           ].map((x) => (
                             <button
                               key={x.label}
@@ -1162,23 +1157,22 @@ export default function FichasTecnicasPizza() {
                               disabled={!x.allowed && !x.on}
                               onClick={() => toggleExtra(x.terms, x.label)}
                               className={cn(
-                                "rounded-md border px-3 py-2 text-xs text-left transition",
+                                "inline-flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-[13px] font-semibold transition border-0",
                                 x.on
-                                  ? "bg-foreground text-background border-foreground"
+                                  ? "bg-slate-800 text-white"
                                   : x.allowed
-                                    ? "bg-muted/30 border-border hover:border-primary hover:text-primary"
-                                    : "bg-muted/10 border-border text-muted-foreground/50 cursor-not-allowed",
+                                    ? "bg-slate-200 text-slate-400 hover:bg-slate-300"
+                                    : "bg-slate-100 text-slate-300 cursor-not-allowed",
                               )}
-                              title={x.hint ?? ""}
                             >
-                              <div className="flex items-center justify-between gap-1">
-                                <span className="font-medium">{x.label}</span>
-                                {x.on && <Check className="h-3 w-3" />}
-                              </div>
-                              {x.hint && <p className="text-[10px] mt-0.5 opacity-70">{x.hint}</p>}
+                              <span>{x.label}</span>
+                              {x.on && <span className="text-[11px] opacity-80">✓</span>}
                             </button>
                           ))}
                         </div>
+                        <p className="text-[11px] text-stone-500 italic">
+                          ✨ Ketchup e Maionese são desativados automaticamente se a pizza for Doce.
+                        </p>
                       </div>
                     </div>
                   );
@@ -1186,14 +1180,40 @@ export default function FichasTecnicasPizza() {
 
                 {/* MODO DE PREPARO */}
                 <div className="space-y-2">
-                  <Label htmlFor="modo_preparo" className="text-xs font-medium uppercase tracking-wider text-slate-500">Modo de Preparo</Label>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="modo_preparo" className="text-xs font-bold uppercase tracking-wider text-stone-900 m-0">Modo de Preparo</Label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+                        if (!SR) {
+                          toast.error("Ditado não suportado", { description: "Seu navegador não suporta reconhecimento de voz." });
+                          return;
+                        }
+                        const rec = new SR();
+                        rec.lang = "pt-BR";
+                        rec.interimResults = false;
+                        rec.continuous = false;
+                        toast("🎙️ Ouvindo...", { description: "Fale o modo de preparo." });
+                        rec.onresult = (e: any) => {
+                          const txt = e.results[0][0].transcript;
+                          setForm((f) => ({ ...f, modo_preparo: (f.modo_preparo ? f.modo_preparo + "\n" : "") + txt }));
+                        };
+                        rec.onerror = () => toast.error("Erro no ditado");
+                        rec.start();
+                      }}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 text-blue-600 border border-blue-200 text-xs font-semibold hover:bg-blue-100 transition"
+                    >
+                      🎙️ Ditar Receita
+                    </button>
+                  </div>
                   <Textarea
                     id="modo_preparo"
-                    placeholder="Descreva o passo a passo do preparo..."
+                    placeholder="Descreva o passo a passo ou use o assistente de voz..."
                     value={form.modo_preparo}
                     onChange={(e) => setForm({ ...form, modo_preparo: e.target.value })}
                     rows={3}
-                    className="text-sm border-slate-200 resize-none"
+                    className="text-sm border-stone-200 resize-none rounded-xl"
                   />
                 </div>
                 </div>
