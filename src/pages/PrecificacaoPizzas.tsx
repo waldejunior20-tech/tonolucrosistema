@@ -626,7 +626,9 @@ export default function PrecificacaoPizzas() {
               </Button>
             </div>
           ) : (
-            fichas.map((ficha, rowIndex) => {
+            fichas
+              .filter((f) => !showOnlyAffected || fichaTopAlert.has(f.id))
+              .map((ficha, rowIndex) => {
               const custos = pizzaCustos[ficha.id] ?? { p: 0, m: 0, g: 0 };
               const precos = { p: getPreco(ficha.id, "p", ficha), m: getPreco(ficha.id, "m", ficha), g: getPreco(ficha.id, "g", ficha) };
               const cmvs = { p: calcCmv(custos.p, precos.p), m: calcCmv(custos.m, precos.m), g: calcCmv(custos.g, precos.g) };
@@ -634,6 +636,7 @@ export default function PrecificacaoPizzas() {
               const hasAlert = cmvs.p > 40 || cmvs.m > 40 || cmvs.g > 40;
               const isOpen = expandedCards[ficha.id] ?? false;
               const health = getHealthColor(cmvs, precos);
+              const insumoAlert = fichaTopAlert.get(ficha.id);
 
               return (
                 <Collapsible
