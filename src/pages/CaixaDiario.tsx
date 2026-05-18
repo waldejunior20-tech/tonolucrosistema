@@ -45,6 +45,25 @@ export default function CaixaDiario() {
     </div>
   );
 
+  return (
+    <div className="space-y-5 page-enter">
+      <FinanceiroCategoryTabs />
+
+      <PageHeader title="Caixa Diário">
+        <button
+          onClick={() => setReceitaOpen(true)}
+          className="inline-flex items-center gap-1.5 h-10 px-4 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 text-[13.5px] font-bold hover:bg-emerald-100 hover:border-emerald-300 hover:shadow-sm transition-all"
+        >
+          <Plus size={15} strokeWidth={2.75} />
+          Lançar receita
+        </button>
+        <button
+          onClick={() => setDespesaOpen(true)}
+          className="inline-flex items-center gap-1.5 h-10 px-4 rounded-lg border border-rose-200 bg-rose-50 text-rose-700 text-[13.5px] font-bold hover:bg-rose-100 hover:border-rose-300 hover:shadow-sm transition-all"
+        >
+          <Minus size={15} strokeWidth={2.75} />
+          Lançar despesa
+        </button>
       </PageHeader>
 
       <div className="flex items-center">{periodSelector}</div>
