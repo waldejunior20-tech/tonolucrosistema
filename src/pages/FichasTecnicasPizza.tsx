@@ -1465,9 +1465,7 @@ export default function FichasTecnicasPizza() {
                 </TableHead>
                 <TableHead>Nome</TableHead>
                 <TableHead>Tipo</TableHead>
-                <TableHead className="text-right">Custo P</TableHead>
-                <TableHead className="text-right">Custo M</TableHead>
-                <TableHead className="text-right">Custo G</TableHead>
+                <TableHead className="text-right">Custos</TableHead>
                 <TableHead className="w-[120px]">Ações</TableHead>
               </TableRow>
             </TableHeader>
@@ -1498,13 +1496,11 @@ export default function FichasTecnicasPizza() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Money value={custos.custoP} />
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Money value={custos.custoM} />
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Money value={custos.custoG} />
+                      <div className="flex flex-col items-end justify-center min-w-[80px]">
+                        <Money value={custos.custoP} className="text-[13px] font-semibold text-slate-600 py-0.5" />
+                        <Money value={custos.custoM} className="text-[13px] font-semibold text-slate-600 py-0.5" />
+                        <Money value={custos.custoG} className="text-[13px] font-semibold text-slate-600 py-0.5" />
+                      </div>
                     </TableCell>
                     <TableCell onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center justify-end gap-3">
