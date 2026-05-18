@@ -223,6 +223,7 @@ export function useDashboardData() {
     promocoesAtivas,
     faturamentoMes,
     despesasMes,
+    lucroMes,
     faturamentoMesAnterior,
     despesasMesAnterior,
     lucroMesAnterior,
