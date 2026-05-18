@@ -369,11 +369,11 @@ export default function InsumosComprados() {
         <TableHead className={cn(HEAD, "text-left w-[140px]")}>Categoria</TableHead>
       )}
       <TableHead className={cn(HEAD, "text-right w-[120px]")}>Preço atual</TableHead>
-      <TableHead className={cn(HEAD, "text-right w-[120px]")}>Quantidade</TableHead>
+      <TableHead className={cn(HEAD, "text-right w-[110px]")}>Qtd. base</TableHead>
+      <TableHead className={cn(HEAD, "text-center w-[80px]")}>Unidade</TableHead>
       <TableHead className={cn(HEAD, "text-right w-[110px]")}>Variação</TableHead>
-      <TableHead className={cn(HEAD, "text-left w-[180px]")}>Último fornecedor</TableHead>
-      <TableHead className={cn(HEAD, "text-center w-[120px]")}>Última compra</TableHead>
       <TableHead className={cn(HEAD, "text-center w-[90px]")}>Em fichas</TableHead>
+      <TableHead className={cn(HEAD, "text-right w-[130px]")}>Última atualização</TableHead>
       <TableHead className={cn(HEAD, "text-center w-[130px] pr-4")}>Ações</TableHead>
     </TableRow>
   );
