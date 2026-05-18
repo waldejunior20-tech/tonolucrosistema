@@ -570,20 +570,20 @@ export default function PrecificacaoPizzas() {
               icon={TrendingDown}
               tone={affectedCount > 0 ? "down" : "up"}
               label={showOnlyAffected ? "Filtrando afetadas" : "Comprometem a meta"}
-              value={<span>{affectedCount > 0 ? affectedCount : indicators.foraMetaCount}</span>}
+              value={<span style={{ fontSize: 28, fontWeight: 800, color: "#0f172a" }}>{affectedCount > 0 ? affectedCount : indicators.foraMetaCount}</span>}
             />
           </button>
           <StatCard
             icon={Activity}
             tone="neutral"
             label="Total de pizzas"
-            value={<span>{fichas.length}</span>}
+            value={<span style={{ fontSize: 28, fontWeight: 800, color: "#0f172a" }}>{fichas.length}</span>}
           />
           <StatCard
             icon={Cog}
             tone="neutral"
             label="Meta de CMV"
-            value={<span>{cmvMeta.toFixed(0)}%</span>}
+            value={<span style={{ fontSize: 28, fontWeight: 800, color: "#0f172a" }}>{cmvMeta.toFixed(0)}%</span>}
           />
         </StatCardGrid>
 
