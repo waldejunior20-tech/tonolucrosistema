@@ -1,4 +1,5 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -16,7 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { appError } from "@/lib/error-codes";
-import { Pencil, Trash2, Plus, Search, X, Check, BookOpen } from "lucide-react";
+import { Pencil, Trash2, Plus, Search, X, Check, BookOpen, ArrowLeft, Sandwich, UtensilsCrossed, IceCream, GlassWater, Leaf, Soup, Coffee, Beer, Wine, Star, Gem, Salad, Flame, Snowflake, Sparkles } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 import { formatMoney, formatQty } from "@/components/MoneyInput";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -79,6 +80,33 @@ const CATEGORIA_LABELS: Record<string, string> = {
   bebida: "Bebidas",
 };
 
+type SubcatDef = { id: string; label: string; icon: any; hint: string };
+const SUBCATEGORIAS: Record<string, SubcatDef[]> = {
+  sanduiche: [
+    { id: "tradicional", label: "Tradicionais", icon: Sandwich,    hint: "Clássicos do cardápio" },
+    { id: "especial",    label: "Especiais",    icon: Star,        hint: "Combinações da casa" },
+    { id: "premium",     label: "Premium",      icon: Gem,         hint: "Ingredientes nobres" },
+    { id: "vegano",      label: "Veganos",      icon: Leaf,        hint: "Sem ingredientes animais" },
+  ],
+  prato: [
+    { id: "executivo",   label: "Executivos",   icon: UtensilsCrossed, hint: "Prato do dia" },
+    { id: "a_la_carte",  label: "À la carte",   icon: Flame,           hint: "Especialidades" },
+    { id: "massa",       label: "Massas",       icon: Soup,            hint: "Pastas e molhos" },
+    { id: "salada",      label: "Saladas",      icon: Salad,           hint: "Opções leves" },
+  ],
+  sobremesa: [
+    { id: "gelada",      label: "Geladas",      icon: Snowflake,   hint: "Mousses, sorvetes" },
+    { id: "quente",      label: "Quentes",      icon: Flame,       hint: "Petit gâteau e cia" },
+    { id: "especial",    label: "Especiais",    icon: Sparkles,    hint: "Receitas autorais" },
+  ],
+  bebida: [
+    { id: "suco",         label: "Sucos",        icon: GlassWater,  hint: "Naturais e polpa" },
+    { id: "refrigerante", label: "Refrigerantes",icon: Coffee,      hint: "Latas e garrafas" },
+    { id: "drink",        label: "Drinks",       icon: Wine,        hint: "Coquetelaria" },
+    { id: "cerveja",      label: "Cervejas",     icon: Beer,        hint: "Chopps e long necks" },
+  ],
+};
+
 interface Props {
   categoria: string;
 }
@@ -98,6 +126,32 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
   const formIsValid = !Object.values(errors).some(Boolean);
   const showErr = (field: keyof typeof errors) => submitted && errors[field];
 
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [subcategoria, setSubcategoria] = useState<string | null>(null);
+
+  const subcatsDisponiveis = SUBCATEGORIAS[categoria] ?? [];
+  const subcatAtiva = subcatsDisponiveis.find((s) => s.id === subcategoria);
+
+  useEffect(() => {
+    const sub = searchParams.get("sub");
+    if (sub && subcatsDisponiveis.some((s) => s.id === sub)) {
+      setSubcategoria(sub);
+    } else {
+      setSubcategoria(null);
+    }
+  }, [searchParams, categoria]);
+
+  const selecionarSub = (sub: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("sub", sub);
+    setSearchParams(params);
+  };
+  const voltarSubs = () => {
+    const params = new URLSearchParams(searchParams);
+    params.delete("sub");
+    setSearchParams(params);
+  };
+
   const label = CATEGORIA_LABELS[categoria] || categoria;
 
   // Queries
@@ -113,6 +167,12 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
       return data as FichaProduto[];
     },
   });
+
+  const fichasFiltradas = subcategoria
+    ? fichas.filter((f) => (f as any).subcategoria === subcategoria)
+    : fichas;
+  const countBySub = (subId: string) =>
+    fichas.filter((f) => (f as any).subcategoria === subId).length;
 
   const { data: todosIngredientes = [] } = useQuery({
     queryKey: ["fichas_tecnicas_produtos_ingredientes"],
@@ -222,9 +282,10 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
         .insert({
           nome: data.nome,
           categoria,
+          subcategoria: subcategoria ?? null,
           numero_ficha: data.numero_ficha || null,
           modo_preparo: data.modo_preparo || null,
-        })
+        } as any)
         .select()
         .single();
       if (error) throw error;
@@ -428,7 +489,10 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
   return (
     <div className="space-y-6 page-enter">
       <FichasCategoryTabs />
-      <PageHeader title={`Fichas Técnicas — ${label}`} description="Gerencie receitas e custos dos seus produtos.">
+      <PageHeader
+        title={subcatAtiva ? `${label} — ${subcatAtiva.label}` : `Fichas Técnicas — ${label}`}
+        description={subcatAtiva ? "Gerencie receitas e custos dos seus produtos." : "Selecione um grupo para gerenciar as receitas."}
+      >
         <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) resetForm(); setDialogOpen(open); }}>
           <DialogTrigger asChild>
             <Button onClick={() => { resetForm(); setDialogOpen(true); }} className="btn-hot-cta gap-2 px-4">
@@ -620,59 +684,99 @@ export default function FichasTecnicasProdutos({ categoria }: Props) {
         </Dialog>
       </PageHeader>
 
-      {/* Table */}
-      {isLoading ? (
-        <SkeletonTable rows={6} />
-      ) : fichas.length === 0 ? (
-        <div className="rounded-lg border bg-card p-12 text-center">
-          <p className="text-muted-foreground">Nenhuma ficha técnica cadastrada para {label}.</p>
-          <p className="text-sm text-muted-foreground mt-1">Clique em "+ Nova Ficha" para começar.</p>
+      {/* TELA 1: Grid de Subcategorias */}
+      {subcatsDisponiveis.length > 0 && !subcategoria && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 fade-up">
+          {subcatsDisponiveis.map(({ id, label: lbl, icon: Icon, hint }) => {
+            const count = countBySub(id);
+            return (
+              <button
+                key={id}
+                onClick={() => selecionarSub(id)}
+                className="group text-left bg-card border border-border rounded-2xl p-5 h-[148px] flex flex-col justify-between transition-all duration-200 hover:border-primary hover:-translate-y-0.5 hover:shadow-[0_12px_24px_-10px_hsl(var(--primary)/0.25)]"
+              >
+                <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                  <Icon className="h-5 w-5" strokeWidth={2.2} />
+                </div>
+                <div>
+                  <div className="text-base font-bold text-foreground">{lbl}</div>
+                  <div className="text-xs text-muted-foreground mt-0.5">
+                    {count > 0 ? `${count} ${count === 1 ? "receita" : "receitas"}` : hint}
+                  </div>
+                </div>
+              </button>
+            );
+          })}
         </div>
-      ) : (
-        <div className="table-premium fade-up fade-up-d1">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="">Nome</TableHead>
-                <TableHead className="text-right">Custo Total</TableHead>
-                <TableHead className="w-24 text-center ">Ações</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {fichas.map((ficha) => {
-                const custo = calcularCustoFicha(ficha.id);
-                return (
-                  <TableRow key={ficha.id}>
-                    <TableCell
-                      className="font-semibold text-primary hover:underline cursor-pointer"
-                      onClick={() => handleEdit(ficha)}
-                    >
-                      {ficha.nome}
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums cursor-pointer" onClick={() => handleEdit(ficha)}>
-                      {custo > 0 ? <Money value={custo} /> : "—"}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-destructive"
-                        title="Excluir ficha"
-                        onClick={() => {
-                          if (confirm(`🗑️ Excluir "${ficha.nome}"? Essa ação não pode ser desfeita.`)) {
-                            deleteMutation.mutate(ficha.id);
-                          }
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
+      )}
+
+      {/* TELA 2: Conteúdo da Subcategoria */}
+      {(subcategoria || subcatsDisponiveis.length === 0) && (
+        <>
+          {subcatsDisponiveis.length > 0 && (
+            <button
+              onClick={voltarSubs}
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" /> Voltar para Categorias
+            </button>
+          )}
+
+          {/* Table */}
+          {isLoading ? (
+            <SkeletonTable rows={6} />
+          ) : fichasFiltradas.length === 0 ? (
+            <div className="rounded-lg border bg-card p-12 text-center">
+              <p className="text-muted-foreground">Nenhuma ficha técnica cadastrada para {subcatAtiva?.label ?? label}.</p>
+              <p className="text-sm text-muted-foreground mt-1">Clique em "+ Nova Ficha" para começar.</p>
+            </div>
+          ) : (
+            <div className="table-premium fade-up fade-up-d1">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="">Nome</TableHead>
+                    <TableHead className="text-right">Custo Total</TableHead>
+                    <TableHead className="w-24 text-center ">Ações</TableHead>
                   </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </div>
+                </TableHeader>
+                <TableBody>
+                  {fichasFiltradas.map((ficha) => {
+                    const custo = calcularCustoFicha(ficha.id);
+                    return (
+                      <TableRow key={ficha.id}>
+                        <TableCell
+                          className="font-semibold text-primary hover:underline cursor-pointer"
+                          onClick={() => handleEdit(ficha)}
+                        >
+                          {ficha.nome}
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums cursor-pointer" onClick={() => handleEdit(ficha)}>
+                          {custo > 0 ? <Money value={custo} /> : "—"}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-destructive"
+                            title="Excluir ficha"
+                            onClick={() => {
+                              if (confirm(`🗑️ Excluir "${ficha.nome}"? Essa ação não pode ser desfeita.`)) {
+                                deleteMutation.mutate(ficha.id);
+                              }
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
