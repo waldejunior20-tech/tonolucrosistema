@@ -13,6 +13,8 @@ import { requireActiveUnidadeId } from "@/hooks/useActiveUnidade";
 import { Plus, Target, AlertTriangle, TrendingUp, TrendingDown, Wallet, type LucideIcon } from "lucide-react";
 import { HealthStatus } from "@/components/HealthStatus";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { PageHero } from "@/components/layout/PageHero";
+import { StatCard, StatCardGrid } from "@/components/layout/StatCardGrid";
 import { FinanceiroCategoryTabs } from "@/components/financeiro/FinanceiroCategoryTabs";
 import { Money } from "@/components/Money";
 
