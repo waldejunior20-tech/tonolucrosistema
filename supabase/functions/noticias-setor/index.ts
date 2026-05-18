@@ -115,6 +115,41 @@ async function fetchFeed(feed: { url: string; fonte: string }): Promise<Noticia[
   }
 }
 
+async function fetchNewsApi(): Promise<Noticia[]> {
+  const apiKey = Deno.env.get("NEWSAPI_KEY");
+  if (!apiKey) return [];
+  try {
+    const q = encodeURIComponent('restaurante OR abrasel OR "food service" OR gastronomia');
+    const url = `https://newsapi.org/v2/everything?q=${q}&language=pt&sortBy=publishedAt&pageSize=10&apiKey=${apiKey}`;
+    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) {
+      console.error("NewsAPI status:", res.status);
+      return [];
+    }
+    const json = await res.json();
+    const articles = (json.articles || []) as any[];
+    return articles.map((a, idx) => {
+      const titulo = stripHtml(a.title || "");
+      const resumo = stripHtml(a.description || "");
+      const { statusVendas, badgeTexto } = classificar(titulo, resumo);
+      return {
+        id: `newsapi-${idx}-${(a.url || "").slice(-20)}`,
+        titulo,
+        fonte: a.source?.name || "NewsAPI",
+        linkFonte: a.url,
+        statusVendas,
+        badgeTexto,
+        tempo: tempoRelativo(a.publishedAt),
+        pubDate: a.publishedAt,
+        resumo: resumo.slice(0, 220),
+      } as Noticia;
+    });
+  } catch (e) {
+    console.error("Falha NewsAPI:", (e as Error).message);
+    return [];
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
@@ -125,10 +160,21 @@ Deno.serve(async (req) => {
       });
     }
 
-    const results = await Promise.all(FEEDS.map(fetchFeed));
-    const all = results.flat();
-    all.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
-    const noticias = all.slice(0, 10);
+    const [rssResults, newsApiResults] = await Promise.all([
+      Promise.all(FEEDS.map(fetchFeed)).then((r) => r.flat()),
+      fetchNewsApi(),
+    ]);
+    const all = [...rssResults, ...newsApiResults];
+    // Dedup por título normalizado
+    const seen = new Set<string>();
+    const unique = all.filter((n) => {
+      const key = n.titulo.toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 80);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+    unique.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
+    const noticias = unique.slice(0, 10);
 
     cache = { at: Date.now(), data: noticias };
 
