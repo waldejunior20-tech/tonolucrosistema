@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Plus, Minus, TrendingUp, TrendingDown, Receipt, ShoppingBag } from "lucide-react";
+import { Plus, Minus, TrendingUp, TrendingDown, Receipt, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Money } from "@/components/Money";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PageHero } from "@/components/layout/PageHero";
 import { StatCard, StatCardGrid } from "@/components/layout/StatCardGrid";
@@ -44,22 +45,78 @@ export default function CaixaDiario() {
     </div>
   );
 
+  // Glass red hero (apenas quando devedor) — alto contraste, vidro translúcido
+  const GlassRedHero = () => (
+    <div
+      className="relative overflow-hidden rounded-2xl p-5 sm:p-6 fade-up shadow-lg text-white"
+      style={{
+        background: "linear-gradient(135deg, rgba(220, 38, 38, 0.4) 0%, rgba(220, 38, 38, 0.15) 100%)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        border: "1px solid rgba(220, 38, 38, 0.2)",
+        borderLeft: "4px solid #dc2626",
+      }}
+    >
+      <div className="absolute -top-16 -right-16 h-48 w-48 rounded-full bg-red-500/15 blur-3xl pointer-events-none" />
+      <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex flex-col gap-1 min-w-0">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-red-950/70">
+            Saldo dos últimos {periodo} dias
+          </span>
+          <div className="mt-0.5">
+            <Money
+              value={saldo}
+              className="text-[32px] sm:text-[44px] leading-none font-bold text-red-950 [&_*]:text-red-950"
+              symbolScale={0.5}
+            />
+          </div>
+          <div className="flex items-center gap-1.5 text-[13px] text-red-950/85 mt-1.5 font-medium">
+            <AlertTriangle size={14} strokeWidth={2.5} />
+            Caixa devedor — necessita aportes · {periodoData.qtdVendas} venda{periodoData.qtdVendas !== 1 ? "s" : ""}
+          </div>
+        </div>
+        <div className="flex-shrink-0 flex items-center gap-2">{periodSelector}</div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="space-y-5 page-enter">
       <FinanceiroCategoryTabs />
-      <PageHeader title="Caixa Diário" />
 
-      <PageHero
-        label={`Saldo dos últimos ${periodo} dias`}
-        value={saldo}
-        status={devedor ? "danger" : "neutral"}
-        context={
-          devedor
-            ? `⚠️ Caixa devedor — necessita aportes · ${periodoData.qtdVendas} venda${periodoData.qtdVendas !== 1 ? "s" : ""}`
-            : `✅ Saldo positivo · ${periodoData.qtdVendas} venda${periodoData.qtdVendas !== 1 ? "s" : ""}`
-        }
-        rightSlot={periodSelector}
-      />
+      <PageHeader title="Caixa Diário">
+        <button
+          onClick={() => setReceitaOpen(true)}
+          className="inline-flex items-center gap-1.5 h-10 px-4 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 text-[13.5px] font-bold hover:bg-emerald-100 hover:border-emerald-300 hover:shadow-sm transition-all"
+        >
+          <Plus size={15} strokeWidth={2.75} />
+          Lançar receita
+        </button>
+        <button
+          onClick={() => setDespesaOpen(true)}
+          className="inline-flex items-center gap-1.5 h-10 px-4 rounded-lg border border-rose-200 bg-rose-50 text-rose-700 text-[13.5px] font-bold hover:bg-rose-100 hover:border-rose-300 hover:shadow-sm transition-all"
+        >
+          <Minus size={15} strokeWidth={2.75} />
+          Lançar despesa
+        </button>
+      </PageHeader>
+
+      {devedor ? (
+        <GlassRedHero />
+      ) : (
+        <PageHero
+          label={`Saldo dos últimos ${periodo} dias`}
+          value={saldo}
+          status="neutral"
+          context={
+            <span className="inline-flex items-center gap-1.5">
+              <CheckCircle2 size={14} strokeWidth={2.5} />
+              Saldo positivo · {periodoData.qtdVendas} venda{periodoData.qtdVendas !== 1 ? "s" : ""}
+            </span>
+          }
+          rightSlot={periodSelector}
+        />
+      )}
 
       <StatCardGrid cols={3}>
         <StatCard icon={TrendingUp} tone="up" label="Entrou" value={periodoData.totalGanho} />
@@ -67,25 +124,7 @@ export default function CaixaDiario() {
         <StatCard icon={TrendingDown} tone="down" label="Saiu" value={periodoData.totalGasto} />
       </StatCardGrid>
 
-      {/* Quick actions - compact */}
-      <div className="flex items-center gap-2">
-        <button
-          onClick={() => setReceitaOpen(true)}
-          className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 text-[13px] font-semibold hover:bg-emerald-100 transition-colors"
-        >
-          <Plus size={14} strokeWidth={2.5} />
-          Lançar receita
-        </button>
-        <button
-          onClick={() => setDespesaOpen(true)}
-          className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg border border-rose-200 bg-rose-50 text-rose-700 text-[13px] font-semibold hover:bg-rose-100 transition-colors"
-        >
-          <Minus size={14} strokeWidth={2.5} />
-          Lançar despesa
-        </button>
-      </div>
-
-      {/* Movimentos timeline */}
+      {/* Movimentos timeline — linhas compactas */}
       <div className="space-y-2.5">
         <h3 className="text-sm font-semibold text-foreground">Movimentos por dia</h3>
         <MovimentosTimeline movimentos={movimentos} isLoading={isLoading} />
@@ -96,4 +135,3 @@ export default function CaixaDiario() {
     </div>
   );
 }
-
