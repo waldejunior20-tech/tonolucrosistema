@@ -108,10 +108,10 @@ function AppRoutes() {
         <Route path="/insumos/comprados/duplicados" element={<InsumosDuplicados />} />
         <Route path="/insumos/produzidos" element={<InsumosProduzidos />} />
         <Route path="/fichas/pizzas" element={<FichasTecnicasPizza />} />
-        <Route path="/fichas/sanduiches" element={<FichasTecnicasProdutos categoria="sanduiche" />} />
-        <Route path="/fichas/pratos" element={<FichasTecnicasProdutos categoria="prato" />} />
-        <Route path="/fichas/sobremesas" element={<FichasTecnicasProdutos categoria="sobremesa" />} />
-        <Route path="/fichas/bebidas" element={<FichasTecnicasProdutos categoria="bebida" />} />
+        <Route path="/fichas/sanduiches" element={<FichasTecnicasProdutos key="sanduiche" categoria="sanduiche" />} />
+        <Route path="/fichas/pratos" element={<FichasTecnicasProdutos key="prato" categoria="prato" />} />
+        <Route path="/fichas/sobremesas" element={<FichasTecnicasProdutos key="sobremesa" categoria="sobremesa" />} />
+        <Route path="/fichas/bebidas" element={<FichasTecnicasProdutos key="bebida" categoria="bebida" />} />
         <Route path="/precificacao/pizzas" element={<PrecificacaoPizzas />} />
         <Route path="/precificacao/produtos" element={<PrecificacaoProdutos />} />
         <Route path="/precificacao/bebidas" element={<PrecificacaoBebidas />} />
