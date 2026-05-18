@@ -752,89 +752,126 @@ export default function Dashboard() {
 
       {/* ─── ROW 2 — 4 KPIs ─────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-5">
-        {/* Entradas */}
-        <div className="bg-white border border-[#E2E8F0] rounded-3xl p-6 shadow-sm">
+        {/* Entradas — azul = sucesso */}
+        <div className={cn("rounded-3xl p-6", GLASS_SUCCESS)}>
           <div className="flex justify-between items-start mb-3">
             <p className={cn(T.label, C.muted, "text-[11px]")}>Entradas</p>
-            <div className="text-emerald-500"><ArrowUpRight size={18} /></div>
+            <div className="text-blue-600"><ArrowUpRight size={18} /></div>
           </div>
-          <p className={cn(T.mono, "text-2xl font-bold mb-3", C.text)}>{fmtBRL(faturamentoMes)}</p>
-          <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+          <p className={cn(T.mono, "text-2xl font-bold mb-3 text-blue-700")}>{fmtBRL(faturamentoMes)}</p>
+          <div className="h-1.5 w-full bg-slate-100/60 rounded-full overflow-hidden">
             <div
-              className="h-full bg-emerald-500 rounded-full transition-all"
+              className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all"
               style={{ width: `${Math.min(100, faturamentoMes > 0 ? 100 : 0)}%` }}
             />
           </div>
           {comparativos?.faturamento !== null && comparativos?.faturamento !== undefined && (
             <p className={cn(
               "text-[11px] font-semibold mt-2",
-              comparativos.faturamento >= 0 ? "text-emerald-600" : "text-rose-500",
+              comparativos.faturamento >= 0 ? "text-blue-700" : "text-rose-600",
             )}>
               {comparativos.faturamento >= 0 ? "+" : ""}{comparativos.faturamento.toFixed(1)}% vs mês anterior
             </p>
           )}
         </div>
 
-        {/* Saídas */}
-        <div className="bg-white border border-[#E2E8F0] rounded-3xl p-6 shadow-sm">
-          <div className="flex justify-between items-start mb-3">
-            <p className={cn(T.label, C.muted, "text-[11px]")}>Saídas</p>
-            <div className="text-rose-500"><ArrowDownRight size={18} /></div>
-          </div>
-          <p className={cn(T.mono, "text-2xl font-bold mb-3", C.text)}>{fmtBRL(despesasMes)}</p>
-          <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-rose-500 rounded-full transition-all"
-              style={{ width: `${Math.min(100, faturamentoMes > 0 ? (despesasMes / faturamentoMes) * 100 : 0)}%` }}
-            />
-          </div>
-          {comparativos?.despesas !== null && comparativos?.despesas !== undefined && (
-            <p className={cn(
-              "text-[11px] font-semibold mt-2",
-              comparativos.despesas <= 0 ? "text-emerald-600" : "text-rose-500",
-            )}>
-              {comparativos.despesas >= 0 ? "+" : ""}{comparativos.despesas.toFixed(1)}% vs mês anterior
-            </p>
-          )}
-        </div>
-
-        {/* CMV % */}
-        <div className="bg-white border border-[#E2E8F0] rounded-3xl p-6 shadow-sm">
-          <p className={cn(T.label, C.muted, "text-[11px] mb-3")}>CMV Operacional</p>
-          <div className="flex items-end justify-between mb-3">
-            <p className={cn(T.mono, "text-2xl font-bold", C.text)}>{cmvPct.toFixed(1)}%</p>
-            <span className={cn(
-              "text-[11px] font-bold",
-              cmvOk ? "text-emerald-600" : "text-rose-500",
-            )}>
-              Meta {cmvMeta}%
-            </span>
-          </div>
-          <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-            <div
-              className={cn(
-                "h-full rounded-full transition-all",
-                cmvOk ? "bg-emerald-500" : cmvPct < cmvMeta * 1.2 ? "bg-amber-400" : "bg-rose-500",
+        {/* Saídas — vermelho quando crescem, neutro caso contrário */}
+        {(() => {
+          const despAlta = (comparativos?.despesas ?? 0) > 5;
+          const cls = despAlta ? GLASS_DANGER : GLASS;
+          return (
+            <div className={cn("rounded-3xl p-6", cls)}>
+              <div className="flex justify-between items-start mb-3">
+                <p className={cn(T.label, C.muted, "text-[11px]")}>Saídas</p>
+                <div className={despAlta ? "text-rose-600" : "text-slate-500"}><ArrowDownRight size={18} /></div>
+              </div>
+              <p className={cn(T.mono, "text-2xl font-bold mb-3", despAlta ? "text-rose-600" : C.text)}>{fmtBRL(despesasMes)}</p>
+              <div className="h-1.5 w-full bg-slate-100/60 rounded-full overflow-hidden">
+                <div
+                  className={cn("h-full rounded-full transition-all", despAlta ? "bg-gradient-to-r from-rose-500 to-rose-600" : "bg-slate-400")}
+                  style={{ width: `${Math.min(100, faturamentoMes > 0 ? (despesasMes / faturamentoMes) * 100 : 0)}%` }}
+                />
+              </div>
+              {comparativos?.despesas !== null && comparativos?.despesas !== undefined && (
+                <p className={cn(
+                  "text-[11px] font-semibold mt-2",
+                  comparativos.despesas <= 0 ? "text-emerald-600" : "text-rose-600",
+                )}>
+                  {comparativos.despesas >= 0 ? "+" : ""}{comparativos.despesas.toFixed(1)}% vs mês anterior
+                </p>
               )}
-              style={{ width: `${Math.min(100, (cmvPct / (cmvMeta * 1.5)) * 100)}%` }}
-            />
-          </div>
-        </div>
+            </div>
+          );
+        })()}
 
-        {/* Lucro Líquido */}
-        <div className="bg-white border border-[#E2E8F0] rounded-3xl p-6 shadow-sm">
-          <p className={cn(T.label, C.muted, "text-[11px] mb-3")}>Lucro Líquido</p>
-          <p className={cn(
-            T.mono, "text-2xl font-bold mb-2",
-            caixaPositivo ? "text-emerald-600" : caixaNegativo ? "text-rose-500" : C.text,
-          )}>
-            {fmtBRL(lucroMes)}
-          </p>
-          <p className={cn(T.body, C.muted, "text-[11px]")}>
-            Margem de {faturamentoMes > 0 ? ((lucroMes / faturamentoMes) * 100).toFixed(1) : "0"}%
-          </p>
-        </div>
+        {/* CMV % — crítico se > 100% */}
+        {(() => {
+          const cmvCritico = cmvPct > 100;
+          const cmvAlerta = !cmvOk && !cmvCritico;
+          const cls = cmvCritico ? GLASS_DANGER : cmvAlerta ? GLASS_WARN : GLASS_SUCCESS;
+          const valorCor = cmvCritico ? "text-rose-600" : cmvAlerta ? "text-amber-600" : "text-blue-700";
+          return (
+            <div className={cn("rounded-3xl p-6", cls)}>
+              <div className="flex items-center justify-between mb-3">
+                <p className={cn(T.label, C.muted, "text-[11px]")}>
+                  {cmvCritico ? "CMV crítico" : "CMV Operacional"}
+                </p>
+                {cmvCritico && (
+                  <span className="text-[9.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 border border-rose-200">
+                    Risco
+                  </span>
+                )}
+              </div>
+              <div className="flex items-end justify-between mb-3">
+                <p className={cn(T.mono, "text-2xl font-bold", valorCor)}>{cmvPct.toFixed(1)}%</p>
+                <span className={cn("text-[11px] font-bold", cmvOk ? "text-blue-700" : "text-rose-600")}>
+                  Meta {cmvMeta}%
+                </span>
+              </div>
+              <div className="h-1.5 w-full bg-slate-100/60 rounded-full overflow-hidden">
+                <div
+                  className={cn(
+                    "h-full rounded-full transition-all",
+                    cmvCritico ? "bg-gradient-to-r from-rose-500 to-rose-700"
+                    : cmvAlerta ? "bg-gradient-to-r from-amber-400 to-orange-500"
+                    : "bg-gradient-to-r from-blue-500 to-blue-600",
+                  )}
+                  style={{ width: `${Math.min(100, (cmvPct / (cmvMeta * 1.5)) * 100)}%` }}
+                />
+              </div>
+              {cmvCritico && (
+                <p className="text-[11px] font-semibold mt-2 text-rose-600">
+                  Custos ultrapassaram 100% — revisar preços urgente.
+                </p>
+              )}
+            </div>
+          );
+        })()}
+
+        {/* Lucro Líquido — azul positivo, vermelho negativo, âmbar limite */}
+        {(() => {
+          const cls = caixaNegativo ? GLASS_DANGER : caixaAtencao ? GLASS_WARN : GLASS_SUCCESS;
+          const cor = caixaNegativo ? "text-rose-600" : caixaAtencao ? "text-amber-600" : "text-blue-700";
+          const label = caixaNegativo ? "Prejuízo no mês" : caixaAtencao ? "Lucro no limite" : "Lucro Líquido";
+          return (
+            <div className={cn("rounded-3xl p-6", cls)}>
+              <div className="flex items-center justify-between mb-3">
+                <p className={cn(T.label, C.muted, "text-[11px]")}>{label}</p>
+                {caixaNegativo && (
+                  <span className="text-[9.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 border border-rose-200">
+                    Alerta
+                  </span>
+                )}
+              </div>
+              <p className={cn(T.mono, "text-2xl font-bold mb-2", cor)}>{fmtBRL(lucroMes)}</p>
+              <p className={cn(T.body, C.muted, "text-[11px]")}>
+                Margem de {faturamentoMes > 0 ? ((lucroMes / faturamentoMes) * 100).toFixed(1) : "0"}%
+              </p>
+            </div>
+          );
+        })()}
       </div>
+
 
       {/* ─── ROW 3 — CHART + CONTAS A VENCER ────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-8">
