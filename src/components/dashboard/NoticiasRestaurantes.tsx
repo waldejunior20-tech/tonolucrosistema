@@ -101,7 +101,7 @@ export function NoticiasRestaurantes() {
 
       {!isLoading && !isError && (
         <div className="flex flex-col gap-3">
-          {noticias.slice(0, 6).map((item) => (
+          {noticias.slice(0, 3).map((item) => (
             <div
               key={item.id}
               className="flex items-center justify-between gap-4 px-4 py-3.5 bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl transition-colors"
