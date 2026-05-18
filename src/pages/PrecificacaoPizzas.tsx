@@ -522,106 +522,104 @@ export default function PrecificacaoPizzas() {
           </Card>
         )}
 
-        {/* ═══ Header unificado: Alerta + KPIs + Legenda ═══ */}
-        <section className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-          {/* Linha 1 — Alerta de caixa (compacto) ou Hero de CMV */}
-          {lucroMes < 0 ? (
-            <div className="flex items-start gap-3 px-5 py-4 border-l-4 border-red-600 bg-red-50/60">
-              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-red-100">
-                <AlertTriangle className="h-5 w-5 text-red-700" strokeWidth={2.5} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-baseline gap-2 flex-wrap">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-red-700">Caixa negativo</span>
-                  <span className="text-finance-mono text-[17px] font-extrabold text-red-800 tabular-nums">
-                    {formatMoney(lucroMes)}
-                  </span>
+        {/* ═══ Header em grid de 3 cards independentes ═══ */}
+        <section
+          className="grid gap-4"
+          style={{ gridTemplateColumns: lucroMes < 0 ? "1.2fr 1fr 1fr" : "1fr 1fr" }}
+        >
+          {/* Card 1 — Alerta de caixa (destaque) */}
+          {lucroMes < 0 && (
+            <div
+              className="rounded-2xl bg-[#fef2f2] shadow-sm flex flex-col p-5"
+              style={{ borderLeft: "4px solid #dc2626" }}
+            >
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100">
+                  <AlertTriangle className="h-4.5 w-4.5 text-red-700" strokeWidth={2.5} />
                 </div>
-                <p className="text-[13px] text-slate-700 mt-0.5 leading-snug">
-                  {affectedCount > 0
-                    ? `${affectedCount} ${affectedCount === 1 ? "pizza usa" : "pizzas usam"} insumos com alta no mercado e ${affectedCount === 1 ? "está sufocando" : "estão sufocando"} o lucro operacional.`
-                    : "Revise sua precificação — o CMV médio está consumindo a margem do mês."}
-                </p>
+                <span className="text-[10.5px] font-bold uppercase tracking-wider text-red-700">
+                  Caixa negativo
+                </span>
               </div>
+              <div className="mt-3 text-finance-mono text-[34px] font-extrabold leading-none tabular-nums text-red-700">
+                {formatMoney(lucroMes)}
+              </div>
+              <p className="mt-2 text-[12.5px] text-slate-700 leading-snug flex-1">
+                {affectedCount > 0
+                  ? `${affectedCount} ${affectedCount === 1 ? "pizza usa" : "pizzas usam"} insumos com alta no mercado, sufocando o lucro.`
+                  : "Revise sua precificação — o CMV médio está consumindo a margem do mês."}
+              </p>
               {affectedCount > 0 && (
                 <button
                   onClick={() => setShowOnlyAffected((v) => !v)}
-                  className="flex-shrink-0 bg-red-700 hover:bg-red-800 text-white transition-colors px-3.5 py-2 rounded-lg font-semibold text-[12.5px] whitespace-nowrap shadow-sm"
+                  className="mt-3 w-full bg-red-700 hover:bg-red-800 text-white transition-colors px-3.5 py-2 rounded-lg font-semibold text-[12.5px] shadow-sm"
                 >
                   {showOnlyAffected ? "Mostrar Todas" : "Corrigir Afetadas"}
                 </button>
               )}
             </div>
-          ) : (
-            <div className="px-5 py-4 border-b border-slate-100">
-              <PageHero
-                label="CMV Médio das Pizzas"
-                value={indicators.avgCmv}
-                unit="PERCENT"
-                status={
-                  indicators.avgCmv > 40 ? "danger" :
-                  indicators.avgCmv > 35 ? "warning" :
-                  indicators.avgCmv >= 25 ? "success" : "neutral"
-                }
-                context={cmvMessage(indicators.avgCmv)}
-              />
-            </div>
           )}
 
-          {/* Linha 2 — KPIs inline compactos */}
-          <div className="grid grid-cols-3 divide-x divide-slate-200 border-t border-slate-200">
-            <button
-              type="button"
-              onClick={() => setShowOnlyAffected((v) => !v)}
-              disabled={affectedCount === 0}
-              className="text-left px-5 py-3.5 hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-destructive/40 disabled:cursor-default disabled:hover:bg-transparent"
-              title={affectedCount > 0 ? "Filtrar apenas pizzas com insumos em alta" : "Nenhuma pizza afetada"}
+          {/* Card 2 — Comprometem a meta */}
+          <button
+            type="button"
+            onClick={() => setShowOnlyAffected((v) => !v)}
+            disabled={affectedCount === 0}
+            className="text-left rounded-2xl border border-slate-200 bg-white shadow-sm p-5 hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-destructive/40 disabled:cursor-default disabled:hover:bg-white"
+          >
+            <div className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-wider text-slate-500">
+              <TrendingDown className={cn("h-3.5 w-3.5", affectedCount > 0 ? "text-red-600" : "text-slate-400")} />
+              {showOnlyAffected ? "Filtrando afetadas" : "Comprometem a meta"}
+            </div>
+            <div
+              className="mt-3 text-[32px] font-extrabold leading-none tabular-nums"
+              style={{ color: affectedCount > 0 ? "#b91c1c" : "#0f172a" }}
             >
-              <div className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-wider text-slate-500">
-                <TrendingDown className={cn("h-3.5 w-3.5", affectedCount > 0 ? "text-red-600" : "text-slate-400")} />
-                {showOnlyAffected ? "Filtrando afetadas" : "Comprometem a meta"}
-              </div>
-              <div className="mt-1 text-[26px] font-extrabold leading-none tabular-nums" style={{ color: affectedCount > 0 ? "#b91c1c" : "#0f172a" }}>
-                {affectedCount > 0 ? affectedCount : indicators.foraMetaCount}
-              </div>
-            </button>
-            <div className="px-5 py-3.5">
-              <div className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-wider text-slate-500">
-                <Activity className="h-3.5 w-3.5 text-slate-400" />
-                Total de pizzas
-              </div>
-              <div className="mt-1 text-[26px] font-extrabold leading-none tabular-nums text-[#0f172a]">
-                {fichas.length}
-              </div>
+              {affectedCount > 0 ? affectedCount : indicators.foraMetaCount}
             </div>
-            <div className="px-5 py-3.5">
-              <div className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-wider text-slate-500">
-                <Cog className="h-3.5 w-3.5 text-slate-400" />
-                Meta de CMV
-              </div>
-              <div className="mt-1 text-[26px] font-extrabold leading-none tabular-nums text-[#0f172a]">
-                {cmvMeta.toFixed(0)}%
-              </div>
-            </div>
-          </div>
+            <p className="mt-2 text-[12px] text-slate-500 leading-snug">
+              Pizzas acima do CMV ideal de {cmvMeta.toFixed(0)}%.
+            </p>
+          </button>
 
-          {/* Linha 3 — Legenda de faixas */}
-          <div className="flex flex-wrap items-center gap-2 px-5 py-3 border-t border-slate-200 bg-slate-50/60 text-[11px] font-semibold">
-            <span className="text-slate-500 uppercase tracking-wider mr-1">Faixas de CMV:</span>
-            <span className="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">&lt; 25% Margem alta</span>
-            <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">25–35% Ideal</span>
-            <span className="px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">35–40% Atenção</span>
-            <span className="px-2.5 py-1 rounded-full bg-red-50 text-red-700 border border-red-200">&gt; 40% Prejuízo</span>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button type="button" className="ml-1 text-slate-400 hover:text-slate-700 transition-colors">
-                  <Info className="h-3.5 w-3.5" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="max-w-xs text-xs">
-                CMV = Custo da Mercadoria Vendida. Mostra quanto do preço de venda é consumido pelo custo do produto. Faixas baseadas no padrão Abrasel para food service.
-              </TooltipContent>
-            </Tooltip>
+          {/* Card 3 — Total + Meta de CMV */}
+          <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-5">
+            <div className="grid grid-cols-2 gap-4 h-full">
+              <div className="flex flex-col">
+                <div className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-wider text-slate-500">
+                  <Activity className="h-3.5 w-3.5 text-slate-400" />
+                  Total de pizzas
+                </div>
+                <div className="mt-3 text-[32px] font-extrabold leading-none tabular-nums text-[#0f172a]">
+                  {fichas.length}
+                </div>
+              </div>
+              <div className="flex flex-col border-l border-slate-200 pl-4">
+                <div className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-wider text-slate-500">
+                  <Cog className="h-3.5 w-3.5 text-slate-400" />
+                  Meta de CMV
+                </div>
+                <div className="mt-3 text-[32px] font-extrabold leading-none tabular-nums text-[#0f172a]">
+                  {cmvMeta.toFixed(0)}%
+                </div>
+              </div>
+            </div>
+            <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center gap-1.5 text-[10.5px] font-semibold">
+              <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">&lt; 25%</span>
+              <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">25–35%</span>
+              <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">35–40%</span>
+              <span className="px-2 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-200">&gt; 40%</span>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button type="button" className="ml-auto text-slate-400 hover:text-slate-700 transition-colors">
+                    <Info className="h-3.5 w-3.5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-xs text-xs">
+                  CMV = Custo da Mercadoria Vendida. Faixas baseadas no padrão Abrasel para food service.
+                </TooltipContent>
+              </Tooltip>
+            </div>
           </div>
         </section>
 
