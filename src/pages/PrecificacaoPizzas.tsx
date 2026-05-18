@@ -617,12 +617,12 @@ export default function PrecificacaoPizzas() {
 
 
         {/* ═══ Régua global FAIXAS DE CMV ═══ */}
-        <div className="flex flex-wrap items-center text-[11px] font-semibold" style={{ gap: "8px" }}>
-          <span className="text-slate-500 uppercase tracking-wider mr-1">Faixas de CMV:</span>
-          <span className="px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">&lt; 25% Margem alta</span>
-          <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">25–35% Ideal</span>
-          <span className="px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">35–40% Atenção</span>
-          <span className="px-2.5 py-1 rounded-full bg-red-50 text-red-700 border border-red-200">&gt; 40% Prejuízo</span>
+        <div className="flex flex-wrap items-center text-[11px]" style={{ gap: "8px" }}>
+          <span className="text-slate-500 uppercase tracking-wider mr-1 font-semibold">Faixas de CMV:</span>
+          <span style={{ backgroundColor: '#eff6ff', color: '#1e40af', border: '1px solid rgba(37, 99, 235, 0.1)', borderRadius: '6px', padding: '4px 10px', fontWeight: 700 }}>&lt; 25% Margem alta</span>
+          <span style={{ backgroundColor: '#f0fdf4', color: '#166534', border: '1px solid rgba(22, 101, 52, 0.1)', borderRadius: '6px', padding: '4px 10px', fontWeight: 700 }}>25–35% Ideal</span>
+          <span style={{ backgroundColor: '#fefce8', color: '#854d0e', border: '1px solid rgba(133, 77, 14, 0.1)', borderRadius: '6px', padding: '4px 10px', fontWeight: 700 }}>35–40% Atenção</span>
+          <span style={{ backgroundColor: '#fef2f2', color: '#991b1b', border: '1px solid rgba(153, 27, 27, 0.1)', borderRadius: '6px', padding: '4px 10px', fontWeight: 700 }}>&gt; 40% Prejuízo</span>
           <Tooltip>
             <TooltipTrigger asChild>
               <button type="button" className="text-slate-400 hover:text-slate-700 transition-colors">
