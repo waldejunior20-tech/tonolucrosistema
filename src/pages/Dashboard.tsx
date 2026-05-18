@@ -345,11 +345,7 @@ export default function Dashboard() {
       ? "bg-gradient-to-br from-amber-500 to-orange-600"
       : "bg-gradient-to-br from-blue-600 to-blue-700";
   const heroShadow =
-    statusCaixa === "negativo"
-      ? "shadow-[0_30px_80px_-30px_rgba(225,29,72,0.45)]"
-      : statusCaixa === "atencao"
-      ? "shadow-[0_30px_80px_-30px_rgba(234,88,12,0.45)]"
-      : "shadow-[0_30px_80px_-30px_rgba(37,99,235,0.45)]";
+    "shadow-[0_18px_40px_-20px_rgba(15,23,42,0.35),0_4px_12px_-6px_rgba(15,23,42,0.2)]";
   const heroBtnText =
     statusCaixa === "negativo" ? "text-rose-700"
     : statusCaixa === "atencao" ? "text-orange-700"
