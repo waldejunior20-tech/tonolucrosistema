@@ -198,12 +198,9 @@ function GlassStat({
           {label}
         </span>
       </div>
-      <Money
-        value={value}
-        symbolScale={0.55}
-        className="text-[22px] leading-tight text-finance-mono"
-        style={{ color: cfg.text, fontWeight: 700 }}
-      />
+      <div style={{ color: cfg.text, fontWeight: 700 }} className="text-[22px] leading-tight text-finance-mono">
+        <Money value={value} symbolScale={0.55} className="text-[22px] leading-tight" />
+      </div>
     </div>
   );
 }
