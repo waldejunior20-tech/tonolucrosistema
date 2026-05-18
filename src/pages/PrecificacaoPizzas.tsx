@@ -533,10 +533,10 @@ export default function PrecificacaoPizzas() {
             <div
               className="rounded-2xl shadow-sm flex flex-col p-5"
               style={{
-                background: "linear-gradient(135deg, rgba(254, 226, 226, 0.4) 0%, rgba(254, 226, 226, 0.15) 100%)",
-                backdropFilter: "blur(8px)",
-                WebkitBackdropFilter: "blur(8px)",
-                border: "1px solid rgba(220, 38, 38, 0.15)",
+                background: "linear-gradient(135deg, rgba(254, 226, 226, 0.4) 0%, rgba(254, 226, 226, 0.1) 100%)",
+                backdropFilter: "blur(12px)",
+                WebkitBackdropFilter: "blur(12px)",
+                border: "1px solid rgba(220, 38, 38, 0.2)",
                 borderLeft: "4px solid #dc2626",
               }}
             >
