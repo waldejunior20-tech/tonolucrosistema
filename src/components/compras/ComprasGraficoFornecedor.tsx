@@ -102,7 +102,7 @@ export function ComprasGraficoFornecedor({ rows, selectedFornecedor, onSelectFor
 
           const rankStyle =
             rank === 1
-              ? "bg-gradient-to-br from-amber-400 to-amber-500 text-white shadow-[0_2px_8px_rgba(245,158,11,0.35)]"
+              ? "bg-amber-500 text-white shadow-sm"
               : rank === 2
               ? "bg-gradient-to-br from-slate-300 to-slate-400 text-white"
               : rank === 3
