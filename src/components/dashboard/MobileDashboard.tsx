@@ -413,7 +413,7 @@ export function MobileDashboard() {
             tagFg: "text-[#059669]",
             icon: Sparkles,
             accent: "#10B981",
-            gradient: "linear-gradient(135deg, #ffffff 0%, #F0FDF4 100%)",
+            gradient: "#ffffff",
             title: p.nome,
             subtitle: "Margem favorável agora",
             metric: fmtBRL(p.preco_venda_g || p.preco_venda_m || p.preco_venda_p),
@@ -556,19 +556,12 @@ export function MobileDashboard() {
                   <button
                     key={it.key}
                     onClick={it.onClick}
-                    className="snap-start shrink-0 w-[82%] text-left rounded-2xl border border-[#E6EAF0] p-4 active:scale-[0.99] transition-transform shadow-[0_1px_2px_rgba(15,23,42,0.04),0_10px_24px_-14px_rgba(15,23,42,0.18)] relative overflow-hidden"
-                    style={{ background: it.gradient }}
+                    className="snap-start shrink-0 w-[82%] text-left rounded-2xl border border-[#E6EAF0] bg-white p-4 active:scale-[0.99] transition-transform shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_20px_-12px_rgba(15,23,42,0.10)] relative overflow-hidden"
                   >
                     {/* accent bar */}
                     <span
                       aria-hidden
-                      className="absolute left-0 top-4 bottom-4 w-1 rounded-r-full"
-                      style={{ background: it.accent }}
-                    />
-                    {/* glow */}
-                    <span
-                      aria-hidden
-                      className="absolute -bottom-10 -right-10 w-32 h-32 rounded-full opacity-20 blur-2xl pointer-events-none"
+                      className="absolute left-0 top-4 bottom-4 w-[3px] rounded-r-full"
                       style={{ background: it.accent }}
                     />
                     <div className="relative flex items-start justify-between gap-2 mb-3">
@@ -579,12 +572,12 @@ export function MobileDashboard() {
                         <Icon size={17} className={it.tagFg} strokeWidth={2.4} />
                       </div>
                     </div>
-                    <h3 className="relative font-heading text-[15.5px] font-bold text-[#0F172A] leading-tight line-clamp-1">
+                    <h3 className="relative font-heading text-[15.5px] font-semibold text-[#0F172A] leading-tight line-clamp-1 tracking-tight">
                       {it.title}
                     </h3>
                     <p className="relative text-[11.5px] text-[#64748B] mt-0.5 line-clamp-1">{it.subtitle}</p>
                     {it.metric && (
-                      <p className={cn("relative font-mono text-[22px] font-bold leading-none mt-3", it.metricColor)}>
+                      <p className={cn("relative font-mono text-[22px] font-bold leading-none mt-3 tabular-nums tracking-tight", it.metricColor)}>
                         {it.metric}
                       </p>
                     )}
@@ -626,16 +619,16 @@ export function MobileDashboard() {
       <div className="grid grid-cols-2 gap-2.5 mb-5">
         <button
           onClick={() => navigate("/financeiro/caixa-diario")}
-          className="rounded-2xl p-4 text-left bg-[linear-gradient(180deg,#3B82F6_0%,#2563EB_100%)] text-white active:scale-[0.97] transition-transform shadow-[0_8px_20px_-8px_rgba(37,99,235,0.55)] min-h-[88px]"
+          className="rounded-2xl p-4 text-left bg-white border border-[#E6EAF0] active:scale-[0.97] transition-transform min-h-[88px] shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
         >
-          <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center mb-2">
+          <div className="w-9 h-9 rounded-xl bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center mb-2">
             <Plus size={18} strokeWidth={2.5} />
           </div>
-          <p className="font-semibold text-[14px] leading-tight">Registrar venda</p>
+          <p className="font-semibold text-[14px] leading-tight text-[#0F172A]">Registrar venda</p>
         </button>
         <button
           onClick={() => navigate("/insumos/comprados")}
-          className="rounded-2xl p-4 text-left bg-white border border-[#E6EAF0] active:scale-[0.97] transition-transform min-h-[88px]"
+          className="rounded-2xl p-4 text-left bg-white border border-[#E6EAF0] active:scale-[0.97] transition-transform min-h-[88px] shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
         >
           <div className="w-9 h-9 rounded-xl bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center mb-2">
             <FileUp size={18} strokeWidth={2.4} />
@@ -644,7 +637,7 @@ export function MobileDashboard() {
         </button>
         <button
           onClick={() => navigate("/fichas/pizzas")}
-          className="rounded-2xl p-4 text-left bg-white border border-[#E6EAF0] active:scale-[0.97] transition-transform min-h-[88px]"
+          className="rounded-2xl p-4 text-left bg-white border border-[#E6EAF0] active:scale-[0.97] transition-transform min-h-[88px] shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
         >
           <div className="w-9 h-9 rounded-xl bg-[#ECFDF5] text-[#059669] flex items-center justify-center mb-2">
             <ChefHat size={18} strokeWidth={2.4} />
@@ -653,7 +646,7 @@ export function MobileDashboard() {
         </button>
         <button
           onClick={() => navigate("/precificacao/pizzas")}
-          className="rounded-2xl p-4 text-left bg-white border border-[#E6EAF0] active:scale-[0.97] transition-transform min-h-[88px]"
+          className="rounded-2xl p-4 text-left bg-white border border-[#E6EAF0] active:scale-[0.97] transition-transform min-h-[88px] shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
         >
           <div className="w-9 h-9 rounded-xl bg-[#FFFBEB] text-[#D97706] flex items-center justify-center mb-2">
             <Tag size={18} strokeWidth={2.4} />
