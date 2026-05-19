@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { DesktopOnlyGuard } from "@/components/layout/DesktopOnlyGuard";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
@@ -108,28 +109,28 @@ function AppRoutes() {
         <Route path="/insumos/comprados/historico" element={<Navigate to="/compras/historico" replace />} />
         <Route path="/insumos/comprados/revisar" element={<InsumosRevisar />} />
         <Route path="/insumos/comprados/duplicados" element={<InsumosDuplicados />} />
-        <Route path="/insumos/produzidos" element={<InsumosProduzidos />} />
-        <Route path="/fichas/pizzas" element={<FichasTecnicasPizza />} />
-        <Route path="/fichas/sanduiches" element={<FichasTecnicasProdutos key="sanduiche" categoria="sanduiche" />} />
-        <Route path="/fichas/pratos" element={<FichasTecnicasProdutos key="prato" categoria="prato" />} />
-        <Route path="/fichas/sobremesas" element={<FichasTecnicasProdutos key="sobremesa" categoria="sobremesa" />} />
-        <Route path="/fichas/bebidas" element={<FichasTecnicasProdutos key="bebida" categoria="bebida" />} />
-        <Route path="/precificacao/pizzas" element={<PrecificacaoPizzas />} />
-        <Route path="/precificacao/produtos" element={<PrecificacaoProdutos />} />
-        <Route path="/precificacao/bebidas" element={<PrecificacaoBebidas />} />
-        <Route path="/precificacao/configuracoes" element={<PrecificacaoConfiguracoes />} />
+        <Route path="/insumos/produzidos" element={<DesktopOnlyGuard feature="Pré-preparo / Insumos produzidos"><InsumosProduzidos /></DesktopOnlyGuard>} />
+        <Route path="/fichas/pizzas" element={<DesktopOnlyGuard feature="Fichas técnicas de pizza"><FichasTecnicasPizza /></DesktopOnlyGuard>} />
+        <Route path="/fichas/sanduiches" element={<DesktopOnlyGuard feature="Fichas técnicas de sanduíches"><FichasTecnicasProdutos key="sanduiche" categoria="sanduiche" /></DesktopOnlyGuard>} />
+        <Route path="/fichas/pratos" element={<DesktopOnlyGuard feature="Fichas técnicas de pratos"><FichasTecnicasProdutos key="prato" categoria="prato" /></DesktopOnlyGuard>} />
+        <Route path="/fichas/sobremesas" element={<DesktopOnlyGuard feature="Fichas técnicas de sobremesas"><FichasTecnicasProdutos key="sobremesa" categoria="sobremesa" /></DesktopOnlyGuard>} />
+        <Route path="/fichas/bebidas" element={<DesktopOnlyGuard feature="Fichas técnicas de bebidas"><FichasTecnicasProdutos key="bebida" categoria="bebida" /></DesktopOnlyGuard>} />
+        <Route path="/precificacao/pizzas" element={<DesktopOnlyGuard feature="Precificação de pizzas (P/M/G)"><PrecificacaoPizzas /></DesktopOnlyGuard>} />
+        <Route path="/precificacao/produtos" element={<DesktopOnlyGuard feature="Precificação de produtos"><PrecificacaoProdutos /></DesktopOnlyGuard>} />
+        <Route path="/precificacao/bebidas" element={<DesktopOnlyGuard feature="Precificação de bebidas"><PrecificacaoBebidas /></DesktopOnlyGuard>} />
+        <Route path="/precificacao/configuracoes" element={<DesktopOnlyGuard feature="Configurações de precificação"><PrecificacaoConfiguracoes /></DesktopOnlyGuard>} />
         <Route path="/financeiro/caixa-diario" element={<CaixaDiario />} />
         <Route path="/financeiro/dre" element={<FinanceiroDRE />} />
         <Route path="/financeiro/contas-a-pagar" element={<FinanceiroContasPagar />} />
         <Route path="/financeiro/ponto-de-equilibrio" element={<FinanceiroPontoEquilibrio />} />
         <Route path="/promocoes" element={<Navigate to="/promocoes/ativas" replace />} />
         <Route path="/promocoes/ativas" element={<PromocoesAtivas />} />
-        <Route path="/promocoes/combos" element={<ComboSimulator />} />
+        <Route path="/promocoes/combos" element={<DesktopOnlyGuard feature="Simulador de combos"><ComboSimulator /></DesktopOnlyGuard>} />
         <Route path="/automacao/alertas" element={<AutomacaoAlertas />} />
         <Route path="/automacao/historico-precos" element={<AutomacaoHistoricoPrecos />} />
         <Route path="/automacao/fichas-warnings" element={<AutomacaoFichasWarnings />} />
         <Route path="/automacao/saude" element={<AutomacaoSaude />} />
-        <Route path="/configuracoes" element={<Configuracoes />} />
+        <Route path="/configuracoes" element={<DesktopOnlyGuard feature="Configurações avançadas"><Configuracoes /></DesktopOnlyGuard>} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
