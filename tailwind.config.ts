@@ -84,24 +84,27 @@ export default {
         },
       },
       borderRadius: {
-        /* Alinhado com --radius-* tokens do index.css */
-        xs: "var(--radius-xs)",     /* 2px  — badges, trend pills */
-        sm: "var(--radius-sm)",     /* 4px  — botões, inputs */
-        md: "var(--radius-md)",     /* 6px  — cards, modais, status pills */
-        lg: "var(--radius-lg)",     /* 8px  — containers, tabelas */
-        xl: "var(--radius-xl)",     /* 12px — cards premium, destaque */
-        pill: "var(--radius-pill)", /* 9999px — avatares, tags */
+        /* Escala premium unificada — alinhada com --radius-* do index.css */
+        xs: "var(--radius-xs)",     /*  8px — badges, pills */
+        sm: "var(--radius-sm)",     /* 12px — pequenos containers */
+        md: "var(--radius-md)",     /* 14px — inputs */
+        lg: "var(--radius-lg)",     /* 16px — botões */
+        xl: "var(--radius-xl)",     /* 18px — cards pequenos */
+        "2xl": "var(--radius-2xl)", /* 22px — cards médios */
+        "3xl": "var(--radius-3xl)", /* 28px — hero cards */
+        pill: "var(--radius-pill)",
       },
       boxShadow: {
-        card: "0 4px 20px rgba(0,0,0,0.05)",
-        "card-hover": "0 8px 30px rgba(0,0,0,0.08)",
-        "card-ember": "0 4px 20px rgba(0,0,0,0.05)",
+        /* Sombras neutras, premium, sem cor — Stripe/Linear feel */
+        card: "0 1px 2px rgba(15,23,42,0.04), 0 4px 12px -4px rgba(15,23,42,0.06)",
+        "card-hover": "0 2px 4px rgba(15,23,42,0.05), 0 12px 28px -8px rgba(15,23,42,0.10)",
+        "card-ember": "0 1px 2px rgba(15,23,42,0.04), 0 4px 12px -4px rgba(15,23,42,0.06)",
         "glow-ember": "none",
         "glow-profit": "none",
-        button: "0 2px 4px rgba(0,0,0,0.08)",
-        tooltip: "0 8px 32px rgba(0,0,0,0.12)",
-        sidebar: "1px 0 4px rgba(0,0,0,0.04)",
-        glass: "0 25px 60px rgba(0,0,0,0.15)",
+        button: "0 1px 2px rgba(15,23,42,0.06)",
+        tooltip: "0 8px 24px -4px rgba(15,23,42,0.12)",
+        sidebar: "1px 0 2px rgba(15,23,42,0.03)",
+        glass: "0 12px 32px -8px rgba(15,23,42,0.10)",
       },
       keyframes: {
         "accordion-down": {
