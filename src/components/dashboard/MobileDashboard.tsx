@@ -268,66 +268,52 @@ export function MobileDashboard() {
 
   return (
     <div className="page-enter -m-4 pb-6 bg-[#F1F5F9] min-h-[calc(100vh-4rem)]">
-      {/* HERO AZUL — gradiente + saudação + caixa do mês gigante */}
+      {/* HERO AZUL — gradiente discreto, padding reduzido ~18% */}
       <div
-        className="relative px-5 pt-6 pb-20 text-white overflow-hidden"
+        className="relative px-5 pt-5 pb-16 text-white overflow-hidden"
         style={{
           background:
-            "radial-gradient(120% 80% at 100% 0%, #60A5FA 0%, transparent 55%)," +
-            "radial-gradient(100% 90% at 0% 100%, #1E3A8A 0%, transparent 60%)," +
-            "linear-gradient(135deg, #2563EB 0%, #1D4ED8 55%, #1E40AF 100%)",
-          borderBottomLeftRadius: 32,
-          borderBottomRightRadius: 32,
+            "linear-gradient(135deg, #2563EB 0%, #1D4ED8 60%, #1E40AF 100%)",
+          borderBottomLeftRadius: 28,
+          borderBottomRightRadius: 28,
         }}
       >
-        {/* Brilhos decorativos */}
-        <div
-          aria-hidden
-          className="absolute -top-16 -right-10 w-56 h-56 rounded-full opacity-30 blur-2xl"
-          style={{ background: "radial-gradient(circle, #93C5FD 0%, transparent 70%)" }}
-        />
-        <div
-          aria-hidden
-          className="absolute -bottom-10 -left-10 w-48 h-48 rounded-full opacity-20 blur-2xl"
-          style={{ background: "radial-gradient(circle, #BFDBFE 0%, transparent 70%)" }}
-        />
-
         <div className="relative flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[13px] font-medium text-white/80">{greeting()},</p>
-            <h1 className="font-heading text-[22px] font-bold leading-tight mt-0.5 truncate">
+            <p className="text-[12px] font-medium text-white/70">{greeting()},</p>
+            <h1 className="font-heading text-[17px] font-semibold leading-tight mt-0.5 truncate">
               {userName || "Bem-vindo"}
             </h1>
             {businessName && (
-              <p className="text-[12px] text-white/70 mt-0.5 truncate">{businessName}</p>
+              <p className="text-[11.5px] text-white/60 mt-0.5 truncate">{businessName}</p>
             )}
           </div>
           <button
             onClick={() => navigate("/automacao/alertas")}
             aria-label="Notificações"
-            className="relative w-11 h-11 rounded-full bg-white/15 backdrop-blur flex items-center justify-center active:scale-95 transition-transform shrink-0 ring-1 ring-white/20 text-center"
+            className="relative w-10 h-10 rounded-full bg-white/10 hover:bg-white/15 flex items-center justify-center active:scale-95 transition shrink-0"
           >
-            <Bell size={20} strokeWidth={2.2} />
+            <Bell size={18} strokeWidth={2.2} />
             {notifCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-[#DC2626] text-white text-[10px] font-bold flex items-center justify-center border-2 border-[#1D4ED8]">
+              <span className="absolute -top-0.5 -right-0.5 min-w-[17px] h-[17px] px-1 rounded-full bg-[#DC2626] text-white text-[10px] font-bold flex items-center justify-center border-2 border-[#1D4ED8]">
                 {notifCount > 9 ? "9+" : notifCount}
               </span>
             )}
           </button>
         </div>
 
-        {/* Caixa do mês — número GIGANTE com olhinho */}
-        <div className="relative mt-7">
+        {/* Caixa do mês — protagonista absoluto */}
+        <div className="relative mt-6">
           <div className="flex items-center justify-between gap-3 mb-2">
             <div className="flex items-center gap-2">
-              <p className="text-[11.5px] font-semibold uppercase tracking-wider text-white/70">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-white/65">
                 Caixa do mês
               </p>
               <span className={cn(
-                "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider backdrop-blur",
-                !hasFaturamento ? "bg-white/15 text-white/80" :
-                caixaNegativo ? "bg-[#DC2626]/90 text-white" :
-                "bg-[#10B981]/90 text-white",
+                "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider",
+                !hasFaturamento ? "bg-white/12 text-white/80" :
+                caixaNegativo ? "bg-[#DC2626] text-white" :
+                "bg-[#10B981] text-white",
               )}>
                 <Wallet size={10} />{finanLabel}
               </span>
@@ -335,15 +321,17 @@ export function MobileDashboard() {
             <button
               onClick={toggleSaldo}
               aria-label={showSaldo ? "Ocultar saldo" : "Mostrar saldo"}
-              className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center active:scale-95 transition"
+              className="w-8 h-8 rounded-full bg-white/8 hover:bg-white/15 flex items-center justify-center active:scale-95 transition"
             >
-              {showSaldo ? <Eye size={15} className="text-white" /> : <EyeOff size={15} className="text-white" />}
+              {showSaldo ? <Eye size={14} className="text-white" /> : <EyeOff size={14} className="text-white" />}
             </button>
           </div>
           <p className={cn(
-            "leading-none transition-all num-depth-light",
-            showSaldo ? "text-[34px]" : "text-[26px] tracking-widest",
-          )}>
+            "leading-none transition-all font-heading font-bold text-white tracking-tight",
+            showSaldo ? "text-[40px]" : "text-[28px] tracking-widest",
+          )}
+          style={{ fontVariantNumeric: "tabular-nums", letterSpacing: showSaldo ? "-0.02em" : "0.1em" }}
+          >
             {!hasFaturamento ? "—" : showSaldo ? fmtBRL(lucroMes) : mask}
           </p>
           {(() => {
@@ -351,33 +339,33 @@ export function MobileDashboard() {
             const entradaPct = Math.min(100, (faturamentoMes / maxVal) * 100);
             const saidaPct = Math.min(100, (despesasMes / maxVal) * 100);
             return (
-              <div className="mt-5 space-y-2.5">
-                <div className="rounded-2xl bg-white/10 backdrop-blur-sm ring-1 ring-white/15 px-3.5 py-2.5">
+              <div className="mt-5 space-y-2">
+                <div className="rounded-2xl bg-white/10 ring-1 ring-white/12 px-3.5 py-2.5">
                   <div className="flex items-center justify-between mb-1.5">
                     <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-full bg-white/15 flex items-center justify-center">
-                        <ArrowUpRight size={14} className="text-[#86EFAC]" strokeWidth={2.5} />
+                      <div className="w-6 h-6 rounded-full bg-white/12 flex items-center justify-center">
+                        <ArrowUpRight size={13} className="text-[#86EFAC]" strokeWidth={2.5} />
                       </div>
                       <span className="text-[12.5px] font-semibold text-white">Entrada</span>
                     </div>
-                    <span className="font-mono text-[13px] font-bold text-white">{showSaldo ? fmtBRL(faturamentoMes) : "•••••"}</span>
+                    <span className="font-mono text-[13px] font-bold text-white tabular-nums">{showSaldo ? fmtBRL(faturamentoMes) : "•••••"}</span>
                   </div>
-                  <div className="h-1.5 rounded-full bg-white/15 overflow-hidden">
-                    <div className="h-full rounded-full transition-all duration-500" style={{ width: `${entradaPct}%`, background: "linear-gradient(90deg, #34D399 0%, #10B981 100%)" }} />
+                  <div className="h-1 rounded-full bg-white/12 overflow-hidden">
+                    <div className="h-full rounded-full transition-all duration-500" style={{ width: `${entradaPct}%`, background: "#10B981" }} />
                   </div>
                 </div>
-                <div className="rounded-2xl bg-white/10 backdrop-blur-sm ring-1 ring-white/15 px-3.5 py-2.5">
+                <div className="rounded-2xl bg-white/10 ring-1 ring-white/12 px-3.5 py-2.5">
                   <div className="flex items-center justify-between mb-1.5">
                     <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-full bg-white/15 flex items-center justify-center">
-                        <ArrowDownRight size={14} className="text-[#FCA5A5]" strokeWidth={2.5} />
+                      <div className="w-6 h-6 rounded-full bg-white/12 flex items-center justify-center">
+                        <ArrowDownRight size={13} className="text-[#FCA5A5]" strokeWidth={2.5} />
                       </div>
                       <span className="text-[12.5px] font-semibold text-white">Saída</span>
                     </div>
-                    <span className="font-mono text-[13px] font-bold text-white">{showSaldo ? fmtBRL(despesasMes) : "•••••"}</span>
+                    <span className="font-mono text-[13px] font-bold text-white tabular-nums">{showSaldo ? fmtBRL(despesasMes) : "•••••"}</span>
                   </div>
-                  <div className="h-1.5 rounded-full bg-white/15 overflow-hidden">
-                    <div className="h-full rounded-full transition-all duration-500" style={{ width: `${saidaPct}%`, background: "linear-gradient(90deg, #FB923C 0%, #EF4444 100%)" }} />
+                  <div className="h-1 rounded-full bg-white/12 overflow-hidden">
+                    <div className="h-full rounded-full transition-all duration-500" style={{ width: `${saidaPct}%`, background: "#EF4444" }} />
                   </div>
                 </div>
               </div>
@@ -387,7 +375,8 @@ export function MobileDashboard() {
       </div>
 
       {/* Card branco sobreposto — tira a sensação de esmagado */}
-      <div className="px-4 -mt-12 relative z-10">
+      <div className="px-4 -mt-10 relative z-10">
+
 
       {/* INSIGHTS — carrossel deslizável horizontal */}
       {(() => {
