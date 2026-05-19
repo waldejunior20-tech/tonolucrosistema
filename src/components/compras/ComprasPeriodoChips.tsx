@@ -50,8 +50,8 @@ export function ComprasPeriodoChips({ periodo, customRange, onChange, onDark = t
               "inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl border text-[13px] font-semibold transition-all",
               periodo === "custom"
                 ? onDark
-                  ? "bg-white text-blue-700 border-white shadow-[0_2px_8px_rgba(0,0,0,0.12)]"
-                  : "bg-white text-blue-600 border-blue-200 shadow-[0_6px_18px_rgba(37,99,235,0.12)]"
+                  ? "bg-white text-blue-700 border-white shadow-sm"
+                  : "bg-white text-blue-600 border-blue-200 shadow-sm"
                 : onDark
                 ? "bg-white/10 text-white/85 border-white/25 hover:bg-white/15"
                 : "bg-white text-slate-600 border-slate-200 hover:text-slate-900"
